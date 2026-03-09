@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>APGI Training Platform</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #dcdee0; margin: 0; padding: 40px; }
+    h1 { color: #333; margin-bottom: 8px; }
+    .description { font-size: 16px; color: #555; margin-bottom: 32px; max-width: 600px; }
+    h2 { color: #333; font-size: 18px; margin-bottom: 12px; }
+    ul { list-style: none; padding: 0; }
+    li { margin: 12px 0; display: flex; align-items: center; gap: 12px; }
+    a.course-link { display: inline-block; padding: 12px 24px; background: #0057a8; color: #fff; text-decoration: none; border-radius: 4px; font-size: 16px; }
+    a.course-link:hover { background: #003d7a; }
+    a.course-link:focus { background: #003d7a; outline: 3px solid #ffbf47; outline-offset: 2px; }
+    a.course-link.upcoming { background: #8a9ab0; cursor: default; pointer-events: none; }
+    a.course-link.upcoming:focus { background: #8a9ab0; outline: 3px solid #adb5bd; outline-offset: 2px; }
+    .badge { font-size: 12px; color: #666; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>APGI Training Platform</h1>
+    <p class="description">Welcome to the APGI Training Platform. Select a course below to get started.</p>
+    <h2>Available Courses</h2>
+    <ul>
+      <li>
+        <a class="course-link" href="/courses/vpshr-level-0/">VPSHR Level 0</a>
+      </li>
+      <li>
+        <a class="course-link upcoming" href="/courses/vpshr-level-1/" aria-disabled="true" tabindex="-1" aria-label="VPSHR Level 1 – Coming soon">VPSHR Level 1</a>
+        <span class="badge">Coming soon</span>
+      </li>
+    </ul>
+  </main>
+</body>
+</html>
