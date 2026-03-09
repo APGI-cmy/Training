@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/courses/level0/module1",
+      "destination": "/courses/level0/module1/index.html"
+    }
+  ]
+}
