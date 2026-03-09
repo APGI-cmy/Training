@@ -6,25 +6,44 @@
   <title>VPSHR Level 0</title>
   <style>
     body { font-family: Arial, sans-serif; background: #dcdee0; margin: 0; padding: 40px; }
-    h1 { color: #333; }
+    h1 { color: #333; margin-bottom: 8px; }
+    .description { font-size: 16px; color: #555; margin-bottom: 32px; max-width: 600px; }
+    h2 { color: #333; font-size: 18px; margin-bottom: 12px; }
     ul { list-style: none; padding: 0; }
-    li { margin: 12px 0; }
-    a { display: inline-block; padding: 12px 24px; background: #0057a8; color: #fff; text-decoration: none; border-radius: 4px; font-size: 16px; }
-    a:hover { background: #003d7a; }
-    a:focus { background: #003d7a; outline: 3px solid #ffbf47; outline-offset: 2px; }
+    li { margin: 12px 0; display: flex; align-items: center; gap: 12px; }
+    a.unit-link { display: inline-block; padding: 12px 24px; background: #0057a8; color: #fff; text-decoration: none; border-radius: 4px; font-size: 16px; }
+    a.unit-link:hover { background: #003d7a; }
+    a.unit-link:focus { background: #003d7a; outline: 3px solid #ffbf47; outline-offset: 2px; }
+    span.unit-link { display: inline-block; padding: 12px 24px; background: #8a9ab0; color: #fff; border-radius: 4px; font-size: 16px; cursor: default; }
+    .badge { font-size: 12px; color: #666; }
   </style>
 </head>
 <body>
   <main>
-  <h1>VPSHR Level 0</h1>
-  <p>Select a learning unit to begin:</p>
-  <ul>
-    <li><a href="unit1/">Unit 1</a></li>
-    <li><a href="unit2/">Unit 2</a></li>
-    <li><a href="unit3/">Unit 3</a></li>
-    <li><a href="unit4/">Unit 4</a></li>
-    <li><a href="unit5/">Unit 5</a></li>
-  </ul>
+    <h1>VPSHR Level 0</h1>
+    <p class="description">An introduction to VPSHR processes and procedures, covering the essential knowledge and skills required for working in a compliant and effective manner. Complete each unit in order to build your understanding progressively.</p>
+    <h2>Learning Units</h2>
+    <ul>
+      <li>
+        <a class="unit-link" href="unit1/">Unit 1</a>
+      </li>
+      <li>
+        <span class="unit-link">Unit 2</span>
+        <span class="badge">Coming soon</span>
+      </li>
+      <li>
+        <span class="unit-link">Unit 3</span>
+        <span class="badge">Coming soon</span>
+      </li>
+      <li>
+        <span class="unit-link">Unit 4</span>
+        <span class="badge">Coming soon</span>
+      </li>
+      <li>
+        <span class="unit-link">Unit 5</span>
+        <span class="badge">Coming soon</span>
+      </li>
+    </ul>
   </main>
 </body>
 </html>
