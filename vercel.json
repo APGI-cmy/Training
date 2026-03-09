@@ -1,7 +1,14 @@
 {
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/courses/level0/module1/",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
-      "source": "/courses/level0/module1",
+      "source": "/courses/level0/module1/",
       "destination": "/courses/level0/module1/index.html"
     }
   ]
