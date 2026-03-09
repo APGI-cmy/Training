@@ -14,7 +14,8 @@
     a.unit-link { display: inline-block; padding: 12px 24px; background: #0057a8; color: #fff; text-decoration: none; border-radius: 4px; font-size: 16px; }
     a.unit-link:hover { background: #003d7a; }
     a.unit-link:focus { background: #003d7a; outline: 3px solid #ffbf47; outline-offset: 2px; }
-    span.unit-link { display: inline-block; padding: 12px 24px; background: #8a9ab0; color: #fff; border-radius: 4px; font-size: 16px; cursor: default; }
+    a.unit-link.upcoming { background: #8a9ab0; }
+    a.unit-link.upcoming:hover { background: #6e7f94; }
     .badge { font-size: 12px; color: #666; }
   </style>
 </head>
@@ -28,19 +29,19 @@
         <a class="unit-link" href="unit1/">Unit 1</a>
       </li>
       <li>
-        <span class="unit-link">Unit 2</span>
+        <a class="unit-link upcoming" href="unit2/" aria-label="Unit 2 – Coming soon">Unit 2</a>
         <span class="badge">Coming soon</span>
       </li>
       <li>
-        <span class="unit-link">Unit 3</span>
+        <a class="unit-link upcoming" href="unit3/" aria-label="Unit 3 – Coming soon">Unit 3</a>
         <span class="badge">Coming soon</span>
       </li>
       <li>
-        <span class="unit-link">Unit 4</span>
+        <a class="unit-link upcoming" href="unit4/" aria-label="Unit 4 – Coming soon">Unit 4</a>
         <span class="badge">Coming soon</span>
       </li>
       <li>
-        <span class="unit-link">Unit 5</span>
+        <a class="unit-link upcoming" href="unit5/" aria-label="Unit 5 – Coming soon">Unit 5</a>
         <span class="badge">Coming soon</span>
       </li>
     </ul>
