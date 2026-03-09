@@ -2,14 +2,8 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/courses/level0/module1/",
+      "destination": "/courses/vpshr-level-0/",
       "permanent": false
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/courses/level0/module1/",
-      "destination": "/courses/level0/module1/index.html"
     }
   ]
 }
