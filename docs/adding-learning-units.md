@@ -2,13 +2,7 @@
 
 This guide explains the standard workflow for publishing a new iSpring learning unit and integrating it into the repository.
 
-> **Intake-to-deployment overview**
->
-> 1. Export from iSpring → upload to `staging/courses/<course-id>/unit<N>/` (not yet live).
-> 2. Open a pull request so the team can review the files before anything goes public.
-> 3. Once approved, move the folder to `public/courses/<course-id>/unit<N>/`, update the course landing page, and merge.
->
-> See [`staging/README.md`](../staging/README.md) for a concise reference.
+> **Using a staging area?** If your team requires a non-public review step before content goes live, see [`docs/ispring-intake-workflow.md`](ispring-intake-workflow.md) for the full intake-to-deployment workflow.
 
 ## Prerequisites
 
@@ -44,58 +38,34 @@ Both `index.html` **and** the `data/` folder must be present. If either is missi
 
 ---
 
-## Step 3 – Upload the Export to the Staging Area
+## Step 3 – Add the Unit Folder to the Repository
 
-Copy the entire iSpring output directory into the corresponding path under `staging/` (**not** into `public/` yet):
+Create a new folder for the unit under the relevant course directory:
 
 ```
-staging/courses/<course-id>/unit<N>/
+public/courses/<course-id>/unit<N>/
 ```
 
 For example, for Unit 2 of the `vpshr-level-0` course:
 
 ```
-staging/courses/vpshr-level-0/unit2/
-├── index.html          ← copied from iSpring export
+public/courses/vpshr-level-0/unit2/
+```
+
+If a placeholder `index.html` already exists in that folder (e.g. a "Content coming soon" page), **replace it** with the iSpring export. Copy the entire contents of the iSpring output directory into the unit folder:
+
+```
+public/courses/vpshr-level-0/unit2/
+├── index.html          ← copied from iSpring export (replaces placeholder)
 └── data/               ← copied from iSpring export
     └── …
 ```
-
-Files in `staging/` are **not served by Vercel** (Vercel only serves the `public/` directory), so nothing is publicly visible until the promotion step.
-
----
-
-## Step 4 – Commit and Open a Pull Request for Review
-
-Stage the new files and open a pull request:
-
-```bash
-git add staging/courses/<course-id>/unit<N>/
-git commit -m "Stage Unit N iSpring export for <course-id>"
-git push origin <your-branch>
-```
-
-Open a pull request against `main`. Reviewers can inspect the HTML structure, verify the `data/` folder is present, and confirm the export looks correct before it goes live.
-
----
-
-## Step 5 – Promote from Staging to Production
-
-Once the pull request is approved, move the unit folder from `staging/` to `public/` and clean up the staging entry **in the same PR**:
-
-```bash
-mv staging/courses/<course-id>/unit<N>/ public/courses/<course-id>/unit<N>/
-git add public/courses/<course-id>/unit<N>/
-git rm -r staging/courses/<course-id>/unit<N>/
-```
-
-If a placeholder `index.html` already exists in the destination (e.g. a "Content coming soon" page), the `mv` command replaces it automatically.
 
 > **Note:** The placeholder `index.html` references `../placeholder.css`. The iSpring-exported `index.html` does **not** load `placeholder.css`, so that file can be left in place at the course level — it is only used by remaining placeholder units.
 
 ---
 
-## Step 6 – Update the Course Landing Page
+## Step 4 – Update the Course Landing Page
 
 Open `public/courses/<course-id>/index.html` and promote the unit's link from *upcoming* to *live*:
 
@@ -123,22 +93,22 @@ Changes to make:
 
 ---
 
-## Step 7 – Commit and Push
+## Step 5 – Commit and Push
 
-Stage the promotion changes and update the pull request:
+Stage all changes and open a pull request:
 
 ```bash
 git add public/courses/<course-id>/unit<N>/
 git add public/courses/<course-id>/index.html
-git commit -m "Promote Unit N to production for <course-id>"
+git commit -m "Add Unit N iSpring HTML5 export for <course-id>"
 git push origin <your-branch>
 ```
 
-Once approved and merged, Vercel will deploy the updated content automatically.
+Open a pull request against `main`. Once approved and merged, Vercel will deploy the updated content automatically.
 
 ---
 
-## Step 8 – Verify the Deployed Vercel URL
+## Step 6 – Verify the Deployed Vercel URL
 
 After the pull request is merged, Vercel deploys within a few minutes. Confirm the unit is live before linking it anywhere:
 
@@ -154,7 +124,7 @@ After the pull request is merged, Vercel deploys within a few minutes. Confirm t
 
 ---
 
-## Step 9 – Add the URL as a Lesson in Thinkific
+## Step 7 – Add the URL as a Lesson in Thinkific
 
 Once the deployed URL is confirmed working, add it to the corresponding lesson in Thinkific:
 
@@ -162,7 +132,7 @@ Once the deployed URL is confirmed working, add it to the corresponding lesson i
 2. Navigate to **Courses** and open the relevant course.
 3. In the course builder, locate the lesson for this unit (or create a new one if it does not exist yet).
 4. Set the lesson type to **Multimedia** (or **External Website** / **Iframe**, depending on how previous units are configured).
-5. Paste the Vercel URL (from Step 8) as the lesson content URL.
+5. Paste the Vercel URL (from Step 6) as the lesson content URL.
 6. Save and preview the lesson to confirm the iSpring content loads inside Thinkific.
 7. Publish the lesson when ready.
 
@@ -174,10 +144,8 @@ Once the deployed URL is confirmed working, add it to the corresponding lesson i
 |------|--------|
 | 1 | Publish from iSpring → My Computer → HTML5 |
 | 2 | Confirm export contains `index.html` and `data/` |
-| 3 | Copy export into `staging/courses/<course>/unit<N>/` |
-| 4 | Commit staged files and open a pull request for review |
-| 5 | Move folder from `staging/` to `public/courses/<course>/unit<N>/` |
-| 6 | Update course `index.html`: remove `upcoming` class and "Coming soon" badge |
-| 7 | Commit promotion changes and push |
-| 8 | After merge, verify the unit loads at the Vercel production URL |
-| 9 | Add the Vercel URL as the lesson link in Thinkific |
+| 3 | Copy export into `public/courses/<course>/unit<N>/` (replace placeholder) |
+| 4 | Update course `index.html`: remove `upcoming` class and "Coming soon" badge |
+| 5 | Commit, push, and open a pull request |
+| 6 | After merge, verify the unit loads at the Vercel production URL |
+| 7 | Add the Vercel URL as the lesson link in Thinkific |
