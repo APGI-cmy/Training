@@ -26,6 +26,10 @@ When instructed with a prompt such as:
 > Please validate it, promote it into the live course structure, replace the placeholder,
 > update the course landing page, and prepare it for deployment."
 
+> "I uploaded a new iSpring package to `staging/ispring-imports/vpshr-level-1/unit1/`.
+> Please validate it, promote it into the live course structure, replace the placeholder,
+> update the course landing page, and prepare it for deployment."
+
 Follow the steps below exactly. **Do not skip or reorder them.**
 
 ### Step A — Validate the staged package
@@ -93,11 +97,32 @@ Changes to make:
 - Remove the `aria-label` attribute.
 - Remove the `<span class="badge">Coming soon</span>` sibling element.
 
-### Step D — Stage and commit the changes
+### Step D — Update the Thinkific URL map (when relevant)
+
+Open `docs/thinkific-url-map.md` and find the row for the promoted unit.
+
+- Change the **Status** column from `Coming soon` to `Live`.
+- If the Thinkific lesson title is now confirmed, update the **Thinkific Lesson** column with the full lesson title.
+- If no row exists for this unit yet, add one following the existing table format.
+
+Example — row before promotion:
+
+```
+| Unit 2 | https://…/courses/vpshr-level-0/unit2/ | Unit 2 | Coming soon |
+```
+
+Example — row after promotion:
+
+```
+| Unit 2 | https://…/courses/vpshr-level-0/unit2/ | Unit 2 – Lesson Title | Live |
+```
+
+### Step E — Stage and commit the changes
 
 ```bash
 git add public/courses/<course-id>/<unit-dir>/
 git add public/courses/<course-id>/index.html
+git add docs/thinkific-url-map.md
 git commit -m "Promote <unit-dir> to production for <course-id>"
 ```
 
@@ -110,7 +135,7 @@ iSpring export
     ↓
 staging/ispring-imports/<course-id>/<unit-dir>/
     ↓
-Agent: validate (Step A) + promote (Step B) + update landing page (Step C) + commit (Step D)
+Agent: validate (Step A) + promote (Step B) + update landing page (Step C) + update URL map (Step D) + commit (Step E)
     ↓
 public/courses/<course-id>/<unit-dir>/
     ↓
@@ -128,6 +153,7 @@ Vercel deployment
 | `staging/ispring-imports/` | Non-public intake area for new iSpring exports |
 | `public/courses/` | Live course content served by Vercel |
 | `public/courses/<course-id>/index.html` | Course landing page — update unit links here |
+| `docs/thinkific-url-map.md` | URL map — update unit status to `Live` after promotion |
 | `scripts/promote-unit.sh` | Safe promotion helper script |
 | `docs/ispring-intake-workflow.md` | Full end-to-end intake workflow reference |
 | `docs/adding-learning-units.md` | Maintainer guide for adding new units |
@@ -138,4 +164,5 @@ Vercel deployment
 
 - [`docs/ispring-intake-workflow.md`](../docs/ispring-intake-workflow.md) — complete step-by-step intake process
 - [`docs/adding-learning-units.md`](../docs/adding-learning-units.md) — maintainer guide
+- [`docs/thinkific-url-map.md`](../docs/thinkific-url-map.md) — Vercel → Thinkific URL map; update status after promotion
 - [`scripts/promote-unit.sh`](../scripts/promote-unit.sh) — promotion script with inline safety documentation
