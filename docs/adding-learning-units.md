@@ -106,6 +106,36 @@ Open a pull request against `main`. Once approved and merged, Vercel will deploy
 
 ---
 
+## Step 6 – Verify the Deployed Vercel URL
+
+After the pull request is merged, Vercel deploys within a few minutes. Confirm the unit is live before linking it anywhere:
+
+1. Open the production URL for the unit in a browser:
+   ```
+   https://<vercel-project>.vercel.app/courses/<course-id>/unit<N>/
+   ```
+2. Check that the iSpring presentation loads correctly — slides advance, audio plays (if applicable), and there are no console errors.
+3. If the page shows a 404 or still displays the "Content coming soon" placeholder, verify that:
+   - The PR was fully merged (not just pushed).
+   - The Vercel deployment completed successfully (check the Vercel dashboard for build errors).
+   - The folder path in the repository matches the URL exactly (paths are case-sensitive).
+
+---
+
+## Step 7 – Add the URL as a Lesson in Thinkific
+
+Once the deployed URL is confirmed working, add it to the corresponding lesson in Thinkific:
+
+1. Log in to the Thinkific admin panel.
+2. Navigate to **Courses** and open the relevant course.
+3. In the course builder, locate the lesson for this unit (or create a new one if it does not exist yet).
+4. Set the lesson type to **Multimedia** (or **External Website** / **Iframe**, depending on how previous units are configured).
+5. Paste the Vercel URL (from Step 6) as the lesson content URL.
+6. Save and preview the lesson to confirm the iSpring content loads inside Thinkific.
+7. Publish the lesson when ready.
+
+---
+
 ## Quick Reference
 
 | Step | Action |
@@ -115,3 +145,5 @@ Open a pull request against `main`. Once approved and merged, Vercel will deploy
 | 3 | Copy export into `public/courses/<course>/unit<N>/` (replace placeholder) |
 | 4 | Update course `index.html`: remove `upcoming` class and "Coming soon" badge |
 | 5 | Commit, push, and open a pull request |
+| 6 | After merge, verify the unit loads at the Vercel production URL |
+| 7 | Add the Vercel URL as the lesson link in Thinkific |
