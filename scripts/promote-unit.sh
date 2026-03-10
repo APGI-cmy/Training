@@ -61,9 +61,11 @@ echo ""
 [[ -d "$STAGING_SRC" ]] \
   || die "Staging source not found: ${STAGING_SRC}"
 
-# 2. Source must contain index.html (basic completeness check).
+# 2. Source must contain index.html and a data/ directory (iSpring export completeness check).
 [[ -f "${STAGING_SRC}/index.html" ]] \
   || die "index.html not found in ${STAGING_SRC} — re-check the iSpring export."
+[[ -d "${STAGING_SRC}/data" ]] \
+  || die "data/ directory not found in ${STAGING_SRC} — re-check the iSpring export."
 
 # 3. Destination course directory must already exist (prevents creating
 #    arbitrary new directories inside public/).
