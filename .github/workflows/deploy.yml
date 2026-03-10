@@ -25,7 +25,7 @@ jobs:
         run: npm install --global vercel@latest
 
       - name: Pull Vercel project settings
-        run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+        run: vercel pull --yes --environment=production
 
       - name: Deploy to Vercel (production)
-        run: vercel deploy --prod --token=$VERCEL_TOKEN
+        run: vercel deploy --prod
