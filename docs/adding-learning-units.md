@@ -2,6 +2,8 @@
 
 This guide explains the standard workflow for publishing a new iSpring learning unit and integrating it into the repository.
 
+> **Using a staging area?** If your team requires a non-public review step before content goes live, see [`docs/ispring-intake-workflow.md`](ispring-intake-workflow.md) for the full intake-to-deployment workflow.
+
 ## Prerequisites
 
 - iSpring Suite (or iSpring Suite Max) installed and the source presentation ready to publish.
