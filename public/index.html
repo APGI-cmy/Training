@@ -14,9 +14,8 @@
     a.course-link { display: inline-block; padding: 12px 24px; background: #0057a8; color: #fff; text-decoration: none; border-radius: 4px; font-size: 16px; }
     a.course-link:hover { background: #003d7a; }
     a.course-link:focus { background: #003d7a; outline: 3px solid #ffbf47; outline-offset: 2px; }
-    a.course-link.upcoming { background: #8a9ab0; }
-    a.course-link.upcoming:hover { background: #6e7f94; }
-    a.course-link.upcoming:focus { background: #6e7f94; outline: 3px solid #ffbf47; outline-offset: 2px; }
+    a.course-link.upcoming { background: #8a9ab0; cursor: default; pointer-events: none; }
+    a.course-link.upcoming:focus { background: #8a9ab0; outline: 3px solid #adb5bd; outline-offset: 2px; }
     .badge { font-size: 12px; color: #666; }
   </style>
 </head>
@@ -30,23 +29,7 @@
         <a class="course-link" href="/courses/vpshr-level-0/">VPSHR Level 0</a>
       </li>
       <li>
-        <a class="course-link upcoming" href="/courses/vpshr-level-1/" aria-label="VPSHR Level 1 – Coming soon">VPSHR Level 1</a>
-        <span class="badge">Coming soon</span>
-      </li>
-      <li>
-        <a class="course-link upcoming" href="/courses/vpshr-level-2/" aria-label="VPSHR Level 2 – Coming soon">VPSHR Level 2</a>
-        <span class="badge">Coming soon</span>
-      </li>
-      <li>
-        <a class="course-link upcoming" href="/courses/vpshr-level-3/" aria-label="VPSHR Level 3 – Coming soon">VPSHR Level 3</a>
-        <span class="badge">Coming soon</span>
-      </li>
-      <li>
-        <a class="course-link upcoming" href="/courses/vpshr-level-4/" aria-label="VPSHR Level 4 – Coming soon">VPSHR Level 4</a>
-        <span class="badge">Coming soon</span>
-      </li>
-      <li>
-        <a class="course-link upcoming" href="/courses/vpshr-level-5/" aria-label="VPSHR Level 5 – Coming soon">VPSHR Level 5</a>
+        <a class="course-link upcoming" href="/courses/vpshr-level-1/" aria-disabled="true" tabindex="-1" aria-label="VPSHR Level 1 – Coming soon">VPSHR Level 1</a>
         <span class="badge">Coming soon</span>
       </li>
     </ul>
