@@ -10,7 +10,7 @@ The Vercel URLs listed here correspond directly to the repository structure unde
 
 | Unit | Vercel URL | Thinkific Lesson | Status |
 |------|------------|------------------|--------|
-| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-0/intro/ | Introduction | Coming soon |
+| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-0/introduction/ | Introduction | Coming soon |
 | Unit 1 | https://training-three-rosy.vercel.app/courses/vpshr-level-0/unit1/ | Unit 1 – The Meaning of Human Rights | Live |
 | Unit 2 | https://training-three-rosy.vercel.app/courses/vpshr-level-0/unit2/ | Unit 2 | Coming soon |
 | Unit 3 | https://training-three-rosy.vercel.app/courses/vpshr-level-0/unit3/ | Unit 3 | Coming soon |
@@ -33,7 +33,7 @@ The Vercel URLs listed here correspond directly to the repository structure unde
 
 | Unit | Vercel URL | Thinkific Lesson | Status |
 |------|------------|------------------|--------|
-| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-1/intro/ | Introduction | Coming soon |
+| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-1/introduction/ | Introduction | Coming soon |
 | Unit 1 | https://training-three-rosy.vercel.app/courses/vpshr-level-1/unit1/ | Unit 1 | Coming soon |
 | Unit 2 | https://training-three-rosy.vercel.app/courses/vpshr-level-1/unit2/ | Unit 2 | Coming soon |
 | Unit 3 | https://training-three-rosy.vercel.app/courses/vpshr-level-1/unit3/ | Unit 3 | Coming soon |
@@ -56,7 +56,7 @@ The Vercel URLs listed here correspond directly to the repository structure unde
 
 | Unit | Vercel URL | Thinkific Lesson | Status |
 |------|------------|------------------|--------|
-| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-2/intro/ | Introduction | Coming soon |
+| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-2/introduction/ | Introduction | Coming soon |
 | Unit 1 | https://training-three-rosy.vercel.app/courses/vpshr-level-2/unit1/ | Unit 1 | Coming soon |
 | Unit 2 | https://training-three-rosy.vercel.app/courses/vpshr-level-2/unit2/ | Unit 2 | Coming soon |
 | Unit 3 | https://training-three-rosy.vercel.app/courses/vpshr-level-2/unit3/ | Unit 3 | Coming soon |
@@ -79,7 +79,7 @@ The Vercel URLs listed here correspond directly to the repository structure unde
 
 | Unit | Vercel URL | Thinkific Lesson | Status |
 |------|------------|------------------|--------|
-| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-3/intro/ | Introduction | Coming soon |
+| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-3/introduction/ | Introduction | Coming soon |
 | Unit 1 | https://training-three-rosy.vercel.app/courses/vpshr-level-3/unit1/ | Unit 1 | Coming soon |
 | Unit 2 | https://training-three-rosy.vercel.app/courses/vpshr-level-3/unit2/ | Unit 2 | Coming soon |
 | Unit 3 | https://training-three-rosy.vercel.app/courses/vpshr-level-3/unit3/ | Unit 3 | Coming soon |
@@ -102,7 +102,7 @@ The Vercel URLs listed here correspond directly to the repository structure unde
 
 | Unit | Vercel URL | Thinkific Lesson | Status |
 |------|------------|------------------|--------|
-| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-4/intro/ | Introduction | Coming soon |
+| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-4/introduction/ | Introduction | Coming soon |
 | Unit 1 | https://training-three-rosy.vercel.app/courses/vpshr-level-4/unit1/ | Unit 1 | Coming soon |
 | Unit 2 | https://training-three-rosy.vercel.app/courses/vpshr-level-4/unit2/ | Unit 2 | Coming soon |
 | Unit 3 | https://training-three-rosy.vercel.app/courses/vpshr-level-4/unit3/ | Unit 3 | Coming soon |
@@ -125,7 +125,7 @@ The Vercel URLs listed here correspond directly to the repository structure unde
 
 | Unit | Vercel URL | Thinkific Lesson | Status |
 |------|------------|------------------|--------|
-| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-5/intro/ | Introduction | Coming soon |
+| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-5/introduction/ | Introduction | Coming soon |
 | Unit 1 | https://training-three-rosy.vercel.app/courses/vpshr-level-5/unit1/ | Unit 1 | Coming soon |
 | Unit 2 | https://training-three-rosy.vercel.app/courses/vpshr-level-5/unit2/ | Unit 2 | Coming soon |
 | Unit 3 | https://training-three-rosy.vercel.app/courses/vpshr-level-5/unit3/ | Unit 3 | Coming soon |
