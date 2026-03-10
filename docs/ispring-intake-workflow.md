@@ -98,18 +98,25 @@ Reviewers should confirm:
 
 ## Step 5 – Promote from Staging to Production
 
-Once the pull request is approved, move the unit folder from `staging/ispring-imports/` to `public/courses/` and remove the staging copy **in the same commit**:
+Once the pull request is approved, run the promotion helper script from the repository root:
 
 ```bash
-# Remove the existing placeholder directory, if present
-rm -rf public/courses/<course-id>/unit<N>/
-
-# Move the staged export into the live course structure
-mv staging/ispring-imports/<course-id>/unit<N>/ public/courses/<course-id>/unit<N>/
-
-git add public/courses/<course-id>/unit<N>/
-git rm -r staging/ispring-imports/<course-id>/unit<N>/
+./scripts/promote-unit.sh <course-id> <unit-dir>
 ```
+
+For example:
+
+```bash
+./scripts/promote-unit.sh vpshr-level-0 unit2
+```
+
+The script will:
+
+1. Verify the staging source exists and contains `index.html`.
+2. Verify the destination course directory already exists (guards against typos creating arbitrary new directories).
+3. Remove only the specific unit directory at the destination if one is present (e.g. a placeholder page) — never the whole course directory.
+4. Move the staged unit into `public/courses/<course-id>/unit<N>/`.
+5. Stage the moved files with `git add` and remove the staging path from Git tracking.
 
 > **Note:** The placeholder `index.html` references `../placeholder.css`. The iSpring-exported `index.html` does **not** load `placeholder.css`, so that file can be left in place at the course level — it is only used by remaining placeholder units.
 
@@ -196,7 +203,7 @@ Once the deployed URL is confirmed working:
 | 2 | Confirm export contains `index.html` and `data/` |
 | 3 | Copy export into `staging/ispring-imports/<course>/unit<N>/` |
 | 4 | Commit and open a pull request for review |
-| 5 | Move folder to `public/courses/<course>/unit<N>/`, remove staging copy |
+| 5 | Run `./scripts/promote-unit.sh <course> <unit-dir>` to move to `public/courses/` |
 | 6 | Update course `index.html`: remove `upcoming` class and "Coming soon" badge |
 | 7 | Commit promotion changes and push |
 | 8 | After merge, verify the unit loads at the Vercel production URL |
