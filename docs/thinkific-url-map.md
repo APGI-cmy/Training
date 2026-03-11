@@ -10,9 +10,9 @@ The Vercel URLs listed here correspond directly to the repository structure unde
 
 | Unit | Vercel URL | Thinkific Lesson | Status |
 |------|------------|------------------|--------|
-| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-0/introduction/ | Introduction | Coming soon |
+| Introduction | https://training-three-rosy.vercel.app/courses/vpshr-level-0/introduction/ | Introduction | Live |
 | Unit 1 | https://training-three-rosy.vercel.app/courses/vpshr-level-0/unit1/ | Unit 1 – The Meaning of Human Rights | Live |
-| Unit 2 | https://training-three-rosy.vercel.app/courses/vpshr-level-0/unit2/ | Unit 2 | Coming soon |
+| Unit 2 | https://training-three-rosy.vercel.app/courses/vpshr-level-0/unit2/ | Unit 2 – Who are Responsible for Human Rights | Live |
 | Unit 3 | https://training-three-rosy.vercel.app/courses/vpshr-level-0/unit3/ | Unit 3 | Coming soon |
 | Unit 4 | https://training-three-rosy.vercel.app/courses/vpshr-level-0/unit4/ | Unit 4 | Coming soon |
 | Unit 5 | https://training-three-rosy.vercel.app/courses/vpshr-level-0/unit5/ | Unit 5 | Coming soon |
