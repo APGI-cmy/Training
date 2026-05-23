@@ -1,0 +1,1183 @@
+{
+  "id": "vpshr-level-0",
+  "slug": "vpshr-level-0",
+  "title": "VPSHR Level 0",
+  "level": "Foundational awareness",
+  "description": "A responsive learning pathway for the Voluntary Principles on Security and Human Rights, built around the published VPSHR course files already stored in this repository.",
+  "audience": "Security teams, site leaders, contractors, and employees who need a practical baseline in human rights responsibilities.",
+  "duration": "12 learning units plus orientation",
+  "sourceRoot": "/courses/vpshr-level-0",
+  "integrationNotes": [
+    "Each Next.js learning unit can be embedded or linked from Thinkific.",
+    "The original iSpring exports remain available under public/courses/vpshr-level-0 for compatibility.",
+    "Progress is saved locally as a placeholder until a Thinkific or LMS API is connected."
+  ],
+  "units": [
+    {
+      "id": "intro",
+      "slug": "introduction",
+      "legacySlug": "introduction",
+      "order": 0,
+      "title": "Introduction to VPSHR Level 0",
+      "subtitle": "Set the context for rights-aware security practice.",
+      "duration": "5 min",
+      "assetBase": "/courses/vpshr-level-0/introduction",
+      "publishedPath": "/courses/vpshr-level-0/introduction/index.html",
+      "objectives": [
+        "Recognize why security and human rights belong in the same operating conversation.",
+        "Identify how the course is structured and how each learning unit builds on the last.",
+        "Connect the VPSHR baseline to everyday workplace decision-making."
+      ],
+      "media": [
+        {
+          "kind": "video",
+          "title": "Orientation video",
+          "src": "/courses/vpshr-level-0/introduction/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/introduction/data/thmb1.jpg"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published orientation",
+          "src": "/courses/vpshr-level-0/introduction/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Course purpose",
+          "body": "This pathway introduces VPSHR as a practical operating standard for respectful, accountable security."
+        },
+        {
+          "title": "Learner commitment",
+          "body": "Learners are asked to connect each topic to real choices they may make on site or in the field."
+        }
+      ],
+      "quiz": [
+        {
+          "id": "intro-q1",
+          "type": "trueFalse",
+          "prompt": "VPSHR training only applies to specialist legal teams.",
+          "options": [
+            {
+              "id": "true",
+              "label": "True"
+            },
+            {
+              "id": "false",
+              "label": "False"
+            }
+          ],
+          "answer": "false",
+          "feedback": "VPSHR awareness is relevant to security personnel, employees, contractors, managers, and leaders."
+        }
+      ],
+      "survey": [
+        {
+          "id": "intro-s1",
+          "type": "reflection",
+          "prompt": "Where could human rights risks appear in your day-to-day security environment?",
+          "guidance": "Name one practical setting, such as access control, protest response, contractor supervision, or incident reporting."
+        }
+      ],
+      "summary": [
+        "Security decisions can affect dignity, safety, and trust.",
+        "The rest of the course turns the VPSHR baseline into practical scenarios and checks."
+      ]
+    },
+    {
+      "id": "lu1",
+      "slug": "lu1",
+      "legacySlug": "unit1",
+      "order": 1,
+      "title": "Definition of Human Rights",
+      "subtitle": "Build a shared vocabulary for rights and responsibilities.",
+      "duration": "10 min",
+      "assetBase": "/courses/vpshr-level-0/LU1 Definition",
+      "publishedPath": "/courses/vpshr-level-0/LU1 Definition/index.html",
+      "objectives": [
+        "Define human rights in plain operational language.",
+        "Recognize that rights apply to everyone without discrimination.",
+        "Explain why rights awareness matters in private and public security settings."
+      ],
+      "media": [
+        {
+          "kind": "video",
+          "title": "Human rights definition video",
+          "src": "/courses/vpshr-level-0/LU1 Definition/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU1 Definition/data/thmb1.jpg"
+        },
+        {
+          "kind": "audio",
+          "title": "Narration audio",
+          "src": "/courses/vpshr-level-0/LU1 Definition/data/sound1.mp3"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published unit",
+          "src": "/courses/vpshr-level-0/LU1 Definition/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Universal rights",
+          "body": "Human rights protect the dignity and safety of every person affected by security operations.",
+          "thumbnail": "/courses/vpshr-level-0/LU1 Definition/data/thmb1.jpg"
+        },
+        {
+          "title": "Operational relevance",
+          "body": "The definition becomes practical when teams use it to guide communication, escalation, and reporting.",
+          "thumbnail": "/courses/vpshr-level-0/LU1 Definition/data/thmb2.jpg"
+        },
+        {
+          "title": "Accountability",
+          "body": "Respect for rights depends on preparation, supervision, and consistent follow-through.",
+          "thumbnail": "/courses/vpshr-level-0/LU1 Definition/data/thmb3.jpg"
+        }
+      ],
+      "quiz": [
+        {
+          "id": "lu1-q1",
+          "type": "multipleChoice",
+          "prompt": "Which statement best describes human rights in this training context?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Standards that protect dignity, safety, and fair treatment"
+            },
+            {
+              "id": "b",
+              "label": "Benefits that only apply after a legal complaint"
+            },
+            {
+              "id": "c",
+              "label": "Internal company preferences with no operational effect"
+            }
+          ],
+          "answer": "a",
+          "feedback": "The course treats human rights as practical standards that guide how people are treated during security operations."
+        }
+      ],
+      "survey": [
+        {
+          "id": "lu1-s1",
+          "type": "scenario",
+          "prompt": "A visitor is frustrated at a checkpoint and raises their voice. What is the best first response?",
+          "options": [
+            {
+              "id": "listen",
+              "label": "Listen, de-escalate, and explain the process"
+            },
+            {
+              "id": "dismiss",
+              "label": "Ignore the concern and move to enforcement"
+            },
+            {
+              "id": "delay",
+              "label": "Delay the visitor without explanation"
+            }
+          ],
+          "guidance": "A rights-aware response starts with calm communication and proportionate action."
+        }
+      ],
+      "summary": [
+        "Human rights are not abstract extras; they shape everyday security choices.",
+        "Clear definitions help teams make consistent decisions under pressure."
+      ]
+    },
+    {
+      "id": "lu2",
+      "slug": "lu2",
+      "legacySlug": "unit2",
+      "order": 2,
+      "title": "Responsibilities",
+      "subtitle": "Clarify who carries which responsibilities in a VPSHR environment.",
+      "duration": "12 min",
+      "assetBase": "/courses/vpshr-level-0/LU2 Responsibilities",
+      "publishedPath": "/courses/vpshr-level-0/LU2 Responsibilities/index.html",
+      "objectives": [
+        "Identify employee, contractor, security, and leadership responsibilities.",
+        "Distinguish personal conduct from organizational accountability.",
+        "Recognize when concerns should be escalated or reported."
+      ],
+      "media": [
+        {
+          "kind": "video",
+          "title": "Responsibilities video 1",
+          "src": "/courses/vpshr-level-0/LU2 Responsibilities/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU2 Responsibilities/data/thmb1.jpg"
+        },
+        {
+          "kind": "video",
+          "title": "Responsibilities video 2",
+          "src": "/courses/vpshr-level-0/LU2 Responsibilities/data/video2.mp4",
+          "poster": "/courses/vpshr-level-0/LU2 Responsibilities/data/thmb2.jpg"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published unit",
+          "src": "/courses/vpshr-level-0/LU2 Responsibilities/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Shared responsibility",
+          "body": "Rights-aware security works when every role understands its part.",
+          "thumbnail": "/courses/vpshr-level-0/LU2 Responsibilities/data/thmb1.jpg"
+        },
+        {
+          "title": "Escalation points",
+          "body": "Early escalation prevents small concerns from becoming serious incidents.",
+          "thumbnail": "/courses/vpshr-level-0/LU2 Responsibilities/data/thmb2.jpg"
+        },
+        {
+          "title": "Record and learn",
+          "body": "Accurate reporting supports accountability and continuous improvement.",
+          "thumbnail": "/courses/vpshr-level-0/LU2 Responsibilities/data/thmb3.jpg"
+        }
+      ],
+      "quiz": [
+        {
+          "id": "lu2-q1",
+          "type": "multipleResponse",
+          "prompt": "Which actions support responsible VPSHR implementation? Select all that apply.",
+          "options": [
+            {
+              "id": "report",
+              "label": "Report credible concerns through the correct channel"
+            },
+            {
+              "id": "train",
+              "label": "Keep security teams trained and supervised"
+            },
+            {
+              "id": "hide",
+              "label": "Avoid documenting incidents to reduce paperwork"
+            },
+            {
+              "id": "review",
+              "label": "Review incidents for lessons learned"
+            }
+          ],
+          "answers": ["report", "train", "review"],
+          "feedback": "Responsible implementation depends on training, reporting, supervision, and review."
+        }
+      ],
+      "survey": [
+        {
+          "id": "lu2-s1",
+          "type": "reflection",
+          "prompt": "What responsibility in your role most directly affects another person's dignity or safety?",
+          "guidance": "Focus on one task where communication, supervision, or escalation matters."
+        }
+      ],
+      "summary": [
+        "Responsibilities must be visible before an incident happens.",
+        "Documentation, escalation, and supervision are core safeguards."
+      ]
+    },
+    {
+      "id": "lu3",
+      "slug": "lu3",
+      "legacySlug": "unit3",
+      "order": 3,
+      "title": "Benefits of Human Rights",
+      "subtitle": "Connect rights practice to trust, resilience, and safer operations.",
+      "duration": "10 min",
+      "assetBase": "/courses/vpshr-level-0/LU3 benefits-human-rights",
+      "publishedPath": "/courses/vpshr-level-0/LU3 benefits-human-rights/index.html",
+      "objectives": [
+        "Describe how rights-aware conduct improves community trust.",
+        "Recognize operational benefits of de-escalation and fair treatment.",
+        "Link better security outcomes to accountability."
+      ],
+      "media": [
+        {
+          "kind": "video",
+          "title": "Benefits video 1",
+          "src": "/courses/vpshr-level-0/LU3 benefits-human-rights/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU3 benefits-human-rights/data/thmb1.jpg"
+        },
+        {
+          "kind": "video",
+          "title": "Benefits video 2",
+          "src": "/courses/vpshr-level-0/LU3 benefits-human-rights/data/video2.mp4",
+          "poster": "/courses/vpshr-level-0/LU3 benefits-human-rights/data/thmb2.jpg"
+        },
+        {
+          "kind": "audio",
+          "title": "Narration audio",
+          "src": "/courses/vpshr-level-0/LU3 benefits-human-rights/data/sound1.mp3"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published unit",
+          "src": "/courses/vpshr-level-0/LU3 benefits-human-rights/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Trust lowers risk",
+          "body": "Respectful engagement can reduce tension and improve the quality of information shared with security teams.",
+          "thumbnail": "/courses/vpshr-level-0/LU3 benefits-human-rights/data/thmb1.jpg"
+        },
+        {
+          "title": "Consistency matters",
+          "body": "People are more likely to cooperate when rules are explained and applied fairly.",
+          "thumbnail": "/courses/vpshr-level-0/LU3 benefits-human-rights/data/thmb2.jpg"
+        },
+        {
+          "title": "Better decisions",
+          "body": "Rights-aware teams are more likely to choose proportionate, defensible actions.",
+          "thumbnail": "/courses/vpshr-level-0/LU3 benefits-human-rights/data/thmb3.jpg"
+        }
+      ],
+      "quiz": [
+        {
+          "id": "lu3-q1",
+          "type": "matching",
+          "prompt": "Match each practice to its likely benefit.",
+          "pairs": [
+            {
+              "left": "Clear communication",
+              "right": "Lower confusion at security touchpoints"
+            },
+            {
+              "left": "Consistent reporting",
+              "right": "Better accountability and follow-up"
+            },
+            {
+              "left": "De-escalation",
+              "right": "Reduced risk of harm"
+            }
+          ],
+          "feedback": "Human rights practice has operational value when it is applied consistently."
+        }
+      ],
+      "survey": [
+        {
+          "id": "lu3-s1",
+          "type": "scenario",
+          "prompt": "A community member reports rough treatment by a contractor. Which benefit is most at risk if the concern is ignored?",
+          "options": [
+            {
+              "id": "trust",
+              "label": "Community trust"
+            },
+            {
+              "id": "speed",
+              "label": "Queue speed only"
+            },
+            {
+              "id": "branding",
+              "label": "Visual branding"
+            }
+          ],
+          "guidance": "Trust is damaged when people believe concerns will not be heard or addressed."
+        }
+      ],
+      "summary": [
+        "Human rights practice helps prevent harm and strengthens trust.",
+        "Operational benefits depend on consistent behavior, not slogans."
+      ]
+    },
+    {
+      "id": "lu4",
+      "slug": "lu4",
+      "legacySlug": "unit4",
+      "order": 4,
+      "title": "Thirty Human Rights",
+      "subtitle": "Explore the rights baseline behind VPSHR decision-making.",
+      "duration": "12 min",
+      "assetBase": "/courses/vpshr-level-0/LU4 30-human-rights",
+      "publishedPath": "/courses/vpshr-level-0/LU4 30-human-rights/index.html",
+      "objectives": [
+        "Recognize that rights cover safety, liberty, equality, privacy, and fair treatment.",
+        "Connect broad rights language to security touchpoints.",
+        "Identify when a right may be affected by an operational decision."
+      ],
+      "media": [
+        {
+          "kind": "video",
+          "title": "Rights overview video 1",
+          "src": "/courses/vpshr-level-0/LU4 30-human-rights/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU4 30-human-rights/data/thmb1.jpg"
+        },
+        {
+          "kind": "video",
+          "title": "Rights overview video 2",
+          "src": "/courses/vpshr-level-0/LU4 30-human-rights/data/video2.mp4",
+          "poster": "/courses/vpshr-level-0/LU4 30-human-rights/data/thmb2.jpg"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published unit",
+          "src": "/courses/vpshr-level-0/LU4 30-human-rights/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Rights families",
+          "body": "Human rights include civil, political, economic, social, and cultural protections.",
+          "thumbnail": "/courses/vpshr-level-0/LU4 30-human-rights/data/thmb1.jpg"
+        },
+        {
+          "title": "Security touchpoints",
+          "body": "Access control, searches, investigations, and protest response can all affect rights.",
+          "thumbnail": "/courses/vpshr-level-0/LU4 30-human-rights/data/thmb2.jpg"
+        },
+        {
+          "title": "Proportionate action",
+          "body": "Security measures should be necessary, lawful, and proportionate to the risk.",
+          "thumbnail": "/courses/vpshr-level-0/LU4 30-human-rights/data/thmb3.jpg"
+        }
+      ],
+      "quiz": [
+        {
+          "id": "lu4-q1",
+          "type": "dragWords",
+          "prompt": "Complete the VPSHR principle.",
+          "sentenceParts": [
+            "Security action should be ",
+            ", ",
+            ", and proportionate."
+          ],
+          "words": [
+            {
+              "id": "lawful",
+              "label": "lawful"
+            },
+            {
+              "id": "necessary",
+              "label": "necessary"
+            },
+            {
+              "id": "secret",
+              "label": "secret"
+            }
+          ],
+          "answer": ["lawful", "necessary"],
+          "feedback": "Proportionate security action should be lawful and necessary before force or restrictions are considered."
+        }
+      ],
+      "survey": [
+        {
+          "id": "lu4-s1",
+          "type": "reflection",
+          "prompt": "Choose one right that could be affected during a site security incident.",
+          "guidance": "Consider privacy, personal safety, freedom of movement, or fair treatment."
+        }
+      ],
+      "summary": [
+        "Human rights give security teams a practical standard for evaluating impact.",
+        "Necessity and proportionality are central decision checks."
+      ]
+    },
+    {
+      "id": "lu5",
+      "slug": "lu5",
+      "legacySlug": "unit5",
+      "order": 5,
+      "title": "Factors That May Contribute to Human Rights Risk",
+      "subtitle": "Spot early indicators before incidents escalate.",
+      "duration": "15 min",
+      "assetBase": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)",
+      "publishedPath": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/index.html",
+      "objectives": [
+        "Identify contextual, behavioral, and governance factors that increase risk.",
+        "Use scenario awareness to prevent avoidable harm.",
+        "Connect risk indicators to reporting and mitigation actions."
+      ],
+      "media": [
+        {
+          "kind": "video",
+          "title": "Risk factors video",
+          "src": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/data/thmb1.jpg"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published unit",
+          "src": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Context signals",
+          "body": "Conflict, community tension, weak supervision, and unclear rules can increase the likelihood of harm.",
+          "thumbnail": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/data/thmb1.jpg"
+        },
+        {
+          "title": "Behavior signals",
+          "body": "Aggressive language, intimidation, and unmanaged bias can turn routine security tasks into rights risks.",
+          "thumbnail": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/data/thmb2.jpg"
+        },
+        {
+          "title": "Control signals",
+          "body": "Training, supervision, and clear escalation paths are practical controls.",
+          "thumbnail": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/data/thmb3.jpg"
+        }
+      ],
+      "quiz": [
+        {
+          "id": "lu5-q1",
+          "type": "multipleChoice",
+          "prompt": "Which situation is an early warning sign for human rights risk?",
+          "options": [
+            {
+              "id": "unclear",
+              "label": "Unclear instructions during a tense community interaction"
+            },
+            {
+              "id": "briefing",
+              "label": "A calm briefing with documented escalation channels"
+            },
+            {
+              "id": "review",
+              "label": "A supervisor reviewing incident reports"
+            }
+          ],
+          "answer": "unclear",
+          "feedback": "Unclear instructions during tension can lead to inconsistent, disproportionate, or harmful responses."
+        }
+      ],
+      "survey": [
+        {
+          "id": "lu5-s1",
+          "type": "reflection",
+          "prompt": "Name one factor that could raise rights risk at your site.",
+          "guidance": "Think about context, behavior, training, supervision, or reporting channels."
+        }
+      ],
+      "summary": [
+        "Risk factors are easier to manage when they are identified early.",
+        "Controls should be practical, documented, and understood before incidents occur."
+      ]
+    },
+    {
+      "id": "lu6",
+      "slug": "lu6",
+      "legacySlug": "unit6",
+      "order": 6,
+      "title": "Role of Employees",
+      "subtitle": "Make human rights awareness part of everyday conduct.",
+      "duration": "15 min",
+      "assetBase": "/courses/vpshr-level-0/LU6 Role-of-Employees",
+      "publishedPath": "/courses/vpshr-level-0/LU6 Role-of-Employees/index.html",
+      "objectives": [
+        "Recognize the employee role in identifying and escalating concerns.",
+        "Apply respectful conduct during interactions with colleagues, contractors, and communities.",
+        "Use available reporting channels when something does not look right."
+      ],
+      "media": [
+        {
+          "kind": "video",
+          "title": "Employee role video",
+          "src": "/courses/vpshr-level-0/LU6 Role-of-Employees/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU6 Role-of-Employees/data/thmb1.jpg"
+        },
+        {
+          "kind": "audio",
+          "title": "Narration audio",
+          "src": "/courses/vpshr-level-0/LU6 Role-of-Employees/data/sound1.mp3"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published unit",
+          "src": "/courses/vpshr-level-0/LU6 Role-of-Employees/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Speak up early",
+          "body": "Employees can prevent harm by raising concerns before they escalate.",
+          "thumbnail": "/courses/vpshr-level-0/LU6 Role-of-Employees/data/thmb1.jpg"
+        },
+        {
+          "title": "Respectful conduct",
+          "body": "Every interaction is an opportunity to reinforce dignity and fairness.",
+          "thumbnail": "/courses/vpshr-level-0/LU6 Role-of-Employees/data/thmb2.jpg"
+        },
+        {
+          "title": "Know the channel",
+          "body": "Reports are more useful when employees know where to send them and what details matter.",
+          "thumbnail": "/courses/vpshr-level-0/LU6 Role-of-Employees/data/thmb3.jpg"
+        }
+      ],
+      "quiz": [
+        {
+          "id": "lu6-q1",
+          "type": "trueFalse",
+          "prompt": "Only supervisors can raise human rights concerns.",
+          "options": [
+            {
+              "id": "true",
+              "label": "True"
+            },
+            {
+              "id": "false",
+              "label": "False"
+            }
+          ],
+          "answer": "false",
+          "feedback": "Every employee has a role in recognizing and escalating credible concerns."
+        }
+      ],
+      "survey": [
+        {
+          "id": "lu6-s1",
+          "type": "scenario",
+          "prompt": "You see a colleague mocking a community member during a tense interaction. What should you do?",
+          "options": [
+            {
+              "id": "intervene",
+              "label": "Use a safe intervention or report through the proper channel"
+            },
+            {
+              "id": "ignore",
+              "label": "Ignore it because it is not your job"
+            },
+            {
+              "id": "repeat",
+              "label": "Join in to keep the team aligned"
+            }
+          ],
+          "guidance": "Employees should act safely and use the correct escalation route when conduct may affect dignity or safety."
+        }
+      ],
+      "summary": [
+        "Employees are often closest to early warning signs.",
+        "Respectful conduct and reporting channels are practical safeguards."
+      ]
+    },
+    {
+      "id": "lu7",
+      "slug": "lu7",
+      "legacySlug": "unit7",
+      "order": 7,
+      "title": "Key Policy Requirements",
+      "subtitle": "Turn policy commitments into working controls.",
+      "duration": "12 min",
+      "assetBase": "/courses/vpshr-level-0/LU7 Key-policy-requirements/8. Key policy requirements - final (Published)",
+      "publishedPath": "/courses/vpshr-level-0/LU7 Key-policy-requirements/8. Key policy requirements - final (Published)/index.html",
+      "objectives": [
+        "Identify the policy elements that support VPSHR implementation.",
+        "Link policy requirements to training, incident management, and contractor oversight.",
+        "Recognize how documentation supports accountability."
+      ],
+      "media": [
+        {
+          "kind": "video",
+          "title": "Policy requirements video",
+          "src": "/courses/vpshr-level-0/LU7 Key-policy-requirements/8. Key policy requirements - final (Published)/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU7 Key-policy-requirements/8. Key policy requirements - final (Published)/data/thmb1.jpg"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published unit",
+          "src": "/courses/vpshr-level-0/LU7 Key-policy-requirements/8. Key policy requirements - final (Published)/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Policy to practice",
+          "body": "Requirements only protect people when teams can apply them in daily work.",
+          "thumbnail": "/courses/vpshr-level-0/LU7 Key-policy-requirements/8. Key policy requirements - final (Published)/data/thmb1.jpg"
+        },
+        {
+          "title": "Contractor oversight",
+          "body": "External security providers need the same clarity, training, and supervision.",
+          "thumbnail": "/courses/vpshr-level-0/LU7 Key-policy-requirements/8. Key policy requirements - final (Published)/data/thmb2.jpg"
+        },
+        {
+          "title": "Incident learning",
+          "body": "Policies should help teams record, investigate, and improve after incidents.",
+          "thumbnail": "/courses/vpshr-level-0/LU7 Key-policy-requirements/8. Key policy requirements - final (Published)/data/thmb3.jpg"
+        }
+      ],
+      "quiz": [
+        {
+          "id": "lu7-q1",
+          "type": "multipleResponse",
+          "prompt": "Which items belong in a practical VPSHR policy framework?",
+          "options": [
+            {
+              "id": "training",
+              "label": "Training expectations"
+            },
+            {
+              "id": "reporting",
+              "label": "Incident reporting channels"
+            },
+            {
+              "id": "oversight",
+              "label": "Contractor oversight"
+            },
+            {
+              "id": "silence",
+              "label": "Instruction to avoid documenting concerns"
+            }
+          ],
+          "answers": ["training", "reporting", "oversight"],
+          "feedback": "Policy requirements should make training, reporting, supervision, and oversight clear."
+        }
+      ],
+      "survey": [
+        {
+          "id": "lu7-s1",
+          "type": "reflection",
+          "prompt": "Which policy requirement would most help your team act consistently?",
+          "guidance": "Choose a control that would reduce uncertainty during a real interaction."
+        }
+      ],
+      "summary": [
+        "Policy requirements need practical owners and routines.",
+        "Training, reporting, and contractor oversight make the requirements usable."
+      ]
+    },
+    {
+      "id": "lu8",
+      "slug": "lu8",
+      "legacySlug": "unit8",
+      "order": 8,
+      "title": "Voluntary Principles on Security and Human Rights",
+      "subtitle": "Understand the VPSHR framework and its operating expectations.",
+      "duration": "18 min",
+      "assetBase": "/courses/vpshr-level-0/LU8 VPSHR",
+      "publishedPath": "/courses/vpshr-level-0/LU8 VPSHR/index.html",
+      "objectives": [
+        "Describe the purpose of VPSHR.",
+        "Identify how risk assessment, public security, and private security fit together.",
+        "Connect VPSHR expectations to site-level controls."
+      ],
+      "media": [
+        {
+          "kind": "video",
+          "title": "VPSHR video 1",
+          "src": "/courses/vpshr-level-0/LU8 VPSHR/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU8 VPSHR/data/thmb1.jpg"
+        },
+        {
+          "kind": "video",
+          "title": "VPSHR video 2",
+          "src": "/courses/vpshr-level-0/LU8 VPSHR/data/video2.mp4",
+          "poster": "/courses/vpshr-level-0/LU8 VPSHR/data/thmb2.jpg"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published unit",
+          "src": "/courses/vpshr-level-0/LU8 VPSHR/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Framework pillars",
+          "body": "VPSHR connects risk assessment, public security, and private security management.",
+          "thumbnail": "/courses/vpshr-level-0/LU8 VPSHR/data/thmb1.jpg"
+        },
+        {
+          "title": "Risk assessment",
+          "body": "The framework starts with understanding context and likely impacts.",
+          "thumbnail": "/courses/vpshr-level-0/LU8 VPSHR/data/thmb2.jpg"
+        },
+        {
+          "title": "Security partners",
+          "body": "The framework expects appropriate engagement, training, and accountability across security providers.",
+          "thumbnail": "/courses/vpshr-level-0/LU8 VPSHR/data/thmb3.jpg"
+        }
+      ],
+      "quiz": [
+        {
+          "id": "lu8-q1",
+          "type": "matching",
+          "prompt": "Match each VPSHR area to the practical question it raises.",
+          "pairs": [
+            {
+              "left": "Risk assessment",
+              "right": "What context and impacts should we anticipate?"
+            },
+            {
+              "left": "Public security",
+              "right": "How do we engage state security actors responsibly?"
+            },
+            {
+              "left": "Private security",
+              "right": "How do we train and oversee contracted providers?"
+            }
+          ],
+          "feedback": "VPSHR becomes operational when each area is tied to practical questions and controls."
+        }
+      ],
+      "survey": [
+        {
+          "id": "lu8-s1",
+          "type": "reflection",
+          "prompt": "Which VPSHR area feels most relevant to your current site context?",
+          "guidance": "Choose risk assessment, public security, or private security and explain why."
+        }
+      ],
+      "summary": [
+        "VPSHR is a management framework for rights-aware security.",
+        "The framework expects practical controls across risk, public security, and private security."
+      ]
+    },
+    {
+      "id": "lu9",
+      "slug": "lu9",
+      "legacySlug": "unit9",
+      "order": 9,
+      "title": "Role of Security",
+      "subtitle": "Apply VPSHR expectations to security team conduct.",
+      "duration": "20 min",
+      "assetBase": "/courses/vpshr-level-0/LU9 Role-of-security",
+      "publishedPath": "/courses/vpshr-level-0/LU9 Role-of-security/index.html",
+      "objectives": [
+        "Explain the role of security in protecting people and assets responsibly.",
+        "Apply de-escalation, proportionality, and reporting expectations.",
+        "Recognize when additional support or supervision is needed."
+      ],
+      "media": [
+        {
+          "kind": "video",
+          "title": "Security role video",
+          "src": "/courses/vpshr-level-0/LU9 Role-of-security/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU9 Role-of-security/data/thmb1.jpg"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published unit",
+          "src": "/courses/vpshr-level-0/LU9 Role-of-security/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Protective posture",
+          "body": "Security teams protect people, property, and rights when they act with discipline and respect.",
+          "thumbnail": "/courses/vpshr-level-0/LU9 Role-of-security/data/thmb1.jpg"
+        },
+        {
+          "title": "De-escalation",
+          "body": "Calm communication and measured action can prevent avoidable harm.",
+          "thumbnail": "/courses/vpshr-level-0/LU9 Role-of-security/data/thmb2.jpg"
+        },
+        {
+          "title": "Accountability",
+          "body": "Security actions should be explainable, documented, and open to review.",
+          "thumbnail": "/courses/vpshr-level-0/LU9 Role-of-security/data/thmb3.jpg"
+        }
+      ],
+      "quiz": [
+        {
+          "id": "lu9-q1",
+          "type": "trueFalse",
+          "prompt": "A security response should be proportionate to the actual risk.",
+          "options": [
+            {
+              "id": "true",
+              "label": "True"
+            },
+            {
+              "id": "false",
+              "label": "False"
+            }
+          ],
+          "answer": "true",
+          "feedback": "Proportionality is one of the key checks for rights-aware security action."
+        }
+      ],
+      "survey": [
+        {
+          "id": "lu9-s1",
+          "type": "scenario",
+          "prompt": "A small group gathers near an access gate to complain about employment concerns. What should security prioritize first?",
+          "options": [
+            {
+              "id": "calm",
+              "label": "Calm observation, communication, and escalation"
+            },
+            {
+              "id": "force",
+              "label": "Immediate force to disperse the group"
+            },
+            {
+              "id": "ignore",
+              "label": "Ignore all safety concerns"
+            }
+          ],
+          "guidance": "A proportionate first response focuses on safety, communication, and escalation."
+        }
+      ],
+      "summary": [
+        "Security teams are guardians of both safety and respectful treatment.",
+        "De-escalation, proportionality, and documentation support accountable security."
+      ]
+    },
+    {
+      "id": "lu10",
+      "slug": "lu10",
+      "legacySlug": "unit10",
+      "order": 10,
+      "title": "Investigations",
+      "subtitle": "Handle security investigations with fairness and care.",
+      "duration": "15 min",
+      "assetBase": "/courses/vpshr-level-0/LU10 Investigations/11. Investigations-Final (Published)",
+      "publishedPath": "/courses/vpshr-level-0/LU10 Investigations/11. Investigations-Final (Published)/index.html",
+      "objectives": [
+        "Identify rights risks in security investigations.",
+        "Apply fairness, privacy, and non-retaliation principles.",
+        "Recognize when investigation concerns should be escalated."
+      ],
+      "media": [
+        {
+          "kind": "image",
+          "title": "Investigation slide",
+          "src": "/courses/vpshr-level-0/LU10 Investigations/11. Investigations-Final (Published)/data/thmb1.jpg"
+        },
+        {
+          "kind": "audio",
+          "title": "Investigation narration",
+          "src": "/courses/vpshr-level-0/LU10 Investigations/11. Investigations-Final (Published)/data/sound1.mp3"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published unit",
+          "src": "/courses/vpshr-level-0/LU10 Investigations/11. Investigations-Final (Published)/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Fair process",
+          "body": "Investigations should gather facts without intimidation, discrimination, or retaliation.",
+          "thumbnail": "/courses/vpshr-level-0/LU10 Investigations/11. Investigations-Final (Published)/data/thmb1.jpg"
+        },
+        {
+          "title": "Privacy",
+          "body": "Information should be handled only by people with a legitimate role in the process.",
+          "thumbnail": "/courses/vpshr-level-0/LU10 Investigations/11. Investigations-Final (Published)/data/thmb2.jpg"
+        },
+        {
+          "title": "Follow-through",
+          "body": "Findings should lead to appropriate action and learning.",
+          "thumbnail": "/courses/vpshr-level-0/LU10 Investigations/11. Investigations-Final (Published)/data/thmb3.jpg"
+        }
+      ],
+      "quiz": [
+        {
+          "id": "lu10-q1",
+          "type": "multipleChoice",
+          "prompt": "Which practice best supports a rights-aware investigation?",
+          "options": [
+            {
+              "id": "facts",
+              "label": "Collect facts fairly and protect sensitive information"
+            },
+            {
+              "id": "pressure",
+              "label": "Pressure witnesses until they agree"
+            },
+            {
+              "id": "share",
+              "label": "Share allegations widely before review"
+            }
+          ],
+          "answer": "facts",
+          "feedback": "Fairness, privacy, and careful documentation reduce investigation risk."
+        }
+      ],
+      "survey": [
+        {
+          "id": "lu10-s1",
+          "type": "reflection",
+          "prompt": "What information should be protected during an investigation?",
+          "guidance": "Consider identity, allegations, evidence, medical details, and witness information."
+        }
+      ],
+      "summary": [
+        "Investigations can create rights risks if handled carelessly.",
+        "Fairness, privacy, and non-retaliation should shape each step."
+      ]
+    },
+    {
+      "id": "lu11",
+      "slug": "lu11",
+      "legacySlug": "unit11",
+      "order": 11,
+      "title": "Civil Unrest",
+      "subtitle": "Prepare for protest and unrest scenarios with restraint.",
+      "duration": "15 min",
+      "assetBase": "/courses/vpshr-level-0/LU11 Civil-unrest",
+      "publishedPath": "/courses/vpshr-level-0/LU11 Civil-unrest/index.html",
+      "objectives": [
+        "Recognize rights risks during protest, unrest, or crowd scenarios.",
+        "Apply de-escalation and proportionality principles.",
+        "Understand when to coordinate with appropriate public authorities."
+      ],
+      "media": [
+        {
+          "kind": "video",
+          "title": "Civil unrest video",
+          "src": "/courses/vpshr-level-0/LU11 Civil-unrest/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU11 Civil-unrest/data/thmb1.jpg"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published unit",
+          "src": "/courses/vpshr-level-0/LU11 Civil-unrest/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Safety first",
+          "body": "Civil unrest planning should protect people while respecting lawful expression and movement.",
+          "thumbnail": "/courses/vpshr-level-0/LU11 Civil-unrest/data/thmb1.jpg"
+        },
+        {
+          "title": "Clear roles",
+          "body": "Private security roles should be defined before public security actors become involved.",
+          "thumbnail": "/courses/vpshr-level-0/LU11 Civil-unrest/data/thmb2.jpg"
+        },
+        {
+          "title": "Restraint",
+          "body": "Force, restrictions, and dispersal should never be default responses.",
+          "thumbnail": "/courses/vpshr-level-0/LU11 Civil-unrest/data/thmb3.jpg"
+        }
+      ],
+      "quiz": [
+        {
+          "id": "lu11-q1",
+          "type": "multipleResponse",
+          "prompt": "Which actions support a rights-aware response to unrest?",
+          "options": [
+            {
+              "id": "plan",
+              "label": "Clarify roles and escalation paths"
+            },
+            {
+              "id": "observe",
+              "label": "Observe and communicate before escalating"
+            },
+            {
+              "id": "default-force",
+              "label": "Use force as the default first action"
+            },
+            {
+              "id": "record",
+              "label": "Document decisions and incidents"
+            }
+          ],
+          "answers": ["plan", "observe", "record"],
+          "feedback": "Preparation, communication, documentation, and restraint support rights-aware response."
+        }
+      ],
+      "survey": [
+        {
+          "id": "lu11-s1",
+          "type": "scenario",
+          "prompt": "A protest becomes louder but remains non-violent. What should security review before escalating?",
+          "options": [
+            {
+              "id": "risk",
+              "label": "Actual risk, roles, communication, and proportionality"
+            },
+            {
+              "id": "noise",
+              "label": "Noise level only"
+            },
+            {
+              "id": "appearance",
+              "label": "Whether the protest looks untidy"
+            }
+          ],
+          "guidance": "Escalation decisions should be based on actual risk and proportionate response."
+        }
+      ],
+      "summary": [
+        "Civil unrest response requires planning, restraint, and clear roles.",
+        "Rights-aware teams distinguish disruption from genuine safety risk."
+      ]
+    },
+    {
+      "id": "lu12",
+      "slug": "lu12",
+      "legacySlug": "unit12",
+      "order": 12,
+      "title": "Surveillance and Monitoring",
+      "subtitle": "Balance security monitoring with privacy and accountability.",
+      "duration": "12 min",
+      "assetBase": "/courses/vpshr-level-0/LU12 Surveillance/LU 11 Surveillance and monitoring-final (Published)",
+      "publishedPath": "/courses/vpshr-level-0/LU12 Surveillance/LU 11 Surveillance and monitoring-final (Published)/index.html",
+      "objectives": [
+        "Identify privacy risks linked to surveillance and monitoring.",
+        "Apply necessity, purpose limitation, and access control principles.",
+        "Recognize when monitoring activity should be reviewed or escalated."
+      ],
+      "media": [
+        {
+          "kind": "image",
+          "title": "Surveillance slide",
+          "src": "/courses/vpshr-level-0/LU12 Surveillance/LU 11 Surveillance and monitoring-final (Published)/data/thmb1.jpg"
+        },
+        {
+          "kind": "audio",
+          "title": "Surveillance narration",
+          "src": "/courses/vpshr-level-0/LU12 Surveillance/LU 11 Surveillance and monitoring-final (Published)/data/sound1.mp3"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published unit",
+          "src": "/courses/vpshr-level-0/LU12 Surveillance/LU 11 Surveillance and monitoring-final (Published)/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Purpose limitation",
+          "body": "Monitoring should be tied to a legitimate security purpose.",
+          "thumbnail": "/courses/vpshr-level-0/LU12 Surveillance/LU 11 Surveillance and monitoring-final (Published)/data/thmb1.jpg"
+        },
+        {
+          "title": "Privacy controls",
+          "body": "Access to monitoring data should be limited, logged, and reviewed.",
+          "thumbnail": "/courses/vpshr-level-0/LU12 Surveillance/LU 11 Surveillance and monitoring-final (Published)/data/thmb2.jpg"
+        },
+        {
+          "title": "Transparency",
+          "body": "People should know when monitoring affects them unless a legitimate exception applies.",
+          "thumbnail": "/courses/vpshr-level-0/LU12 Surveillance/LU 11 Surveillance and monitoring-final (Published)/data/thmb3.jpg"
+        }
+      ],
+      "quiz": [
+        {
+          "id": "lu12-q1",
+          "type": "multipleChoice",
+          "prompt": "What is the best first check before using surveillance data?",
+          "options": [
+            {
+              "id": "purpose",
+              "label": "Confirm a legitimate purpose and authorized access"
+            },
+            {
+              "id": "curiosity",
+              "label": "Use it if someone is curious"
+            },
+            {
+              "id": "share",
+              "label": "Share it widely to save time"
+            }
+          ],
+          "answer": "purpose",
+          "feedback": "Monitoring data should be used only for legitimate purposes by authorized people."
+        }
+      ],
+      "survey": [
+        {
+          "id": "lu12-s1",
+          "type": "reflection",
+          "prompt": "What privacy control would be most important for monitoring at your site?",
+          "guidance": "Consider access limits, retention, signage, review, or incident logs."
+        }
+      ],
+      "summary": [
+        "Surveillance can support safety but can also affect privacy and trust.",
+        "Legitimate purpose, limited access, and review are core controls."
+      ]
+    }
+  ]
+}
