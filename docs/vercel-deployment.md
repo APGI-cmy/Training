@@ -37,7 +37,7 @@ If no Vercel project exists yet, create one:
 1. Log in to the [Vercel dashboard](https://vercel.com/dashboard).
 2. Click **Add New → Project**.
 3. Import the `APGI-cmy/Training` repository *without* enabling the automatic Git deployment in Vercel — the GitHub Actions workflow handles deploys instead.
-4. Under **Build & Output Settings**, confirm that the output directory is `public` (this is also set in `vercel.json`).
+4. Under **Build & Output Settings**, confirm that Vercel detects the `nextjs` framework. The build command is `npm run build`.
 5. Deploy once manually from the Vercel dashboard to create the initial production deployment.
 
 ### 2. Collect the project identifiers
@@ -88,17 +88,20 @@ After a pull request is merged to `main`:
 3. Open the production URL in a browser and verify the change is live:
    - `/` — platform root
    - `/courses/vpshr-level-0/` — course landing page
-   - `/courses/vpshr-level-0/unit1/` — Unit 1
+   - `/courses/vpshr-level-0/lu1` — Learning Unit 1
+   - `/courses/vpshr-level-0/unit1` — legacy-style redirect to Learning Unit 1
 
 If a deployment fails, click the failed workflow run in the Actions tab to view the full job log.
 
 ---
 
-## Repository and output directory
+## Repository and build settings
 
 | Setting | Value |
 |---|---|
 | Repository | `APGI-cmy/Training` |
 | Production branch | `main` |
-| Output directory | `public/` (set in `vercel.json`) |
+| Framework | Next.js |
+| Build command | `npm run build` |
+| Output directory | Managed by Vercel's Next.js builder |
 | Vercel Git integration | Disabled (GitHub Actions is the deploy path) |
