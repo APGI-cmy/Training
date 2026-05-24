@@ -1,71 +1,62 @@
 import Link from "next/link";
-import { CourseProgressSummary } from "@/components/CourseProgressSummary";
-import { LearningUnitCard } from "@/components/LearningUnitCard";
 import { getVpshrLevel0Course } from "@/lib/courses";
 
 export const metadata = {
-  title: "VPSHR Level 0",
-  description: "Foundational VPSHR learning units for APGI training."
+  title: "VPSHR Level 0 URL Index",
+  description: "Stable URL list for Thinkific multimedia lessons."
 };
+
+const deploymentOrigin = process.env.NEXT_PUBLIC_DEPLOYMENT_ORIGIN?.replace(/\/$/, "");
+
+function toAbsoluteUrl(path: string): string {
+  if (!deploymentOrigin) {
+    return path;
+  }
+
+  return `${deploymentOrigin}${path}`;
+}
 
 export default function VpshrLevel0Page() {
   const course = getVpshrLevel0Course();
-  const firstUnit = course.units[0];
+  const urls = course.units.map((unit) => {
+    const slug = unit.legacySlug ?? unit.slug;
+    const path = `/courses/${course.slug}/${slug}`;
+
+    return {
+      id: unit.id,
+      label: unit.order === 0 ? "Introduction" : `Unit ${unit.order}`,
+      title: unit.title,
+      path,
+      absoluteUrl: toAbsoluteUrl(path)
+    };
+  });
 
   return (
-    <main>
-      <section className="course-masthead">
-        <div className="content-inner course-masthead-grid">
-          <div>
-            <p className="eyebrow">{course.level}</p>
-            <h1>{course.title}</h1>
-            <p>{course.description}</p>
-            <div className="button-row">
-              <Link className="primary-button" href={`/courses/${course.slug}/${firstUnit.slug}`}>
-                Start course
+    <main className="url-module-page">
+      <section className="url-module-shell">
+        <h1>{course.title} URL Module</h1>
+        <p className="url-module-note">Use these URLs in Thinkific Multimedia lessons.</p>
+        {deploymentOrigin ? (
+          <p className="url-module-note">Base URL: {deploymentOrigin}</p>
+        ) : (
+          <p className="url-module-note">Set NEXT_PUBLIC_DEPLOYMENT_ORIGIN for full copy-ready URLs.</p>
+        )}
+
+        <ul className="url-module-list">
+          {urls.map((unit) => (
+            <li key={unit.id} className="url-module-item">
+              <div>
+                <strong>
+                  {unit.label}: {unit.title}
+                </strong>
+                <code>{unit.absoluteUrl}</code>
+              </div>
+              <Link className="open-link" href={unit.path}>
+                Open
               </Link>
-              <a className="secondary-button" href={`${course.sourceRoot}/index.html`}>
-                Open legacy landing
-              </a>
-            </div>
-          </div>
-          <CourseProgressSummary unitIds={course.units.map((unit) => unit.id)} />
-        </div>
-      </section>
-
-      <section className="content-band">
-        <div className="content-inner overview-grid">
-          <div>
-            <p className="eyebrow">Audience</p>
-            <h2>Built for applied security decisions</h2>
-            <p>{course.audience}</p>
-          </div>
-          <div>
-            <p className="eyebrow">Structure</p>
-            <h2>{course.duration}</h2>
-            <ul className="plain-list">
-              {course.integrationNotes.map((note) => (
-                <li key={note}>{note}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section className="content-band muted-band" aria-labelledby="units-heading">
-        <div className="content-inner">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Learning units</p>
-              <h2 id="units-heading">VPSHR Level 0 pathway</h2>
-            </div>
-          </div>
-          <div className="unit-grid">
-            {course.units.map((unit) => (
-              <LearningUnitCard key={unit.id} unit={unit} />
-            ))}
-          </div>
-        </div>
+            </li>
+          ))}
+        </ul>
       </section>
     </main>
   );

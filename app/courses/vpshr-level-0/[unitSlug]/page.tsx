@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ContentSlides } from "@/components/ContentSlides";
-import { MediaPanel } from "@/components/MediaPanel";
-import { ProgressTracker } from "@/components/ProgressTracker";
-import { QuizEngine } from "@/components/QuizEngine";
-import { SurveyEngine } from "@/components/SurveyEngine";
-import { UnitNavigation } from "@/components/UnitNavigation";
-import { getAdjacentUnits, getUnitBySlug, getUnitStaticParams } from "@/lib/courses";
+import { notFound, permanentRedirect } from "next/navigation";
+import { encodeAssetPath, getUnitBySlug, getUnitStaticParams } from "@/lib/courses";
 
 type UnitPageProps = {
   params: Promise<{
@@ -43,57 +37,28 @@ export default async function LearningUnitPage({ params }: UnitPageProps) {
     notFound();
   }
 
-  const { previous, next } = getAdjacentUnits(unit);
+  const canonicalSlug = unit.legacySlug ?? unit.slug;
+  const requestedSlug = unitSlug.toLowerCase();
+
+  if (requestedSlug !== canonicalSlug.toLowerCase()) {
+    permanentRedirect(`/courses/vpshr-level-0/${canonicalSlug}`);
+  }
+
+  const iframeSrc = encodeAssetPath(unit.publishedPath);
 
   return (
-    <main>
-      <section className="unit-masthead">
-        <div className="content-inner">
-          <Link className="back-link" href="/courses/vpshr-level-0">
-            Back to course
-          </Link>
-          <p className="eyebrow">{unit.order === 0 ? "Orientation" : `Learning Unit ${unit.order}`}</p>
+    <main className="unit-embed-page">
+      <header className="unit-embed-header">
+        <div>
+          <p className="unit-embed-label">{unit.order === 0 ? "Introduction" : `Unit ${unit.order}`}</p>
           <h1>{unit.title}</h1>
-          <p>{unit.subtitle}</p>
-          <div className="unit-meta">
-            <span>{unit.duration}</span>
-            <a href={unit.publishedPath}>Original published unit</a>
-          </div>
         </div>
-      </section>
-
-      <section className="content-band">
-        <div className="content-inner objectives-layout">
-          <div>
-            <p className="eyebrow">Objectives</p>
-            <h2>What this unit covers</h2>
-            <ol className="objective-list">
-              {unit.objectives.map((objective) => (
-                <li key={objective}>{objective}</li>
-              ))}
-            </ol>
-          </div>
-          <ProgressTracker unit={unit} />
+        <div className="unit-embed-links">
+          <Link href="/courses/vpshr-level-0">All URLs</Link>
+          <a href={iframeSrc}>Open package</a>
         </div>
-      </section>
-
-      <MediaPanel media={unit.media} />
-      <ContentSlides slides={unit.slides} />
-      <QuizEngine unitId={unit.id} questions={unit.quiz} />
-      <SurveyEngine unitId={unit.id} prompts={unit.survey} />
-
-      <section className="content-band">
-        <div className="content-inner">
-          <p className="eyebrow">Summary</p>
-          <h2>Key takeaways</h2>
-          <ul className="summary-list">
-            {unit.summary.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-          <UnitNavigation previous={previous} next={next} />
-        </div>
-      </section>
+      </header>
+      <iframe className="unit-embed-frame" src={iframeSrc} title={unit.title} loading="eager" />
     </main>
   );
 }
