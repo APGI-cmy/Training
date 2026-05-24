@@ -23,6 +23,7 @@ Use your `urls-module` Vercel production domain as the base:
 | Unit 10 | `/courses/vpshr-level-0/unit10` |
 | Unit 11 | `/courses/vpshr-level-0/unit11` |
 | Unit 12 | `/courses/vpshr-level-0/unit12` |
+| Unit 13 | `/courses/vpshr-level-0/unit13` |
 
 ## Notes
 

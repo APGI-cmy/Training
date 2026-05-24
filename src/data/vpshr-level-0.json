@@ -1178,6 +1178,98 @@
         "Surveillance can support safety but can also affect privacy and trust.",
         "Legitimate purpose, limited access, and review are core controls."
       ]
+    },
+    {
+      "id": "lu13",
+      "slug": "lu13",
+      "legacySlug": "unit13",
+      "order": 13,
+      "title": "Trespass",
+      "subtitle": "Respond to trespass incidents with lawful, proportionate, and rights-aware actions.",
+      "duration": "12 min",
+      "assetBase": "/courses/vpshr-level-0/LU 13 Trespass",
+      "publishedPath": "/courses/vpshr-level-0/LU 13 Trespass/index.html",
+      "objectives": [
+        "Recognize trespass indicators early and verify facts before action.",
+        "Apply de-escalation and proportional response in suspected trespass situations.",
+        "Escalate and document incidents using approved VPSHR-aligned procedures."
+      ],
+      "media": [
+        {
+          "kind": "video",
+          "title": "Trespass video 1",
+          "src": "/courses/vpshr-level-0/LU 13 Trespass/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU 13 Trespass/data/thmb1.jpg"
+        },
+        {
+          "kind": "video",
+          "title": "Trespass video 2",
+          "src": "/courses/vpshr-level-0/LU 13 Trespass/data/video2.mp4",
+          "poster": "/courses/vpshr-level-0/LU 13 Trespass/data/thmb2.jpg"
+        },
+        {
+          "kind": "audio",
+          "title": "Trespass narration",
+          "src": "/courses/vpshr-level-0/LU 13 Trespass/data/sound1.mp3"
+        },
+        {
+          "kind": "embed",
+          "title": "Original published unit",
+          "src": "/courses/vpshr-level-0/LU 13 Trespass/index.html"
+        }
+      ],
+      "slides": [
+        {
+          "title": "Recognize trespass risk",
+          "body": "Identify unauthorized access indicators and pause to assess risk before escalation.",
+          "thumbnail": "/courses/vpshr-level-0/LU 13 Trespass/data/thmb1.jpg"
+        },
+        {
+          "title": "Safe and proportionate response",
+          "body": "Prioritize communication, safety, and least-force options while following procedure.",
+          "thumbnail": "/courses/vpshr-level-0/LU 13 Trespass/data/thmb2.jpg"
+        },
+        {
+          "title": "Document and escalate",
+          "body": "Capture facts, preserve evidence, and report through approved channels for follow-up.",
+          "thumbnail": "/courses/vpshr-level-0/LU 13 Trespass/data/thmb3.jpg"
+        }
+      ],
+      "quiz": [
+        {
+          "id": "lu13-q1",
+          "type": "multipleChoice",
+          "prompt": "What is the best first response to a suspected trespass incident?",
+          "options": [
+            {
+              "id": "assess",
+              "label": "Assess risk, communicate calmly, and escalate per procedure"
+            },
+            {
+              "id": "force",
+              "label": "Use immediate force without assessment"
+            },
+            {
+              "id": "ignore",
+              "label": "Ignore the situation until damage occurs"
+            }
+          ],
+          "answer": "assess",
+          "feedback": "A rights-aware response starts with assessment, communication, and controlled escalation."
+        }
+      ],
+      "survey": [
+        {
+          "id": "lu13-s1",
+          "type": "reflection",
+          "prompt": "Which trespass control in your area most needs improvement?",
+          "guidance": "Consider signage, access control, communication protocols, or incident reporting."
+        }
+      ],
+      "summary": [
+        "Trespass responses should balance safety, lawful action, and human rights.",
+        "Clear escalation and accurate documentation reduce repeat risk and improve accountability."
+      ]
     }
   ]
 }

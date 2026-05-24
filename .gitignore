@@ -9,3 +9,5 @@ next-dev*.log
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+.vercel
