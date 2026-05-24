@@ -24,6 +24,7 @@ This document captures the current working model for the APGI Training repositor
 - Git repository connected in Vercel: `APGI-cmy/Training`
 - Vercel repository access: enabled (all repositories on the connected GitHub account)
 - Production branch tracking: `urls-module`
+- Vercel Git LFS: **must remain enabled** (`gitLFS=true`) because `.mp4` assets are tracked with Git LFS
 - Result: every push to `urls-module` triggers a Production deployment automatically.
 
 ## Content update workflow (VPSHR Level 0)
