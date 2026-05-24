@@ -24,10 +24,17 @@ The build is deploy-ready for Vercel. Vercel should detect the `nextjs` framewor
 
 - `/courses/vpshr-level-0` - VPSHR Level 0 landing page
 - `/courses/vpshr-level-0/introduction` - orientation unit
-- `/courses/vpshr-level-0/lu1` through `/courses/vpshr-level-0/lu12` - learning units
+- `/courses/vpshr-level-0/lu1` through `/courses/vpshr-level-0/lu13` - learning units
 - `/courses/vpshr-level-0/unit1` style URLs redirect to the matching `lu` route
 
 The original published files remain under `public/courses/vpshr-level-0/` and are embedded from the new learning-unit pages.
+
+## Branch strategy
+
+- `main`: long-term APGI Learning Portal / LMS development
+- `urls-module`: stable Thinkific URL publishing branch
+
+See [docs/agent-handover.md](docs/agent-handover.md) for operational handover context and [docs/thinkific-url-map.md](docs/thinkific-url-map.md) for canonical Thinkific routes.
 
 ## Content model
 
