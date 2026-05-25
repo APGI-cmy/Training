@@ -479,8 +479,8 @@
       "title": "Factors That May Contribute to Human Rights Risk",
       "subtitle": "Spot early indicators before incidents escalate.",
       "duration": "15 min",
-      "assetBase": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)",
-      "publishedPath": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/index.html",
+      "assetBase": "/courses/vpshr-level-0/LU5 Factors-contributing",
+      "publishedPath": "/courses/vpshr-level-0/LU5 Factors-contributing/index.html",
       "objectives": [
         "Identify contextual, behavioral, and governance factors that increase risk.",
         "Use scenario awareness to prevent avoidable harm.",
@@ -490,30 +490,30 @@
         {
           "kind": "video",
           "title": "Risk factors video",
-          "src": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/data/video1.mp4",
-          "poster": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/data/thmb1.jpg"
+          "src": "/courses/vpshr-level-0/LU5 Factors-contributing/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU5 Factors-contributing/data/thmb1.jpg"
         },
         {
           "kind": "embed",
           "title": "Original published unit",
-          "src": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/index.html"
+          "src": "/courses/vpshr-level-0/LU5 Factors-contributing/index.html"
         }
       ],
       "slides": [
         {
           "title": "Context signals",
           "body": "Conflict, community tension, weak supervision, and unclear rules can increase the likelihood of harm.",
-          "thumbnail": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/data/thmb1.jpg"
+          "thumbnail": "/courses/vpshr-level-0/LU5 Factors-contributing/data/thmb1.jpg"
         },
         {
           "title": "Behavior signals",
           "body": "Aggressive language, intimidation, and unmanaged bias can turn routine security tasks into rights risks.",
-          "thumbnail": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/data/thmb2.jpg"
+          "thumbnail": "/courses/vpshr-level-0/LU5 Factors-contributing/data/thmb2.jpg"
         },
         {
           "title": "Control signals",
           "body": "Training, supervision, and clear escalation paths are practical controls.",
-          "thumbnail": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/data/thmb3.jpg"
+          "thumbnail": "/courses/vpshr-level-0/LU5 Factors-contributing/data/thmb3.jpg"
         }
       ],
       "quiz": [
