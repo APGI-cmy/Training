@@ -1,0 +1,11 @@
+{
+  "module_slug": "ALP",
+  "module_name": "APGI Learning Portal",
+  "status": "pre-build",
+  "owner": "Johan Ras",
+  "authority": "CS2: Johan Ras",
+  "canonical_root": "modules/ALP",
+  "governance_root": "docs/governance",
+  "source_pattern": "APGI-cmy/apgi-public-website/modules/APW",
+  "last_structured_at": "2026-06-03"
+}
