@@ -8,12 +8,12 @@ describe("ALP Stage 6 certificates", () => {
   });
 
   it("QA-ALP-421 certificate generation action and schema exist", () => {
-    expectPath("server/actions/certificates/generate-certificate.ts", "QA-ALP-421");
+    expectPath("src/server/actions/certificates/generate-certificate.ts", "QA-ALP-421");
     expectContains("supabase/migrations/006_alp_files_certificates_notifications_audit.sql", "certificates", "QA-ALP-421");
   });
 
   it("QA-ALP-424 certificate download action exists", () => {
-    expectPath("server/actions/certificates/get-certificate-file.ts", "QA-ALP-424");
+    expectPath("src/server/actions/certificates/get-certificate-file.ts", "QA-ALP-424");
   });
 
   it("QA-ALP-429 certificate events are auditable", () => {
