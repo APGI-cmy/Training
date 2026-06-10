@@ -29,33 +29,33 @@ const routes = [
 ];
 
 const components = [
-  "components/layout/app-shell.tsx",
-  "components/auth/protected-layout.tsx",
-  "components/auth/login-form.tsx",
-  "components/dashboard/learner-dashboard.tsx",
-  "components/course/course-shell.tsx",
-  "components/course/course-sidebar.tsx",
-  "components/course/unit-viewer.tsx",
-  "components/progress/progress-indicator.tsx",
-  "components/assessments/assessment-submission-form.tsx",
-  "components/reviews/review-queue.tsx",
-  "components/certificates/certificate-viewer.tsx",
-  "components/admin/admin-table.tsx",
-  "components/audit/audit-log-table.tsx"
+  "src/components/layout/app-shell.tsx",
+  "src/components/auth/protected-layout.tsx",
+  "src/components/auth/login-form.tsx",
+  "src/components/dashboard/learner-dashboard.tsx",
+  "src/components/course/course-shell.tsx",
+  "src/components/course/course-sidebar.tsx",
+  "src/components/course/unit-viewer.tsx",
+  "src/components/progress/progress-indicator.tsx",
+  "src/components/assessments/assessment-submission-form.tsx",
+  "src/components/reviews/review-queue.tsx",
+  "src/components/certificates/certificate-viewer.tsx",
+  "src/components/admin/admin-table.tsx",
+  "src/components/audit/audit-log-table.tsx"
 ];
 
 const actions = [
-  "server/actions/invitations/accept-invitation.ts",
-  "server/actions/payments/create-checkout-session.ts",
+  "src/server/actions/invitations/accept-invitation.ts",
+  "src/server/actions/payments/create-checkout-session.ts",
   "app/api/webhooks/stripe/route.ts",
-  "server/actions/enrolments/manual-enrolment.ts",
-  "server/actions/profiles/update-profile.ts",
-  "server/actions/progress/record-progress-event.ts",
-  "server/actions/assessments/submit-assessment.ts",
-  "server/actions/ai/evaluate-assessment-via-aimc.ts",
-  "server/actions/reviews/review-assessment.ts",
-  "server/actions/certificates/generate-certificate.ts",
-  "lib/services/audit/write-audit-log.ts"
+  "src/server/actions/enrolments/manual-enrolment.ts",
+  "src/server/actions/profiles/update-profile.ts",
+  "src/server/actions/progress/record-progress-event.ts",
+  "src/server/actions/assessments/submit-assessment.ts",
+  "src/server/actions/ai/evaluate-assessment-via-aimc.ts",
+  "src/server/actions/reviews/review-assessment.ts",
+  "src/server/actions/certificates/generate-certificate.ts",
+  "src/lib/services/audit/write-audit-log.ts"
 ];
 
 describe("ALP Stage 6 architecture inventory", () => {
