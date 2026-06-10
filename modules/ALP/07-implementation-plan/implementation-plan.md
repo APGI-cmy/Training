@@ -63,7 +63,7 @@ This plan is governed by the Pre-Build Stage Model canon. Stage 8 requires:
 
 ### 4.1 Build Philosophy
 
-The ALP build must be executed as a build-to-green sequence. Each wave begins with RED tests already present from Stage 6. The builder may implement only enough scope to turn that wave's assigned tests GREEN while preserving all prior GREEN suites.
+The ALP build must be executed as a build-to-green sequence. Each wave must have its scope covered by the Stage 6 QA-to-Red suites (existing files, expanded where necessary) before implementation begins. The builder may implement only enough scope to turn that wave's assigned tests GREEN while preserving all prior GREEN suites.
 
 ### 4.2 Build Boundaries
 
