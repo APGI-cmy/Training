@@ -447,9 +447,8 @@ The implementation must not add future-scope features such as SCORM/cmi5 runtime
 
 **QA to Turn GREEN**:
 
-- `ai-evaluation.spec.ts` when present/expanded.
-- `human-review.spec.ts` when present/expanded.
-- audit/security regression.
+- `assessment-submission.spec.ts` (AIMC evaluation + human review queue/action assertions)
+- regression: `security-privacy.spec.ts`, `architecture-inventory.spec.ts`.
 
 **Handover to W7**:
 
