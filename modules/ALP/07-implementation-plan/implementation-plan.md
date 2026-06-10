@@ -298,8 +298,8 @@ The implementation must not add future-scope features such as SCORM/cmi5 runtime
 
 **QA to Turn GREEN**:
 
-- `progress-completion.spec.ts` when present/expanded.
-- regression: `dashboard.spec.ts`, `course-shell.spec.ts`.
+- `course-shell.spec.ts` (expanded for progress/completion assertions).
+- regression: `auth.spec.ts`, `security-privacy.spec.ts`, `architecture-inventory.spec.ts`, `deployment-cwt.spec.ts`.
 
 **Handover to W4**:
 
