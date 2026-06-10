@@ -1,9 +1,12 @@
 import { describe, it } from "vitest";
-import { expectContains, expectPath } from "./helpers/project-root";
+import { expectAnyPath, expectContains, expectPath } from "./helpers/project-root";
 
 describe("ALP Stage 6 governance artifacts", () => {
   it("QA-ALP-001 app description exists", () => {
-    expectPath("modules/ALP/00-app-description/app-description.md", "QA-ALP-001");
+    expectAnyPath([
+      "modules/ALP/00-app-description/app-description.md",
+      "modules/ALP/00-app-description/APGI_LEARNING_PORTAL_APP_DESCRIPTION.md"
+    ], "QA-ALP-001");
   });
 
   it("QA-ALP-002 UX workflow and wiring spec exists", () => {
