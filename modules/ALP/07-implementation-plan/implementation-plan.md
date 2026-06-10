@@ -201,9 +201,8 @@ The implementation must not add future-scope features such as SCORM/cmi5 runtime
 **QA to Turn GREEN**:
 
 - `auth.spec.ts`
-- `profile-files.spec.ts` when present/expanded
-- relevant `security-privacy.spec.ts` rows
-- relevant `audit.spec.ts` rows
+- `security-privacy.spec.ts` (profile + private storage/RLS assertions)
+- `architecture-inventory.spec.ts` (route/action inventory assertions)
 
 **Handover to W2**:
 
