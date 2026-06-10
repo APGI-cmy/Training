@@ -4,12 +4,12 @@ import { expectContains, expectPath } from "./helpers/project-root";
 describe("ALP Stage 6 auth and route protection", () => {
   it("QA-ALP-066 login form exists", () => {
     expectPath("app/(public)/login/page.tsx", "QA-ALP-066");
-    expectPath("components/auth/login-form.tsx", "QA-ALP-066");
+    expectPath("src/components/auth/login-form.tsx", "QA-ALP-066");
   });
 
   it("QA-ALP-071 admin route is protected", () => {
-    expectPath("components/auth/protected-layout.tsx", "QA-ALP-071");
-    expectContains("components/auth/protected-layout.tsx", "admin", "QA-ALP-071");
+    expectPath("src/components/auth/protected-layout.tsx", "QA-ALP-071");
+    expectContains("src/components/auth/protected-layout.tsx", "admin", "QA-ALP-071");
   });
 
   it("QA-ALP-077 user roles are schema-backed", () => {
