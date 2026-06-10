@@ -252,7 +252,7 @@ The implementation must not add future-scope features such as SCORM/cmi5 runtime
 
 **QA to Turn GREEN**:
 
-- `dashboard.spec.ts` when present/expanded.
+- `architecture-inventory.spec.ts` (dashboard + learner routes/components inventory)
 - `course-shell.spec.ts`.
 - accessibility sidebar/unit viewer subset.
 
