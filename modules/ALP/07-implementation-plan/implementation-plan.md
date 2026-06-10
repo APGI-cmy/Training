@@ -548,9 +548,8 @@ The implementation must not add future-scope features such as SCORM/cmi5 runtime
 
 **QA to Turn GREEN**:
 
-- `admin.spec.ts` when present/expanded.
-- `reports.spec.ts` when present/expanded.
-- `audit.spec.ts` when present/expanded.
+- `architecture-inventory.spec.ts` (admin/reports/audit routes + core components inventory)
+- regression: `security-privacy.spec.ts`.
 
 **Handover to W9**:
 
