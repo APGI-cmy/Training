@@ -3,15 +3,15 @@ import { expectContains, expectPath } from "./helpers/project-root";
 
 describe("ALP Stage 6 deployment and CWT evidence", () => {
   it("QA-ALP-636 package build script exists", () => {
-    expectContains("package.json", "\"build\"", "QA-ALP-636");
+    expectContains("package.json", "\"build\": \"next build\"", "QA-ALP-636");
   });
 
   it("QA-ALP-637 package typecheck script exists", () => {
-    expectContains("package.json", "\"typecheck\"", "QA-ALP-637");
+    expectContains("package.json", "\"typecheck\": \"tsc --noEmit\"", "QA-ALP-637");
   });
 
   it("QA-ALP-642 environment validation module exists", () => {
-    expectPath("lib/config/env.ts", "QA-ALP-642");
+    expectPath("src/lib/config/env.ts", "QA-ALP-642");
   });
 
   it("QA-ALP-643 Stripe webhook route exists", () => {
