@@ -7,7 +7,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:alp:red": "vitest run tests/qa-to-red/alp",
+    "test:alp:red:static": "vitest run tests/qa-to-red/alp/governance-artifacts.spec.ts tests/qa-to-red/alp/architecture-inventory.spec.ts",
+    "test:alp:red:integration": "vitest run tests/qa-to-red/alp --exclude tests/qa-to-red/alp/deployment-cwt.spec.ts",
+    "test:alp:red:e2e": "vitest run tests/qa-to-red/alp/course-shell.spec.ts tests/qa-to-red/alp/assessment-submission.spec.ts tests/qa-to-red/alp/certificate.spec.ts",
+    "test:alp:red:cwt": "vitest run tests/qa-to-red/alp/deployment-cwt.spec.ts"
   },
   "dependencies": {
     "next": "16.2.6",
@@ -21,7 +26,8 @@
     "@types/node": "25.9.1",
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vitest": "^3.0.0"
   },
   "engines": {
     "node": ">=22.0.0"
