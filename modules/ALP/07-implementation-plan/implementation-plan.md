@@ -347,10 +347,9 @@ The implementation must not add future-scope features such as SCORM/cmi5 runtime
 
 **QA to Turn GREEN**:
 
-- `invitation.spec.ts` when present/expanded.
-- `payments.spec.ts` when present/expanded.
-- admin payment/enrolment subset.
-- audit subset.
+- `architecture-inventory.spec.ts` (invite/buy/checkout/admin routes and actions)
+- `deployment-cwt.spec.ts` (Stripe webhook route)
+- `security-privacy.spec.ts` (webhook signing secret + privacy/RLS assertions)
 
 **Handover to W5**:
 
