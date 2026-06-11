@@ -7,7 +7,7 @@
 | Artifact | Build Readiness Remediation Plan |
 | Module | ALP - APGI Learning Portal |
 | Stage Context | Post-Stage 12 blocked build authorization readiness |
-| Version | 0.1 |
+| Version | 0.2 |
 | Status | Draft - remediation plan filed; build remains blocked |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/11-build/build-readiness-remediation-plan.md |
@@ -49,10 +49,10 @@ Build may not begin until every remediation item in this plan is either complete
 
 | Workstream | Objective | Output Artifact / Evidence | Build Impact |
 |---|---|---|---|
-| WS-01 Builder Appointment Completion | Convert Stage 11 scaffold into real appointment record | updated `modules/ALP/10-builder-appointment/builder-appointment.md` | Blocks build until complete |
-| WS-02 Stage 9 Builder Checklist PASS Evidence | Record checklist PASS evidence for every appointed builder | updated Stage 9 checklist or linked acknowledgement evidence | Blocks build until complete |
-| WS-03 Stage 10 IAA Acknowledgement Completion | Record Foreman and builder acknowledgements | updated Stage 10 IAA pre-brief or linked acknowledgement evidence | Blocks build until complete |
-| WS-04 Assurance / Advisory Recording | Record ASSURANCE-TOKEN or PHASE_A_ADVISORY | token/advisory reference filed in Stage 10/11 | Blocks build until complete |
+| WS-01 Builder Appointment Completion | Convert Stage 11 scaffold into real appointment record after readiness prerequisites are complete | updated `modules/ALP/10-builder-appointment/builder-appointment.md` | Blocks build until complete |
+| WS-02 Stage 9 Builder Checklist PASS Evidence | Record checklist PASS evidence for every proposed builder | updated Stage 9 checklist or linked acknowledgement evidence | Blocks appointment/build until complete |
+| WS-03 Stage 10 IAA Acknowledgement Completion | Record Foreman and proposed-builder acknowledgements | updated Stage 10 IAA pre-brief or linked acknowledgement evidence | Blocks appointment/build until complete |
+| WS-04 Assurance / Advisory Recording | Record ASSURANCE-TOKEN or PHASE_A_ADVISORY | token/advisory reference filed in Stage 10/11 | Blocks appointment/build until complete |
 | WS-05 Carry-Forward Artifact Verification | Verify/file Stage 2-5 and Requirement Registry on main | verification log and missing artifact PRs if required | Blocks appointment/build until complete |
 | WS-06 QA-ALP Range Status | Confirm module-local acceptance or canonical registration | QA range decision record | Blocks build until complete |
 | WS-07 Runtime/Deployment Contract | Define target runtime, env, secrets names, auth assumptions, data prerequisites, external dependencies, health checks | `modules/ALP/11-build/runtime-deployment-contract.md` | Required before W0 |
@@ -69,17 +69,17 @@ Build may not begin until every remediation item in this plan is either complete
 
 | Item | Required Action | Evidence | Status |
 |---|---|---|---|
-| WS-01-001 | Identify named builder or agent for each appointed wave | appointment register row | Pending |
-| WS-01-002 | Link current builder contract for every appointed builder | contract path/link | Pending |
-| WS-01-003 | Assign wave scope boundaries per builder | appointment scope declaration | Pending |
-| WS-01-004 | Assign RED QA boundaries per builder | QA boundary declaration | Pending |
-| WS-01-005 | Assign evidence boundaries per builder | evidence boundary declaration | Pending |
-| WS-01-006 | Record Foreman appointment decision | formal appointment row | Pending |
+| WS-01-001 | Identify named builder or agent for each proposed appointed wave | appointment register row | Pending |
+| WS-01-002 | Link current builder contract for every proposed builder | contract path/link | Pending |
+| WS-01-003 | Assign wave scope boundaries per proposed builder | appointment scope declaration | Pending |
+| WS-01-004 | Assign RED QA boundaries per proposed builder | QA boundary declaration | Pending |
+| WS-01-005 | Assign evidence boundaries per proposed builder | evidence boundary declaration | Pending |
+| WS-01-006 | Record Foreman appointment decision only after WS-02, WS-03, and WS-04 are complete | formal appointment row | Pending |
 
 Completion rule:
 
 ```text
-WS-01 is complete only when Stage 11 has named builders and formal Foreman appointment decisions for all appointed scope.
+WS-01 is complete only when Stage 11 has named builders and formal Foreman appointment decisions for all appointed scope, and only after Stage 9 PASS evidence, Stage 10 acknowledgements, and ASSURANCE-TOKEN / PHASE_A_ADVISORY status have been recorded.
 ```
 
 ---
@@ -89,7 +89,7 @@ WS-01 is complete only when Stage 11 has named builders and formal Foreman appoi
 | Item | Required Action | Evidence | Status |
 |---|---|---|---|
 | WS-02-001 | Complete builder contract current check | Stage 9 checklist update | Pending |
-| WS-02-002 | Record canon acknowledgement per builder | acknowledgement evidence | Pending |
+| WS-02-002 | Record canon acknowledgement per proposed builder | acknowledgement evidence | Pending |
 | WS-02-003 | Record wave-by-wave scope understanding | signed scope statement | Pending |
 | WS-02-004 | Record RED QA suite understanding | QA acknowledgement | Pending |
 | WS-02-005 | Record architecture/TRS/FRS understanding | requirement acknowledgement | Pending |
@@ -100,7 +100,7 @@ WS-01 is complete only when Stage 11 has named builders and formal Foreman appoi
 Completion rule:
 
 ```text
-WS-02 is complete only when every appointed builder has Stage 9 PASS evidence.
+WS-02 is complete only when every proposed builder has Stage 9 PASS evidence before appointment.
 ```
 
 ---
@@ -111,15 +111,15 @@ WS-02 is complete only when every appointed builder has Stage 9 PASS evidence.
 |---|---|---|---|
 | WS-03-001 | Record Foreman receipt of IAA pre-brief | Stage 10 acknowledgement table | Pending |
 | WS-03-002 | Record Foreman confirmation that briefing is complete enough for builder acknowledgement | Stage 10 acknowledgement table | Pending |
-| WS-03-003 | Record builder receipt of IAA pre-brief | builder acknowledgement register | Pending |
-| WS-03-004 | Record builder acknowledgement of assigned wave acceptance criteria | builder acknowledgement register | Pending |
-| WS-03-005 | Record builder acknowledgement of evidence obligations | builder acknowledgement register | Pending |
-| WS-03-006 | Record builder acknowledgement that build remains blocked until explicit authorization | builder acknowledgement register | Pending |
+| WS-03-003 | Record proposed-builder receipt of IAA pre-brief | builder acknowledgement register | Pending |
+| WS-03-004 | Record proposed-builder acknowledgement of assigned wave acceptance criteria | builder acknowledgement register | Pending |
+| WS-03-005 | Record proposed-builder acknowledgement of evidence obligations | builder acknowledgement register | Pending |
+| WS-03-006 | Record proposed-builder acknowledgement that build remains blocked until explicit authorization | builder acknowledgement register | Pending |
 
 Completion rule:
 
 ```text
-WS-03 is complete only when Foreman and every appointed builder have acknowledged Stage 10.
+WS-03 is complete only when Foreman and every proposed builder have acknowledged Stage 10 before appointment.
 ```
 
 ---
@@ -135,7 +135,7 @@ WS-03 is complete only when Foreman and every appointed builder have acknowledge
 Completion rule:
 
 ```text
-WS-04 is complete only when token/advisory status is explicitly recorded and any conditions are mapped to build gates.
+WS-04 is complete only when token/advisory status is explicitly recorded and any conditions are mapped to build gates before appointment.
 ```
 
 ---
@@ -277,13 +277,13 @@ The remediation work must execute in this order:
 4. WS-08 Golden Path Verification Pack;
 5. WS-09 Build Tracker Initialization;
 6. WS-10 Evidence Folder Confirmation;
-7. WS-01 Builder Appointment Completion;
-8. WS-02 Stage 9 Builder Checklist PASS Evidence;
-9. WS-03 Stage 10 IAA Acknowledgement Completion;
-10. WS-04 Assurance / Advisory Recording;
+7. WS-02 Stage 9 Builder Checklist PASS Evidence for proposed builders;
+8. WS-03 Stage 10 IAA Acknowledgement Completion for proposed builders;
+9. WS-04 Assurance / Advisory Recording;
+10. WS-01 Builder Appointment Completion;
 11. WS-11 Final Build Authorization Update.
 
-This order ensures the builders are appointed only after the product, runtime, evidence, and verification basis is complete.
+This order ensures builders are formally appointed only after the product, runtime, evidence, verification basis, Stage 9 checklist PASS evidence, Stage 10 acknowledgements, and assurance/advisory status are complete.
 
 ---
 
@@ -343,3 +343,4 @@ It does not constitute Foreman/Governance sign-off and does not authorize build 
 | Version | Date | Change Description | Changed By | Approval |
 |---|---|---|---|---|
 | 0.1 | 2026-06-11 | Initial build readiness remediation plan created after blocked Stage 12 scaffold merge. | AI-assisted draft (pending Foreman review) | Filed for review; build remains blocked |
+| 0.2 | 2026-06-11 | Corrected remediation execution order so Stage 9 PASS evidence, Stage 10 acknowledgements, and assurance/advisory status precede formal builder appointment. | AI-assisted draft (pending Foreman review) | Filed for review; build remains blocked |
