@@ -196,7 +196,7 @@ Formal Stage 12 Build Authorization may be prepared only after Stage 11 is updat
 Planned path:
 
 ```text
-modules/ALP/11-build-authorization/build-authorization.md
+modules/ALP/11-build/build-authorization.md
 ```
 
 Build remains blocked.
