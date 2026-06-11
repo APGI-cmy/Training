@@ -12,7 +12,7 @@
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/11-build/build-readiness-remediation-plan.md |
 | Prepared Date | 2026-06-11 |
-| Prepared By | ChatGPT acting as Product Owner / Foreman / Governance proxy at user request |
+| Prepared By | AI-assisted draft (filed for review; requires Foreman/Governance human sign-off) |
 | Upstream Stage 12 Scaffold | modules/ALP/11-build/build-authorization.md |
 | Build Authorized? | No |
 | Builder Appointment Authorized? | No |
