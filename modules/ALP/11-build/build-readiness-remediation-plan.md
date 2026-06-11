@@ -331,11 +331,10 @@ This plan creates the route to unblock build later. It does not itself unblock b
 
 ---
 
-## 9. Proxy Sign-Off
+## 9. Drafting Note (AI-assisted)
 
-I, ChatGPT acting as Product Owner / Foreman / Governance proxy at user request, record that this remediation plan maps the remaining Stage 12 blockers into actionable workstreams and evidence outputs.
-
-I do not authorize build or implementation.
+This remediation plan was drafted with AI assistance at user request and is filed for review.
+It does not constitute Foreman/Governance sign-off and does not authorize build or implementation.
 
 ---
 
