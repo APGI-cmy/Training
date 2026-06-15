@@ -229,11 +229,11 @@ Exports must be role-gated and must avoid exposing private learner files unless 
 
 | Journey | Screens | Triggers | State Transitions | QA Evidence Needed |
 |---|---|---|---|---|
-| UJ-ALP-001 | Invite, Auth, Profile, Dashboard | TRG-001..004 | Invitation, Profile, Enrolment | invite accept proof, dashboard proof |
-| UJ-ALP-002 | Buy, Checkout, Dashboard | TRG-006..007 | Payment, Enrolment | payment success/fail/idempotency proof |
-| UJ-ALP-003 | Admin Learners, Dashboard | TRG-003 | Enrolment | manual enrolment proof |
-| UJ-ALP-004 | Profile | TRG-004..005 | Profile | private media proof |
-| UJ-ALP-005 | Dashboard | TRG-004/009 | Enrolment, Course Progress | dashboard proof |
+| UJ-ALP-001 | Invite, Auth, Profile, Dashboard | TRG-ALP-001..004 | Invitation, Profile, Enrolment | invite accept proof, dashboard proof |
+| UJ-ALP-002 | Buy, Checkout, Dashboard | TRG-ALP-006..007 | Payment, Enrolment | payment success/fail/idempotency proof |
+| UJ-ALP-003 | Admin Learners, Dashboard | TRG-ALP-003 | Enrolment | manual enrolment proof |
+| UJ-ALP-004 | Profile | TRG-ALP-004..005 | Profile | private media proof |
+| UJ-ALP-005 | Dashboard | TRG-ALP-004/TRG-ALP-009 | Enrolment, Course Progress | dashboard proof |
 | UJ-ALP-006 | Course Shell | TRG-008..009 | Unit/Course Progress | navigation proof |
 | UJ-ALP-007 | Unit Viewer | TRG-008 | Unit Progress | external load/failure proof |
 | UJ-ALP-008 | Unit Viewer, Course Shell | TRG-009 | Unit/Course Progress | completion proof |
