@@ -7,7 +7,7 @@
 | Artifact | UX Workflow & Wiring Spec |
 | Module | ALP - APGI Learning Portal |
 | Stage | 2 - UX Workflow & Wiring Spec |
-| Version | 0.2 |
+| Version | 0.3 |
 | Status | Draft - filed to clear WS-05 carry-forward path; approval remains pending |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/01-ux-workflow-wiring/ux-workflow-wiring-spec.md |
@@ -178,6 +178,12 @@ Admin users need role-gated screens for learner management, course management, e
 | TRG-ALP-012 | Human review finalized | Review queue | final assessment state |
 | TRG-ALP-013 | Certificate generated | Certificate screen/system | certificate state |
 | TRG-ALP-014 | Report exported | Reports screen | export/audit event |
+| TRG-ALP-015 | Admin enrolment created | Admin Learners screen | learner enrolment and audit state |
+| TRG-ALP-016 | Restricted route opened without permission | Protected route | access denied state |
+| TRG-ALP-017 | External unit content fails | Unit Viewer | recoverable content failure state |
+| TRG-ALP-018 | Duplicate payment event received | Payment provider | idempotent duplicate-ignored state |
+| TRG-ALP-019 | AIMC Gateway failure received | AIMC Gateway | recoverable or human-review-required state |
+| TRG-ALP-020 | Certificate requested before eligibility | Certificate screen | eligibility-blocked state |
 
 ---
 
@@ -195,6 +201,8 @@ Admin users need role-gated screens for learner management, course management, e
 | Retake | not_required -> eligible -> used / exhausted / expired |
 | Certificate | locked -> eligible -> generated -> downloadable / generation_failed |
 | AI Evaluation | queued -> processing -> completed / failed / review_required |
+| Access Control | requested -> authorized / denied |
+| External Content | requested -> loaded / failed_recoverable / blocked |
 
 ---
 
@@ -231,19 +239,24 @@ Exports must be role-gated and must avoid exposing private learner files unless 
 |---|---|---|---|---|
 | UJ-ALP-001 | Invite, Auth, Profile, Dashboard | TRG-ALP-001..004 | Invitation, Profile, Enrolment | invite accept proof, dashboard proof |
 | UJ-ALP-002 | Buy, Checkout, Dashboard | TRG-ALP-006..007 | Payment, Enrolment | payment success/fail/idempotency proof |
-| UJ-ALP-003 | Admin Learners, Dashboard | TRG-ALP-003 | Enrolment | manual enrolment proof |
+| UJ-ALP-003 | Admin Learners, Dashboard | TRG-ALP-015 | Enrolment | manual enrolment and audit proof |
 | UJ-ALP-004 | Profile | TRG-ALP-004..005 | Profile | private media proof |
 | UJ-ALP-005 | Dashboard | TRG-ALP-004/TRG-ALP-009 | Enrolment, Course Progress | dashboard proof |
-| UJ-ALP-006 | Course Shell | TRG-008..009 | Unit/Course Progress | navigation proof |
-| UJ-ALP-007 | Unit Viewer | TRG-008 | Unit Progress | external load/failure proof |
-| UJ-ALP-008 | Unit Viewer, Course Shell | TRG-009 | Unit/Course Progress | completion proof |
-| UJ-ALP-009 | Course Shell, Assessment | TRG-009 | Assessment unlock | locked/unlocked proof |
-| UJ-ALP-010 | Assessment | TRG-010 | Assessment | submission proof |
-| UJ-ALP-011 | Assessment Result | TRG-ALP-011 | AI Evaluation, Assessment | AI success/failure proof |
+| UJ-ALP-006 | Course Shell | TRG-ALP-008..009 | Unit/Course Progress | navigation proof |
+| UJ-ALP-007 | Unit Viewer | TRG-ALP-008 | External Content, Unit Progress | external load proof |
+| UJ-ALP-008 | Unit Viewer, Course Shell | TRG-ALP-009 | Unit/Course Progress | completion proof |
+| UJ-ALP-009 | Course Shell, Assessment | TRG-ALP-009 | Assessment unlock | locked/unlocked proof |
+| UJ-ALP-010 | Assessment | TRG-ALP-010 | Assessment | submission proof |
+| UJ-ALP-011 | Assessment Result | TRG-ALP-011 | AI Evaluation, Assessment | AI success proof |
 | UJ-ALP-012 | Review Queue, Assessment Result | TRG-ALP-012 | Assessment | human review proof |
 | UJ-ALP-013 | Result, Assessment | TRG-ALP-010/TRG-ALP-012 | Retake, Assessment | retake proof |
 | UJ-ALP-014 | Certificate | TRG-ALP-013 | Certificate | eligibility/generation proof |
 | UJ-ALP-015 | Reports, Audit | TRG-ALP-014 | Audit/export | report/export proof |
+| UJ-ALP-016 | Restricted Route | TRG-ALP-016 | Access Control | unauthorized access denial proof |
+| UJ-ALP-017 | Unit Viewer | TRG-ALP-017 | External Content | external content failure proof |
+| UJ-ALP-018 | Payment Status / Admin Payments | TRG-ALP-018 | Payment, Enrolment | duplicate payment idempotency proof |
+| UJ-ALP-019 | Assessment Result / Review Queue | TRG-ALP-019 | AI Evaluation, Assessment | AIMC failure fallback proof |
+| UJ-ALP-020 | Certificate | TRG-ALP-020 | Certificate | pre-eligibility block proof |
 
 ---
 
@@ -303,3 +316,4 @@ It does not constitute final Product Owner, Foreman, or Governance approval.
 |---|---|---|---|---|
 | 0.1 | 2026-06-08 | Original detailed UX Workflow & Wiring Spec drafted from APGI Learning Portal app description and FRS baseline. | AI-assisted draft | Pending |
 | 0.2 | 2026-06-15 | Filed governance-safe canonical Stage 2 module artifact to resolve WS-05 carry-forward missing-path item. | AI-assisted draft (pending Foreman/Product Owner review) | Filed for review; build remains blocked |
+| 0.3 | 2026-06-15 | Added admin enrolment and negative-path triggers, normalized trigger references, and completed CWT wiring rows for UJ-ALP-016 through UJ-ALP-020. | AI-assisted draft (pending Foreman/Product Owner review) | Filed for review; build remains blocked |
