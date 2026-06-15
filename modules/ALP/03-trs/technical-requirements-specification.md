@@ -7,12 +7,13 @@
 | Artifact | Technical Requirements Specification |
 | Module | ALP - APGI Learning Portal |
 | Stage | 4 - TRS |
-| Version | 0.2 |
+| Version | 0.3 |
 | Status | Draft - filed to clear WS-05 carry-forward path; approval remains pending |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/03-trs/technical-requirements-specification.md |
 | Prepared Date | 2026-06-15 |
 | Prepared By | AI-assisted draft based on Stage 2 UX and Stage 3 FRS; requires Foreman/Governance technical review |
+| Derived From | Stage 2 UX Workflow & Wiring Spec v0.3 and Stage 3 Functional Requirements Specification v0.2 |
 | Upstream Stage 2 | modules/ALP/01-ux-workflow-wiring/ux-workflow-wiring-spec.md |
 | Upstream Stage 3 | modules/ALP/02-frs/functional-requirements.md |
 | Downstream Stage 5 | modules/ALP/04-architecture/architecture.md |
@@ -29,7 +30,7 @@ This Stage 4 Technical Requirements Specification defines the technical behavior
 
 It is filed to resolve the WS-05 carry-forward gap for the Stage 4 TRS at the QA-enforced module path.
 
-This artifact reconciles to the Stage 2 UX Workflow & Wiring Spec and Stage 3 Functional Requirements Specification. It does not authorize builder appointment, build, or implementation.
+This artifact is derived from the Stage 2 UX Workflow & Wiring Spec v0.3 and Stage 3 Functional Requirements Specification v0.2. It does not authorize builder appointment, build, or implementation.
 
 ---
 
@@ -100,7 +101,7 @@ The implementation shall define durable records for at least the following conce
 | Unit | learning item, external URL-module metadata, completion rules | Must support locked/unlocked and external URL states. |
 | Enrolment | learner-course relationship | Must support invitation, paid, and admin origins. |
 | Invitation | invitation lifecycle | Must support valid, accepted, expired, revoked states. |
-| Payment event | payment state and reconciliation evidence | Must support idempotency. |
+| Payment event | payment state and reconciliation evidence | Must support verified, pending, failed, cancelled, duplicate-ignored, and idempotent reconciliation states. |
 | Progress | learner unit/module/course status | Must support recalculation and audit. |
 | Assessment submission | assessment attempt and evidence state | Must support submitted, review, passed, failed, retake states. |
 | AI evaluation | AIMC response and fallback state | Must support failed/review-required states. |
@@ -132,7 +133,8 @@ The implementation shall provide server-side operations or equivalent endpoints 
 |---|---|
 | Auth/session | current user, role, protected-route validation |
 | Invitation | validate invite, accept invite, revoke/expire handling |
-| Enrolment | create from invitation, create from payment, create from admin, list learner enrolments |
+| Enrolment | create from invitation, create from verified payment, create from admin, list learner enrolments |
+| Payment events | receive provider event, verify event authenticity, persist payment event, reconcile payment state, handle pending/failed/cancelled/duplicate events, enforce idempotency before enrolment activation |
 | Profile | read/update learner profile, record profile completion |
 | Course | list learner courses, read course structure, read unit metadata |
 | Progress | mark unit progress, recalculate course progress, read dashboard progress |
@@ -142,7 +144,7 @@ The implementation shall provide server-side operations or equivalent endpoints 
 | Certificate | calculate eligibility, generate certificate, retrieve learner certificate |
 | Admin/reporting | learner/course/enrolment/payment/assessment/certificate/report/audit reads |
 
-Every protected operation must define owner/role validation and failure behavior.
+Every protected operation must define owner/role validation and failure behavior. Payment-event operations must not activate paid enrolment until the payment event has been verified and idempotently reconciled.
 
 ---
 
@@ -152,7 +154,7 @@ Every protected operation must define owner/role validation and failure behavior
 |---|---|---|
 | TR-ALP-QA-001 | Governance artifact existence checks shall pass for Stage 1-6 artifacts. | Before WS-05 closure. |
 | TR-ALP-QA-002 | Auth and unauthorized access tests shall prove safe denial. | Before build-wave closure. |
-| TR-ALP-QA-003 | Learner enrolment tests shall cover invitation, payment, admin, and duplicate states. | Before relevant wave closure. |
+| TR-ALP-QA-003 | Learner enrolment tests shall cover invitation, verified payment event intake, admin enrolment, pending/failed/cancelled payment states, and duplicate payment idempotency. | Before relevant wave closure. |
 | TR-ALP-QA-004 | Course shell tests shall cover dashboard, navigation, locked state, unit launch, and external failure. | Before relevant wave closure. |
 | TR-ALP-QA-005 | Assessment tests shall cover eligibility, submission, AI success, AI failure, human review, pass/fail, and retake. | Before relevant wave closure. |
 | TR-ALP-QA-006 | Certificate tests shall cover locked, eligible, generated, and failed states. | Before relevant wave closure. |
@@ -272,3 +274,4 @@ It does not constitute final Foreman, Technical, or Governance approval.
 |---|---|---|---|---|
 | 0.1 | 2026-06-08 | Original TRS baseline drafted for the APGI Learning Portal. | AI-assisted draft | Pending |
 | 0.2 | 2026-06-15 | Filed canonical Stage 4 module artifact to resolve WS-05 carry-forward missing-path item and reconcile with Stage 2 UX and Stage 3 FRS. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
+| 0.3 | 2026-06-15 | Added explicit upstream derived-from versions and strengthened payment event intake, verification, reconciliation, and idempotency requirements. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
