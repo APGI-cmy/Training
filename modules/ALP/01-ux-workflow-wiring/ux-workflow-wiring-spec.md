@@ -201,7 +201,7 @@ Admin users need role-gated screens for learner management, course management, e
 ## 9. AI Action Points
 
 | AI Action ID | Point | Input | Output | Required Guardrail |
-|---|---|---|---|
+|---|---|---|---|---|
 | AI-ALP-001 | Assessment evaluation | submission, rubric, learner/course metadata | score/recommendation/feedback/review flag | use AIMC Gateway only |
 | AI-ALP-002 | Review escalation | low confidence or policy exception | human review state | no silent pass/fail |
 | AI-ALP-003 | Feedback generation support | rubric and submission context | draft feedback | reviewer override/audit where applicable |
