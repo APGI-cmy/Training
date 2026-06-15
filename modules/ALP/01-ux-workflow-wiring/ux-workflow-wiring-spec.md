@@ -239,11 +239,11 @@ Exports must be role-gated and must avoid exposing private learner files unless 
 | UJ-ALP-008 | Unit Viewer, Course Shell | TRG-009 | Unit/Course Progress | completion proof |
 | UJ-ALP-009 | Course Shell, Assessment | TRG-009 | Assessment unlock | locked/unlocked proof |
 | UJ-ALP-010 | Assessment | TRG-010 | Assessment | submission proof |
-| UJ-ALP-011 | Assessment Result | TRG-011 | AI Evaluation, Assessment | AI success/failure proof |
-| UJ-ALP-012 | Review Queue, Assessment Result | TRG-012 | Assessment | human review proof |
-| UJ-ALP-013 | Result, Assessment | TRG-010/012 | Retake, Assessment | retake proof |
-| UJ-ALP-014 | Certificate | TRG-013 | Certificate | eligibility/generation proof |
-| UJ-ALP-015 | Reports, Audit | TRG-014 | Audit/export | report/export proof |
+| UJ-ALP-011 | Assessment Result | TRG-ALP-011 | AI Evaluation, Assessment | AI success/failure proof |
+| UJ-ALP-012 | Review Queue, Assessment Result | TRG-ALP-012 | Assessment | human review proof |
+| UJ-ALP-013 | Result, Assessment | TRG-ALP-010/TRG-ALP-012 | Retake, Assessment | retake proof |
+| UJ-ALP-014 | Certificate | TRG-ALP-013 | Certificate | eligibility/generation proof |
+| UJ-ALP-015 | Reports, Audit | TRG-ALP-014 | Audit/export | report/export proof |
 
 ---
 
