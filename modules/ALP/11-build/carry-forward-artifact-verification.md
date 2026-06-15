@@ -8,7 +8,7 @@
 | Module | ALP - APGI Learning Portal |
 | Workstream | WS-05 - Carry-Forward Artifact Verification |
 | Stage Context | Post-Stage 12 blocked build readiness remediation |
-| Version | 0.1 |
+| Version | 0.2 |
 | Status | Draft - verification filed; carry-forward blockers remain open |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/11-build/carry-forward-artifact-verification.md |
@@ -43,7 +43,8 @@ Checks used:
 
 - direct fetch of expected canonical path where known;
 - repository search for ALP foundation artifacts and registry terms;
-- review of existing ALP module stage paths referenced by prior stages.
+- review of existing ALP module stage paths referenced by prior stages;
+- alignment with the QA-to-Red governance artifact expectations in `tests/qa-to-red/alp/governance-artifacts.spec.ts`.
 
 The expected Stage 2-5 and Requirement Registry artifacts were not found at the expected ALP module paths during this verification pass. This means they remain build-blocking until filed or their actual canonical paths are confirmed and linked.
 
@@ -54,10 +55,10 @@ The expected Stage 2-5 and Requirement Registry artifacts were not found at the 
 | Stage / Registry | Expected Path | Verification Result | Build Impact |
 |---|---|---|---|
 | Stage 2 - UX Workflow & Wiring Spec | modules/ALP/01-ux-workflow-wiring/ux-workflow-wiring-spec.md | Not found at expected path | Blocks appointment/build |
-| Stage 3 - FRS | modules/ALP/02-frs/frs.md | Not found at expected path | Blocks appointment/build |
-| Stage 4 - TRS | modules/ALP/03-trs/trs.md | Not found at expected path | Blocks appointment/build |
+| Stage 3 - FRS | modules/ALP/02-frs/functional-requirements.md | Not found at expected path | Blocks appointment/build |
+| Stage 4 - TRS | modules/ALP/03-trs/technical-requirements-specification.md | Not found at expected path | Blocks appointment/build |
 | Stage 5 - Architecture v0.2 | modules/ALP/04-architecture/architecture.md | Not found at expected path | Blocks appointment/build |
-| Requirement Registry | modules/ALP/requirement-registry.md or modules/ALP/04-architecture/requirement-registry.md | Not found at expected path | Blocks appointment/build |
+| Requirement Registry | modules/ALP/REQUIREMENT_REGISTRY.md | Not found at expected path | Blocks appointment/build |
 | QA-ALP Range Status | modules/ALP/05-qa-to-red/qa-catalog-alignment.md | Filed, but final ID governance remains to be confirmed in WS-06 | Blocks build until WS-06 completes |
 
 ---
@@ -68,7 +69,7 @@ The following ALP artifacts are known to be filed and do not need to be re-creat
 
 | Artifact | Path | Status |
 |---|---|---|
-| Stage 0 App Description | modules/ALP/00-app-description/APGI_LEARNING_PORTAL_APP_DESCRIPTION.md | Filed |
+| Stage 1 App Description | modules/ALP/00-app-description/APGI_LEARNING_PORTAL_APP_DESCRIPTION.md | Filed |
 | Stage 6 QA-to-Red | modules/ALP/05-qa-to-red/qa-to-red.md | Filed |
 | Stage 6 QA Catalog Alignment | modules/ALP/05-qa-to-red/qa-catalog-alignment.md | Filed |
 | Stage 6 RED Proof Report | modules/ALP/05-qa-to-red/red-proof-report.md | Filed |
@@ -102,7 +103,7 @@ The following ALP artifacts are known to be filed and do not need to be re-creat
 |---|---|
 | Required? | Yes |
 | Current Status | Missing or unverified on `main` |
-| Expected Path | modules/ALP/02-frs/frs.md |
+| Expected Path | modules/ALP/02-frs/functional-requirements.md |
 | Required Action | File the Stage 3 FRS at the expected path, or confirm the actual canonical path and update this verification record |
 | Build Impact | Blocks builder appointment and build authorization |
 
@@ -112,7 +113,7 @@ The following ALP artifacts are known to be filed and do not need to be re-creat
 |---|---|
 | Required? | Yes |
 | Current Status | Missing or unverified on `main` |
-| Expected Path | modules/ALP/03-trs/trs.md |
+| Expected Path | modules/ALP/03-trs/technical-requirements-specification.md |
 | Required Action | File the Stage 4 TRS at the expected path, or confirm the actual canonical path and update this verification record |
 | Build Impact | Blocks builder appointment and build authorization |
 
@@ -132,8 +133,8 @@ The following ALP artifacts are known to be filed and do not need to be re-creat
 |---|---|
 | Required? | Yes |
 | Current Status | Missing or unverified on `main` |
-| Expected Path | modules/ALP/requirement-registry.md or modules/ALP/04-architecture/requirement-registry.md |
-| Required Action | File the Requirement Registry at a canonical path, or confirm the actual canonical path and update this verification record |
+| Expected Path | modules/ALP/REQUIREMENT_REGISTRY.md |
+| Required Action | File the Requirement Registry at the QA-enforced canonical path, or confirm the actual canonical path and update this verification record |
 | Build Impact | Blocks builder appointment and build authorization |
 
 ### CF-ALP-006 - QA-ALP Range Status
@@ -158,6 +159,16 @@ The missing or unverified artifacts should be filed in the original pre-build se
 4. Stage 5 Architecture v0.2;
 5. Requirement Registry;
 6. WS-06 QA-ALP Range Status confirmation.
+
+Canonical filing targets:
+
+```text
+modules/ALP/01-ux-workflow-wiring/ux-workflow-wiring-spec.md
+modules/ALP/02-frs/functional-requirements.md
+modules/ALP/03-trs/technical-requirements-specification.md
+modules/ALP/04-architecture/architecture.md
+modules/ALP/REQUIREMENT_REGISTRY.md
+```
 
 If any artifact already exists in another branch or uploaded source, it should be copied into the ALP module path through a PR and linked back to this verification record.
 
@@ -215,3 +226,4 @@ It does not constitute Foreman/Governance sign-off and does not authorize builde
 | Version | Date | Change Description | Changed By | Approval |
 |---|---|---|---|---|
 | 0.1 | 2026-06-11 | Initial WS-05 carry-forward artifact verification filed after build readiness remediation plan merge. | AI-assisted draft (pending Foreman review) | Filed with failing carry-forward items; build remains blocked |
+| 0.2 | 2026-06-15 | Aligned FRS, TRS, and Requirement Registry paths with QA-to-Red governance artifact expectations and corrected App Description stage label to Stage 1. | AI-assisted draft (pending Foreman review) | Filed with failing carry-forward items; build remains blocked |
