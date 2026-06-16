@@ -7,7 +7,7 @@
 | Artifact | QA-ALP Range Status Confirmation |
 | Module | ALP - APGI Learning Portal |
 | Workstream | WS-06 - QA-ALP Range Status Confirmation |
-| Version | 0.1 |
+| Version | 0.2 |
 | Status | Draft - filed for governance review |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/05-qa-to-red/qa-alp-range-status.md |
@@ -38,6 +38,7 @@ This artifact does not authorize builder appointment, build, or implementation.
 |---|---|---|
 | Stage 6 QA-to-Red | modules/ALP/05-qa-to-red/qa-to-red.md | RED test intent and build-blocking posture filed. |
 | Stage 6 QA Catalog Alignment | modules/ALP/05-qa-to-red/qa-catalog-alignment.md | `QA-ALP-001` through `QA-ALP-700` reserved as module-local range. |
+| Assessment RED suite | tests/qa-to-red/alp/assessment-submission.spec.ts | Active markers include `QA-ALP-291`, `QA-ALP-296`, `QA-ALP-297`, `QA-ALP-341`, and `QA-ALP-381`. |
 | Requirement Registry | modules/ALP/REQUIREMENT_REGISTRY.md | Registry includes filed module-local QA ranges and keeps WS-06 final range status pending until this artifact. |
 | WS-05 Carry-Forward Verification | modules/ALP/11-build/carry-forward-artifact-verification.md | Identified QA-ALP Range Status as carry-forward item requiring final governance confirmation. |
 
@@ -57,18 +58,20 @@ The range remains traceable to the ALP module and may be used for ALP-local test
 
 ## 4. Range Allocation Confirmation
 
-| Range | Domain | Test File | WS-06 Status |
+| Range / Marker | Domain | Test File | WS-06 Status |
 |---|---|---|---|
 | QA-ALP-001 to QA-ALP-020 | Governance and artifact gates | tests/qa-to-red/alp/governance-artifacts.spec.ts | Confirmed module-local |
 | QA-ALP-021 to QA-ALP-065 | Architecture physical inventory | tests/qa-to-red/alp/architecture-inventory.spec.ts | Confirmed module-local |
 | QA-ALP-066 to QA-ALP-080 | Auth, roles, route protection | tests/qa-to-red/alp/auth.spec.ts | Confirmed module-local |
 | QA-ALP-211 to QA-ALP-250 | Course shell and unit viewer | tests/qa-to-red/alp/course-shell.spec.ts | Confirmed module-local |
-| QA-ALP-291 to QA-ALP-340 | Assessment submission | tests/qa-to-red/alp/assessment-submission.spec.ts | Confirmed module-local |
+| QA-ALP-291 to QA-ALP-340 | Assessment admin, submission, and evidence upload | tests/qa-to-red/alp/assessment-submission.spec.ts | Confirmed module-local |
+| QA-ALP-341 | AI evaluation action uses AIMC | tests/qa-to-red/alp/assessment-submission.spec.ts | Confirmed module-local active marker |
+| QA-ALP-381 | Review queue and review action exist | tests/qa-to-red/alp/assessment-submission.spec.ts | Confirmed module-local active marker |
 | QA-ALP-416 to QA-ALP-450 | Certificates | tests/qa-to-red/alp/certificate.spec.ts | Confirmed module-local |
 | QA-ALP-526 to QA-ALP-565 | Security/privacy/RLS | tests/qa-to-red/alp/security-privacy.spec.ts | Confirmed module-local |
 | QA-ALP-636 to QA-ALP-700 | Deployment and CWT | tests/qa-to-red/alp/deployment-cwt.spec.ts | Confirmed module-local |
 
-The unused gaps in `QA-ALP-001` through `QA-ALP-700` remain reserved for ALP-local expansion unless a future governance artifact reallocates them.
+The unused gaps in `QA-ALP-001` through `QA-ALP-700` remain reserved for ALP-local expansion unless a future governance artifact reallocates them. Active filed markers inside those gaps, including `QA-ALP-341` and `QA-ALP-381`, are explicitly confirmed above and are not treated as unallocated.
 
 ---
 
@@ -123,6 +126,7 @@ This decision confirms the ALP QA range posture only. It does not approve test r
 | QA range explicitly identified | PASS | `QA-ALP-001` through `QA-ALP-700`. |
 | Module-local posture confirmed | PASS | Section 5. |
 | Existing range allocations preserved | PASS | Section 4. |
+| Active assessment markers included | PASS | `QA-ALP-341` and `QA-ALP-381` explicitly confirmed. |
 | Canonical QA Catalog dependency resolved for current path | PASS | Not required before WS-07 unless later mandated. |
 | Build authorization preserved as blocked | PASS | Sections 5 and 7. |
 | Human Governance approval | PENDING | Required before approval state. |
@@ -154,3 +158,4 @@ It does not constitute final Foreman, Product Owner, Technical, Architecture, QA
 | Version | Date | Change Description | Changed By | Approval |
 |---|---|---|---|---|
 | 0.1 | 2026-06-16 | Filed WS-06 QA-ALP Range Status Confirmation for `QA-ALP-001` through `QA-ALP-700`. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
+| 0.2 | 2026-06-16 | Confirmed active assessment markers `QA-ALP-341` and `QA-ALP-381` inside the module-local range. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
