@@ -7,18 +7,19 @@
 | Artifact | Requirement Registry |
 | Module | ALP - APGI Learning Portal |
 | Stage Context | Cross-stage governance registry |
-| Version | 0.2 |
+| Version | 0.3 |
 | Status | Draft - filed to clear WS-05 carry-forward path; approval remains pending |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/REQUIREMENT_REGISTRY.md |
 | Prepared Date | 2026-06-16 |
 | Prepared By | AI-assisted draft based on filed ALP Stage 2-6 artifacts; requires Foreman/Governance review |
-| Derived From | Stage 2 UX v0.3; Stage 3 FRS v0.2; Stage 4 TRS v0.3; Stage 5 Architecture v0.2; Stage 6 QA-to-Red |
+| Derived From | Stage 2 UX v0.3; Stage 3 FRS v0.2; Stage 4 TRS v0.3; Stage 5 Architecture v0.2; Stage 6 QA-to-Red; Stage 6 QA Catalog Alignment v0.1 |
 | Stage 2 UX | modules/ALP/01-ux-workflow-wiring/ux-workflow-wiring-spec.md |
 | Stage 3 FRS | modules/ALP/02-frs/functional-requirements.md |
 | Stage 4 TRS | modules/ALP/03-trs/technical-requirements-specification.md |
 | Stage 5 Architecture | modules/ALP/04-architecture/architecture.md |
 | Stage 6 QA-to-Red | modules/ALP/05-qa-to-red/qa-to-red.md |
+| Stage 6 QA Catalog Alignment | modules/ALP/05-qa-to-red/qa-catalog-alignment.md |
 | Build Authorized? | No |
 | Builder Appointment Authorized? | No |
 | Implementation Authorized? | No |
@@ -31,7 +32,7 @@ This Requirement Registry records the canonical cross-stage traceability spine f
 
 It is filed to resolve the WS-05 carry-forward gap for the Requirement Registry at the QA-enforced module path.
 
-The registry links UX journey IDs, functional requirement IDs, technical requirement groups, architecture controls, and QA coverage markers so downstream work can trace build evidence back to approved governance artifacts.
+The registry links UX journey IDs, functional requirement IDs, technical requirement groups, architecture controls, QA marker ranges, and governance blockers so downstream work can trace build evidence back to approved governance artifacts.
 
 This artifact does not authorize builder appointment, build, or implementation.
 
@@ -45,7 +46,7 @@ The registry covers:
 - Stage 3 functional requirement IDs `FR-ALP-*`;
 - Stage 4 technical requirement groups `TR-ALP-*`;
 - Stage 5 architecture principle/control IDs `ARC-ALP-*` and architecture sections;
-- Stage 6 QA markers `QA-ALP-*` where currently filed;
+- Stage 6 QA markers and module-local QA ranges currently filed through QA-to-Red and QA Catalog Alignment;
 - governance blockers that remain open after the registry is filed.
 
 The registry does not replace the source artifacts. The source artifacts remain authoritative for their own stage content.
@@ -62,7 +63,7 @@ The registry does not replace the source artifacts. The source artifacts remain 
 | SRC-ALP-004 | Stage 4 Technical Requirements Specification | modules/ALP/03-trs/technical-requirements-specification.md | v0.3 filed for review |
 | SRC-ALP-005 | Stage 5 Architecture v0.2 | modules/ALP/04-architecture/architecture.md | v0.2 filed for review |
 | SRC-ALP-006 | Stage 6 QA-to-Red | modules/ALP/05-qa-to-red/qa-to-red.md | Filed |
-| SRC-ALP-007 | Stage 6 QA Catalog Alignment | modules/ALP/05-qa-to-red/qa-catalog-alignment.md | Filed; WS-06 final range status pending |
+| SRC-ALP-007 | Stage 6 QA Catalog Alignment | modules/ALP/05-qa-to-red/qa-catalog-alignment.md | v0.1 filed; WS-06 final range status pending |
 | SRC-ALP-008 | WS-05 Carry-Forward Artifact Verification | modules/ALP/11-build/carry-forward-artifact-verification.md | Filed with carry-forward blockers |
 
 ---
@@ -143,10 +144,11 @@ The registry does not replace the source artifacts. The source artifacts remain 
 
 ---
 
-## 8. QA Marker Registry
+## 8. QA Marker and Range Registry
 
-| QA Marker | Source / Path | Registry Meaning | Current Status |
+| QA Marker / Range | Source / Path | Registry Meaning | Current Status |
 |---|---|---|---|
+| QA-ALP-001 to QA-ALP-020 | tests/qa-to-red/alp/governance-artifacts.spec.ts | Governance and artifact gates | Filed; final range governance pending WS-06 |
 | QA-ALP-001 | tests/qa-to-red/alp/governance-artifacts.spec.ts | App description exists | Expected to pass when source path exists |
 | QA-ALP-002 | tests/qa-to-red/alp/governance-artifacts.spec.ts | UX workflow and wiring spec exists | Expected to pass after PR #56 merge |
 | QA-ALP-003 | tests/qa-to-red/alp/governance-artifacts.spec.ts | FRS exists | Expected to pass after PR #57 merge |
@@ -156,6 +158,15 @@ The registry does not replace the source artifacts. The source artifacts remain 
 | QA-ALP-009 | tests/qa-to-red/alp/governance-artifacts.spec.ts | QA-to-Red specification exists | Filed |
 | QA-ALP-010 | tests/qa-to-red/alp/governance-artifacts.spec.ts | Build remains blocked | Filed through QA-to-Red status |
 | QA-ALP-015 | tests/qa-to-red/alp/governance-artifacts.spec.ts | QA catalog alignment exists | Filed; WS-06 confirmation pending |
+| QA-ALP-021 to QA-ALP-065 | tests/qa-to-red/alp/architecture-inventory.spec.ts | Architecture physical inventory | Filed range; final range governance pending WS-06 |
+| QA-ALP-066 to QA-ALP-080 | tests/qa-to-red/alp/auth.spec.ts | Auth, roles, route protection | Filed range; final range governance pending WS-06 |
+| QA-ALP-211 to QA-ALP-250 | tests/qa-to-red/alp/course-shell.spec.ts | Course shell and unit viewer | Filed range; final range governance pending WS-06 |
+| QA-ALP-291 to QA-ALP-340 | tests/qa-to-red/alp/assessment-submission.spec.ts | Assessment submission | Filed range; final range governance pending WS-06 |
+| QA-ALP-416 to QA-ALP-450 | tests/qa-to-red/alp/certificate.spec.ts | Certificates | Filed range; final range governance pending WS-06 |
+| QA-ALP-526 to QA-ALP-565 | tests/qa-to-red/alp/security-privacy.spec.ts | Security/privacy/RLS | Filed range; final range governance pending WS-06 |
+| QA-ALP-636 to QA-ALP-700 | tests/qa-to-red/alp/deployment-cwt.spec.ts | Deployment and CWT | Filed range; final range governance pending WS-06 |
+
+The currently filed QA range is module-local per `modules/ALP/05-qa-to-red/qa-catalog-alignment.md`. WS-06 must still confirm module-local acceptance or canonical QA Catalog registration.
 
 ---
 
@@ -199,9 +210,10 @@ The registry does not replace the source artifacts. The source artifacts remain 
 | Functional requirement groups registered | PASS | Section 5 |
 | Technical requirement groups registered | PASS | Section 6 |
 | Architecture principles registered | PASS | Section 7 |
-| QA markers registered | PASS | Section 8 |
+| QA marker/range registry included | PASS | Section 8 registers governance markers and filed module-local QA ranges |
 | WS-05 carry-forward closure matrix included | PASS | Section 9 |
 | Remaining blockers preserved | PASS | Section 10 |
+| WS-06 QA-ALP final range status | PENDING | Module-local acceptance or canonical registration still required |
 | Human Governance approval | PENDING | Required before approval state |
 | Build authorized | NO | Pre-build remediation still incomplete |
 
@@ -212,6 +224,7 @@ The registry does not replace the source artifacts. The source artifacts remain 
 ```text
 Requirement Registry: FILED FOR REVIEW.
 WS-05 Carry-Forward Item CF-ALP-005: READY TO CLEAR when merged.
+WS-06 QA-ALP Range Status: PENDING.
 Builder Appointment: BLOCKED.
 Build Authorization: BLOCKED.
 Implementation: BLOCKED.
@@ -234,3 +247,4 @@ It does not constitute final Foreman, Product Owner, Technical, Architecture, or
 |---|---|---|---|---|
 | 0.1 | 2026-06-08 | Original APGI Learning Portal requirement registry baseline drafted. | AI-assisted draft | Pending |
 | 0.2 | 2026-06-16 | Filed canonical Requirement Registry artifact to resolve WS-05 carry-forward missing-path item and register Stage 2-6 traceability. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
+| 0.3 | 2026-06-16 | Registered filed module-local QA ranges through QA-ALP-700 and kept WS-06 final range status pending. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
