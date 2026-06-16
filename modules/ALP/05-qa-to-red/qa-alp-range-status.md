@@ -6,7 +6,7 @@
 |---|---|
 | Artifact | QA-ALP Range Status Confirmation |
 | Module | ALP - APGI Learning Portal |
-| Workstream | WS-06 - QA-ALP Range Status confirmation |
+| Workstream | WS-06 - QA-ALP Range Status Confirmation |
 | Version | 0.1 |
 | Status | Draft - filed for governance review |
 | Repository | APGI-cmy/Training |
