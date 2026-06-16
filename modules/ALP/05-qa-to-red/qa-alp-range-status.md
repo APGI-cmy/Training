@@ -49,7 +49,7 @@ This artifact does not authorize builder appointment, build, or implementation.
 QA-ALP-001 through QA-ALP-700
 ```
 
-This range is confirmed as the APGI Learning Portal module-local QA marker range for filed ALP QA-to-RED work.
+This range is confirmed as the APGI Learning Portal module-local QA marker range for filed ALP QA-to-Red work.
 
 The range remains traceable to the ALP module and may be used for ALP-local test/evidence organization unless Foreman/Governance later mandates migration or registration into a global canonical QA Catalog.
 
