@@ -25,7 +25,7 @@ Builder Appointment: BLOCKED
 Build Authorization: BLOCKED
 Implementation: BLOCKED
 Current stage/workstream: WS-08 Golden Path Verification Pack filed for review
-Next stage/workstream: WS-09 Build Tracker Initialization / Ongoing Maintenance
+Next stage/workstream: WS-10 - Evidence Folder Convention
 ```
 
 ---
