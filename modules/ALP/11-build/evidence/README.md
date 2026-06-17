@@ -7,13 +7,13 @@
 | Artifact | Evidence Folder Convention |
 | Module | ALP - APGI Learning Portal |
 | Workstream | WS-10 - Evidence Folder Convention |
-| Version | 0.1 |
+| Version | 0.2 |
 | Status | Draft - filed for governance review |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/11-build/evidence/README.md |
 | Prepared Date | 2026-06-17 |
 | Prepared By | AI-assisted draft based on filed ALP build-readiness remediation artifacts; requires Foreman/Governance/QA review |
-| Derived From | WS-08 Golden Path Verification Pack; WS-09 Build Progress Tracker; WS-07 Runtime / Deployment Contract; WS-06 QA-ALP Range Status Confirmation |
+| Derived From | WS-08 Golden Path Verification Pack; WS-09 Build Progress Tracker; WS-07 Runtime / Deployment Contract; WS-06 QA-ALP Range Status Confirmation; Stage 8 Implementation Plan; Stage 9 Builder Checklist |
 | Build Authorized? | No |
 | Builder Appointment Authorized? | No |
 | Implementation Authorized? | No |
@@ -38,7 +38,7 @@ The canonical ALP build evidence root is:
 modules/ALP/11-build/evidence/
 ```
 
-This README is the index and convention file for that evidence root.
+This README is the convention file for the evidence root. The canonical roll-up evidence index is `modules/ALP/11-build/evidence/index.md`, which must be created before or during the first authorized build-wave evidence PR.
 
 All future build-wave evidence must be filed under this root unless a later approved governance artifact explicitly changes the evidence location.
 
@@ -46,25 +46,25 @@ All future build-wave evidence must be filed under this root unless a later appr
 
 ## 3. Required Folder Structure
 
-Future evidence must use this structure:
+Future evidence must use this structure, aligned to the existing Stage 8 implementation plan and Stage 9 builder checklist wave definitions:
 
 ```text
 modules/ALP/11-build/evidence/
 ├── README.md
 ├── index.md
-├── W0-runtime-baseline/
-├── W1-auth-roles/
-├── W2-enrolment-payment/
-├── W3-course-shell/
-├── W4-assessment-submission/
-├── W5-aimc-review/
-├── W6-certificates/
-├── W7-admin-reporting/
-├── W8-security-privacy/
+├── W0-foundation-scaffold/
+├── W1-auth-profile-files/
+├── W2-dashboard-course-shell/
+├── W3-progress-completion/
+├── W4-enrolment-payments/
+├── W5-assessment-submission/
+├── W6-ai-review/
+├── W7-certificates/
+├── W8-admin-reports-audit/
 └── W9-deployment-cwt/
 ```
 
-`index.md` must be created before or during the first authorized build-wave evidence PR. It must provide a roll-up table linking each evidence file to its wave, QA marker(s), PR, check status, and closure decision.
+`index.md` must provide a roll-up table linking each evidence file to its wave, QA marker(s), PR, check status, and closure decision.
 
 The wave folders above may remain absent until build is authorized and evidence is produced, but their names are reserved by this convention.
 
@@ -74,16 +74,16 @@ The wave folders above may remain absent until build is authorized and evidence 
 
 | Wave | Folder | Evidence Purpose |
 |---|---|---|
-| W0 | `W0-runtime-baseline/` | Runtime baseline, app shell, environment posture, health/readiness evidence |
-| W1 | `W1-auth-roles/` | Auth, roles, route protection, denied-path evidence |
-| W2 | `W2-enrolment-payment/` | Invite, paid enrolment, admin enrolment, payment webhook/idempotency evidence |
-| W3 | `W3-course-shell/` | Dashboard, course shell, unit navigation, external URL recovery evidence |
-| W4 | `W4-assessment-submission/` | Progress, assessment unlock, submission, evidence upload evidence |
-| W5 | `W5-aimc-review/` | AIMC Gateway evaluation, failure handling, review queue evidence |
-| W6 | `W6-certificates/` | Certificate eligibility, generation, storage/privacy evidence |
-| W7 | `W7-admin-reporting/` | Admin reports, exports, audit evidence |
-| W8 | `W8-security-privacy/` | RLS/privacy, cross-learner denial, secret/privacy posture evidence |
-| W9 | `W9-deployment-cwt/` | Preview URL, protected preview access, CWT route evidence, final closure pack |
+| W0 | `W0-foundation-scaffold/` | Foundation/scaffold, tooling, environment, repo structure, base app shell, Supabase config skeleton, health/readiness evidence |
+| W1 | `W1-auth-profile-files/` | Auth, roles, protected layouts, profile, private profile file upload, denied-path evidence |
+| W2 | `W2-dashboard-course-shell/` | Learner dashboard, course cards, course shell, sidebar, read-only URL-module unit viewer evidence |
+| W3 | `W3-progress-completion/` | Progress events, learner progress, module/course completion, next-action evidence |
+| W4 | `W4-enrolment-payments/` | Invitation, manual enrolment, Stripe checkout/webhook/idempotency, payment audit evidence |
+| W5 | `W5-assessment-submission/` | Assessment definitions, rubrics, attempts, written/evidence submission evidence |
+| W6 | `W6-ai-review/` | AIMC Gateway adapter, AI states, reviewer queue, final outcomes evidence |
+| W7 | `W7-certificates/` | Certificate eligibility, generation, storage, download, certificate event evidence |
+| W8 | `W8-admin-reports-audit/` | Admin operations, reports, audit UI, report filter evidence |
+| W9 | `W9-deployment-cwt/` | Deployed integrated LMS, CWT evidence package, preview URL proof, final proof |
 
 ---
 
@@ -99,7 +99,7 @@ Examples:
 
 ```text
 20260617-W1-QA-ALP-066-screenshot-learner-dashboard-denied.png
-20260617-W4-GP-ALP-007-test-output-assessment-submission.md
+20260617-W5-GP-ALP-007-test-output-assessment-submission.md
 20260617-W9-GP-ALP-012-cwt-preview-route-smoke.md
 ```
 
@@ -259,6 +259,7 @@ Implementation: BLOCKED.
 | Screenshot/video rules defined | PASS | Section 9. |
 | Test output/log rules defined | PASS | Section 10. |
 | Wave closure evidence rules defined | PASS | Section 11. |
+| Wave mapping aligned to Stage 8/9 plan | PASS | Sections 3 and 4 use the existing W0-W9 wave definitions. |
 | Human Governance/QA approval | PENDING | Required before approval state. |
 | Build authorized | NO | Builder/build/implementation remain blocked. |
 
@@ -289,3 +290,4 @@ It does not constitute final Foreman, Product Owner, Technical, Architecture, QA
 | Version | Date | Change Description | Changed By | Approval |
 |---|---|---|---|---|
 | 0.1 | 2026-06-17 | Filed WS-10 Evidence Folder Convention for ALP. | AI-assisted draft (pending Foreman/Governance/QA review) | Filed for review; build remains blocked |
+| 0.2 | 2026-06-17 | Clarified README vs index roles and aligned W0-W9 evidence folders to the existing Stage 8/9 wave plan. | AI-assisted draft (pending Foreman/Governance/QA review) | Filed for review; build remains blocked |
