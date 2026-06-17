@@ -171,7 +171,36 @@ QA-ALP-001 through QA-ALP-700
 **Key Artifacts**:
 - [x] `BUILD_PROGRESS_TRACKER.md`
 
-**Maintenance Rule**: This tracker must be updated whenever a workstream/stage status changes, a blocker is cleared, or a build authorization posture changes.
+**Maintenance Rule**: This tracker must be updated whenever a workstream/stage status changes, a blocker is cleared, a build-wave status changes, evidence is attached, checks run, PRs merge, or a build authorization posture changes.
+
+#### W0-W9 Build Wave Status Table
+
+This table satisfies WS-09 by recording wave status rows, evidence link columns, merge/check status columns, and blocker/risk columns. All waves remain blocked until WS-10, Stage 9/10/11, and final build authorization gates clear.
+
+| Wave | Planned Scope | Status | Evidence Link(s) | Merge / PR Status | Check Status | Blocker / Risk |
+|---|---|---|---|---|---|---|
+| W0 | Runtime baseline, repo/app shell, environment contract alignment, health/readiness skeleton | BLOCKED - not authorized | Pending | No PR | No checks run | Build authorization blocked; WS-10 evidence convention missing; no appointed builder |
+| W1 | Auth, roles, protected routes, learner/admin/reviewer access boundaries | BLOCKED - not authorized | Pending | No PR | No checks run | Builder appointment blocked; RED-to-GREEN not authorized |
+| W2 | Learner enrolment flows: invite, paid enrolment, admin enrolment, payment idempotency | BLOCKED - not authorized | Pending | No PR | No checks run | Payment sandbox/secrets not authorized; build blocked |
+| W3 | Dashboard, course shell, module/unit navigation, external URL unit handling | BLOCKED - not authorized | Pending | No PR | No checks run | Build blocked; CWT evidence not yet executable |
+| W4 | Progress tracking, assessment unlock, assessment submission, evidence upload | BLOCKED - not authorized | Pending | No PR | No checks run | Storage/evidence convention pending; build blocked |
+| W5 | AIMC Gateway evaluation, failure handling, human review queue, reviewer final decision | BLOCKED - not authorized | Pending | No PR | No checks run | AIMC runtime secrets not authorized; build blocked |
+| W6 | Certificate eligibility, certificate generation, artifact privacy controls | BLOCKED - not authorized | Pending | No PR | No checks run | Certificate runtime/signing secret not authorized; build blocked |
+| W7 | Admin reports, exports, audit views, payment/admin review surfaces | BLOCKED - not authorized | Pending | No PR | No checks run | Admin evidence convention pending; build blocked |
+| W8 | Security/privacy hardening, role-denied paths, cross-learner denial, private storage checks | BLOCKED - not authorized | Pending | No PR | No checks run | RLS/security evidence not executable before build authorization |
+| W9 | Deployment/CWT evidence, preview URL proof, final wave evidence packaging, handover readiness | BLOCKED - not authorized | Pending | No PR | No checks run | WS-08/WS-10 and final build authorization required; production promotion blocked |
+
+#### Wave Closure Rule
+
+No wave may move from `BLOCKED - not authorized` to `IN PROGRESS`, `READY FOR REVIEW`, or `CLOSED` until all of the following are true:
+
+- WS-10 Evidence Folder Convention is filed and accepted;
+- Stage 9 named-builder checklist PASS evidence is complete;
+- Stage 10 acknowledgements/advisory evidence is complete;
+- Stage 11 builder appointment is complete;
+- final Stage 12 build authorization is issued;
+- the wave has a PR or evidence record;
+- evidence links, merge/check status, and blocker/risk status are updated in this tracker.
 
 ---
 
@@ -294,3 +323,4 @@ No percentage-complete claim is made because ALP has not entered authorized buil
 | Version | Date | Change Description | Changed By | Approval |
 |---|---|---|---|---|
 | 0.1 | 2026-06-16 | Initialized ALP build progress tracker alongside WS-08 Golden Path Verification Pack. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
+| 0.2 | 2026-06-17 | Added required W0-W9 wave status table with evidence, merge/check status, and blocker/risk columns. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
