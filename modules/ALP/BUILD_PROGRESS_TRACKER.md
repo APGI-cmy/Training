@@ -8,7 +8,7 @@
 > **Repository**: APGI-cmy/Training  
 > **Tracker Location**: `modules/ALP/BUILD_PROGRESS_TRACKER.md`  
 > **Current Workstream**: WS-08 - Golden Path Verification Pack  
-> **Next Workstream**: WS-09 - Build Tracker Initialization / Ongoing Maintenance  
+> **Next Workstream**: WS-10 - Evidence Folder Convention
 
 ---
 
