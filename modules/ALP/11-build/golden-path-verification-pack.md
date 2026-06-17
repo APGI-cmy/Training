@@ -168,7 +168,7 @@ Final exact routes remain implementation-specific and must be recorded in Stage 
 
 | Blocker ID | Blocker | Required Resolution |
 |---|---|---|
-| WS08-ALP-BLOCK-001 | Build tracker not initialized or not current | Complete WS-09 tracker initialization/update before build starts. |
+| WS08-ALP-BLOCK-001 | WS-09 build tracker not yet accepted on main | Merge/accept WS-09 tracker and keep it current before build starts. |
 | WS08-ALP-BLOCK-002 | Evidence folder convention not confirmed | Complete WS-10 before build starts. |
 | WS08-ALP-BLOCK-003 | Stage 9 builder checklist PASS evidence for named builders not complete | Complete before builder appointment. |
 | WS08-ALP-BLOCK-004 | Stage 10 IAA acknowledgements for named builders not complete | Complete before builder appointment. |
