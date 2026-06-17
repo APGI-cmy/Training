@@ -175,20 +175,20 @@ QA-ALP-001 through QA-ALP-700
 
 #### W0-W9 Build Wave Status Table
 
-This table records wave status rows, evidence link columns, merge/check status columns, and blocker/risk columns. All waves remain blocked until WS-10 is accepted on main, Stage 9/10/11 prerequisites are complete, and final build authorization clears.
+This table records wave status rows, evidence link columns, merge/check status columns, and blocker/risk columns. Wave IDs and scope align to the existing Stage 8 implementation plan and Stage 9 builder checklist. All waves remain blocked until WS-10 is accepted on main, Stage 9/10/11 prerequisites are complete, and final build authorization clears.
 
 | Wave | Planned Scope | Status | Evidence Link(s) | Merge / PR Status | Check Status | Blocker / Risk |
 |---|---|---|---|---|---|---|
-| W0 | Runtime baseline, repo/app shell, environment contract alignment, health/readiness skeleton | BLOCKED - not authorized | Pending | No PR | No checks run | Build authorization blocked; WS-10 pending merge; no appointed builder |
-| W1 | Auth, roles, protected routes, learner/admin/reviewer access boundaries | BLOCKED - not authorized | Pending | No PR | No checks run | Builder appointment blocked; RED-to-GREEN not authorized |
-| W2 | Learner enrolment flows: invite, paid enrolment, admin enrolment, payment idempotency | BLOCKED - not authorized | Pending | No PR | No checks run | Payment sandbox/secrets not authorized; build blocked |
-| W3 | Dashboard, course shell, module/unit navigation, external URL unit handling | BLOCKED - not authorized | Pending | No PR | No checks run | Build blocked; CWT evidence not yet executable |
-| W4 | Progress tracking, assessment unlock, assessment submission, evidence upload | BLOCKED - not authorized | Pending | No PR | No checks run | Storage/evidence convention pending merge; build blocked |
-| W5 | AIMC Gateway evaluation, failure handling, human review queue, reviewer final decision | BLOCKED - not authorized | Pending | No PR | No checks run | AIMC runtime secrets not authorized; build blocked |
-| W6 | Certificate eligibility, certificate generation, artifact privacy controls | BLOCKED - not authorized | Pending | No PR | No checks run | Certificate runtime/signing secret not authorized; build blocked |
-| W7 | Admin reports, exports, audit views, payment/admin review surfaces | BLOCKED - not authorized | Pending | No PR | No checks run | Admin evidence convention pending merge; build blocked |
-| W8 | Security/privacy hardening, role-denied paths, cross-learner denial, private storage checks | BLOCKED - not authorized | Pending | No PR | No checks run | RLS/security evidence not executable before build authorization |
-| W9 | Deployment/CWT evidence, preview URL proof, final wave evidence packaging, handover readiness | BLOCKED - not authorized | Pending | No PR | No checks run | WS-10 and final build authorization required; production promotion blocked |
+| W0 | Foundation / Scaffold: tooling, env, repo structure, base app shell, Supabase config skeleton | BLOCKED - not authorized | Pending | No PR | No checks run | Build authorization blocked; WS-10 pending merge; no appointed builder |
+| W1 | Auth + Profile + Files: auth, roles, protected layouts, profile, private profile file upload | BLOCKED - not authorized | Pending | No PR | No checks run | Builder appointment blocked; RED-to-GREEN not authorized |
+| W2 | Dashboard + Course Shell + Unit Viewer: learner dashboard, course cards, shell, sidebar, read-only URL-module unit viewer | BLOCKED - not authorized | Pending | No PR | No checks run | Build blocked; CWT evidence not yet executable |
+| W3 | Progress + Completion: progress events, learner progress, module/course completion, next action | BLOCKED - not authorized | Pending | No PR | No checks run | Progress evidence not executable before build authorization |
+| W4 | Enrolment + Payments: invitation, manual enrolment, checkout/webhook/idempotency | BLOCKED - not authorized | Pending | No PR | No checks run | Payment sandbox/secrets not authorized; build blocked |
+| W5 | Assessment Submission: assessment definitions, rubrics, attempts, written/evidence submission | BLOCKED - not authorized | Pending | No PR | No checks run | Storage/evidence convention pending merge; build blocked |
+| W6 | AI Evaluation + Human Review: AIMC Gateway adapter, AI states, reviewer queue, final outcomes | BLOCKED - not authorized | Pending | No PR | No checks run | AIMC runtime secrets not authorized; build blocked |
+| W7 | Certificates: eligibility, generation, storage, download, certificate events | BLOCKED - not authorized | Pending | No PR | No checks run | Certificate runtime/signing secret not authorized; build blocked |
+| W8 | Admin Reports + Audit: admin operations, reports, audit UI, report filters | BLOCKED - not authorized | Pending | No PR | No checks run | Admin/report evidence not executable before build authorization |
+| W9 | Deployment + CWT: deployed integrated LMS, CWT evidence package, final proof | BLOCKED - not authorized | Pending | No PR | No checks run | WS-10 and final build authorization required; production promotion blocked |
 
 #### Wave Closure Rule
 
@@ -212,7 +212,7 @@ No wave may move from `BLOCKED - not authorized` to `IN PROGRESS`, `READY FOR RE
 
 **Convention Coverage**:
 - [x] Evidence root
-- [x] W0-W9 evidence folder naming
+- [x] W0-W9 evidence folder naming aligned to existing Stage 8/9 wave definitions
 - [x] Evidence file naming rules
 - [x] Evidence index requirements
 - [x] CWT URL/environment recording rules
@@ -332,3 +332,4 @@ No percentage-complete claim is made because ALP has not entered authorized buil
 | 0.1 | 2026-06-16 | Initialized ALP build progress tracker alongside WS-08 Golden Path Verification Pack. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
 | 0.2 | 2026-06-17 | Added required W0-W9 wave status table with evidence, merge/check status, and blocker/risk columns. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
 | 0.3 | 2026-06-17 | Updated tracker after PR #63 merge and filed WS-10 Evidence Folder Convention for review. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
+| 0.4 | 2026-06-17 | Aligned W0-W9 tracker rows to the existing Stage 8 implementation plan and Stage 9 builder checklist wave definitions. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
