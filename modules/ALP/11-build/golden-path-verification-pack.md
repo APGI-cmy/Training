@@ -198,7 +198,7 @@ Final exact routes remain implementation-specific and must be recorded in Stage 
 ```text
 WS-08 Golden Path Verification Pack: FILED FOR REVIEW.
 Golden path verification evidence contract: DEFINED FOR REVIEW.
-WS-09 Build Tracker Initialization: NEXT.
+WS-09 Build Tracker Initialization: FILED IN CURRENT PR (pending merge); WS-10 Evidence Folder Convention: NEXT.
 Builder Appointment: BLOCKED.
 Build Authorization: BLOCKED.
 Implementation: BLOCKED.
