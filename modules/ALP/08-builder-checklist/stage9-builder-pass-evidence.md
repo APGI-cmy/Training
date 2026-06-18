@@ -7,7 +7,7 @@
 | Artifact | Stage 9 Builder Checklist PASS Evidence Register |
 | Module | ALP - APGI Learning Portal |
 | Workstream | WS-02 - Stage 9 Builder Checklist PASS Evidence |
-| Version | 0.1 |
+| Version | 0.2 |
 | Status | Filed as blocking evidence register - no builder PASS claim |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/08-builder-checklist/stage9-builder-pass-evidence.md |
@@ -35,6 +35,7 @@ After reviewing the filed Stage 9 Builder Checklist, no actual builder candidate
 | Source | Finding |
 |---|---|
 | `modules/ALP/08-builder-checklist/builder-checklist.md` | Candidate register contains BC-ALP-001 through BC-ALP-010, all with `Builder / Agent` set to `To be assigned`, `Contract Current?` set to `Pending`, and `Checklist Result` set to `Pending`. |
+| `modules/ALP/08-builder-checklist/builder-checklist.md` | Universal checks require Stage 8 QA/Traceability acknowledgement, Architecture/TRS/FRS understanding, no-scope-deviation acknowledgement, dependency statements, protocol compliance, and Foreman role-fit decision. |
 | `modules/ALP/11-build/build-readiness-remediation-plan.md` | WS-02 requires Stage 9 Builder Checklist PASS evidence for every proposed builder and blocks appointment/build until complete. |
 | `modules/ALP/BUILD_PROGRESS_TRACKER.md` | Stage 9 named-builder PASS evidence remains an active blocker. |
 
@@ -66,15 +67,20 @@ Every proposed builder candidate must have all of the following before WS-02 can
 | WS02-EV-004 | Stage 6 QA-to-Red acknowledgement | Candidate acknowledgement evidence |
 | WS02-EV-005 | Stage 7 PBFAG acknowledgement | Candidate acknowledgement evidence |
 | WS02-EV-006 | Stage 8 Implementation Plan acknowledgement | Candidate acknowledgement evidence |
-| WS02-EV-007 | WS-07 Runtime / Deployment Contract acknowledgement, if assigned runtime/deployment work | Candidate acknowledgement evidence |
-| WS02-EV-008 | WS-08 Golden Path Verification Pack acknowledgement | Candidate acknowledgement evidence |
-| WS02-EV-009 | WS-10 Evidence Folder Convention acknowledgement | Candidate acknowledgement evidence |
-| WS02-EV-010 | RED QA suite understanding acknowledgement | Candidate acknowledgement evidence |
-| WS02-EV-011 | STOP-AND-FIX and merge-gate compliance acknowledgement | Candidate acknowledgement evidence |
-| WS02-EV-012 | Evidence filing responsibility acknowledgement | Candidate acknowledgement evidence |
-| WS02-EV-013 | No unresolved dependency blocker for assigned wave(s) | Candidate dependency statement |
-| WS02-EV-014 | Foreman role-fit decision | Foreman/Governance decision record |
-| WS02-EV-015 | Checklist result set to PASS | Updated Stage 9 checklist |
+| WS02-EV-007 | Stage 8 QA/Traceability Resolution acknowledgement | Candidate acknowledgement evidence |
+| WS02-EV-008 | WS-07 Runtime / Deployment Contract acknowledgement, if assigned runtime/deployment work | Candidate acknowledgement evidence |
+| WS02-EV-009 | WS-08 Golden Path Verification Pack acknowledgement | Candidate acknowledgement evidence |
+| WS02-EV-010 | WS-10 Evidence Folder Convention acknowledgement | Candidate acknowledgement evidence |
+| WS02-EV-011 | RED QA suite understanding acknowledgement | Candidate acknowledgement evidence |
+| WS02-EV-012 | Architecture, TRS, and FRS understanding for assigned scope | Candidate acknowledgement evidence |
+| WS02-EV-013 | STOP-AND-FIX and merge-gate compliance acknowledgement | Candidate acknowledgement evidence |
+| WS02-EV-014 | Evidence filing responsibility acknowledgement | Candidate acknowledgement evidence |
+| WS02-EV-015 | No scope deviation without Foreman approval acknowledgement | Candidate acknowledgement evidence |
+| WS02-EV-016 | No unresolved dependency blocker for assigned wave(s) | Candidate dependency statement |
+| WS02-EV-017 | Candidate has no unresolved review warnings or blockers | Warning/blocker review evidence |
+| WS02-EV-018 | Builder understands build remains blocked until Stage 12 authorization | Appointment-boundary acknowledgement |
+| WS02-EV-019 | Foreman role-fit decision | Foreman/Governance decision record |
+| WS02-EV-020 | Checklist result set to PASS | Updated Stage 9 checklist |
 
 ---
 
@@ -123,10 +129,11 @@ The later PR must:
 
 1. name the builder(s);
 2. link current contract(s);
-3. record acknowledgements;
-4. record Foreman role-fit decision(s);
-5. set each applicable candidate row to PASS;
-6. update the tracker blocker state.
+3. record all required acknowledgements listed in Section 4;
+4. record dependency/blocker statements;
+5. record Foreman role-fit decision(s);
+6. set each applicable candidate row to PASS;
+7. update the tracker blocker state.
 
 ---
 
@@ -138,6 +145,9 @@ The later PR must:
 | Builder candidates named | BLOCKED | Current candidates are `To be assigned`. |
 | Contracts current | BLOCKED | Current rows are `Pending`. |
 | Candidate acknowledgements complete | BLOCKED | No acknowledgements recorded. |
+| Stage 8 QA/Traceability acknowledgement captured | BLOCKED | No acknowledgements recorded. |
+| Architecture/TRS/FRS understanding captured | BLOCKED | No acknowledgements recorded. |
+| Scope-deviation acknowledgement captured | BLOCKED | No acknowledgements recorded. |
 | Foreman role-fit decisions recorded | BLOCKED | No decisions recorded. |
 | Checklist PASS evidence for every proposed builder | BLOCKED | No candidate has PASS evidence. |
 | Build authorization preserved as blocked | PASS | No build authorization is granted. |
@@ -168,3 +178,4 @@ This WS-02 evidence register was drafted with AI assistance at user request and 
 | Version | Date | Change Description | Changed By | Approval |
 |---|---|---|---|---|
 | 0.1 | 2026-06-17 | Filed WS-02 Stage 9 Builder Checklist PASS Evidence Register as a blocking-evidence record because no named builder PASS evidence exists. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; builder/build remain blocked |
+| 0.2 | 2026-06-18 | Added missing mandatory Stage 9 evidence items for QA/Traceability, Architecture/TRS/FRS understanding, scope-deviation acknowledgement, unresolved-warning check, and Stage 12 boundary acknowledgement. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; builder/build remain blocked |
