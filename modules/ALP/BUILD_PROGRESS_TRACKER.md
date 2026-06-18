@@ -16,7 +16,7 @@
 
 ALP is in pre-build remediation. Stages 1 through 6 have been filed at canonical module paths, the Requirement Registry is filed, WS-06 QA range status is confirmed module-local, WS-07 Runtime / Deployment Contract is filed, PR #63 merged the WS-08 Golden Path Verification Pack plus the initialized WS-09 Build Progress Tracker, and PR #64 merged the WS-10 Evidence Folder Convention.
 
-WS-02 Stage 9 Builder Checklist PASS Evidence is being filed in the current PR as a blocking-evidence register because the Stage 9 checklist still has no named builder candidates, no current contracts, no acknowledgements, and no Foreman role-fit decisions.
+WS-02 Stage 9 Builder Checklist PASS Evidence was filed on 2026-06-17 as a blocking-evidence register because the Stage 9 checklist still has no named builder candidates, no current contracts, no acknowledgements, and no Foreman role-fit decisions.
 
 No builder has been appointed. No build has been authorized. No implementation has been authorized.
 
