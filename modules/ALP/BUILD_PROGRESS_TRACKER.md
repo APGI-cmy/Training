@@ -46,7 +46,7 @@ Next required action: identify builder model and named builder(s)
 | WS-08 Golden Path Verification Pack | MERGED / ACCEPTED ON MAIN | `modules/ALP/11-build/golden-path-verification-pack.md` |
 | WS-09 Build Tracker | INITIALIZED / ACCEPTED ON MAIN | `modules/ALP/BUILD_PROGRESS_TRACKER.md` |
 | WS-10 Evidence Folder Convention | MERGED / ACCEPTED ON MAIN | `modules/ALP/11-build/evidence/README.md` |
-| WS-02 Stage 9 Builder Checklist PASS Evidence | FILED AS BLOCKING EVIDENCE IN CURRENT PR | `modules/ALP/08-builder-checklist/stage9-builder-pass-evidence.md` |
+| WS-02 Stage 9 Builder Checklist PASS Evidence | FILED AS BLOCKING EVIDENCE (2026-06-17) | `modules/ALP/08-builder-checklist/stage9-builder-pass-evidence.md` |
 | Stage 9 Builder Checklist | FILED BUT NOT PASS-FINALIZED FOR NAMED BUILDERS | `modules/ALP/08-builder-checklist/builder-checklist.md` |
 | Stage 10 IAA Pre-Brief | FILED BUT ACKNOWLEDGEMENTS/ADVISORY STILL BLOCKING | `modules/ALP/09-iaa-pre-brief/iaa-pre-brief.md` |
 | Stage 11 Builder Appointment | BLOCKED | `modules/ALP/10-builder-appointment/builder-appointment.md` |
