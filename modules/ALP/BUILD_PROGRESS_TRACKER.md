@@ -246,7 +246,7 @@ No wave may move from `BLOCKED - not authorized` to `IN PROGRESS`, `READY FOR RE
 **Key Artifacts**:
 - [x] `builder-checklist.md`
 - [x] `builder-checklist-review-resolution.md`
-- [x] `stage9-builder-pass-evidence.md` - current PR
+- [x] `stage9-builder-pass-evidence.md` (filed 2026-06-17)
 
 **Remaining Need**:
 - [ ] Named builder readiness evidence
