@@ -3,20 +3,20 @@
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
 **Last Updated**: 2026-06-17  
-**Updated By**: WS-10 Evidence Folder Convention filing after PR #63 merge  
-> **Classification**: ACTIVE - PRE-BUILD REMEDIATION IN PROGRESS - WS-10 FILED FOR REVIEW - BUILD BLOCKED  
+**Updated By**: WS-02 Stage 9 Builder Checklist PASS Evidence blocking register filing after PR #64 merge  
+> **Classification**: ACTIVE - PRE-BUILD REMEDIATION IN PROGRESS - WS-02 FILED AS BLOCKING EVIDENCE - BUILD BLOCKED  
 > **Repository**: APGI-cmy/Training  
 > **Tracker Location**: `modules/ALP/BUILD_PROGRESS_TRACKER.md`  
-> **Current Workstream**: WS-10 - Evidence Folder Convention  
-> **Next Workstream**: WS-02 - Stage 9 Builder Checklist PASS Evidence
+> **Current Workstream**: WS-02 - Stage 9 Builder Checklist PASS Evidence  
+> **Next Required Action**: Identify proposed builder model and named builder(s)
 
 ---
 
 ## Current Executive Status
 
-ALP is in pre-build remediation. Stages 1 through 6 have been filed at canonical module paths, the Requirement Registry is filed, WS-06 QA range status is confirmed module-local, WS-07 Runtime / Deployment Contract is filed, and PR #63 merged the WS-08 Golden Path Verification Pack plus the initialized WS-09 Build Progress Tracker.
+ALP is in pre-build remediation. Stages 1 through 6 have been filed at canonical module paths, the Requirement Registry is filed, WS-06 QA range status is confirmed module-local, WS-07 Runtime / Deployment Contract is filed, PR #63 merged the WS-08 Golden Path Verification Pack plus the initialized WS-09 Build Progress Tracker, and PR #64 merged the WS-10 Evidence Folder Convention.
 
-WS-10 Evidence Folder Convention is being filed for review in the current PR.
+WS-02 Stage 9 Builder Checklist PASS Evidence is being filed in the current PR as a blocking-evidence register because the Stage 9 checklist still has no named builder candidates, no current contracts, no acknowledgements, and no Foreman role-fit decisions.
 
 No builder has been appointed. No build has been authorized. No implementation has been authorized.
 
@@ -24,8 +24,8 @@ No builder has been appointed. No build has been authorized. No implementation h
 Builder Appointment: BLOCKED
 Build Authorization: BLOCKED
 Implementation: BLOCKED
-Current stage/workstream: WS-10 Evidence Folder Convention filed for review
-Next stage/workstream after WS-10 merge: WS-02 - Stage 9 Builder Checklist PASS Evidence
+Current stage/workstream: WS-02 Stage 9 Builder Checklist PASS Evidence filed as blocking evidence
+Next required action: identify builder model and named builder(s)
 ```
 
 ---
@@ -45,7 +45,8 @@ Next stage/workstream after WS-10 merge: WS-02 - Stage 9 Builder Checklist PASS 
 | WS-07 Runtime / Deployment Contract | FILED FOR REVIEW | `modules/ALP/11-build/runtime-deployment-contract.md` |
 | WS-08 Golden Path Verification Pack | MERGED / ACCEPTED ON MAIN | `modules/ALP/11-build/golden-path-verification-pack.md` |
 | WS-09 Build Tracker | INITIALIZED / ACCEPTED ON MAIN | `modules/ALP/BUILD_PROGRESS_TRACKER.md` |
-| WS-10 Evidence Folder Convention | FILED FOR REVIEW IN CURRENT PR | `modules/ALP/11-build/evidence/README.md` |
+| WS-10 Evidence Folder Convention | MERGED / ACCEPTED ON MAIN | `modules/ALP/11-build/evidence/README.md` |
+| WS-02 Stage 9 Builder Checklist PASS Evidence | FILED AS BLOCKING EVIDENCE IN CURRENT PR | `modules/ALP/08-builder-checklist/stage9-builder-pass-evidence.md` |
 | Stage 9 Builder Checklist | FILED BUT NOT PASS-FINALIZED FOR NAMED BUILDERS | `modules/ALP/08-builder-checklist/builder-checklist.md` |
 | Stage 10 IAA Pre-Brief | FILED BUT ACKNOWLEDGEMENTS/ADVISORY STILL BLOCKING | `modules/ALP/09-iaa-pre-brief/iaa-pre-brief.md` |
 | Stage 11 Builder Appointment | BLOCKED | `modules/ALP/10-builder-appointment/builder-appointment.md` |
@@ -175,26 +176,25 @@ QA-ALP-001 through QA-ALP-700
 
 #### W0-W9 Build Wave Status Table
 
-This table records wave status rows, evidence link columns, merge/check status columns, and blocker/risk columns. Wave IDs and scope align to the existing Stage 8 implementation plan and Stage 9 builder checklist. All waves remain blocked until WS-10 is accepted on main, Stage 9/10/11 prerequisites are complete, and final build authorization clears.
+This table records wave status rows, evidence link columns, merge/check status columns, and blocker/risk columns. Wave IDs and scope align to the existing Stage 8 implementation plan and Stage 9 builder checklist. All waves remain blocked until Stage 9/10/11 prerequisites are complete and final build authorization clears.
 
 | Wave | Planned Scope | Status | Evidence Link(s) | Merge / PR Status | Check Status | Blocker / Risk |
 |---|---|---|---|---|---|---|
-| W0 | Foundation / Scaffold: tooling, env, repo structure, base app shell, Supabase config skeleton | BLOCKED - not authorized | Pending | No PR | No checks run | Build authorization blocked; WS-10 pending merge; no appointed builder |
+| W0 | Foundation / Scaffold: tooling, env, repo structure, base app shell, Supabase config skeleton | BLOCKED - not authorized | Pending | No PR | No checks run | Build authorization blocked; no appointed builder |
 | W1 | Auth + Profile + Files: auth, roles, protected layouts, profile, private profile file upload | BLOCKED - not authorized | Pending | No PR | No checks run | Builder appointment blocked; RED-to-GREEN not authorized |
 | W2 | Dashboard + Course Shell + Unit Viewer: learner dashboard, course cards, shell, sidebar, read-only URL-module unit viewer | BLOCKED - not authorized | Pending | No PR | No checks run | Build blocked; CWT evidence not yet executable |
 | W3 | Progress + Completion: progress events, learner progress, module/course completion, next action | BLOCKED - not authorized | Pending | No PR | No checks run | Progress evidence not executable before build authorization |
 | W4 | Enrolment + Payments: invitation, manual enrolment, checkout/webhook/idempotency | BLOCKED - not authorized | Pending | No PR | No checks run | Payment sandbox/secrets not authorized; build blocked |
-| W5 | Assessment Submission: assessment definitions, rubrics, attempts, written/evidence submission | BLOCKED - not authorized | Pending | No PR | No checks run | Storage/evidence convention pending merge; build blocked |
+| W5 | Assessment Submission: assessment definitions, rubrics, attempts, written/evidence submission | BLOCKED - not authorized | Pending | No PR | No checks run | Storage/evidence convention defined but no authorized build |
 | W6 | AI Evaluation + Human Review: AIMC Gateway adapter, AI states, reviewer queue, final outcomes | BLOCKED - not authorized | Pending | No PR | No checks run | AIMC runtime secrets not authorized; build blocked |
 | W7 | Certificates: eligibility, generation, storage, download, certificate events | BLOCKED - not authorized | Pending | No PR | No checks run | Certificate runtime/signing secret not authorized; build blocked |
 | W8 | Admin Reports + Audit: admin operations, reports, audit UI, report filters | BLOCKED - not authorized | Pending | No PR | No checks run | Admin/report evidence not executable before build authorization |
-| W9 | Deployment + CWT: deployed integrated LMS, CWT evidence package, final proof | BLOCKED - not authorized | Pending | No PR | No checks run | WS-10 and final build authorization required; production promotion blocked |
+| W9 | Deployment + CWT: deployed integrated LMS, CWT evidence package, final proof | BLOCKED - not authorized | Pending | No PR | No checks run | Final build authorization required; production promotion blocked |
 
 #### Wave Closure Rule
 
 No wave may move from `BLOCKED - not authorized` to `IN PROGRESS`, `READY FOR REVIEW`, or `CLOSED` until all of the following are true:
 
-- WS-10 Evidence Folder Convention is accepted on main;
 - Stage 9 named-builder checklist PASS evidence is complete;
 - Stage 10 acknowledgements/advisory evidence is complete;
 - Stage 11 builder appointment is complete;
@@ -205,7 +205,7 @@ No wave may move from `BLOCKED - not authorized` to `IN PROGRESS`, `READY FOR RE
 ---
 
 ### WS-10: Evidence Folder Convention
-**Status**: [x] FILED FOR REVIEW IN CURRENT PR  
+**Status**: [x] MERGED / ACCEPTED ON MAIN  
 **Expected Location**: `modules/ALP/11-build/evidence/`  
 **Key Artifacts**:
 - [x] `modules/ALP/11-build/evidence/README.md`
@@ -223,12 +223,30 @@ No wave may move from `BLOCKED - not authorized` to `IN PROGRESS`, `READY FOR RE
 
 ---
 
+### WS-02: Stage 9 Builder Checklist PASS Evidence
+**Status**: [ ] FILED AS BLOCKING EVIDENCE IN CURRENT PR  
+**Location**: `modules/ALP/08-builder-checklist/`  
+**Key Artifacts**:
+- [x] `stage9-builder-pass-evidence.md`
+- [x] `builder-checklist.md`
+- [x] `builder-checklist-review-resolution.md`
+
+**Remaining Need**:
+- [ ] Named builder identity or builder model selected
+- [ ] Current builder contract(s) linked
+- [ ] Builder acknowledgements recorded
+- [ ] Foreman role-fit decision(s) recorded
+- [ ] Explicit PASS state for selected builder(s)
+
+---
+
 ### Stage 9: Builder Checklist
 **Status**: [ ] BLOCKED / NOT FINALIZED FOR NAMED BUILDERS  
 **Location**: `modules/ALP/08-builder-checklist/`  
 **Key Artifacts**:
 - [x] `builder-checklist.md`
 - [x] `builder-checklist-review-resolution.md`
+- [x] `stage9-builder-pass-evidence.md` - current PR
 
 **Remaining Need**:
 - [ ] Named builder readiness evidence
@@ -269,12 +287,13 @@ No wave may move from `BLOCKED - not authorized` to `IN PROGRESS`, `READY FOR RE
 - [x] `carry-forward-artifact-verification.md`
 - [x] `runtime-deployment-contract.md`
 - [x] `golden-path-verification-pack.md`
-- [x] `evidence/README.md` - current PR
+- [x] `evidence/README.md`
 
 **Stage 12 cannot begin until**:
 - [x] WS-08 is merged and reviewed
 - [x] WS-09 tracker is current and accepted
-- [ ] WS-10 evidence convention is merged and accepted
+- [x] WS-10 evidence convention is merged and accepted
+- [ ] WS-02 Stage 9 builder PASS evidence is complete
 - [ ] Stage 9 builder checklist is pass-finalized for named builder(s)
 - [ ] Stage 10 acknowledgements/advisory are complete
 - [ ] Stage 11 builder appointment is complete
@@ -286,24 +305,17 @@ No wave may move from `BLOCKED - not authorized` to `IN PROGRESS`, `READY FOR RE
 
 | Blocker ID | Blocker | Current Status | Required Next Action |
 |---|---|---|---|
-| ALP-BLOCK-001 | WS-10 evidence folder convention not merged | In current PR | Review and merge WS-10 artifact |
-| ALP-BLOCK-002 | Stage 9 named-builder PASS evidence incomplete | Open | Complete builder checklist finalization |
-| ALP-BLOCK-003 | Stage 10 acknowledgements/advisory incomplete | Open | Complete IAA/advisory evidence |
-| ALP-BLOCK-004 | Stage 11 actual builder appointment incomplete | Open | Appoint builder only after prerequisites clear |
-| ALP-BLOCK-005 | Stage 12 final build authorization missing | Open | Issue only after all blockers clear |
+| ALP-BLOCK-001 | WS-02 Stage 9 named-builder PASS evidence incomplete | Blocking evidence register in current PR | Identify builder model and named builder(s) |
+| ALP-BLOCK-002 | Stage 10 acknowledgements/advisory incomplete | Open | Complete IAA/advisory evidence after builder model is known |
+| ALP-BLOCK-003 | Stage 11 actual builder appointment incomplete | Open | Appoint builder only after prerequisites clear |
+| ALP-BLOCK-004 | Stage 12 final build authorization missing | Open | Issue only after all blockers clear |
 
 ---
 
 ## Immediate Next Action
 
 ```text
-Review and merge the WS-10 Evidence Folder Convention and ALP Build Progress Tracker update PR.
-```
-
-After this PR merges, the next workstream is:
-
-```text
-WS-02 - Stage 9 Builder Checklist PASS Evidence
+Review and merge the WS-02 blocking-evidence register PR, then identify the proposed builder model and named builder(s).
 ```
 
 The tracker itself must continue to be kept current as each remaining blocker changes.
@@ -333,3 +345,4 @@ No percentage-complete claim is made because ALP has not entered authorized buil
 | 0.2 | 2026-06-17 | Added required W0-W9 wave status table with evidence, merge/check status, and blocker/risk columns. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
 | 0.3 | 2026-06-17 | Updated tracker after PR #63 merge and filed WS-10 Evidence Folder Convention for review. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
 | 0.4 | 2026-06-17 | Aligned W0-W9 tracker rows to the existing Stage 8 implementation plan and Stage 9 builder checklist wave definitions. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
+| 0.5 | 2026-06-17 | Updated tracker after PR #64 merge and filed WS-02 Stage 9 Builder Checklist PASS Evidence as a blocking-evidence register. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; build remains blocked |
