@@ -305,7 +305,7 @@ No wave may move from `BLOCKED - not authorized` to `IN PROGRESS`, `READY FOR RE
 
 | Blocker ID | Blocker | Current Status | Required Next Action |
 |---|---|---|---|
-| ALP-BLOCK-001 | WS-02 Stage 9 named-builder PASS evidence incomplete | Blocking evidence register in current PR | Identify builder model and named builder(s) |
+| ALP-BLOCK-001 | WS-02 Stage 9 named-builder PASS evidence incomplete | Blocking evidence register filed 2026-06-17 | Identify builder model and named builder(s) |
 | ALP-BLOCK-002 | Stage 10 acknowledgements/advisory incomplete | Open | Complete IAA/advisory evidence after builder model is known |
 | ALP-BLOCK-003 | Stage 11 actual builder appointment incomplete | Open | Appoint builder only after prerequisites clear |
 | ALP-BLOCK-004 | Stage 12 final build authorization missing | Open | Issue only after all blockers clear |
