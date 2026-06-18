@@ -224,7 +224,7 @@ No wave may move from `BLOCKED - not authorized` to `IN PROGRESS`, `READY FOR RE
 ---
 
 ### WS-02: Stage 9 Builder Checklist PASS Evidence
-**Status**: [ ] FILED AS BLOCKING EVIDENCE IN CURRENT PR  
+**Status**: [ ] BLOCKED (blocking-evidence register filed 2026-06-17)  
 **Location**: `modules/ALP/08-builder-checklist/`  
 **Key Artifacts**:
 - [x] `stage9-builder-pass-evidence.md`
