@@ -7,8 +7,8 @@
 | Artifact | Builder Model Clarification |
 | Module | ALP - APGI Learning Portal |
 | Related Workstream | WS-02 - Stage 9 Builder Checklist PASS Evidence |
-| Version | 0.2 |
-| Status | Filed for governance review |
+| Version | 0.3 |
+| Status | Filed for governance review - companion evidence path clarified |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/08-builder-checklist/builder-model-clarification.md |
 | Prepared Date | 2026-06-18 |
@@ -53,7 +53,7 @@ Builder / Agent: ChatGPT Codex Connector, acting under APGI-cmy Foreman/Governan
 
 | Candidate ID | Builder / Agent | Proposed Role | Proposed Waves | Contract | Stage 9 Evidence | Status |
 |---|---|---|---|---|---|---|
-| BC-ALP-CONSOLIDATED-001 | ChatGPT Codex Connector, acting under APGI-cmy Foreman/Governance direction | Consolidated ALP Builder | W0-W9 | `consolidated-builder-agent-contract.md` | `consolidated-builder-stage9-evidence.md` | Filed for Stage 9 readiness review |
+| BC-ALP-CONSOLIDATED-001 | ChatGPT Codex Connector, acting under APGI-cmy Foreman/Governance direction | Consolidated ALP Builder | W0-W9 | `consolidated-builder-agent-contract.md` | `consolidated-builder-stage9-evidence.md` | Filed for Stage 9 readiness review as companion evidence |
 
 No individual, agent, or team is appointed by this artifact. Appointment remains a later Stage 11 action.
 
@@ -65,8 +65,11 @@ No individual, agent, or team is appointed by this artifact. Appointment remains
 |---|---|
 | Builder agent contract | `modules/ALP/08-builder-checklist/consolidated-builder-agent-contract.md` |
 | Consolidated builder Stage 9 evidence | `modules/ALP/08-builder-checklist/consolidated-builder-stage9-evidence.md` |
+| Consolidated builder checklist addendum | `modules/ALP/08-builder-checklist/builder-checklist-consolidated-addendum.md` |
 | WS-02 evidence register | `modules/ALP/08-builder-checklist/stage9-builder-pass-evidence.md` |
 | Stage 9 checklist | `modules/ALP/08-builder-checklist/builder-checklist.md` |
+
+**Canonical register note:** `stage9-builder-pass-evidence.md` and `BUILD_PROGRESS_TRACKER.md` remain canonical governance readers and still need direct consolidation or explicit supersession before Stage 9 is treated as fully cleared in downstream Stage 10/11 processing.
 
 ---
 
@@ -75,10 +78,11 @@ No individual, agent, or team is appointed by this artifact. Appointment remains
 | Gate Item | Status | Reason |
 |---|---|---|
 | Builder model selected | PASS | Consolidated builder model selected for ALP. |
-| Consolidated builder candidate named | PASS FOR REVIEW | BC-ALP-CONSOLIDATED-001. |
-| Current builder contract linked | PASS FOR REVIEW | Contract artifact filed. |
-| Required acknowledgements recorded | PASS FOR REVIEW | Stage 9 evidence artifact filed. |
-| Foreman role-fit decision recorded | PASS FOR REVIEW | Stage 9 evidence artifact filed. |
+| Consolidated builder candidate named | FILED FOR REVIEW | BC-ALP-CONSOLIDATED-001. |
+| Current builder contract linked | FILED FOR REVIEW | Contract artifact filed. |
+| Required acknowledgements recorded | FILED FOR REVIEW | Companion Stage 9 evidence artifact filed. |
+| Foreman role-fit decision recorded | FILED FOR REVIEW | Companion Stage 9 evidence artifact filed. |
+| Canonical register/tracker consolidation | STILL REQUIRED | Canonical files must be updated or explicitly superseded before downstream gate closure. |
 | Builder appointment authorized | NO | Appointment remains Stage 11. |
 | Build authorized | NO | Build remains Stage 12. |
 | Implementation authorized | NO | Implementation remains blocked. |
@@ -90,8 +94,9 @@ No individual, agent, or team is appointed by this artifact. Appointment remains
 ```text
 ALP Builder Model: CONSOLIDATED BUILDER MODEL SELECTED.
 Named Consolidated Builder Candidate: BC-ALP-CONSOLIDATED-001.
-Stage 9 Builder Readiness Evidence: FILED FOR REVIEW.
-Stage 10 IAA Acknowledgements: NEXT.
+Stage 9 Builder Readiness Evidence: FILED FOR REVIEW AS COMPANION EVIDENCE.
+Canonical register/tracker consolidation: STILL REQUIRED unless reviewers explicitly accept this addendum path.
+Stage 10 IAA Acknowledgements: NEXT AFTER STAGE 9 EVIDENCE IS ACCEPTED.
 Stage 11 Builder Appointment: BLOCKED.
 Stage 12 Build Authorization: BLOCKED.
 Implementation: BLOCKED.
@@ -111,3 +116,4 @@ This clarification was drafted with AI assistance at user request and is filed f
 |---|---|---|---|---|
 | 0.1 | 2026-06-18 | Selected consolidated builder model for ALP while preserving named-builder, Stage 9 PASS, appointment, build, and implementation blockers. | AI-assisted draft | Filed for review; builder/build remain blocked |
 | 0.2 | 2026-06-19 | Named consolidated builder candidate and linked contract/evidence artifacts while preserving Stage 10/11/12 blockers. | AI-assisted draft | Filed for review; appointment/build remain blocked |
+| 0.3 | 2026-06-19 | Clarified that companion artifacts do not by themselves update the canonical WS-02 register/tracker and that consolidation or explicit supersession remains required. | AI-assisted draft | Filed for review; appointment/build remain blocked |
