@@ -73,7 +73,7 @@ The consolidated builder slot is reserved as:
 |---|---|---|---|---|---|---|
 | BC-ALP-CONSOLIDATED-001 | To be named by Foreman/Governance | Consolidated ALP Builder | W0-W9 | Pending | Pending | BLOCKED |
 
-The existing per-wave candidate rows in `builder-checklist.md` remain historical/placeholding rows until the checklist is updated by a later PR.
+The existing per-wave candidate rows in `builder-checklist.md` remain historical/placeholder rows until the checklist is updated by a later PR.
 
 ---
 
