@@ -53,7 +53,7 @@ The filed WS-02 PASS Evidence Register confirms that no named builder candidates
 Selected builder model for ALP: CONSOLIDATED BUILDER MODEL.
 ```
 
-ALP should proceed with a consolidated builder model unless Foreman/Governance later overrides this decision.
+This artifact records the consolidated builder model selection for ALP, pending Foreman/Governance confirmation.
 
 Under this model, one named builder or build agent may cover the full W0-W9 ALP build sequence, provided the builder separately acknowledges and passes readiness for each assigned wave and each required Stage 9 checklist item.
 
