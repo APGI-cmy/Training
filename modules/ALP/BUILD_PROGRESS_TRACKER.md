@@ -50,7 +50,7 @@ Next required action: name consolidated builder and supply Stage 9 PASS evidence
 | WS-10 Evidence Folder Convention | MERGED / ACCEPTED ON MAIN | `modules/ALP/11-build/evidence/README.md` |
 | WS-02 Stage 9 Builder Checklist PASS Evidence | FILED AS BLOCKING EVIDENCE | `modules/ALP/08-builder-checklist/stage9-builder-pass-evidence.md` |
 | Builder Model Clarification | FILED FOR REVIEW IN CURRENT PR | `modules/ALP/08-builder-checklist/builder-model-clarification.md` |
-| Stage 9 Builder Checklist | FILED BUT NOT PASS-FINALIZED FOR NAMED BUILDER | `modules/ALP/08-builder-checklist/builder-checklist.md` |
+| Stage 9 Builder Checklist | FILED BUT NOT PASS-FINALIZED FOR NAMED CONSOLIDATED BUILDER | `modules/ALP/08-builder-checklist/builder-checklist.md` |
 | Stage 10 IAA Pre-Brief | FILED BUT ACKNOWLEDGEMENTS/ADVISORY STILL BLOCKING | `modules/ALP/09-iaa-pre-brief/iaa-pre-brief.md` |
 | Stage 11 Builder Appointment | BLOCKED | `modules/ALP/10-builder-appointment/builder-appointment.md` |
 | Stage 12 Build Authorization | BLOCKED | `modules/ALP/11-build/build-authorization.md` |
