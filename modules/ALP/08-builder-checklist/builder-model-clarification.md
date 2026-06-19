@@ -7,13 +7,14 @@
 | Artifact | Builder Model Clarification |
 | Module | ALP - APGI Learning Portal |
 | Related Workstream | WS-02 - Stage 9 Builder Checklist PASS Evidence |
-| Version | 0.1 |
-| Status | Draft - filed for governance review |
+| Version | 0.3 |
+| Status | Filed for governance review - companion evidence path clarified |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/08-builder-checklist/builder-model-clarification.md |
 | Prepared Date | 2026-06-18 |
+| Updated Date | 2026-06-19 |
 | Prepared By | AI-assisted governance clarification at user request; requires Foreman/Governance confirmation |
-| Derived From | modules/ALP/08-builder-checklist/builder-checklist.md; modules/ALP/08-builder-checklist/stage9-builder-pass-evidence.md; modules/ALP/BUILD_PROGRESS_TRACKER.md |
+| Derived From | modules/ALP/08-builder-checklist/builder-checklist.md; modules/ALP/08-builder-checklist/stage9-builder-pass-evidence.md; modules/ALP/08-builder-checklist/consolidated-builder-agent-contract.md; modules/ALP/08-builder-checklist/consolidated-builder-stage9-evidence.md; modules/ALP/BUILD_PROGRESS_TRACKER.md |
 | Builder Appointment Authorized? | No |
 | Build Authorized? | No |
 | Implementation Authorized? | No |
@@ -22,127 +23,80 @@
 
 ## 1. Purpose
 
-This artifact clarifies the ALP builder assignment model after PR #65 confirmed that WS-02 remains blocked pending named builder evidence.
+This artifact clarifies the ALP builder assignment model after PR #65 confirmed that WS-02 remained blocked pending named builder evidence.
 
 It answers two governance questions:
 
 1. Will ALP use one consolidated builder or one builder per wave?
 2. Who is currently named as builder?
 
-This artifact does not complete Stage 9 PASS evidence, appoint a builder, authorize build, or authorize implementation.
+This artifact does not appoint a builder, authorize build, or authorize implementation.
 
 ---
 
-## 2. Source State Before Clarification
-
-The filed Stage 9 Builder Checklist currently records BC-ALP-001 through BC-ALP-010 as per-wave candidate placeholders, but every row remains:
-
-```text
-Builder / Agent: To be assigned
-Contract Current?: Pending
-Checklist Result: Pending
-```
-
-The filed WS-02 PASS Evidence Register confirms that no named builder candidates, current contracts, acknowledgements, Foreman role-fit decisions, or candidate-specific PASS results have been recorded.
-
----
-
-## 3. Builder Model Decision
+## 2. Builder Model Decision
 
 ```text
 Selected builder model for ALP: CONSOLIDATED BUILDER MODEL.
 ```
 
-This artifact records the consolidated builder model selection for ALP, pending Foreman/Governance confirmation.
-
-Under this model, one named builder or build agent may cover the full W0-W9 ALP build sequence, provided the builder separately acknowledges and passes readiness for each assigned wave and each required Stage 9 checklist item.
+The consolidated builder model is selected for ALP. Under this model, one named builder/build agent may cover the full W0-W9 ALP build sequence, provided all remaining Stage 10, Stage 11, and Stage 12 gates are completed before implementation.
 
 ---
 
-## 4. Named Builder Status
+## 3. Named Builder Candidate
 
 ```text
-Named builder: NOT YET NAMED.
+Named consolidated builder candidate: BC-ALP-CONSOLIDATED-001.
+Builder / Agent: ChatGPT Codex Connector, acting under APGI-cmy Foreman/Governance direction.
 ```
 
-No individual, agent, or team is appointed by this artifact.
-
-The consolidated builder slot is reserved as:
-
-| Candidate ID | Builder / Agent | Proposed Role | Proposed Waves | Contract Current? | Checklist Result | Status |
+| Candidate ID | Builder / Agent | Proposed Role | Proposed Waves | Contract | Stage 9 Evidence | Status |
 |---|---|---|---|---|---|---|
-| BC-ALP-CONSOLIDATED-001 | To be named by Foreman/Governance | Consolidated ALP Builder | W0-W9 | Pending | Pending | BLOCKED |
+| BC-ALP-CONSOLIDATED-001 | ChatGPT Codex Connector, acting under APGI-cmy Foreman/Governance direction | Consolidated ALP Builder | W0-W9 | `consolidated-builder-agent-contract.md` | `consolidated-builder-stage9-evidence.md` | Filed for Stage 9 readiness review as companion evidence |
 
-The existing per-wave candidate rows in `builder-checklist.md` remain historical/placeholder rows until the checklist is updated by a later PR.
-
----
-
-## 5. Required Evidence to Activate Consolidated Builder Model
-
-Before the consolidated builder can PASS Stage 9, a later PR must record:
-
-| Evidence ID | Required Evidence | Status Now |
-|---|---|---|
-| BM-ALP-001 | Named consolidated builder identity | Missing |
-| BM-ALP-002 | Current builder/agent contract link or path | Missing |
-| BM-ALP-003 | W0-W9 scope acknowledgement | Missing |
-| BM-ALP-004 | Stage 6 QA-to-Red acknowledgement | Missing |
-| BM-ALP-005 | Stage 7 PBFAG acknowledgement | Missing |
-| BM-ALP-006 | Stage 8 Implementation Plan acknowledgement | Missing |
-| BM-ALP-007 | Stage 8 QA/Traceability Resolution acknowledgement | Missing |
-| BM-ALP-008 | WS-07 Runtime / Deployment Contract acknowledgement | Missing |
-| BM-ALP-009 | WS-08 Golden Path Verification Pack acknowledgement | Missing |
-| BM-ALP-010 | WS-10 Evidence Folder Convention acknowledgement | Missing |
-| BM-ALP-011 | RED QA suite understanding acknowledgement | Missing |
-| BM-ALP-012 | Architecture/TRS/FRS understanding for W0-W9 | Missing |
-| BM-ALP-013 | STOP-AND-FIX and merge-gate compliance acknowledgement | Missing |
-| BM-ALP-014 | Evidence filing responsibility acknowledgement | Missing |
-| BM-ALP-015 | No scope deviation without Foreman approval acknowledgement | Missing |
-| BM-ALP-016 | No unresolved dependency blocker statement | Missing |
-| BM-ALP-017 | No unresolved review warnings/blockers | Missing |
-| BM-ALP-018 | Stage 12 build-authorization boundary acknowledgement | Missing |
-| BM-ALP-019 | Foreman role-fit decision for W0-W9 consolidated scope | Missing |
-| BM-ALP-020 | Checklist result set to PASS | Missing |
+No individual, agent, or team is appointed by this artifact. Appointment remains a later Stage 11 action.
 
 ---
 
-## 6. Required Follow-Up PR
+## 4. Evidence Links
 
-To make the consolidated builder model effective, the next PR must update:
+| Evidence | Path |
+|---|---|
+| Builder agent contract | `modules/ALP/08-builder-checklist/consolidated-builder-agent-contract.md` |
+| Consolidated builder Stage 9 evidence | `modules/ALP/08-builder-checklist/consolidated-builder-stage9-evidence.md` |
+| Consolidated builder checklist addendum | `modules/ALP/08-builder-checklist/builder-checklist-consolidated-addendum.md` |
+| WS-02 evidence register | `modules/ALP/08-builder-checklist/stage9-builder-pass-evidence.md` |
+| Stage 9 checklist | `modules/ALP/08-builder-checklist/builder-checklist.md` |
 
-```text
-modules/ALP/08-builder-checklist/builder-checklist.md
-modules/ALP/08-builder-checklist/stage9-builder-pass-evidence.md
-modules/ALP/08-builder-checklist/builder-model-clarification.md
-modules/ALP/BUILD_PROGRESS_TRACKER.md
-```
-
-That PR must name the consolidated builder and supply the required evidence listed in Section 5.
+**Canonical register note:** `stage9-builder-pass-evidence.md` and `BUILD_PROGRESS_TRACKER.md` remain canonical governance readers and still need direct consolidation or explicit supersession before Stage 9 is treated as fully cleared in downstream Stage 10/11 processing.
 
 ---
 
-## 7. Gate Checklist
+## 5. Remaining Gates
 
-| Gate Item | Result | Reason |
+| Gate Item | Status | Reason |
 |---|---|---|
 | Builder model selected | PASS | Consolidated builder model selected for ALP. |
-| Named builder recorded | BLOCKED | Builder / Agent remains to be named by Foreman/Governance. |
-| Current builder contract linked | BLOCKED | No contract link/path supplied. |
-| Required acknowledgements recorded | BLOCKED | No consolidated builder acknowledgements supplied. |
-| Foreman role-fit decision recorded | BLOCKED | No role-fit decision supplied. |
-| Stage 9 PASS evidence complete | BLOCKED | No named builder PASS evidence exists. |
-| Builder appointment authorized | NO | Appointment remains blocked. |
-| Build authorized | NO | Build remains blocked. |
+| Consolidated builder candidate named | FILED FOR REVIEW | BC-ALP-CONSOLIDATED-001. |
+| Current builder contract linked | FILED FOR REVIEW | Contract artifact filed. |
+| Required acknowledgements recorded | FILED FOR REVIEW | Companion Stage 9 evidence artifact filed. |
+| Foreman role-fit decision recorded | FILED FOR REVIEW | Companion Stage 9 evidence artifact filed. |
+| Canonical register/tracker consolidation | STILL REQUIRED | Canonical files must be updated or explicitly superseded before downstream gate closure. |
+| Builder appointment authorized | NO | Appointment remains Stage 11. |
+| Build authorized | NO | Build remains Stage 12. |
+| Implementation authorized | NO | Implementation remains blocked. |
 
 ---
 
-## 8. Decision
+## 6. Decision
 
 ```text
 ALP Builder Model: CONSOLIDATED BUILDER MODEL SELECTED.
-Named Builder: NOT YET NAMED.
-Stage 9 Builder PASS Evidence: BLOCKED.
-Stage 10 IAA Acknowledgements: BLOCKED until builder is named.
+Named Consolidated Builder Candidate: BC-ALP-CONSOLIDATED-001.
+Stage 9 Builder Readiness Evidence: FILED FOR REVIEW AS COMPANION EVIDENCE.
+Canonical register/tracker consolidation: STILL REQUIRED unless reviewers explicitly accept this addendum path.
+Stage 10 IAA Acknowledgements: NEXT AFTER STAGE 9 EVIDENCE IS ACCEPTED.
 Stage 11 Builder Appointment: BLOCKED.
 Stage 12 Build Authorization: BLOCKED.
 Implementation: BLOCKED.
@@ -150,14 +104,16 @@ Implementation: BLOCKED.
 
 ---
 
-## 9. Drafting Note (AI-assisted)
+## 7. Drafting Note
 
-This clarification was drafted with AI assistance at user request and is filed for governance review. It does not constitute final Foreman, Product Owner, Technical, Architecture, QA, Builder, or Governance approval.
+This clarification was drafted with AI assistance at user request and is filed for governance review. It does not constitute final build authorization or implementation approval.
 
 ---
 
-## 10. Change History
+## 8. Change History
 
 | Version | Date | Change Description | Changed By | Approval |
 |---|---|---|---|---|
-| 0.1 | 2026-06-18 | Selected consolidated builder model for ALP while preserving named-builder, Stage 9 PASS, appointment, build, and implementation blockers. | AI-assisted draft (pending Foreman/Governance review) | Filed for review; builder/build remain blocked |
+| 0.1 | 2026-06-18 | Selected consolidated builder model for ALP while preserving named-builder, Stage 9 PASS, appointment, build, and implementation blockers. | AI-assisted draft | Filed for review; builder/build remain blocked |
+| 0.2 | 2026-06-19 | Named consolidated builder candidate and linked contract/evidence artifacts while preserving Stage 10/11/12 blockers. | AI-assisted draft | Filed for review; appointment/build remain blocked |
+| 0.3 | 2026-06-19 | Clarified that companion artifacts do not by themselves update the canonical WS-02 register/tracker and that consolidation or explicit supersession remains required. | AI-assisted draft | Filed for review; appointment/build remain blocked |
