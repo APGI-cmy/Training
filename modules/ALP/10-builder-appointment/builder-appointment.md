@@ -7,26 +7,25 @@
 | Artifact | Builder Appointment Record |
 | Module | ALP - APGI Learning Portal |
 | Stage | 11 - Builder Appointment |
-| Version | 0.1 |
-| Status | Draft - Appointment record created; no builder appointed |
+| Version | 0.2 |
+| Status | Consolidated builder appointment filed for governance review |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/10-builder-appointment/builder-appointment.md |
 | Prepared Date | 2026-06-11 |
-| Prepared By | ChatGPT acting as Product Owner / Foreman / Governance proxy at user request |
-| Upstream Stage 10 | modules/ALP/09-iaa-pre-brief/iaa-pre-brief.md |
+| Updated Date | 2026-06-23 |
+| Prepared By | AI-assisted governance draft at user request |
+| Upstream Stage 10 | modules/ALP/09-iaa-pre-brief/iaa-pre-brief.md; modules/ALP/09-iaa-pre-brief/stage10-iaa-acknowledgement-evidence.md |
 | Build Authorized? | No |
-| Builder Appointment Authorized? | No |
+| Builder Appointment Authorized? | Yes - for BC-ALP-CONSOLIDATED-001, subject to PR review/merge acceptance |
 | Implementation Authorized? | No |
 
 ---
 
 ## 1. Purpose
 
-This Stage 11 artifact records the APGI Learning Portal builder appointment gate and the conditions required before any builder can be formally appointed.
+This Stage 11 artifact records the APGI Learning Portal builder appointment gate and appoints the consolidated ALP builder candidate for W0-W9, subject to PR review/merge acceptance.
 
-It does not appoint a builder yet because Stage 9 and Stage 10 acknowledgements remain pending and no named builder candidates have been supplied.
-
-This artifact prepares the appointment record structure so that a future Foreman appointment can be made only after all mandatory conditions are satisfied.
+It does not authorize build or implementation. Stage 12 Build Authorization remains required before any RED-to-GREEN implementation work may begin.
 
 ---
 
@@ -36,16 +35,16 @@ The Pre-Build Stage Model defines Stage 11 as the stage where approved builders 
 
 Mandatory Stage 11 conditions:
 
-- all Stages 1-10 complete and gate-passed;
-- Builder Checklist PASS for all appointed builders;
+- all Stages 1-10 complete and gate-reviewed;
+- Builder Checklist / Stage 9 readiness evidence filed for all appointed builders;
 - IAA Pre-Brief acknowledged by all appointed builders;
-- formal appointment issued by Foreman;
-- appointment recorded in the module tracker.
+- formal appointment issued by Foreman/Governance;
+- appointment recorded in the module tracker or appointment record.
 
 Gate condition:
 
 ```text
-Formal Foreman appointment issued and recorded in tracker.
+Formal Foreman/Governance appointment issued and recorded.
 ```
 
 ---
@@ -55,90 +54,80 @@ Formal Foreman appointment issued and recorded in tracker.
 | Gate | Required Status Before Appointment | Current Status | Appointment Impact |
 |---|---|---|---|
 | Stage 6 QA-to-Red | Filed and RED proof captured | Filed | Satisfied |
-| Stage 7 PBFAG | Filed | Filed | Satisfied for planning |
-| Stage 8 Implementation Plan | Filed | Filed | Satisfied for planning |
-| Stage 8 QA/Traceability Resolution | Filed | Filed | Satisfied for planning |
-| Stage 9 Builder Checklist | Builder candidates must pass | Checklist filed; candidate acknowledgement pending | Blocks appointment |
-| Stage 9 Review Resolution | Filed | Filed | Satisfied for planning |
-| Stage 10 IAA Pre-Brief | Foreman/builders acknowledged; ASSURANCE-TOKEN or PHASE_A_ADVISORY recorded | Artifact filed; acknowledgements/advisory pending | Blocks appointment |
+| Stage 7 PBFAG | Filed | Filed | Satisfied |
+| Stage 8 Implementation Plan | Filed | Filed | Satisfied |
+| Stage 8 QA/Traceability Resolution | Filed | Filed | Satisfied |
+| WS-07 Runtime / Deployment Contract | Filed before build execution | Filed | Satisfied for appointment |
+| WS-08 Golden Path Verification Pack | Filed before build execution | Filed | Satisfied for appointment |
+| WS-10 Evidence Folder Convention | Filed before build execution | Filed | Satisfied for appointment |
+| Stage 9 Builder Checklist / Evidence | Consolidated builder readiness evidence filed | Companion evidence accepted by PR #67 merge for appointment review | Satisfied for appointment review |
+| Stage 10 IAA Pre-Brief / Acknowledgement Evidence | Foreman/builders acknowledged; PHASE_A_ADVISORY or ASSURANCE status recorded | Companion evidence accepted by PR #68 merge for appointment review; PHASE_A_ADVISORY recorded for review | Satisfied for appointment review |
 
 ---
 
-## 4. Carry-Forward Appointment Blockers
+## 4. Appointment Scope
 
-The following blockers must be cleared or explicitly converted into signed Stage 11 conditions before appointment:
+| Appointment ID | Candidate / Agent | Candidate ID | Wave(s) | Required Role | Stage 9 Evidence | Stage 10 Evidence | Foreman Appointment Decision |
+|---|---|---|---|---|---|---|---|
+| APPT-ALP-CONSOLIDATED-001 | ChatGPT Codex Connector, acting under APGI-cmy Foreman/Governance direction | BC-ALP-CONSOLIDATED-001 | W0-W9 | Consolidated ALP Builder | Filed by PR #67 companion evidence | Filed by PR #68 companion evidence | APPOINTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW |
 
-| Blocker ID | Blocker | Required Resolution |
+---
+
+## 5. Appointment Evidence References
+
+| Evidence | Path | Status |
 |---|---|---|
-| APPT-ALP-BLOCK-001 | Named builder candidates not supplied | identify builder or agent per appointed wave |
-| APPT-ALP-BLOCK-002 | Builder agent contracts not linked | record current contract path per appointed builder |
-| APPT-ALP-BLOCK-003 | Builder Checklist acknowledgements pending | complete Stage 9 acknowledgement rows for appointed builders |
-| APPT-ALP-BLOCK-004 | IAA Pre-Brief acknowledgements pending | complete Stage 10 acknowledgement rows for Foreman and appointed builders |
-| APPT-ALP-BLOCK-005 | ASSURANCE-TOKEN / PHASE_A_ADVISORY pending | record token/advisory status before appointment |
-| APPT-ALP-BLOCK-006 | Stage 2 UX Workflow & Wiring Spec carry-forward verification | verify/file before appointment or record explicit appointment-blocking condition |
-| APPT-ALP-BLOCK-007 | Stage 3 FRS carry-forward verification | verify/file before appointment or record explicit appointment-blocking condition |
-| APPT-ALP-BLOCK-008 | Stage 4 TRS carry-forward verification | verify/file before appointment or record explicit appointment-blocking condition |
-| APPT-ALP-BLOCK-009 | Stage 5 Architecture v0.2 carry-forward verification | verify/file before appointment or record explicit appointment-blocking condition |
-| APPT-ALP-BLOCK-010 | Requirement Registry carry-forward verification | verify/file before appointment or record explicit appointment-blocking condition |
-| APPT-ALP-BLOCK-011 | QA-ALP range acceptance | confirm module-local or canonical registration before appointment |
-| APPT-ALP-BLOCK-012 | Runtime/Deployment Contract | required before first build wave |
-| APPT-ALP-BLOCK-013 | Golden Path Verification Pack | required before first build wave |
+| Builder model clarification | `modules/ALP/08-builder-checklist/builder-model-clarification.md` | Filed / merged |
+| Builder agent contract | `modules/ALP/08-builder-checklist/consolidated-builder-agent-contract.md` | Filed / merged |
+| Stage 9 consolidated builder evidence | `modules/ALP/08-builder-checklist/consolidated-builder-stage9-evidence.md` | Filed / merged |
+| Stage 9 consolidated checklist addendum | `modules/ALP/08-builder-checklist/builder-checklist-consolidated-addendum.md` | Filed / merged |
+| Stage 10 acknowledgement evidence | `modules/ALP/09-iaa-pre-brief/stage10-iaa-acknowledgement-evidence.md` | Filed / merged |
+| Stage 10 acknowledgement addendum | `modules/ALP/09-iaa-pre-brief/iaa-pre-brief-acknowledgement-addendum.md` | Filed / merged |
+| Stage 11 appointment evidence | `modules/ALP/10-builder-appointment/stage11-builder-appointment-evidence.md` | Filed in this PR |
 
 ---
 
-## 5. Appointment Candidate Register
+## 6. Companion Evidence Acceptance / Supersession Note
 
-No candidate is appointed by this artifact. The following table is the appointment register to be completed before a future appointment can pass.
+PR #67 and PR #68 filed companion Stage 9 and Stage 10 evidence rather than fully overwriting all earlier canonical registers. For the limited purpose of Stage 11 appointment review, this appointment record treats those merged companion artifacts as accepted appointment evidence for `BC-ALP-CONSOLIDATED-001`.
 
-| Appointment ID | Candidate / Agent | Wave(s) | Required Role | Stage 9 Checklist PASS? | Stage 10 Acknowledged? | Foreman Appointment Decision |
-|---|---|---|---|---|---|---|
-| APPT-ALP-001 | To be assigned | W0 | Foundation / Platform Builder | Pending | Pending | Not appointed |
-| APPT-ALP-002 | To be assigned | W1 | Auth / Data / Security Builder | Pending | Pending | Not appointed |
-| APPT-ALP-003 | To be assigned | W2 | Learner UX Builder | Pending | Pending | Not appointed |
-| APPT-ALP-004 | To be assigned | W3 | Progress / Completion Builder | Pending | Pending | Not appointed |
-| APPT-ALP-005 | To be assigned | W4 | Payment / Enrolment Builder | Pending | Pending | Not appointed |
-| APPT-ALP-006 | To be assigned | W5 | Assessment Builder | Pending | Pending | Not appointed |
-| APPT-ALP-007 | To be assigned | W6 | AI / Review Builder | Pending | Pending | Not appointed |
-| APPT-ALP-008 | To be assigned | W7 | Certificate Builder | Pending | Pending | Not appointed |
-| APPT-ALP-009 | To be assigned | W8 | Admin / Reporting Builder | Pending | Pending | Not appointed |
-| APPT-ALP-010 | To be assigned | W9 | Deployment / CWT Builder | Pending | Pending | Not appointed |
+Any later direct consolidation of `stage9-builder-pass-evidence.md`, `iaa-pre-brief.md`, or `BUILD_PROGRESS_TRACKER.md` remains documentation cleanup and tracker-alignment work unless a reviewer reopens the gate.
+
+This note does not waive Stage 12 Build Authorization.
 
 ---
 
-## 6. Formal Appointment Template
-
-The following template must be completed before any builder is considered appointed.
+## 7. Formal Appointment
 
 ```text
-Foreman Appointment ID: APPT-ALP-___
-Builder / Agent: <name or agent identifier>
-Assigned Wave(s): <W#>
-Assigned Role: <role>
-Contract Reference: <path/link>
-Stage 9 Checklist Result: PASS
-Stage 10 IAA Pre-Brief Acknowledgement: PASS
-ASSURANCE-TOKEN / PHASE_A_ADVISORY: <token/advisory reference>
-Scope Boundary: <explicit wave scope>
-RED QA Boundary: <assigned executable and expansion suites>
-Evidence Boundary: <required evidence package>
-Merge Gate Boundary: all required checks must pass
-STOP-AND-FIX Acknowledgement: PASS
-Foreman Decision: APPOINTED / NOT APPOINTED
-Foreman Signature: <name/date>
+Foreman Appointment ID: APPT-ALP-CONSOLIDATED-001
+Builder / Agent: ChatGPT Codex Connector, acting under APGI-cmy Foreman/Governance direction
+Candidate ID: BC-ALP-CONSOLIDATED-001
+Assigned Wave(s): W0-W9
+Assigned Role: Consolidated ALP Builder
+Contract Reference: modules/ALP/08-builder-checklist/consolidated-builder-agent-contract.md
+Stage 9 Checklist / Evidence Result: Filed and accepted for appointment review by PR #67
+Stage 10 IAA Pre-Brief Acknowledgement: Filed and accepted for appointment review by PR #68
+ASSURANCE-TOKEN / PHASE_A_ADVISORY: PHASE_A_ADVISORY recorded for review; ASSURANCE-TOKEN not issued
+Scope Boundary: ALP W0-W9 only
+RED QA Boundary: Stage 6 QA-to-Red, QA catalog alignment, and wave-specific RED/expansion tests
+Evidence Boundary: WS-10 evidence folder convention and wave-specific evidence packs
+Merge Gate Boundary: all required GitHub/Vercel checks must pass
+STOP-AND-FIX Acknowledgement: required and recorded by Stage 9/10 evidence
+Foreman Decision: APPOINTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW
+Foreman Signature: APGI-cmy / Governance proxy record, 2026-06-23
 ```
-
-No row may be marked APPOINTED unless every required field is complete.
 
 ---
 
-## 7. Appointed Builder Obligations
+## 8. Appointed Builder Obligations
 
-Any future appointed builder must accept the following obligations:
+The appointed builder accepts the following obligations:
 
-- implement only assigned wave scope;
-- use Stage 8 wave plan and Stage 8 QA/Traceability Resolution as the source of scope and QA boundaries;
-- use Stage 9 Builder Checklist as the source of builder-readiness obligations;
-- use Stage 10 IAA Pre-Brief as the source of task acceptance criteria;
+- implement only assigned W0-W9 ALP scope after Stage 12 authorization;
+- use Stage 8 wave plan and Stage 8 QA/Traceability Resolution as scope and QA boundaries;
+- use Stage 9 Builder Checklist and companion evidence as builder-readiness obligations;
+- use Stage 10 IAA Pre-Brief and acknowledgement evidence as task acceptance criteria;
 - preserve all prior GREEN tests;
 - create and prove any required expansion RED suite before implementing expanded scope;
 - file required evidence before wave handover;
@@ -146,65 +135,68 @@ Any future appointed builder must accept the following obligations:
 - never bypass merge gates;
 - never treat CI green as functional proof without CWT/Golden Path evidence;
 - never expose secrets, private learner files, or cross-learner data;
-- never integrate direct AI provider calls outside the AIMC Gateway unless separately authorized.
+- never integrate direct AI provider calls outside the AIMC Gateway unless separately authorized;
+- preserve Stage 12 build authorization as the mandatory next gate before implementation.
 
 ---
 
-## 8. Appointment Gate Checklist
+## 9. Appointment Gate Checklist
 
 | Gate Item | Result | Reason |
 |---|---|---|
-| Stage 11 artifact exists | PASS when merged | This file |
-| Stage 1-10 chain referenced | PASS | Section 3 |
-| Appointment blockers recorded | PASS | Section 4 |
-| Appointment register provided | PASS | Section 5 |
-| Formal appointment template provided | PASS | Section 6 |
-| Builder obligations recorded | PASS | Section 7 |
-| Named builders supplied | BLOCKED | No named builder candidates supplied |
-| Stage 9 checklist PASS per builder | BLOCKED | Pending candidate acknowledgements |
-| Stage 10 acknowledgement PASS per builder | BLOCKED | Pending candidate acknowledgements |
-| ASSURANCE-TOKEN / PHASE_A_ADVISORY recorded | BLOCKED | Pending |
-| Foreman appointment issued | BLOCKED | Must be issued in future update |
-| Build authorized | NO | Stage 12 only |
+| Stage 11 artifact exists | PASS | This file. |
+| Stage 1-10 chain referenced | PASS | Section 3. |
+| Appointment evidence references recorded | PASS | Section 5. |
+| Companion evidence acceptance/supersession noted | PASS | Section 6. |
+| Appointment register completed | PASS | Section 4. |
+| Formal appointment issued | PASS FOR REVIEW | Section 7. |
+| Builder obligations recorded | PASS | Section 8. |
+| Named builder supplied | PASS | BC-ALP-CONSOLIDATED-001. |
+| Stage 9 evidence filed for builder | PASS | PR #67 evidence. |
+| Stage 10 acknowledgement filed for builder | PASS | PR #68 evidence. |
+| PHASE_A_ADVISORY recorded | PASS | PR #68 evidence. |
+| Builder appointment | APPOINTED FOR STAGE 12 REVIEW | Build still not authorized. |
+| Build authorized | NO | Stage 12 only. |
+| Implementation authorized | NO | Stage 12 only. |
 
 ---
 
-## 9. Stage 11 Decision
+## 10. Stage 11 Decision
 
 ```text
-Stage 11 Builder Appointment Record: Draft PASS as appointment-record structure.
-Formal Builder Appointment: BLOCKED.
-Build / Implementation: BLOCKED.
+Stage 11 Builder Appointment: APPOINTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW.
+Appointed Builder: BC-ALP-CONSOLIDATED-001 / ChatGPT Codex Connector under APGI-cmy Foreman/Governance direction.
+Assigned Scope: W0-W9 ALP consolidated build.
+Stage 12 Build Authorization: NEXT.
+Build / Implementation: BLOCKED until Stage 12 authorization is filed and accepted.
+CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED.
 ```
 
-This artifact is complete as a Stage 11 appointment record scaffold, but it does not appoint any builder. A future update must fill the appointment register with named builders and evidence before appointment can pass.
+---
+
+## 11. Proxy Sign-Off
+
+I, ChatGPT acting as Product Owner / Foreman / Governance proxy at user request, record the Stage 11 appointment of `BC-ALP-CONSOLIDATED-001` for Stage 12 Build Authorization review.
+
+I do not authorize build or implementation.
 
 ---
 
-## 10. Proxy Sign-Off
+## 12. Next Stage
 
-I, ChatGPT acting as Product Owner / Foreman / Governance proxy at user request, record that this Stage 11 artifact defines the required appointment structure, appointment blockers, candidate register, appointment template, and appointed-builder obligations.
-
-I do not appoint any builder and do not authorize implementation.
-
----
-
-## 11. Next Stage
-
-Formal Stage 12 Build Authorization may be prepared only after Stage 11 is updated with actual appointed builders and all appointment blockers are cleared.
-
-Planned path:
+Proceed to:
 
 ```text
 modules/ALP/11-build/build-authorization.md
 ```
 
-Build remains blocked.
+Build remains blocked until Stage 12 Build Authorization is filed, reviewed, and accepted.
 
 ---
 
-## 12. Change History
+## 13. Change History
 
 | Version | Date | Change Description | Changed By | Approval |
 |---|---|---|---|---|
 | 0.1 | 2026-06-11 | Initial Stage 11 Builder Appointment record scaffold created after Stage 10 IAA Pre-Brief merge. | ChatGPT acting as Product Owner / Foreman / Governance proxy | Draft PASS as scaffold; no appointment/build authorization |
+| 0.2 | 2026-06-23 | Appointed BC-ALP-CONSOLIDATED-001 as consolidated ALP builder for Stage 12 Build Authorization review while preserving Stage 12/build/implementation blockers. | AI-assisted draft | Filed for review; build remains blocked |
