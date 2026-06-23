@@ -14,7 +14,7 @@
 
 ## Current Executive Status
 
-ALP has reached Stage 12 Build Authorization review. PR #67 filed companion Stage 9 consolidated-builder evidence for `BC-ALP-CONSOLIDATED-001`, PR #68 filed companion Stage 10 IAA acknowledgement evidence, and PR #69 appointed the consolidated builder for Stage 12 review.
+ALP has reached Stage 12 Build Authorization review. PR #67 filed companion Stage 9 consolidated-builder evidence for `BC-ALP-CONSOLIDATED-001`, PR #68 filed companion Stage 10 IAA acknowledgement evidence, and PR #69 appointed the consolidated builder for Stage 12 Build Authorization review.
 
 This tracker update records Stage 12 Build Authorization as filed for review. After the Stage 12 PR is reviewed and merged, W0 Foundation / Scaffold may begin under the authorized W0-W9 ALP scope.
 
@@ -23,7 +23,7 @@ No code, functional, or CWT pass is claimed by this tracker update.
 ```text
 Builder Model: CONSOLIDATED BUILDER MODEL SELECTED
 Named Builder: BC-ALP-CONSOLIDATED-001
-Builder Appointment: APPOINTED
+Builder Appointment: APPOINTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW
 Build Authorization: FILED FOR REVIEW
 Implementation Authorization: FILED FOR REVIEW, limited to W0-W9 after PR merge
 Current stage/workstream: Stage 12 Build Authorization filed for review
@@ -49,9 +49,9 @@ CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 | WS-08 Golden Path Verification Pack | MERGED / ACCEPTED ON MAIN | `modules/ALP/11-build/golden-path-verification-pack.md` |
 | WS-09 Build Tracker | UPDATED IN CURRENT PR | `modules/ALP/BUILD_PROGRESS_TRACKER.md` |
 | WS-10 Evidence Folder Convention | MERGED / ACCEPTED ON MAIN | `modules/ALP/11-build/evidence/README.md` |
-| Stage 9 Builder Evidence | COMPANION EVIDENCE ACCEPTED FOR AUTHORIZATION REVIEW | `modules/ALP/08-builder-checklist/consolidated-builder-stage9-evidence.md` |
-| Stage 10 IAA Acknowledgement Evidence | COMPANION EVIDENCE ACCEPTED FOR AUTHORIZATION REVIEW | `modules/ALP/09-iaa-pre-brief/stage10-iaa-acknowledgement-evidence.md` |
-| Stage 11 Builder Appointment | MERGED / ACCEPTED FOR AUTHORIZATION REVIEW | `modules/ALP/10-builder-appointment/builder-appointment.md` |
+| Stage 9 Builder Evidence | COMPANION EVIDENCE ACCEPTED / SUPERSEDED FOR AUTHORIZATION REVIEW | `modules/ALP/08-builder-checklist/consolidated-builder-stage9-evidence.md` |
+| Stage 10 IAA Acknowledgement Evidence | COMPANION EVIDENCE ACCEPTED / SUPERSEDED FOR AUTHORIZATION REVIEW | `modules/ALP/09-iaa-pre-brief/stage10-iaa-acknowledgement-evidence.md` |
+| Stage 11 Builder Appointment | MERGED / ACCEPTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW | `modules/ALP/10-builder-appointment/builder-appointment.md` |
 | Stage 12 Build Authorization | FILED FOR REVIEW IN CURRENT PR | `modules/ALP/11-build/build-authorization.md` |
 
 ---
@@ -81,9 +81,9 @@ W0 may begin only after the Stage 12 Build Authorization PR is reviewed and merg
 |---|---|---|
 | Builder model selected | COMPLETE | Consolidated builder model selected. |
 | Consolidated builder named | COMPLETE | `BC-ALP-CONSOLIDATED-001`. |
-| Stage 9 companion evidence | ACCEPTED FOR AUTHORIZATION REVIEW | PR #67 evidence. |
-| Stage 10 companion evidence | ACCEPTED FOR AUTHORIZATION REVIEW | PR #68 evidence. |
-| Stage 11 builder appointment | COMPLETE | PR #69 appointment. |
+| Stage 9 companion evidence | ACCEPTED / SUPERSEDED FOR AUTHORIZATION REVIEW | PR #67 evidence plus Stage 12 supersession note. |
+| Stage 10 companion evidence | ACCEPTED / SUPERSEDED FOR AUTHORIZATION REVIEW | PR #68 evidence plus Stage 12 supersession note. |
+| Stage 11 builder appointment | COMPLETE FOR STAGE 12 BUILD AUTHORIZATION REVIEW | PR #69 appointment. |
 | Stage 12 build authorization | FILED FOR REVIEW | Current PR. |
 | Implementation | AUTHORIZED AFTER STAGE 12 MERGE | Limited to W0-W9 and gated by wave evidence. |
 | CODE_PASS | NOT CLAIMED | Requires later code evidence. |
@@ -117,7 +117,7 @@ Review and merge the Stage 12 Build Authorization PR, then start W0 Foundation /
 ```text
 Builder Model: CONSOLIDATED BUILDER MODEL SELECTED
 Named Builder: BC-ALP-CONSOLIDATED-001
-Builder Appointment: APPOINTED
+Builder Appointment: APPOINTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW
 Build Authorization: FILED FOR REVIEW
 Implementation Authorization: FILED FOR REVIEW, limited to W0-W9 after PR merge
 Functional Pass: NOT CLAIMED
@@ -141,3 +141,4 @@ No percentage-complete claim is made because ALP has not yet filed build-wave ev
 | 0.6 | 2026-06-18 | Selected consolidated builder model while preserving named-builder, Stage 9 PASS, appointment, build, and implementation blockers. | AI-assisted draft | Filed for review; build remains blocked |
 | 0.7 | 2026-06-23 | Updated tracker for Stage 11 appointment of BC-ALP-CONSOLIDATED-001 for Stage 12 Build Authorization review while preserving Stage 12/build/implementation blockers. | AI-assisted draft | Filed for review; build remains blocked |
 | 0.8 | 2026-06-23 | Filed Stage 12 Build Authorization for review and set W0 as next after merge while preserving pass-claim controls. | AI-assisted draft | Filed for review |
+| 0.9 | 2026-06-23 | Clarified Stage 11 appointment qualifier and Stage 9/10 supersession posture for Stage 12 authorization review. | AI-assisted draft | Filed for review |
