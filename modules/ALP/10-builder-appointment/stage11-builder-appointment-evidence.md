@@ -10,12 +10,13 @@
 | Appointment ID | APPT-ALP-CONSOLIDATED-001 |
 | Candidate ID | BC-ALP-CONSOLIDATED-001 |
 | Builder / Agent | ChatGPT Codex Connector, acting under APGI-cmy Foreman/Governance direction |
-| Version | 0.1 |
+| Version | 0.2 |
 | Status | Filed for governance review |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/10-builder-appointment/stage11-builder-appointment-evidence.md |
 | Prepared Date | 2026-06-23 |
-| Builder Appointment Authorized? | Yes - subject to PR review/merge acceptance |
+| Builder Appointment Authorized? | Yes |
+| Builder Appointment Condition | Effective for BC-ALP-CONSOLIDATED-001 after PR review/merge acceptance; build still requires Stage 12 authorization. |
 | Build Authorized? | No |
 | Implementation Authorized? | No |
 
@@ -53,6 +54,7 @@ Decision: APPOINTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW
 | Stage 10 IAA acknowledgement evidence | `modules/ALP/09-iaa-pre-brief/stage10-iaa-acknowledgement-evidence.md` | Accepted for appointment review |
 | Stage 10 IAA acknowledgement addendum | `modules/ALP/09-iaa-pre-brief/iaa-pre-brief-acknowledgement-addendum.md` | Accepted for appointment review |
 | Stage 11 builder appointment record | `modules/ALP/10-builder-appointment/builder-appointment.md` | Updated in this PR |
+| Build progress tracker | `modules/ALP/BUILD_PROGRESS_TRACKER.md` | Updated in this PR |
 
 ---
 
@@ -105,3 +107,4 @@ Build / Implementation: BLOCKED.
 | Version | Date | Change Description | Changed By | Approval |
 |---|---|---|---|---|
 | 0.1 | 2026-06-23 | Filed Stage 11 builder appointment evidence for BC-ALP-CONSOLIDATED-001. | AI-assisted draft | Filed for review; build remains blocked |
+| 0.2 | 2026-06-23 | Normalized authorization header and referenced tracker update. | AI-assisted draft | Filed for review; build remains blocked |
