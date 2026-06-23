@@ -7,7 +7,7 @@
 | Artifact | Builder Appointment Record |
 | Module | ALP - APGI Learning Portal |
 | Stage | 11 - Builder Appointment |
-| Version | 0.2 |
+| Version | 0.3 |
 | Status | Consolidated builder appointment filed for governance review |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/10-builder-appointment/builder-appointment.md |
@@ -15,8 +15,9 @@
 | Updated Date | 2026-06-23 |
 | Prepared By | AI-assisted governance draft at user request |
 | Upstream Stage 10 | modules/ALP/09-iaa-pre-brief/iaa-pre-brief.md; modules/ALP/09-iaa-pre-brief/stage10-iaa-acknowledgement-evidence.md |
+| Builder Appointment Authorized? | Yes |
+| Builder Appointment Condition | Effective for BC-ALP-CONSOLIDATED-001 after PR review/merge acceptance; build still requires Stage 12 authorization. |
 | Build Authorized? | No |
-| Builder Appointment Authorized? | Yes - for BC-ALP-CONSOLIDATED-001, subject to PR review/merge acceptance |
 | Implementation Authorized? | No |
 
 ---
@@ -84,6 +85,7 @@ Formal Foreman/Governance appointment issued and recorded.
 | Stage 10 acknowledgement evidence | `modules/ALP/09-iaa-pre-brief/stage10-iaa-acknowledgement-evidence.md` | Filed / merged |
 | Stage 10 acknowledgement addendum | `modules/ALP/09-iaa-pre-brief/iaa-pre-brief-acknowledgement-addendum.md` | Filed / merged |
 | Stage 11 appointment evidence | `modules/ALP/10-builder-appointment/stage11-builder-appointment-evidence.md` | Filed in this PR |
+| Build progress tracker | `modules/ALP/BUILD_PROGRESS_TRACKER.md` | Updated in this PR |
 
 ---
 
@@ -91,7 +93,7 @@ Formal Foreman/Governance appointment issued and recorded.
 
 PR #67 and PR #68 filed companion Stage 9 and Stage 10 evidence rather than fully overwriting all earlier canonical registers. For the limited purpose of Stage 11 appointment review, this appointment record treats those merged companion artifacts as accepted appointment evidence for `BC-ALP-CONSOLIDATED-001`.
 
-Any later direct consolidation of `stage9-builder-pass-evidence.md`, `iaa-pre-brief.md`, or `BUILD_PROGRESS_TRACKER.md` remains documentation cleanup and tracker-alignment work unless a reviewer reopens the gate.
+This PR updates the Build Progress Tracker so Stage 11 and the current next action no longer contradict the appointment state.
 
 This note does not waive Stage 12 Build Authorization.
 
@@ -147,7 +149,7 @@ The appointed builder accepts the following obligations:
 | Stage 11 artifact exists | PASS | This file. |
 | Stage 1-10 chain referenced | PASS | Section 3. |
 | Appointment evidence references recorded | PASS | Section 5. |
-| Companion evidence acceptance/supersession noted | PASS | Section 6. |
+| Tracker updated | PASS | `BUILD_PROGRESS_TRACKER.md` updated in this PR. |
 | Appointment register completed | PASS | Section 4. |
 | Formal appointment issued | PASS FOR REVIEW | Section 7. |
 | Builder obligations recorded | PASS | Section 8. |
@@ -200,3 +202,4 @@ Build remains blocked until Stage 12 Build Authorization is filed, reviewed, and
 |---|---|---|---|---|
 | 0.1 | 2026-06-11 | Initial Stage 11 Builder Appointment record scaffold created after Stage 10 IAA Pre-Brief merge. | ChatGPT acting as Product Owner / Foreman / Governance proxy | Draft PASS as scaffold; no appointment/build authorization |
 | 0.2 | 2026-06-23 | Appointed BC-ALP-CONSOLIDATED-001 as consolidated ALP builder for Stage 12 Build Authorization review while preserving Stage 12/build/implementation blockers. | AI-assisted draft | Filed for review; build remains blocked |
+| 0.3 | 2026-06-23 | Normalized authorization header, added tracker update reference, and preserved Stage 12/build blockers. | AI-assisted draft | Filed for review; build remains blocked |
