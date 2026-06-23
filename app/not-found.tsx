@@ -1,18 +1,20 @@
 import Link from "next/link";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export default function NotFound() {
   return (
-    <main>
-      <section className="page-masthead">
-        <div className="content-inner">
-          <p className="eyebrow">Not found</p>
-          <h1>That training page is not available</h1>
-          <p>The VPSHR Level 0 course landing page has the current learning unit links.</p>
-          <Link className="primary-button" href="/courses/vpshr-level-0">
-            Open VPSHR Level 0
-          </Link>
-        </div>
-      </section>
+    <main className="content-band">
+      <div className="content-inner">
+        <EmptyState
+          title="Learning page not found"
+          description="The page you requested is not available in the APGI learning portal."
+          action={
+            <Link className="primary-button" href="/courses/vpshr-level-0">
+              Return to Level 0
+            </Link>
+          }
+        />
+      </div>
     </main>
   );
 }
