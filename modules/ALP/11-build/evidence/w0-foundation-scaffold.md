@@ -75,7 +75,7 @@ W0 establishes environment, route-state, helper, migration-path, and evidence-pa
 | PR #71 merged | Closed / merged | Merge commit `48ce32a1974b14487864713af1287ab0379cf4d8` |
 | Review conversations | Resolved before merge | All W0 review threads resolved before closure |
 | Vercel / GitHub checks | Accepted before merge | Latest W0 head SHA `a140d5a8c5a5f19f5e8cee8e99c748d50b1fbd4d` had Vercel success before merge |
-| W0 evidence | Closed for W0 scaffold scope | This file and `w0-closure-w1-entry.md` |
+| W0 evidence | Closed for W0 scaffold scope | This file and `20260624-W0-GOV-ALP-072-decision-w0-closure-w1-entry.md` |
 | W1 entry | Authorized | Limited to Auth + Profile + Files scope from Stage 8 implementation plan |
 
 ---
