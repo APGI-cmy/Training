@@ -33,7 +33,7 @@ This artifact does not authorize any scope outside W1 and does not claim full AL
 | W0 review threads | Complete | Review conversations were resolved before merge. |
 | W0 checks | Accepted for merge | Latest W0 head SHA `a140d5a8c5a5f19f5e8cee8e99c748d50b1fbd4d` had Vercel success before merge. |
 | W0 scope boundary | Preserved | W0 remained scaffold-only. |
-| W0 evidence | Updated | `w0-foundation-scaffold.md` updated to closed / accepted for W1 entry. |
+| W0 evidence | Updated | `w0-foundation-scaffold.md` updated to record W0 closure and filed for review. |
 | Build tracker | Updated | `BUILD_PROGRESS_TRACKER.md` updated to make W1 the current workstream. |
 
 ---
