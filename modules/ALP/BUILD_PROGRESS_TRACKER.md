@@ -85,7 +85,7 @@ FULL APP DELIVERY / CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 | Stage 10 companion evidence | ACCEPTED / SUPERSEDED FOR AUTHORIZATION REVIEW | PR #68 evidence plus Stage 12 supersession note. |
 | Stage 11 builder appointment | COMPLETE FOR STAGE 12 BUILD AUTHORIZATION REVIEW | PR #69 appointment. |
 | Stage 12 build authorization | COMPLETE | PR #70 merged. |
-| W0 Foundation / Scaffold | CLOSED / ACCEPTED FOR W1 ENTRY | PR #71 merged. Closure evidence filed in this PR. |
+| W0 Foundation / Scaffold | CLOSED / FILED FOR REVIEW | PR #71 merged. Closure evidence filed in this PR. |
 | W1 Auth + Profile + Files | AUTHORIZED FOR ENTRY | Next implementation PR must file W1 evidence and withhold pass claims until supported. |
 | Implementation | AUTHORIZED FOR W0-W9 | Wave closure remains evidence-gated. |
 | Full app workflows | NOT DELIVERED BY W0 | Requires W1-W9. |
