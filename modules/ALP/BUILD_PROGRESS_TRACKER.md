@@ -52,7 +52,7 @@ FULL APP DELIVERY / CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 | Stage 10 IAA Acknowledgement Evidence | COMPANION EVIDENCE ACCEPTED / SUPERSEDED FOR AUTHORIZATION REVIEW | `modules/ALP/09-iaa-pre-brief/stage10-iaa-acknowledgement-evidence.md` |
 | Stage 11 Builder Appointment | MERGED / ACCEPTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW | `modules/ALP/10-builder-appointment/builder-appointment.md` |
 | Stage 12 Build Authorization | MERGED / BUILD AUTHORIZED | `modules/ALP/11-build/build-authorization.md` |
-| W0 Foundation / Scaffold | CLOSED / ACCEPTED FOR W1 ENTRY | `modules/ALP/11-build/evidence/w0-foundation-scaffold.md`; `modules/ALP/11-build/evidence/w0-closure-w1-entry.md` |
+| W0 Foundation / Scaffold | CLOSED / FILED FOR REVIEW | `modules/ALP/11-build/evidence/w0-foundation-scaffold.md`; `modules/ALP/11-build/evidence/w0-closure-w1-entry.md` |
 | W1 Auth + Profile + Files | AUTHORIZED FOR ENTRY | Requires W1 implementation PR and evidence |
 | Full App Delivery | NOT DELIVERED BY W0 | Requires W1-W9 implementation and evidence |
 
