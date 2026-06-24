@@ -1,8 +1,8 @@
-import { validateServerEnv } from "@/lib/config/env";
+import { validateSupabaseServerEnv } from "@/lib/config/env";
 import type { AlpSupabaseServerPlaceholder } from "@/lib/supabase/types";
 
 export function createServerSupabasePlaceholder(): AlpSupabaseServerPlaceholder {
-  const validation = validateServerEnv();
+  const validation = validateSupabaseServerEnv();
 
   return {
     kind: "alp-supabase-server-placeholder",
