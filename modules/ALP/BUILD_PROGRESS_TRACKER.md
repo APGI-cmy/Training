@@ -52,7 +52,7 @@ FULL APP DELIVERY / CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 | Stage 10 IAA Acknowledgement Evidence | COMPANION EVIDENCE ACCEPTED / SUPERSEDED FOR AUTHORIZATION REVIEW | `modules/ALP/09-iaa-pre-brief/stage10-iaa-acknowledgement-evidence.md` |
 | Stage 11 Builder Appointment | MERGED / ACCEPTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW | `modules/ALP/10-builder-appointment/builder-appointment.md` |
 | Stage 12 Build Authorization | MERGED / BUILD AUTHORIZED | `modules/ALP/11-build/build-authorization.md` |
-| W0 Foundation / Scaffold | CLOSED / FILED FOR REVIEW | `modules/ALP/11-build/evidence/w0-foundation-scaffold.md`; `modules/ALP/11-build/evidence/w0-closure-w1-entry.md` |
+| W0 Foundation / Scaffold | CLOSED / FILED FOR REVIEW | `modules/ALP/11-build/evidence/w0-foundation-scaffold.md`; `modules/ALP/11-build/evidence/20260624-W0-GOV-ALP-072-decision-w0-closure-w1-entry.md` |
 | W1 Auth + Profile + Files | AUTHORIZED FOR ENTRY | Requires W1 implementation PR and evidence |
 | Full App Delivery | NOT DELIVERED BY W0 | Requires W1-W9 implementation and evidence |
 
@@ -62,7 +62,7 @@ FULL APP DELIVERY / CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 
 | Wave | Planned Scope | Status | Evidence Link(s) | Merge / PR Status | Check Status | Blocker / Risk |
 |---|---|---|---|---|---|---|
-| W0 | Foundation / Scaffold: tooling, env, repo structure, base app shell, Supabase config skeleton | CLOSED / FILED FOR REVIEW | `modules/ALP/11-build/evidence/w0-foundation-scaffold.md`; `modules/ALP/11-build/evidence/w0-closure-w1-entry.md` | PR #71 merged to `main` | Vercel/GitHub checks accepted for PR #71 before merge | Closed for scaffold scope only; no full app delivery claimed |
+| W0 | Foundation / Scaffold: tooling, env, repo structure, base app shell, Supabase config skeleton | CLOSED / FILED FOR REVIEW | `modules/ALP/11-build/evidence/w0-foundation-scaffold.md`; `modules/ALP/11-build/evidence/20260624-W0-GOV-ALP-072-decision-w0-closure-w1-entry.md` | PR #71 merged to `main` | Vercel/GitHub checks accepted for PR #71 before merge | Closed for scaffold scope only; no full app delivery claimed |
 | W1 | Auth + Profile + Files: auth, roles, protected layouts, profile, private profile file upload | AUTHORIZED FOR ENTRY | Pending W1 evidence | No W1 build PR yet | No W1 build checks run | Must replace W0 placeholders with real auth/profile/file implementation |
 | W2 | Dashboard + Course Shell + Unit Viewer: learner dashboard, course cards, shell, sidebar, read-only URL-module unit viewer | AUTHORIZED AFTER W1 GREEN | Pending W2 evidence | No build PR yet | No build checks run | Requires W1 closure |
 | W3 | Progress + Completion: progress events, learner progress, module/course completion, next action | AUTHORIZED AFTER W2 GREEN | Pending W3 evidence | No build PR yet | No build checks run | Requires W2 closure |
