@@ -2,9 +2,9 @@
 
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
-**Last Updated**: 2026-06-23  
-**Updated By**: W0 Foundation / Scaffold implementation filing after PR #70 merge  
-> **Classification**: ACTIVE - W0 FOUNDATION / SCAFFOLD FILED FOR REVIEW  
+**Last Updated**: 2026-06-24  
+**Updated By**: W0 Foundation / Scaffold review-fix filing  
+> **Classification**: ACTIVE - W0 FOUNDATION / SCAFFOLD FILED FOR REVIEW - FULL APP DELIVERY NOT CLAIMED  
 > **Repository**: APGI-cmy/Training  
 > **Tracker Location**: `modules/ALP/BUILD_PROGRESS_TRACKER.md`  
 > **Current Workstream**: W0 Foundation / Scaffold  
@@ -16,7 +16,7 @@
 
 ALP has entered authorized build execution after Stage 12 Build Authorization. W0 Foundation / Scaffold is filed for review in the current PR.
 
-This tracker update records W0 scaffold artifacts and evidence. It does not claim CODE_PASS, FUNCTIONAL_PASS, CWT_PASS, deployment acceptance, or production readiness.
+This tracker update records W0 scaffold artifacts, independent-review fixes, and evidence. It does not claim full app delivery, CODE_PASS, FUNCTIONAL_PASS, CWT_PASS, deployment acceptance, or production readiness.
 
 ```text
 Builder Model: CONSOLIDATED BUILDER MODEL SELECTED
@@ -26,7 +26,7 @@ Build Authorization: AUTHORIZED BY PR #70
 Implementation Authorization: AUTHORIZED FOR W0-W9 UNDER STAGE 12 CONTROLS
 Current stage/workstream: W0 Foundation / Scaffold filed for review
 Next required action: review W0 PR and Vercel/GitHub checks
-CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
+FULL APP DELIVERY / CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 ```
 
 ---
@@ -52,6 +52,7 @@ CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 | Stage 11 Builder Appointment | MERGED / ACCEPTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW | `modules/ALP/10-builder-appointment/builder-appointment.md` |
 | Stage 12 Build Authorization | MERGED / BUILD AUTHORIZED | `modules/ALP/11-build/build-authorization.md` |
 | W0 Foundation / Scaffold | FILED FOR REVIEW IN CURRENT PR | `modules/ALP/11-build/evidence/w0-foundation-scaffold.md` |
+| Full App Delivery | NOT DELIVERED BY W0 | Requires W1-W9 implementation and evidence |
 
 ---
 
@@ -84,6 +85,7 @@ CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 | Stage 12 build authorization | COMPLETE | PR #70 merged. |
 | W0 Foundation / Scaffold | FILED FOR REVIEW | Current PR. |
 | Implementation | AUTHORIZED FOR W0-W9 | Wave closure remains evidence-gated. |
+| Full app workflows | NOT DELIVERED BY W0 | Requires W1-W9. |
 | CODE_PASS | NOT CLAIMED | Requires later code evidence. |
 | FUNCTIONAL_PASS | NOT CLAIMED | Requires later functional evidence. |
 | CWT_PASS | NOT CLAIMED | Requires later deployment/CWT evidence. |
@@ -96,9 +98,10 @@ CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 |---|---|---|---|
 | ALP-CTRL-001 | W0 PR checks | Open until PR checks pass | Review W0 PR and Vercel/GitHub checks. |
 | ALP-CTRL-002 | W0 evidence review | Open until evidence accepted | Review `w0-foundation-scaffold.md`. |
-| ALP-CTRL-003 | No CODE_PASS yet | Open | Claim only after code evidence exists. |
-| ALP-CTRL-004 | No FUNCTIONAL_PASS yet | Open | Claim only after functional evidence exists. |
-| ALP-CTRL-005 | No CWT_PASS yet | Open | Claim only after deployment/CWT evidence exists. |
+| ALP-CTRL-003 | Full app workflows not implemented | Open | Complete W1-W9 implementation and evidence. |
+| ALP-CTRL-004 | No CODE_PASS yet | Open | Claim only after code evidence exists. |
+| ALP-CTRL-005 | No FUNCTIONAL_PASS yet | Open | Claim only after functional evidence exists. |
+| ALP-CTRL-006 | No CWT_PASS yet | Open | Claim only after deployment/CWT evidence exists. |
 
 ---
 
@@ -118,6 +121,7 @@ Named Builder: BC-ALP-CONSOLIDATED-001
 Builder Appointment: APPOINTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW
 Build Authorization: AUTHORIZED BY PR #70
 Implementation Authorization: AUTHORIZED FOR W0-W9 UNDER STAGE 12 CONTROLS
+Full App Delivery: NOT CLAIMED
 Functional Pass: NOT CLAIMED
 Code Pass: NOT CLAIMED
 CWT Pass: NOT CLAIMED
@@ -141,3 +145,4 @@ No percentage-complete claim is made because ALP has not yet accepted build-wave
 | 0.8 | 2026-06-23 | Filed Stage 12 Build Authorization for review and set W0 as next after merge while preserving pass-claim controls. | AI-assisted draft | Filed for review |
 | 0.9 | 2026-06-23 | Clarified Stage 11 appointment qualifier and Stage 9/10 supersession posture for Stage 12 authorization review. | AI-assisted draft | Filed for review |
 | 1.0 | 2026-06-23 | Filed W0 Foundation / Scaffold implementation and evidence for review. | AI-assisted draft | Filed for review; pass claims withheld |
+| 1.1 | 2026-06-24 | Recorded independent-review fixes and explicit full-app/non-functional/CWT non-claims for W0. | AI-assisted draft | Filed for review; full delivery not claimed |
