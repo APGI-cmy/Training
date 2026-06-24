@@ -7,7 +7,7 @@
 | Module | ALP - APGI Learning Portal |
 | Wave | W0 - Foundation / Scaffold |
 | Evidence Version | 0.3 |
-| Status | Closed / accepted for W1 entry |
+| Status | Filed for review |
 | Prepared Date | 2026-06-23 |
 | Updated Date | 2026-06-24 |
 | Builder | BC-ALP-CONSOLIDATED-001 |
