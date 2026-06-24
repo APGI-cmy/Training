@@ -7,7 +7,7 @@ export default function Unauthorized() {
       <div className="content-inner">
         <EmptyState
           title="Access not available"
-          description="This learning area requires an authorised APGI learner, reviewer, or admin session."
+          description="This learning area requires an authorized APGI learner, reviewer, or admin session."
           action={
             <Link className="primary-button" href="/courses/vpshr-level-0">
               Return to course
