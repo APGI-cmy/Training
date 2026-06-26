@@ -7,9 +7,9 @@
 | Module | ALP - APGI Learning Portal |
 | Wave | W1 - Auth + Profile + Files |
 | Date | 2026-06-26 |
-| Status | Filed for review - proof still pending |
+| Status | Filed for review - profile and file proof confirmed |
 | Branch | alp-w1-deployed-proof-closure |
-| Planned PR | #76 |
+| PR | #76 |
 
 ---
 
@@ -27,12 +27,21 @@
 
 | Proof Item | Status |
 |---|---|
-| Login at `/alp-sign-in` | Pending reviewer confirmation |
-| Anonymous protected-route handling | Pending reviewer confirmation |
+| Public course route | Confirmed by reviewer screenshot |
+| Login at `/alp-sign-in` | Confirmed by reviewer screenshot |
+| Supabase auth user exists | Confirmed by reviewer screenshot |
+| Authenticated `/profile` route | Confirmed by reviewer screenshot |
+| Profile save to `profiles` | Confirmed by reviewer screenshot |
+| Private file upload | Confirmed by reviewer screenshot |
+| Uploaded file list renders | Confirmed by reviewer screenshot |
 | Learner/admin route separation | Pending reviewer confirmation |
-| Profile save to `profiles` | Pending reviewer confirmation |
-| Private file upload and metadata record | Pending reviewer confirmation |
 | Cross-user RLS separation | Pending reviewer confirmation |
+
+---
+
+## Current Evidence Notes
+
+The reviewer confirmed that profile save returned `Profile saved.` and private file upload returned `Private profile file uploaded.` Two uploaded files are visible in the deployed profile screen.
 
 ---
 
@@ -43,7 +52,7 @@ W1 Closure: Not claimed.
 W2 Start: Not claimed.
 ```
 
-The required deployed proof still needs to be attached or confirmed by a reviewer with deployed environment access.
+W1 still needs role-boundary and cross-user separation proof before closure.
 
 ---
 
