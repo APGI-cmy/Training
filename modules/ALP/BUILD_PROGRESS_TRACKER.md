@@ -2,21 +2,21 @@
 
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
-**Last Updated**: 2026-06-24  
-**Updated By**: W0 Closure / W1 Entry Authorization filing  
-> **Classification**: ACTIVE - W0 FOUNDATION / SCAFFOLD CLOSED - W1 AUTH + PROFILE + FILES AUTHORIZED FOR ENTRY  
+**Last Updated**: 2026-06-25  
+**Updated By**: W1 Schema / Security pass filing  
+> **Classification**: ACTIVE - W1 AUTH + PROFILE + FILES SCHEMA / SECURITY PASS FILED FOR REVIEW  
 > **Repository**: APGI-cmy/Training  
 > **Tracker Location**: `modules/ALP/BUILD_PROGRESS_TRACKER.md`  
 > **Current Workstream**: W1 Auth + Profile + Files  
-> **Next Required Action**: Open W1 implementation PR with required schema, auth/profile/file implementation, tests, and evidence
+> **Next Required Action**: Review W1 schema/security PR checks and evidence
 
 ---
 
 ## Current Executive Status
 
-ALP is in authorized build execution after Stage 12 Build Authorization. W0 Foundation / Scaffold was merged through PR #71 and is now closed as the scaffold-entry wave for W1.
+ALP is in authorized build execution after Stage 12 Build Authorization. W0 Foundation / Scaffold was merged through PR #71 and W1 entry was authorized through PR #72.
 
-This tracker update records W0 closure and W1 entry authorization only. It does not claim full app delivery, CODE_PASS, FUNCTIONAL_PASS, CWT_PASS, deployment acceptance, or production readiness.
+This tracker update records the W1 schema/security implementation slice for review. It does not claim W1 closure, full app delivery, CODE_PASS, FUNCTIONAL_PASS, CWT_PASS, deployment acceptance, or production readiness.
 
 ```text
 Builder Model: CONSOLIDATED BUILDER MODEL SELECTED
@@ -25,8 +25,9 @@ Builder Appointment: APPOINTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW
 Build Authorization: AUTHORIZED BY PR #70
 Implementation Authorization: AUTHORIZED FOR W0-W9 UNDER STAGE 12 CONTROLS
 Completed workstream: W0 Foundation / Scaffold closed by PR #71
-Current workstream: W1 Auth + Profile + Files authorized for entry
-Next required action: open W1 implementation PR with evidence
+Current workstream: W1 Auth + Profile + Files
+Current slice: W1 schema/security pass filed for review
+Next required action: review W1 schema/security PR checks and evidence
 FULL APP DELIVERY / CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 ```
 
@@ -46,15 +47,15 @@ FULL APP DELIVERY / CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 | WS-06 QA-ALP Range Status | CONFIRMED MODULE-LOCAL | `modules/ALP/05-qa-to-red/qa-alp-range-status.md` |
 | WS-07 Runtime / Deployment Contract | FILED FOR REVIEW | `modules/ALP/11-build/runtime-deployment-contract.md` |
 | WS-08 Golden Path Verification Pack | MERGED / ACCEPTED ON MAIN | `modules/ALP/11-build/golden-path-verification-pack.md` |
-| WS-09 Build Tracker | UPDATED FOR W0 CLOSURE / W1 ENTRY | `modules/ALP/BUILD_PROGRESS_TRACKER.md` |
+| WS-09 Build Tracker | UPDATED FOR W1 SCHEMA / SECURITY PASS | `modules/ALP/BUILD_PROGRESS_TRACKER.md` |
 | WS-10 Evidence Folder Convention | MERGED / ACCEPTED ON MAIN | `modules/ALP/11-build/evidence/README.md` |
 | Stage 9 Builder Evidence | COMPANION EVIDENCE ACCEPTED / SUPERSEDED FOR AUTHORIZATION REVIEW | `modules/ALP/08-builder-checklist/consolidated-builder-stage9-evidence.md` |
 | Stage 10 IAA Acknowledgement Evidence | COMPANION EVIDENCE ACCEPTED / SUPERSEDED FOR AUTHORIZATION REVIEW | `modules/ALP/09-iaa-pre-brief/stage10-iaa-acknowledgement-evidence.md` |
 | Stage 11 Builder Appointment | MERGED / ACCEPTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW | `modules/ALP/10-builder-appointment/builder-appointment.md` |
 | Stage 12 Build Authorization | MERGED / BUILD AUTHORIZED | `modules/ALP/11-build/build-authorization.md` |
 | W0 Foundation / Scaffold | CLOSED / FILED FOR REVIEW | `modules/ALP/11-build/evidence/w0-foundation-scaffold.md`; `modules/ALP/11-build/evidence/20260624-W0-GOV-ALP-072-decision-w0-closure-w1-entry.md` |
-| W1 Auth + Profile + Files | AUTHORIZED FOR ENTRY | Requires W1 implementation PR and evidence |
-| Full App Delivery | NOT DELIVERED BY W0 | Requires W1-W9 implementation and evidence |
+| W1 Auth + Profile + Files | SCHEMA / SECURITY PASS FILED FOR REVIEW | `modules/ALP/11-build/evidence/20260625-W1-GOV-ALP-073-decision-schema-security-pass.md` |
+| Full App Delivery | NOT DELIVERED BY W1 SCHEMA PASS | Requires W1-W9 implementation and evidence |
 
 ---
 
@@ -62,8 +63,8 @@ FULL APP DELIVERY / CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 
 | Wave | Planned Scope | Status | Evidence Link(s) | Merge / PR Status | Check Status | Blocker / Risk |
 |---|---|---|---|---|---|---|
-| W0 | Foundation / Scaffold: tooling, env, repo structure, base app shell, Supabase config skeleton | CLOSED / FILED FOR REVIEW | `modules/ALP/11-build/evidence/w0-foundation-scaffold.md`; `modules/ALP/11-build/evidence/20260624-W0-GOV-ALP-072-decision-w0-closure-w1-entry.md` | PR #71 merged to `main` | Vercel/GitHub checks accepted for PR #71 before merge | Closed for scaffold scope only; no full app delivery claimed |
-| W1 | Auth + Profile + Files: auth, roles, protected layouts, profile, private profile file upload | AUTHORIZED FOR ENTRY | Pending W1 evidence | No W1 build PR yet | No W1 build checks run | Must replace W0 placeholders with real auth/profile/file implementation |
+| W0 | Foundation / Scaffold: tooling, env, repo structure, base app shell, Supabase config skeleton | CLOSED / FILED FOR REVIEW | `modules/ALP/11-build/evidence/w0-foundation-scaffold.md`; `modules/ALP/11-build/evidence/20260624-W0-GOV-ALP-072-decision-w0-closure-w1-entry.md` | PR #71 merged to `main`; PR #72 merged W1 entry | Vercel/GitHub checks accepted before merge | Closed for scaffold scope only; no full app delivery claimed |
+| W1 | Auth + Profile + Files: auth, roles, protected layouts, profile, private profile file upload | SCHEMA / SECURITY PASS FILED FOR REVIEW | `modules/ALP/11-build/evidence/20260625-W1-GOV-ALP-073-decision-schema-security-pass.md` | PR #73 pending | Pending PR checks | App/auth UI/actions still pending; W1 closure not claimed |
 | W2 | Dashboard + Course Shell + Unit Viewer: learner dashboard, course cards, shell, sidebar, read-only URL-module unit viewer | AUTHORIZED AFTER W1 GREEN | Pending W2 evidence | No build PR yet | No build checks run | Requires W1 closure |
 | W3 | Progress + Completion: progress events, learner progress, module/course completion, next action | AUTHORIZED AFTER W2 GREEN | Pending W3 evidence | No build PR yet | No build checks run | Requires W2 closure |
 | W4 | Enrolment + Payments: invitation, manual enrolment, checkout/webhook/idempotency | AUTHORIZED AFTER W1/W2 GREEN | Pending W4 evidence | No build PR yet | No build checks run | Requires W1/W2 closure |
@@ -85,10 +86,10 @@ FULL APP DELIVERY / CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 | Stage 10 companion evidence | ACCEPTED / SUPERSEDED FOR AUTHORIZATION REVIEW | PR #68 evidence plus Stage 12 supersession note. |
 | Stage 11 builder appointment | COMPLETE FOR STAGE 12 BUILD AUTHORIZATION REVIEW | PR #69 appointment. |
 | Stage 12 build authorization | COMPLETE | PR #70 merged. |
-| W0 Foundation / Scaffold | CLOSED / FILED FOR REVIEW | PR #71 merged. Closure evidence filed in this PR. |
-| W1 Auth + Profile + Files | AUTHORIZED FOR ENTRY | Next implementation PR must file W1 evidence and withhold pass claims until supported. |
+| W0 Foundation / Scaffold | CLOSED / FILED FOR REVIEW | PR #71 merged; PR #72 filed W1 entry evidence. |
+| W1 Auth + Profile + Files | SCHEMA / SECURITY PASS FILED FOR REVIEW | PR #73 must be reviewed; W1 app/auth flow remains pending. |
 | Implementation | AUTHORIZED FOR W0-W9 | Wave closure remains evidence-gated. |
-| Full app workflows | NOT DELIVERED BY W0 | Requires W1-W9. |
+| Full app workflows | NOT DELIVERED BY W1 SCHEMA PASS | Requires W1-W9. |
 | CODE_PASS | NOT CLAIMED | Requires later code evidence. |
 | FUNCTIONAL_PASS | NOT CLAIMED | Requires later functional evidence. |
 | CWT_PASS | NOT CLAIMED | Requires later deployment/CWT evidence. |
@@ -105,17 +106,18 @@ FULL APP DELIVERY / CODE_PASS / FUNCTIONAL_PASS / CWT_PASS: NOT CLAIMED
 | ALP-CTRL-004 | No CODE_PASS yet | Open | Claim only after code evidence exists. |
 | ALP-CTRL-005 | No FUNCTIONAL_PASS yet | Open | Claim only after functional evidence exists. |
 | ALP-CTRL-006 | No CWT_PASS yet | Open | Claim only after deployment/CWT evidence exists. |
-| ALP-CTRL-007 | W1 implementation not yet filed | Open | Open W1 Auth + Profile + Files implementation PR. |
+| ALP-CTRL-007 | W1 implementation not yet complete | Open | Complete W1 app/auth/profile/file action pass after schema/security review. |
+| ALP-CTRL-008 | W1 schema/security PR checks | Open | Review PR #73 checks and evidence. |
 
 ---
 
 ## Immediate Next Action
 
 ```text
-Open the W1 Auth + Profile + Files implementation PR.
+Review the W1 schema/security implementation PR and checks.
 ```
 
-The W1 PR must implement the authorized W1 scope and file fresh W1 evidence before any W1 closure or pass claim.
+The W1 schema/security pass must be accepted before W1 proceeds to app/auth/profile/file action implementation. W1 closure is not claimed by this schema/security slice.
 
 ---
 
@@ -128,14 +130,15 @@ Builder Appointment: APPOINTED FOR STAGE 12 BUILD AUTHORIZATION REVIEW
 Build Authorization: AUTHORIZED BY PR #70
 Implementation Authorization: AUTHORIZED FOR W0-W9 UNDER STAGE 12 CONTROLS
 W0 Foundation / Scaffold: CLOSED BY PR #71
-W1 Auth + Profile + Files: AUTHORIZED FOR ENTRY
+W1 Auth + Profile + Files: SCHEMA / SECURITY PASS FILED FOR REVIEW
 Full App Delivery: NOT CLAIMED
 Functional Pass: NOT CLAIMED
 Code Pass: NOT CLAIMED
 CWT Pass: NOT CLAIMED
+W1 Closure: NOT CLAIMED
 ```
 
-No percentage-complete claim is made because ALP has not yet accepted full build-wave evidence beyond W0 scaffold closure.
+No percentage-complete claim is made because ALP has not yet accepted full W1 build-wave evidence.
 
 ---
 
@@ -155,3 +158,4 @@ No percentage-complete claim is made because ALP has not yet accepted full build
 | 1.0 | 2026-06-23 | Filed W0 Foundation / Scaffold implementation and evidence for review. | AI-assisted draft | Filed for review; pass claims withheld |
 | 1.1 | 2026-06-24 | Recorded independent-review fixes and explicit full-app/non-functional/CWT non-claims for W0. | AI-assisted draft | Filed for review; full delivery not claimed |
 | 1.2 | 2026-06-24 | Closed W0 Foundation / Scaffold after PR #71 merge and authorized W1 Auth + Profile + Files entry. | AI-assisted draft | Filed for review; W1 implementation not yet filed |
+| 1.3 | 2026-06-25 | Filed W1 schema/security implementation slice: schema tables, private file metadata, audit hooks, storage bucket expectation, and RLS policies. | AI-assisted draft | Filed for review; W1 closure not claimed |
