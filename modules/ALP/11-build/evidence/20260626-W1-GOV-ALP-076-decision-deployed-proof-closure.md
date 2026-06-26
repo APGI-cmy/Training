@@ -7,7 +7,7 @@
 | Module | ALP - APGI Learning Portal |
 | Wave | W1 - Auth + Profile + Files |
 | Date | 2026-06-26 |
-| Status | Filed for review - protected route, profile, and file proof confirmed |
+| Status | Filed for review - W1 deployed proof confirmed |
 | Branch | alp-w1-deployed-proof-closure |
 | PR | #76 |
 
@@ -36,7 +36,7 @@
 | Private file upload | Confirmed by reviewer screenshot |
 | Uploaded file list renders | Confirmed by reviewer screenshot |
 | Learner/admin route separation | Limited proof: `/admin` did not expose admin content |
-| Cross-user RLS separation | Pending reviewer confirmation |
+| Cross-user RLS separation | Confirmed by reviewer screenshot |
 
 ---
 
@@ -44,7 +44,9 @@
 
 The reviewer confirmed that anonymous `/profile` access redirects to `/alp-sign-in`. After sign-in, the reviewer reached `/profile` with saved profile and uploaded file evidence visible.
 
-The reviewer also confirmed that profile save returned `Profile saved.` and private file upload returned `Private profile file uploaded.` Two uploaded files are visible in the deployed profile screen.
+The reviewer confirmed that profile save returned `Profile saved.` and private file upload returned `Private profile file uploaded.` Two uploaded files are visible in the deployed profile screen.
+
+The reviewer created and signed in with a second user. The second user reached `/profile` and did not see the first user's saved profile details or uploaded private files. This confirms practical cross-user separation through the deployed UI.
 
 The `/admin` path did not expose admin content, but the route currently appears to fall through to the learning not-found screen. This is recorded as limited role-boundary proof, not a full admin-role guard pass.
 
@@ -53,11 +55,10 @@ The `/admin` path did not expose admin content, but the route currently appears 
 ## Decision
 
 ```text
-W1 Closure: Not claimed.
-W2 Start: Not claimed.
+W1 Deployed Proof: Confirmed for review.
+W1 Closure: Ready for closure PR after PR #76 review/merge.
+W2 Start: Not claimed by this artifact.
 ```
-
-W1 still needs cross-user separation proof before closure.
 
 ---
 
