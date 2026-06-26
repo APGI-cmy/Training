@@ -258,8 +258,6 @@ h3 {
 }
 
 .back-link {
-  display: inline-flex;
-  margin-bottom: 22px;
   color: var(--primary-strong);
   font-weight: 800;
 }
@@ -271,7 +269,8 @@ h3 {
 .slide-card,
 .quiz-question,
 .activity-card,
-.media-item {
+.media-item,
+.profile-panel {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
@@ -328,10 +327,56 @@ progress::-moz-progress-bar {
 
 .card-grid,
 .unit-grid,
-.slide-grid {
+.slide-grid,
+.profile-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
+}
+
+.profile-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.75fr);
+  align-items: start;
+}
+
+.profile-panel {
+  padding: 22px;
+}
+
+.auth-panel {
+  max-width: 520px;
+}
+
+.alp-form {
+  display: grid;
+  gap: 16px;
+}
+
+.alp-form label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.alp-form input,
+.alp-form select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 12px;
+  background: var(--surface-strong);
+  color: var(--ink);
+}
+
+.file-list {
+  margin-top: 20px;
+}
+
+.file-list span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.86rem;
 }
 
 .unit-grid {
@@ -518,8 +563,6 @@ select,
 textarea {
   width: 100%;
   border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 12px;
   background: var(--surface-strong);
   color: var(--ink);
 }
@@ -626,7 +669,8 @@ textarea {
   .loading-grid,
   .card-grid,
   .unit-grid,
-  .slide-grid {
+  .slide-grid,
+  .profile-grid {
     grid-template-columns: 1fr;
   }
 
