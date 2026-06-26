@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { signInWithPassword } from "@/server/auth/session";
+import { signInWithPassword, signOut } from "@/server/auth/session";
 
 export type SignInState = {
   error?: string;
@@ -22,4 +22,9 @@ export async function signInAction(_state: SignInState, formData: FormData): Pro
   }
 
   redirect("/profile");
+}
+
+export async function signOutAction() {
+  await signOut();
+  redirect("/login");
 }
