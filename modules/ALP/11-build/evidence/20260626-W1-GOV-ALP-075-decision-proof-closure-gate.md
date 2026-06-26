@@ -18,12 +18,9 @@
 
 ## 1. Purpose
 
-This artifact records the W1 proof and closure gate after:
+This artifact records the W1 proof and closure gate after PR #73 and PR #74.
 
-- PR #73 merged the W1 schema/security slice; and
-- PR #74 merged the W1 app/auth/profile/files slice.
-
-The purpose of this gate is to prevent W1 being marked closed until the required proof exists.
+The purpose of this gate is to prevent W1 from being marked closed until the required proof exists.
 
 ---
 
@@ -41,9 +38,11 @@ The purpose of this gate is to prevent W1 being marked closed until the required
 | Required Proof | Status | Notes |
 |---|---|---|
 | Login proof | Pending | Requires deployed route test at `/alp-sign-in` with valid learner/admin credentials. |
+| Protected-route proof | Pending | Requires anonymous access to protected routes to redirect or be blocked as designed. |
+| Role-boundary proof | Pending | Requires learner access to admin-only routes to be blocked by the W1 role guard. |
 | Profile save proof | Pending | Requires authenticated `/profile` save and persisted `profiles` record. |
 | File upload/private access proof | Pending | Requires authenticated upload into `alp-private-files` and matching `file_metadata` record. |
-| RLS negative proof | Pending | Requires cross-learner profile/file access denial test. |
+| RLS negative proof | Pending | Requires cross-learner profile/file access block test. |
 
 ---
 
@@ -87,10 +86,12 @@ W2 start authorization: NOT CLAIMED.
 A reviewer with deployed environment access must complete the W1 browser proof path:
 
 1. Sign in at `/alp-sign-in`.
-2. Open `/profile`.
-3. Save certificate-critical profile details.
-4. Upload a private profile photo or CV.
-5. Confirm the matching `file_metadata` record.
-6. Confirm another learner cannot access the first learner's profile or private file metadata.
+2. Confirm protected routes handle anonymous users as designed.
+3. Confirm a learner account cannot use admin-only routes.
+4. Open `/profile` as an authenticated learner.
+5. Save certificate-critical profile details.
+6. Upload a private profile photo or CV.
+7. Confirm the matching `file_metadata` record.
+8. Confirm another learner cannot access the first learner's profile or private file metadata.
 
 After this evidence is attached or confirmed, W1 may be marked closed in a follow-up closure update and W2 may begin.
