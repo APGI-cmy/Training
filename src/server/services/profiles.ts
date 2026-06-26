@@ -22,12 +22,12 @@ export type AlpProfileFile = {
   created_at: string;
 };
 
-function headersFor(session: AlpSession) {
+function headersFor(session: AlpSession, prefer = "return=representation") {
   return {
     apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
     authorization: `Bearer ${session.accessToken}`,
     "content-type": "application/json",
-    prefer: "return=representation"
+    prefer
   };
 }
 
@@ -51,7 +51,7 @@ export async function upsertProfile(
 
   const response = await fetch(url, {
     method: "POST",
-    headers: headersFor(session),
+    headers: headersFor(session, "resolution=merge-duplicates,return=representation"),
     body: JSON.stringify({ user_id: session.user.id, email: session.user.email ?? null, ...profile }),
     cache: "no-store"
   });
