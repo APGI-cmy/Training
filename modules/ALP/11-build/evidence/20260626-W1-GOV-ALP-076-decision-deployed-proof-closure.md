@@ -7,7 +7,7 @@
 | Module | ALP - APGI Learning Portal |
 | Wave | W1 - Auth + Profile + Files |
 | Date | 2026-06-26 |
-| Status | Filed for review - profile and file proof confirmed |
+| Status | Filed for review - protected route, profile, and file proof confirmed |
 | Branch | alp-w1-deployed-proof-closure |
 | PR | #76 |
 
@@ -30,18 +30,23 @@
 | Public course route | Confirmed by reviewer screenshot |
 | Login at `/alp-sign-in` | Confirmed by reviewer screenshot |
 | Supabase auth user exists | Confirmed by reviewer screenshot |
+| Anonymous `/profile` redirect to sign-in | Confirmed by reviewer screenshot |
 | Authenticated `/profile` route | Confirmed by reviewer screenshot |
 | Profile save to `profiles` | Confirmed by reviewer screenshot |
 | Private file upload | Confirmed by reviewer screenshot |
 | Uploaded file list renders | Confirmed by reviewer screenshot |
-| Learner/admin route separation | Pending reviewer confirmation |
+| Learner/admin route separation | Limited proof: `/admin` did not expose admin content |
 | Cross-user RLS separation | Pending reviewer confirmation |
 
 ---
 
 ## Current Evidence Notes
 
-The reviewer confirmed that profile save returned `Profile saved.` and private file upload returned `Private profile file uploaded.` Two uploaded files are visible in the deployed profile screen.
+The reviewer confirmed that anonymous `/profile` access redirects to `/alp-sign-in`. After sign-in, the reviewer reached `/profile` with saved profile and uploaded file evidence visible.
+
+The reviewer also confirmed that profile save returned `Profile saved.` and private file upload returned `Private profile file uploaded.` Two uploaded files are visible in the deployed profile screen.
+
+The `/admin` path did not expose admin content, but the route currently appears to fall through to the learning not-found screen. This is recorded as limited role-boundary proof, not a full admin-role guard pass.
 
 ---
 
@@ -52,7 +57,7 @@ W1 Closure: Not claimed.
 W2 Start: Not claimed.
 ```
 
-W1 still needs role-boundary and cross-user separation proof before closure.
+W1 still needs cross-user separation proof before closure.
 
 ---
 
