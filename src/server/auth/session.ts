@@ -162,7 +162,7 @@ export async function requireSession() {
   const session = await getCurrentSession();
 
   if (!session) {
-    redirect("/login");
+    redirect("/alp-sign-in");
   }
 
   return session;
