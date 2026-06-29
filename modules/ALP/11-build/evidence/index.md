@@ -35,5 +35,5 @@ CODE_PASS: NOT CLAIMED.
 FUNCTIONAL_PASS: NOT CLAIMED.
 CWT_PASS: NOT CLAIMED.
 Deployment acceptance: NOT CLAIMED.
-Production readiness: NOT CLAIMED.
+Production readiness: NOT CLAIMED. W2 start: NOT CLAIMED (entry authorized after PR #77 merge).
 ```
