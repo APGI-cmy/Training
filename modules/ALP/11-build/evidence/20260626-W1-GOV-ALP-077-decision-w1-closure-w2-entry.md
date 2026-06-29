@@ -55,7 +55,7 @@ W1 is closed only for the approved W1 scope: auth route, protected profile route
 ## W2 Entry Authorization
 
 ```text
-W2 Dashboard + Course Shell + Unit Viewer: AUTHORIZED FOR ENTRY.
+W2 Dashboard + Course Shell + Unit Viewer: AUTHORIZED FOR ENTRY (effective after PR #77 merge).
 ```
 
 W2 may now start as the next implementation wave. This artifact authorizes W2 entry only. It does not implement W2.
