@@ -45,7 +45,7 @@
 ## Closure Decision
 
 ```text
-W1 Auth + Profile + Files: CLOSED FOR W1 SCOPE.
+W1 Auth + Profile + Files: PROPOSED CLOSED FOR W1 SCOPE (effective upon PR #77 merge).
 ```
 
 W1 is closed only for the approved W1 scope: auth route, protected profile route, profile save, private file upload, storage metadata, protected-route behavior, and practical cross-user separation.
