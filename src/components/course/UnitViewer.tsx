@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { encodeAssetPath } from "@/lib/courses";
 import { CourseSidebar } from "@/components/course/CourseSidebar";
 import type { CourseShellUnit } from "@/lib/services/courses/get-course-shell";
 import type { UnitContent } from "@/lib/services/courses/get-unit-content";
@@ -11,6 +12,8 @@ export function UnitViewer({
   units: CourseShellUnit[];
 }) {
   const { course, unit, previous, next, embeddedContentHref, originalContentHref } = content;
+  const embeddedSrc = embeddedContentHref ? encodeAssetPath(embeddedContentHref) : undefined;
+  const originalHref = encodeAssetPath(originalContentHref);
 
   return (
     <main>
@@ -24,7 +27,7 @@ export function UnitViewer({
           <p>{unit.subtitle}</p>
           <div className="unit-meta">
             <span>{unit.duration}</span>
-            <a href={originalContentHref}>Open original unit</a>
+            <a href={originalHref}>Open original unit</a>
           </div>
         </div>
       </section>
@@ -34,13 +37,18 @@ export function UnitViewer({
           <CourseSidebar courseSlug={course.slug} units={units} activeUnitSlug={unit.slug} />
           <div className="media-stack">
             <figure className="media-item">
-              <iframe title={`${unit.title} published unit`} src={embeddedContentHref} />
+              <iframe
+                title={`${unit.title} published unit`}
+                src={embeddedSrc}
+                loading="lazy"
+                allowFullScreen
+              />
               <figcaption>
                 Embedded published unit. Use the fallback link below if the embedded view is blocked.
               </figcaption>
             </figure>
             <div className="button-row">
-              <a className="primary-button" href={originalContentHref}>
+              <a className="primary-button" href={originalHref}>
                 Open expanded unit
               </a>
               <Link className="secondary-button" href={`/courses/${course.slug}/${unit.slug}`}>
