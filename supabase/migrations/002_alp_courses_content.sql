@@ -50,7 +50,8 @@ create table if not exists public.content_links (
   label text not null,
   href text not null,
   is_read_only boolean not null default true,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  unique (course_id, unit_id, link_type, href)
 );
 
 create index if not exists idx_course_modules_course_id on public.course_modules(course_id);
@@ -64,29 +65,47 @@ alter table public.course_modules enable row level security;
 alter table public.learning_units enable row level security;
 alter table public.content_links enable row level security;
 
-drop policy if exists courses_select_published_or_staff on public.courses;
-create policy courses_select_published_or_staff
+drop policy if exists courses_select_published on public.courses;
+create policy courses_select_published
 on public.courses
 for select
-using (
-  status = 'published'
-  or public.current_user_has_any_role(array['admin', 'reviewer', 'course_publisher'])
-);
+using (status = 'published');
 
-drop policy if exists course_modules_select_authenticated on public.course_modules;
-create policy course_modules_select_authenticated
+drop policy if exists course_modules_select_published_course on public.course_modules;
+create policy course_modules_select_published_course
 on public.course_modules
 for select
-using (auth.uid() is not null);
+using (
+  exists (
+    select 1
+    from public.courses c
+    where c.id = course_id
+      and c.status = 'published'
+  )
+);
 
-drop policy if exists learning_units_select_authenticated on public.learning_units;
-create policy learning_units_select_authenticated
+drop policy if exists learning_units_select_published_course on public.learning_units;
+create policy learning_units_select_published_course
 on public.learning_units
 for select
-using (auth.uid() is not null);
+using (
+  exists (
+    select 1
+    from public.courses c
+    where c.id = course_id
+      and c.status = 'published'
+  )
+);
 
-drop policy if exists content_links_select_authenticated on public.content_links;
-create policy content_links_select_authenticated
+drop policy if exists content_links_select_published_course on public.content_links;
+create policy content_links_select_published_course
 on public.content_links
 for select
-using (auth.uid() is not null);
+using (
+  exists (
+    select 1
+    from public.courses c
+    where c.id = course_id
+      and c.status = 'published'
+  )
+);
