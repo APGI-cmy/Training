@@ -27,9 +27,9 @@
 |---|---|
 | Learner dashboard route | Added |
 | Dashboard course cards | Added |
-| Course shell route | Added for VPSHR Level 0 |
+| Course shell route | Added as generic /learn/[courseSlug] route |
 | Course shell sidebar | Added |
-| Unit viewer route | Added for VPSHR Level 0 units |
+| Unit viewer route | Added as generic /learn/[courseSlug]/units/[unitSlug] route |
 | Unit iframe/fallback links | Added |
 | Course metadata schema | Added |
 | VPSHR Level 0 seed metadata | Added |
@@ -96,3 +96,4 @@ Production readiness: NOT CLAIMED
 |---|---|---|---|---|
 | 1.7 | 2026-06-29 | Filed W1 closure and W2 entry authorization. | AI-assisted draft | Merged by PR #77 |
 | 2.0 | 2026-06-29 | Filed W2 dashboard/course shell/unit viewer implementation slice. | AI-assisted draft | Filed for review |
+
