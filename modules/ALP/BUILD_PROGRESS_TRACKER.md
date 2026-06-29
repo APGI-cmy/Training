@@ -2,7 +2,7 @@
 
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
-**Last Updated**: 2026-06-26  
+**Last Updated**: 2026-06-29  
 **Updated By**: W1 closure / W2 entry filing  
 > **Classification**: ACTIVE - W1 CLOSURE FILED FOR REVIEW  
 > **Repository**: APGI-cmy/Training  
@@ -97,4 +97,4 @@ Production readiness: NOT CLAIMED
 |---|---|---|---|---|
 | 1.5 | 2026-06-26 | Filed W1 proof/closure gate and kept W2 waiting for W1 proof. | AI-assisted draft | Merged by PR #75 |
 | 1.6 | 2026-06-26 | Filed W1 deployed proof record with proof pending reviewer confirmation. | AI-assisted draft | Merged by PR #76 |
-| 1.7 | 2026-06-26 | Filed W1 closure and W2 entry authorization. | AI-assisted draft | Filed for review |
+| 1.7 | 2026-06-29 | Filed W1 closure and W2 entry authorization. | AI-assisted draft | Filed for review |
