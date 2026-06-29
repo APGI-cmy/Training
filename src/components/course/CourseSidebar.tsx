@@ -24,7 +24,10 @@ export function CourseSidebar({
 
             return (
               <li key={unit.id}>
-                <Link href={`/learn/${courseSlug}/units/${unit.slug}`}>
+                <Link
+                  aria-current={isActive ? "page" : undefined}
+                  href={`/learn/${courseSlug}/units/${unit.slug}`}
+                >
                   {unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}: {unit.title}
                 </Link>
                 {isActive ? <span> Current</span> : null}
