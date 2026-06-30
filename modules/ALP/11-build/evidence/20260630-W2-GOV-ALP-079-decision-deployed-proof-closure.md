@@ -20,7 +20,7 @@
 
 PR #78 merged the W2 dashboard, generic course shell, unit viewer, course services, W2 metadata schema, and VPSHR Level 0 seed metadata.
 
-Reviewer deployed browser proof was then performed against `https://training-platform-kappa.vercel.app`.
+A reviewer then performed deployed browser proof against `https://training-platform-kappa.vercel.app`.
 
 ---
 
