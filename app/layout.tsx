@@ -25,6 +25,7 @@ export default function RootLayout({
             APGI Training
           </Link>
           <nav aria-label="Primary navigation">
+            <Link href="/dashboard">Dashboard</Link>
             <Link href="/courses">Courses</Link>
             <ThemeToggle />
           </nav>
@@ -32,6 +33,7 @@ export default function RootLayout({
         {children}
         <footer className="app-footer">
           <span>VPSHR learning platform</span>
+          <Link href="/dashboard">Dashboard</Link>
           <Link href="/courses/vpshr-level-0">Level 0</Link>
         </footer>
       </body>
