@@ -24,13 +24,20 @@
 | `completion_states` schema | Added |
 | Self-scoped RLS for progress tables | Added |
 | Idempotent progress event action | Added |
-| Unit opened event recording | Added |
 | Unit completed action | Added |
 | Completion evaluation service | Added |
 | Next learning action service | Added |
 | Dashboard progress updates | Added |
 | Course shell/sidebar progress updates | Added |
 | Certificate eligibility pre-check hook | Added in completion state as `certificate_eligible` |
+
+---
+
+## Deferred Within W3
+
+| Item | Status | Notes |
+|---|---|---|
+| Automatic unit-opened event from page render | Deferred | The first W3 slice avoids render-time writes. Completion still records progress and can establish course progress state. |
 
 ---
 
@@ -46,11 +53,11 @@
 
 After merge/deploy, reviewer should confirm:
 
-1. Opening a unit records an opened state.
-2. Marking a unit complete records a completed state.
-3. Dashboard progress updates after completion.
-4. Course shell/sidebar status updates after completion.
-5. Completion state records the current completed/total units and certificate eligibility pre-check.
+1. Marking a unit complete records a completed state.
+2. Dashboard progress updates after completion.
+3. Course shell/sidebar status updates after completion.
+4. Completion state records the current completed/total units and certificate eligibility pre-check.
+5. Automatic unit-opened event recording remains deferred and is not claimed by this slice.
 
 ---
 
