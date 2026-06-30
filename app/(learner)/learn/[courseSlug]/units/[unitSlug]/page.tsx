@@ -4,7 +4,6 @@ import { getCourseBySlug } from "@/lib/courses";
 import { getCourseShell } from "@/lib/services/courses/get-course-shell";
 import { getUnitContent } from "@/lib/services/courses/get-unit-content";
 import { getLearnerProgress } from "@/lib/services/progress/get-learner-progress";
-import { recordProgressEvent } from "@/server/actions/progress/record-progress-event";
 import { requireSession } from "@/server/auth/session";
 
 export const dynamic = "force-dynamic";
@@ -24,12 +23,6 @@ export default async function Page({ params }: PageProps) {
   if (!course) {
     notFound();
   }
-
-  await recordProgressEvent({
-    courseSlug,
-    unitSlug,
-    eventType: "unit_opened"
-  });
 
   const progress = await getLearnerProgress({
     accessToken: session.accessToken,
