@@ -15,12 +15,13 @@ export function CourseSidebar({
       <div>
         <p className="eyebrow">Course shell</p>
         <h2>Learning units</h2>
-        <p>Move through the seeded VPSHR Level 0 unit structure.</p>
+        <p>Move through the seeded VPSHR Level 0 unit structure with W3 progress states.</p>
       </div>
       <nav aria-label="Learning unit navigation">
         <ol className="plain-list">
           {units.map((unit) => {
             const isActive = unit.slug === activeUnitSlug || unit.legacySlug === activeUnitSlug;
+            const status = unit.isCompleted ? "Completed" : unit.isOpened ? "Opened" : "New";
 
             return (
               <li key={unit.id}>
@@ -30,6 +31,7 @@ export function CourseSidebar({
                 >
                   {unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}: {unit.title}
                 </Link>
+                <span> {status}</span>
                 {isActive ? <span> Current</span> : null}
               </li>
             );
