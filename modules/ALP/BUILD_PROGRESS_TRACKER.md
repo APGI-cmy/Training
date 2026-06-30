@@ -31,12 +31,12 @@
 | `completion_states` table | Added |
 | Self-scoped RLS for progress tables | Added |
 | Idempotent progress event action | Added |
-| Unit opened state | Added |
 | Unit completed action | Added |
 | Dashboard progress updates | Added |
 | Course shell/sidebar progress updates | Added |
 | Next learning action service | Added |
 | Certificate eligibility pre-check hook | Added |
+| Automatic unit-opened event from page render | Deferred |
 | W3 browser proof | Pending after merge/deploy |
 
 ---
@@ -72,7 +72,7 @@
 
 ## Immediate Next Action
 
-Review PR #80. After merge, complete deployed W3 browser proof for opened/completed progress state.
+Review PR #80. After merge, complete deployed W3 browser proof for completed progress state.
 
 ---
 
