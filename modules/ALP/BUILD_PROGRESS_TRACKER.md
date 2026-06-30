@@ -17,7 +17,7 @@
 |---|---|---|
 | W0 Foundation / Scaffold | Closed for scaffold scope | PR #71 |
 | W1 Closure / W2 Entry | Merged | PR #77 / `f492c8efd8c83cbca49481191315ac2869c62c3b` |
-| W2 Dashboard / Course Shell / Unit Viewer | Closure filed for review | PR #78 / `d241eba98b092723b57a4f584be3fbefc84490ee`; PR #79 pending |
+| W2 Dashboard / Course Shell / Unit Viewer | Closure filed for review | Implementation: PR #78 / `d241eba98b092723b57a4f584be3fbefc84490ee`; Closure: PR #79 pending |
 | W3 Progress + Completion | Authorized after W2 closure merge | Pending PR #79 merge |
 
 ---
@@ -44,7 +44,7 @@
 |---|---|---|---|---|---|---|
 | W0 | Foundation / Scaffold | CLOSED FOR SCAFFOLD SCOPE | W0 evidence files | PR #71 and PR #72 merged | Checks accepted before merge | Full app delivery not claimed |
 | W1 | Auth + Profile + Files | CLOSED FOR W1 SCOPE | W1 evidence files | PR #73-#77 merged | Checks accepted before merge | Admin console proof deferred |
-| W2 | Dashboard + Course Shell + Unit Viewer | CLOSURE FILED FOR REVIEW | `modules/ALP/11-build/evidence/20260630-W2-GOV-ALP-079-decision-deployed-proof-closure.md` | PR #78 merged; PR #79 pending | Pending PR checks | ALP-CTRL-010 carried forward |
+| W2 | Dashboard + Course Shell + Unit Viewer | CLOSURE FILED FOR REVIEW | `modules/ALP/11-build/evidence/20260630-W2-GOV-ALP-079-decision-deployed-proof-closure.md` | PR #78 merged; PR #79 pending | PR #79 checks pending | ALP-CTRL-010 carried forward |
 | W3 | Progress + Completion | AUTHORIZED AFTER PR #79 MERGE | Pending W3 evidence | No W3 PR yet | No checks run | Requires W2 closure merge |
 | W4 | Enrolment + Payments | WAITING | Pending W4 evidence | No W4 PR yet | No checks run | Requires W1/W2 closure |
 | W5 | Assessment Submission | WAITING | Pending W5 evidence | No W5 PR yet | No checks run | Requires W1/W3/W4 closure |
@@ -63,32 +63,28 @@
 | ALP-CTRL-004 | CODE_PASS not claimed | Open | Claim only after code evidence exists. |
 | ALP-CTRL-005 | FUNCTIONAL_PASS not claimed | Open | Claim only after functional evidence exists. |
 | ALP-CTRL-006 | CWT_PASS not claimed | Open | Claim only after deployment/CWT evidence exists. |
-| ALP-CTRL-010 | Legacy iSpring embedded video objects do not consistently play. | Open | Inspect exported iSpring asset references, video file availability, MIME type, and browser console/network errors. Owner wave: W2 follow-up or W3 content-hardening. |
+| ALP-CTRL-010 | Legacy iSpring embedded video objects do not consistently play. | Open | Inspect exported iSpring asset references, video file availability, MIME type, and browser errors. Owner wave: W2 follow-up or W3 content-hardening. |
 
 ---
 
 ## Immediate Next Action
 
-```text
 Review and merge PR #79. After merge, W3 may start while ALP-CTRL-010 remains open.
-```
 
 ---
 
 ## Build Authorization Posture
 
-```text
-W1 Closure: CLOSED FOR W1 SCOPE
-W2 Closure: FILED FOR REVIEW
-W3 Start: AUTHORIZED AFTER PR #79 MERGE
-Full App Delivery: NOT CLAIMED
-CODE_PASS: NOT CLAIMED
-FUNCTIONAL_PASS: NOT CLAIMED
-CWT_PASS: NOT CLAIMED
-Final content quality acceptance: NOT CLAIMED
-Deployment acceptance: NOT CLAIMED
+W1 Closure: CLOSED FOR W1 SCOPE  
+W2 Closure: FILED FOR REVIEW  
+W3 Start: AUTHORIZED AFTER PR #79 MERGE  
+Full App Delivery: NOT CLAIMED  
+CODE_PASS: NOT CLAIMED  
+FUNCTIONAL_PASS: NOT CLAIMED  
+CWT_PASS: NOT CLAIMED  
+Final content quality acceptance: NOT CLAIMED  
+Deployment acceptance: NOT CLAIMED  
 Production readiness: NOT CLAIMED
-```
 
 ---
 
