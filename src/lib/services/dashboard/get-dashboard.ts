@@ -1,6 +1,7 @@
 import { getCourses } from "@/lib/courses";
 import { getLearnerProgress } from "@/lib/services/progress/get-learner-progress";
 import type { AlpSession } from "@/server/auth/session";
+import { getCookieCompletedUnitIds } from "@/server/progress/progress-cookie";
 
 export interface DashboardCourseCard {
   id: string;
@@ -28,19 +29,34 @@ export async function getDashboard(session?: AlpSession): Promise<LearnerDashboa
 
   const progressSnapshots = session
     ? await Promise.all(
-        sourceCourses.map((course) =>
-          getLearnerProgress({
-            accessToken: session.accessToken,
-            userId: session.user.id,
-            courseId: course.id
-          })
-        )
+        sourceCourses.map(async (course) => {
+          const [databaseProgress, cookieCompletedUnitIds] = await Promise.all([
+            getLearnerProgress({
+              accessToken: session.accessToken,
+              userId: session.user.id,
+              courseId: course.id
+            }),
+            getCookieCompletedUnitIds({
+              userId: session.user.id,
+              courseId: course.id
+            })
+          ]);
+
+          return {
+            databaseProgress,
+            cookieCompletedUnitIds
+          };
+        })
       )
     : [];
 
   sourceCourses.forEach((course, index) => {
     const progress = session ? progressSnapshots[index] : undefined;
-    const completedUnits = progress?.completedUnitIds.size ?? 0;
+    const completedUnitIds = new Set(progress?.databaseProgress.completedUnitIds ?? []);
+
+    progress?.cookieCompletedUnitIds.forEach((unitId) => completedUnitIds.add(unitId));
+
+    const completedUnits = completedUnitIds.size;
     const unitCount = course.units.length;
 
     courses.push({
