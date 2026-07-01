@@ -2,12 +2,12 @@
 
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
-**Last Updated**: 2026-06-30  
-**Updated By**: W3 progress / completion entry filing  
-> **Classification**: ACTIVE - W3 PROGRESS COMPLETION FILED FOR REVIEW  
+**Last Updated**: 2026-07-01  
+**Updated By**: W3 progress proof fix filing  
+> **Classification**: ACTIVE - W3 PROGRESS PROOF FIX FILED FOR REVIEW  
 > **Repository**: APGI-cmy/Training  
-> **Current Workstream**: W3 Progress + Completion  
-> **Next Required Action**: Review PR #80 and complete deployed W3 browser proof after merge
+> **Current Workstream**: W3 Progress + Completion proof fix  
+> **Next Required Action**: Review PR #81 and repeat deployed W3 browser proof after merge
 
 ---
 
@@ -18,25 +18,20 @@
 | W0 Foundation / Scaffold | Closed for scaffold scope | PR #71 |
 | W1 Closure / W2 Entry | Closed for W1 scope | PR #77 / `f492c8efd8c83cbca49481191315ac2869c62c3b` |
 | W2 Dashboard / Course Shell / Unit Viewer | Closed for W2 scope | PR #79 / `1b2ae564437a90349ccca95138ac430bf680089b` |
-| W3 Progress + Completion | Filed for review | PR #80 pending |
+| W3 Progress + Completion | Proof fix filed for review | PR #80 merged; PR #81 pending |
 
 ---
 
-## W3 Scope in Current Slice
+## W3 Proof Fix Scope
 
 | Scope Item | Status |
 |---|---|
-| `progress_events` table | Added |
-| `learner_progress` table | Added |
-| `completion_states` table | Added |
-| Self-scoped RLS for progress tables | Added |
-| Idempotent progress event action | Added |
-| Unit completed action | Added |
-| Dashboard progress updates | Added |
-| Course shell/sidebar progress updates | Added |
-| Next learning action service | Added |
-| Certificate eligibility pre-check hook | Added |
-| Automatic unit-opened event from page render | Deferred |
+| Server-side completed-unit cookie fallback | Added |
+| Completion action redirect and confirmation | Added |
+| Dashboard cookie progress hydration | Added |
+| Course shell cookie progress hydration | Added |
+| Unit viewer cookie progress hydration | Added |
+| Supabase progress schema/write path | Preserved |
 | W3 browser proof | Pending after merge/deploy |
 
 ---
@@ -48,7 +43,7 @@
 | W0 | Foundation / Scaffold | CLOSED FOR SCAFFOLD SCOPE | W0 evidence files | PR #71 and PR #72 merged | Checks accepted before merge | Full app delivery not claimed |
 | W1 | Auth + Profile + Files | CLOSED FOR W1 SCOPE | W1 evidence files | PR #73-#77 merged | Checks accepted before merge | Admin console proof deferred |
 | W2 | Dashboard + Course Shell + Unit Viewer | CLOSED FOR W2 SCOPE | W2 evidence files | PR #78 and PR #79 merged | Checks accepted before merge | ALP-CTRL-010 carried forward |
-| W3 | Progress + Completion | FILED FOR REVIEW | `modules/ALP/11-build/evidence/20260630-W3-GOV-ALP-080-decision-progress-completion-entry.md` | PR #80 pending | Pending PR checks | Browser proof required after merge |
+| W3 | Progress + Completion | PROOF FIX FILED FOR REVIEW | `modules/ALP/11-build/evidence/20260701-W3-GOV-ALP-081-decision-progress-proof-fix.md` | PR #80 merged; PR #81 pending | Pending PR checks | Repeat browser proof required after merge |
 | W4 | Enrolment + Payments | WAITING | Pending W4 evidence | No W4 PR yet | No checks run | Requires W1/W2/W3 closure |
 | W5 | Assessment Submission | WAITING | Pending W5 evidence | No W5 PR yet | No checks run | Requires W1/W3/W4 closure |
 | W6 | AI Evaluation + Human Review | WAITING | Pending W6 evidence | No W6 PR yet | No checks run | Requires W5 closure |
@@ -72,7 +67,7 @@
 
 ## Immediate Next Action
 
-Review PR #80. After merge, complete deployed W3 browser proof for completed progress state.
+Review PR #81. After merge, repeat browser proof for unit completion, course shell progress, and dashboard progress.
 
 ---
 
@@ -99,4 +94,5 @@ Production readiness: NOT CLAIMED
 | 1.7 | 2026-06-29 | Filed W1 closure and W2 entry authorization. | AI-assisted draft | Merged by PR #77 |
 | 2.0 | 2026-06-29 | Filed W2 dashboard/course shell/unit viewer implementation slice. | AI-assisted draft | Merged by PR #78 |
 | 2.1 | 2026-06-30 | Filed W2 deployed proof closure and carried ALP-CTRL-010 forward. | AI-assisted draft | Merged by PR #79 |
-| 3.0 | 2026-06-30 | Filed W3 progress/completion implementation slice. | AI-assisted draft | Filed for review |
+| 3.0 | 2026-06-30 | Filed W3 progress/completion implementation slice. | AI-assisted draft | Merged by PR #80 |
+| 3.1 | 2026-07-01 | Filed W3 progress proof fix after reviewer browser proof showed progress did not visibly update. | AI-assisted draft | Filed for review |

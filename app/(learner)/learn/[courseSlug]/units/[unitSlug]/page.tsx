@@ -5,6 +5,7 @@ import { getCourseShell } from "@/lib/services/courses/get-course-shell";
 import { getUnitContent } from "@/lib/services/courses/get-unit-content";
 import { getLearnerProgress } from "@/lib/services/progress/get-learner-progress";
 import { requireSession } from "@/server/auth/session";
+import { getCookieCompletedUnitIds } from "@/server/progress/progress-cookie";
 
 export const dynamic = "force-dynamic";
 
@@ -24,11 +25,23 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
-  const progress = await getLearnerProgress({
-    accessToken: session.accessToken,
-    userId: session.user.id,
-    courseId: course.id
+  const [progress, cookieCompletedUnitIds] = await Promise.all([
+    getLearnerProgress({
+      accessToken: session.accessToken,
+      userId: session.user.id,
+      courseId: course.id
+    }),
+    getCookieCompletedUnitIds({
+      userId: session.user.id,
+      courseId: course.id
+    })
+  ]);
+
+  cookieCompletedUnitIds.forEach((unitId) => {
+    progress.completedUnitIds.add(unitId);
+    progress.openedUnitIds.add(unitId);
   });
+
   const shell = getCourseShell(courseSlug, progress);
   const content = getUnitContent(courseSlug, unitSlug);
 
