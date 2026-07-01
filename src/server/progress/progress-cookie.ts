@@ -48,7 +48,8 @@ export async function markCookieUnitCompleted({
   const cookieStore = await cookies();
   const state = parseProgressCookie(cookieStore.get(PROGRESS_COOKIE)?.value);
   const userState = state[userId] ?? {};
-  const unitIds = new Set(userState[courseId] ?? []);
+  const existingUnitIds = userState[courseId];
+  const unitIds = new Set(Array.isArray(existingUnitIds) ? existingUnitIds : []);
 
   unitIds.add(unitId);
   userState[courseId] = Array.from(unitIds);
