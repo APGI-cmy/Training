@@ -52,9 +52,20 @@ export async function getDashboard(session?: AlpSession): Promise<LearnerDashboa
 
   sourceCourses.forEach((course, index) => {
     const progress = session ? progressSnapshots[index] : undefined;
-    const completedUnitIds = new Set(progress?.databaseProgress.completedUnitIds ?? []);
+    const knownUnitIds = new Set(course.units.map((unit) => unit.id));
+    const completedUnitIds = new Set<string>();
 
-    progress?.cookieCompletedUnitIds.forEach((unitId) => completedUnitIds.add(unitId));
+    progress?.databaseProgress.completedUnitIds.forEach((unitId) => {
+      if (knownUnitIds.has(unitId)) {
+        completedUnitIds.add(unitId);
+      }
+    });
+
+    progress?.cookieCompletedUnitIds.forEach((unitId) => {
+      if (knownUnitIds.has(unitId)) {
+        completedUnitIds.add(unitId);
+      }
+    });
 
     const completedUnits = completedUnitIds.size;
     const unitCount = course.units.length;
