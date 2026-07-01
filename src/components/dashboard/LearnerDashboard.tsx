@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProgressIndicator } from "@/components/progress/ProgressIndicator";
 import type { LearnerDashboard as LearnerDashboardModel } from "@/lib/services/dashboard/get-dashboard";
 
 export function LearnerDashboard({ dashboard }: { dashboard: LearnerDashboardModel }) {
@@ -10,15 +11,14 @@ export function LearnerDashboard({ dashboard }: { dashboard: LearnerDashboardMod
             <p className="eyebrow">Learner dashboard</p>
             <h1>Your APGI learning dashboard</h1>
             <p>
-              Continue approved learning pathways, review course progress placeholders, and open the
-              W2 learner course shell.
+              Continue approved learning pathways, review saved course progress, and open the W3
+              progress-enabled learner course shell.
             </p>
           </div>
-          <aside className="course-progress" aria-label="Dashboard summary">
-            <span>{dashboard.totalCompletedUnits}</span>
-            <small>of {dashboard.totalUnits} units complete</small>
-            <progress value={dashboard.totalCompletedUnits} max={dashboard.totalUnits || 1} />
-          </aside>
+          <ProgressIndicator
+            completedUnits={dashboard.totalCompletedUnits}
+            totalUnits={dashboard.totalUnits}
+          />
         </div>
       </section>
 
@@ -38,8 +38,9 @@ export function LearnerDashboard({ dashboard }: { dashboard: LearnerDashboardMod
                 <p>{course.description}</p>
                 <small>{course.completedUnits} of {course.unitCount} units complete</small>
                 <progress value={course.completedUnits} max={course.unitCount || 1} />
+                <small>{course.progressPercent}% complete</small>
                 <Link className="primary-button" href={course.href}>
-                  Open course shell
+                  {course.completedUnits > 0 ? "Continue course shell" : "Open course shell"}
                 </Link>
               </article>
             ))}

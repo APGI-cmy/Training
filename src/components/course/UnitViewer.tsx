@@ -3,6 +3,7 @@ import { encodeAssetPath } from "@/lib/courses";
 import { CourseSidebar } from "@/components/course/CourseSidebar";
 import type { CourseShellUnit } from "@/lib/services/courses/get-course-shell";
 import type { UnitContent } from "@/lib/services/courses/get-unit-content";
+import { recordProgressEvent } from "@/server/actions/progress/record-progress-event";
 
 export function UnitViewer({
   content,
@@ -12,8 +13,16 @@ export function UnitViewer({
   units: CourseShellUnit[];
 }) {
   const { course, unit, previous, next, embeddedContentHref, originalContentHref } = content;
+  const activeUnit = units.find((candidate) => candidate.id === unit.id);
   const embeddedSrc = embeddedContentHref ? encodeAssetPath(embeddedContentHref) : undefined;
   const originalHref = encodeAssetPath(originalContentHref);
+  const isCompleted = activeUnit?.isCompleted ?? false;
+
+  const completeUnit = recordProgressEvent.bind(null, {
+    courseSlug: course.slug,
+    unitSlug: unit.slug,
+    eventType: "unit_completed"
+  });
 
   return (
     <main>
@@ -27,6 +36,7 @@ export function UnitViewer({
           <p>{unit.subtitle}</p>
           <div className="unit-meta">
             <span>{unit.duration}</span>
+            <span>{isCompleted ? "Completed" : "Opened"}</span>
             <a href={originalHref}>Open original unit</a>
           </div>
         </div>
@@ -55,6 +65,11 @@ export function UnitViewer({
                 Open legacy responsive unit
               </Link>
             </div>
+            <form action={completeUnit}>
+              <button className="primary-button" type="submit" disabled={isCompleted}>
+                {isCompleted ? "Unit completed" : "Mark unit complete"}
+              </button>
+            </form>
           </div>
         </div>
       </section>

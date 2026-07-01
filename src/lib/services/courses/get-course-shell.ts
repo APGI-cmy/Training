@@ -1,4 +1,6 @@
 import { getCourseBySlug } from "@/lib/courses";
+import { getNextLearningAction, type NextLearningAction } from "@/lib/services/completion/get-next-learning-action";
+import type { LearnerProgressSnapshot } from "@/lib/services/progress/get-learner-progress";
 import type { Course, LearningUnit } from "@/types/course";
 
 export interface CourseShellUnit {
@@ -10,15 +12,23 @@ export interface CourseShellUnit {
   subtitle: string;
   duration: string;
   href: string;
+  isOpened: boolean;
+  isCompleted: boolean;
 }
 
 export interface CourseShell {
   course: Course;
   units: CourseShellUnit[];
   firstUnit?: CourseShellUnit;
+  completedUnits: number;
+  progressPercent: number;
+  nextAction?: NextLearningAction;
 }
 
-export function getCourseShell(courseSlug: string): CourseShell | undefined {
+export function getCourseShell(
+  courseSlug: string,
+  progress?: LearnerProgressSnapshot
+): CourseShell | undefined {
   const course = getCourseBySlug(courseSlug);
 
   if (!course) {
@@ -36,12 +46,20 @@ export function getCourseShell(courseSlug: string): CourseShell | undefined {
       title: unit.title,
       subtitle: unit.subtitle,
       duration: unit.duration,
-      href: `/learn/${course.slug}/units/${unit.slug}`
+      href: `/learn/${course.slug}/units/${unit.slug}`,
+      isOpened: progress?.openedUnitIds.has(unit.id) ?? false,
+      isCompleted: progress?.completedUnitIds.has(unit.id) ?? false
     }));
+
+  const completedUnits = units.filter((unit) => unit.isCompleted).length;
+  const progressPercent = units.length === 0 ? 0 : Math.round((completedUnits / units.length) * 100);
 
   return {
     course,
     units,
-    firstUnit: units[0]
+    firstUnit: units[0],
+    completedUnits,
+    progressPercent,
+    nextAction: getNextLearningAction(units)
   };
 }
