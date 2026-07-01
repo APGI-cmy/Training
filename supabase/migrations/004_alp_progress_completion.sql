@@ -116,3 +116,13 @@ on public.completion_states
 for update
 using (user_id = auth.uid())
 with check (user_id = auth.uid());
+
+drop trigger if exists set_learner_progress_updated_at on public.learner_progress;
+create trigger set_learner_progress_updated_at
+before update on public.learner_progress
+for each row execute function public.set_updated_at();
+
+drop trigger if exists set_completion_states_updated_at on public.completion_states;
+create trigger set_completion_states_updated_at
+before update on public.completion_states
+for each row execute function public.set_updated_at();
