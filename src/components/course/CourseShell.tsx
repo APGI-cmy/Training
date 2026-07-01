@@ -3,8 +3,15 @@ import { CourseSidebar } from "@/components/course/CourseSidebar";
 import { ProgressIndicator } from "@/components/progress/ProgressIndicator";
 import type { CourseShell as CourseShellModel } from "@/lib/services/courses/get-course-shell";
 
-export function CourseShell({ shell }: { shell: CourseShellModel }) {
+export function CourseShell({
+  shell,
+  progressMessage
+}: {
+  shell: CourseShellModel;
+  progressMessage?: string;
+}) {
   const { course, units, firstUnit, completedUnits, nextAction } = shell;
+  const showCompletionMessage = progressMessage === "unit-completed";
 
   return (
     <main>
@@ -17,6 +24,9 @@ export function CourseShell({ shell }: { shell: CourseShellModel }) {
             <p className="eyebrow">Learner course shell</p>
             <h1>{course.title}</h1>
             <p>{course.description}</p>
+            {showCompletionMessage ? (
+              <p role="status">Unit marked complete. Progress has been updated.</p>
+            ) : null}
             <div className="button-row">
               {nextAction ? (
                 <Link className="primary-button" href={nextAction.href}>
