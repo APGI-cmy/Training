@@ -11,8 +11,13 @@ function parseProgressCookie(value?: string): ProgressCookieState {
   }
 
   try {
-    const parsed = JSON.parse(value) as ProgressCookieState;
-    return parsed && typeof parsed === "object" ? parsed : {};
+    const parsed: unknown = JSON.parse(value);
+
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return {};
+    }
+
+    return parsed as ProgressCookieState;
   } catch {
     return {};
   }
