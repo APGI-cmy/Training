@@ -32,7 +32,8 @@ export async function getCookieCompletedUnitIds({
 }): Promise<Set<string>> {
   const cookieStore = await cookies();
   const state = parseProgressCookie(cookieStore.get(PROGRESS_COOKIE)?.value);
-  return new Set(state[userId]?.[courseId] ?? []);
+  const unitIds = state[userId]?.[courseId];
+  return new Set(Array.isArray(unitIds) ? unitIds : []);
 }
 
 export async function markCookieUnitCompleted({
