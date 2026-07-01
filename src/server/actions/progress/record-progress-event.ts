@@ -46,5 +46,6 @@ export async function recordProgressEvent(input: {
   revalidatePath(`/learn/${course.slug}`);
   revalidatePath(`/learn/${course.slug}/units/${unit.slug}`);
 
-  redirect(`/learn/${course.slug}?progress=unit-completed`);
+  const progressMessage = input.eventType === "unit_completed" ? "unit-completed" : "unit-opened";
+  redirect(`/learn/${course.slug}?progress=${progressMessage}`);
 }
