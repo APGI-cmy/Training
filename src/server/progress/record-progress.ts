@@ -94,6 +94,14 @@ export async function recordProgressForSession({
     }
   });
 
+  const progressBeforeWrite = await getLearnerProgress({
+    accessToken: session.accessToken,
+    userId: session.user.id,
+    courseId: course.id
+  });
+  const wasAlreadyCompleted = progressBeforeWrite.completedUnitIds.has(unit.id);
+  const nextStatus = eventType === "unit_completed" || wasAlreadyCompleted ? "completed" : "opened";
+
   await postJson({
     accessToken: session.accessToken,
     path: "/rest/v1/learner_progress?on_conflict=user_id,course_id,unit_id",
@@ -102,21 +110,16 @@ export async function recordProgressForSession({
       user_id: session.user.id,
       course_id: course.id,
       unit_id: unit.id,
-      status: eventType === "unit_completed" ? "completed" : "opened",
-      first_opened_at: occurredAt,
-      completed_at: eventType === "unit_completed" ? occurredAt : null,
+      status: nextStatus,
+      first_opened_at: progressBeforeWrite.openedUnitIds.has(unit.id) ? undefined : occurredAt,
+      completed_at: nextStatus === "completed" ? occurredAt : null,
       updated_at: occurredAt
     }
   });
 
-  const progress = await getLearnerProgress({
-    accessToken: session.accessToken,
-    userId: session.user.id,
-    courseId: course.id
-  });
-  const completedUnitIds = new Set(progress.completedUnitIds);
+  const completedUnitIds = new Set(progressBeforeWrite.completedUnitIds);
 
-  if (eventType === "unit_completed") {
+  if (nextStatus === "completed") {
     completedUnitIds.add(unit.id);
   }
 
