@@ -6,7 +6,7 @@
 |---|---|
 | Module | ALP - APGI Learning Portal |
 | Artifact | Build Evidence Index |
-| Status | Updated after PR #83 merge |
+| Status | Updated for W4 entry governance |
 | Date | 2026-07-02 |
 | Repository | APGI-cmy/Training |
 | Canonical Path | `modules/ALP/11-build/evidence/index.md` |
@@ -24,6 +24,7 @@
 | W3 | `modules/ALP/11-build/evidence/20260701-W3-GOV-ALP-081-decision-progress-proof-fix.md` | GOV-ALP-081; progress-proof | W3 progress proof fix path | GitHub PR evidence / reviewer proof | PR #81 / `27f96a9efb9294158ed16b47524ceeeabbb93892` | Vercel accepted before merge | BC-ALP-CONSOLIDATED-001 / reviewer proof | Merged | Visible progress recording fixed. |
 | W3 | `modules/ALP/11-build/evidence/20260701-W3-GOV-ALP-082-decision-deployed-proof-closure.md` | GOV-ALP-082; deployed-ui-proof | W3 deployed UI proof path | Deployed app / reviewer screenshot | PR #82 / merged | Merged | BC-ALP-CONSOLIDATED-001 / reviewer proof | Deployed UI proof only | PR #82 did not close W3 or authorize W4; ALP-CTRL-011 still required database proof. |
 | W3 | `modules/ALP/11-build/evidence/20260702-W3-GOV-ALP-083-decision-db-progress-closure.md` | GOV-ALP-083; db-progress-proof; ALP-CTRL-011 | W3 database-backed progress closure path | Live Supabase / GitHub PR evidence | PR #83 / `55c686aeda1dc293d6ad6de72526f86e2cb488c9` | Merged | BC-ALP-CONSOLIDATED-001 | Closed for approved W3 scope | Live migration verified for `public.progress_events`, `public.learner_progress`, and `public.completion_states`; `vpshr-level-0` / `introduction` proof rows captured as `unit_completed`, `completed`, and `1 of 13`, `7.69%`. |
+| W4 | `modules/ALP/11-build/evidence/20260702-W4-GOV-ALP-085-decision-enrolment-payments-entry.md` | GOV-ALP-085; enrolment-payments-entry | W4 enrolment and payment readiness entry path | GitHub PR evidence | Pending W4 entry PR | Pending review | BC-ALP-CONSOLIDATED-001 | Entry filed; not closed | Opens W4 governance only; no app/runtime/payment code or payment readiness claim. |
 
 ---
 
@@ -36,5 +37,6 @@ CWT_PASS: NOT CLAIMED.
 Final content quality acceptance: NOT CLAIMED.  
 Deployment acceptance: NOT CLAIMED.  
 Production readiness: NOT CLAIMED.  
+Live payment readiness: NOT CLAIMED.  
 ALP-CTRL-010: OPEN and carried forward.  
-W4: AUTHORIZED FOR ENTRY after PR #83 merge, but W4 implementation/closure is NOT CLAIMED.
+W4: ENTRY FILED, but W4 implementation/closure is NOT CLAIMED.
