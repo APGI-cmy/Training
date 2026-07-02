@@ -112,6 +112,6 @@ Production readiness: NOT CLAIMED
 | 2.1 | 2026-06-30 | Filed W2 deployed proof closure and carried ALP-CTRL-010 forward. | AI-assisted draft | Merged by PR #79 |
 | 3.0 | 2026-06-30 | Filed W3 progress/completion implementation slice. | AI-assisted draft | Merged by PR #80 |
 | 3.1 | 2026-07-01 | Filed W3 progress proof fix after reviewer browser proof showed progress did not visibly update. | AI-assisted draft | Merged by PR #81 |
-| 3.2 | 2026-07-01 | Filed W3 deployed UI proof and kept W3 open pending ALP-CTRL-011 DB proof. | AI-assisted draft | Filed by PR #82 as UI proof only |
+| 3.2 | 2026-07-01 | Filed W3 deployed UI proof and kept W3 open pending ALP-CTRL-011 DB proof. | AI-assisted draft | Merged by PR #82 as deployed UI proof only |
 | 3.3 | 2026-07-02 | Filed W3 database-backed progress proof as the closure PR; kept PR #82 as deployed UI proof only and left W4 blocked until merge. | AI-assisted draft | Merged by PR #83 |
 | 3.4 | 2026-07-02 | Normalized GOV-ALP-083 post-merge status header and tracker posture after PR #83 merge. | AI-assisted draft | Filed for follow-up review |
