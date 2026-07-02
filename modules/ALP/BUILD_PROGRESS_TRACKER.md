@@ -3,11 +3,11 @@
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
 **Last Updated**: 2026-07-02  
-**Updated By**: GOV-ALP-083 post-merge evidence normalization  
-> **Classification**: ACTIVE - W3 DATABASE-BACKED PROOF CLOSED; W4 ENTRY AUTHORIZED  
+**Updated By**: GOV-ALP-085 W4 entry governance  
+> **Classification**: ACTIVE - W4 ENTRY FILED FOR REVIEW  
 > **Repository**: APGI-cmy/Training  
 > **Current Workstream**: W4 Enrolment + Payments entry governance  
-> **Next Required Action**: Open W4 entry / implementation PR while carrying ALP-CTRL-010 and non-claims forward
+> **Next Required Action**: Review and merge W4 entry PR before starting W4 implementation slice
 
 ---
 
@@ -18,8 +18,8 @@
 | W0 Foundation / Scaffold | Closed for scaffold scope | PR #71 |
 | W1 Closure / W2 Entry | Closed for W1 scope | PR #77 / `f492c8efd8c83cbca49481191315ac2869c62c3b` |
 | W2 Dashboard / Course Shell / Unit Viewer | Closed for W2 scope | PR #79 / `1b2ae564437a90349ccca95138ac430bf680089b` |
-| W3 Progress + Completion | Closed for approved W3 database-backed progress scope | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 merged |
-| W4 Enrolment + Payments | Waiting / authorized for entry | Authorized after PR #83 merge; requires W4 entry PR before implementation closure |
+| W3 Progress + Completion | Closed for approved W3 database-backed progress scope | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 merged; PR #84 normalized post-merge evidence |
+| W4 Enrolment + Payments | Entry filed for review | `modules/ALP/11-build/evidence/20260702-W4-GOV-ALP-085-decision-enrolment-payments-entry.md` |
 
 ---
 
@@ -50,6 +50,18 @@
 
 ---
 
+## W4 Entry Governance Filed
+
+| Entry Item | Status |
+|---|---|
+| W4 entry evidence | Filed for review. |
+| W4 implementation | Not started in this entry PR. |
+| Initial recommended slice | W4.1 Enrolment state and course access gating. |
+| Payment gateway integration | Not authorized by this entry PR. Requires later gateway decision and sandbox proof. |
+| ALP-CTRL-010 | Open and carried forward. |
+
+---
+
 ## W0-W9 Build Wave Status Table
 
 | Wave | Planned Scope | Status | Evidence Link(s) | Merge / PR Status | Check Status | Blocker / Risk |
@@ -57,8 +69,8 @@
 | W0 | Foundation / Scaffold | CLOSED FOR SCAFFOLD SCOPE | W0 evidence files | PR #71 and PR #72 merged | Checks accepted before merge | Full app delivery not claimed |
 | W1 | Auth + Profile + Files | CLOSED FOR W1 SCOPE | W1 evidence files | PR #73-#77 merged | Checks accepted before merge | Admin console proof deferred |
 | W2 | Dashboard + Course Shell + Unit Viewer | CLOSED FOR W2 SCOPE | W2 evidence files | PR #78 and PR #79 merged | Checks accepted before merge | ALP-CTRL-010 carried forward |
-| W3 | Progress + Completion | CLOSED FOR APPROVED W3 SCOPE | `modules/ALP/11-build/evidence/20260701-W3-GOV-ALP-082-decision-deployed-proof-closure.md`; `modules/ALP/11-build/evidence/20260702-W3-GOV-ALP-083-decision-db-progress-closure.md` | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 merged | PR #83 merged | ALP-CTRL-011 closed; ALP-CTRL-010 remains open |
-| W4 | Enrolment + Payments | WAITING / AUTHORIZED FOR ENTRY | Pending W4 evidence | No W4 PR yet | No checks run | Requires W4 entry PR and evidence; carry ALP-CTRL-010 forward |
+| W3 | Progress + Completion | CLOSED FOR APPROVED W3 SCOPE | `modules/ALP/11-build/evidence/20260701-W3-GOV-ALP-082-decision-deployed-proof-closure.md`; `modules/ALP/11-build/evidence/20260702-W3-GOV-ALP-083-decision-db-progress-closure.md` | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 merged; PR #84 merged | PR #83 and PR #84 merged | ALP-CTRL-011 closed; ALP-CTRL-010 remains open |
+| W4 | Enrolment + Payments | ENTRY FILED FOR REVIEW | `modules/ALP/11-build/evidence/20260702-W4-GOV-ALP-085-decision-enrolment-payments-entry.md` | W4 entry PR pending | Checks pending | Requires W4 entry review/merge before implementation closure |
 | W5 | Assessment Submission | WAITING | Pending W5 evidence | No W5 PR yet | No checks run | Requires W1/W3/W4 closure |
 | W6 | AI Evaluation + Human Review | WAITING | Pending W6 evidence | No W6 PR yet | No checks run | Requires W5 closure |
 | W7 | Certificates | WAITING | Pending W7 evidence | No W7 PR yet | No checks run | Requires W3/W6 closure |
@@ -82,7 +94,7 @@
 
 ## Immediate Next Action
 
-Open W4 entry / implementation governance PR. Carry ALP-CTRL-010 forward and keep all non-claims intact.
+Review and merge the W4 entry governance PR. After merge, open W4.1 implementation for enrolment state and course access gating.
 
 ---
 
@@ -91,13 +103,15 @@ Open W4 entry / implementation governance PR. Carry ALP-CTRL-010 forward and kee
 W1 Closure: CLOSED FOR W1 SCOPE  
 W2 Closure: CLOSED FOR W2 SCOPE  
 W3 Closure: CLOSED FOR APPROVED W3 SCOPE BY PR #83  
-W4 Start: AUTHORIZED FOR ENTRY AFTER PR #83 MERGE  
+W4 Start: ENTRY FILED FOR REVIEW  
+W4 Implementation Closure: NOT CLAIMED  
 Full App Delivery: NOT CLAIMED  
 CODE_PASS: NOT CLAIMED  
 FUNCTIONAL_PASS: NOT CLAIMED  
 CWT_PASS: NOT CLAIMED  
 Final content quality acceptance: NOT CLAIMED  
 Long-term database-backed progress source of truth: CLAIMED FOR W3 PROGRESS SCOPE ONLY  
+Live payment readiness: NOT CLAIMED  
 Deployment acceptance: NOT CLAIMED  
 Production readiness: NOT CLAIMED
 
@@ -114,4 +128,5 @@ Production readiness: NOT CLAIMED
 | 3.1 | 2026-07-01 | Filed W3 progress proof fix after reviewer browser proof showed progress did not visibly update. | AI-assisted draft | Merged by PR #81 |
 | 3.2 | 2026-07-01 | Filed W3 deployed UI proof and kept W3 open pending ALP-CTRL-011 DB proof. | AI-assisted draft | Merged by PR #82 as deployed UI proof only |
 | 3.3 | 2026-07-02 | Filed W3 database-backed progress proof as the closure PR; kept PR #82 as deployed UI proof only and left W4 blocked until merge. | AI-assisted draft | Merged by PR #83 |
-| 3.4 | 2026-07-02 | Normalized GOV-ALP-083 post-merge status header and tracker posture after PR #83 merge. | AI-assisted draft | Filed for follow-up review |
+| 3.4 | 2026-07-02 | Normalized GOV-ALP-083 post-merge status header and tracker posture after PR #83 merge. | AI-assisted draft | Merged by PR #84 |
+| 4.0 | 2026-07-02 | Filed W4 enrolment and payments entry governance. | AI-assisted draft | Filed for W4 entry review |
