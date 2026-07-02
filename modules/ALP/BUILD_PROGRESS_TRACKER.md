@@ -3,11 +3,11 @@
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
 **Last Updated**: 2026-07-02  
-**Updated By**: W3 database-backed progress proof filing  
-> **Classification**: ACTIVE - W3 DATABASE-BACKED PROOF FILED; MERGE REQUIRED FOR CLOSURE  
+**Updated By**: GOV-ALP-083 post-merge evidence normalization  
+> **Classification**: ACTIVE - W3 DATABASE-BACKED PROOF CLOSED; W4 ENTRY AUTHORIZED  
 > **Repository**: APGI-cmy/Training  
-> **Current Workstream**: W3 governance closure via PR #83  
-> **Next Required Action**: Merge PR #83 to close ALP-CTRL-011 and keep W4 blocked until that merge
+> **Current Workstream**: W4 Enrolment + Payments entry governance  
+> **Next Required Action**: Open W4 entry / implementation PR while carrying ALP-CTRL-010 and non-claims forward
 
 ---
 
@@ -18,8 +18,8 @@
 | W0 Foundation / Scaffold | Closed for scaffold scope | PR #71 |
 | W1 Closure / W2 Entry | Closed for W1 scope | PR #77 / `f492c8efd8c83cbca49481191315ac2869c62c3b` |
 | W2 Dashboard / Course Shell / Unit Viewer | Closed for W2 scope | PR #79 / `1b2ae564437a90349ccca95138ac430bf680089b` |
-| W3 Progress + Completion | Database-backed proof filed; closable after PR #83 merge | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 pending |
-| W4 Enrolment + Payments | Waiting / not authorized | Requires PR #83 merge for W3 closure |
+| W3 Progress + Completion | Closed for approved W3 database-backed progress scope | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 merged |
+| W4 Enrolment + Payments | Waiting / authorized for entry | Authorized after PR #83 merge; requires W4 entry PR before implementation closure |
 
 ---
 
@@ -33,11 +33,11 @@
 | Completion confirmation message | Accepted |
 | Course shell progress update | Accepted |
 | Dashboard progress update | Accepted |
-| Supabase database-progress source of truth | Database proof filed in PR #83; closure only after merge |
+| Supabase database-progress source of truth | Database proof closed by PR #83 merge |
 
 ---
 
-## W3 Database-Backed Proof Filed
+## W3 Database-Backed Proof Closed
 
 | Proof Item | Status |
 |---|---|
@@ -46,7 +46,7 @@
 | `public.progress_events` | Verified with `vpshr-level-0` / `introduction` proof row `unit_completed`. |
 | `public.learner_progress` | Verified with `vpshr-level-0` / `introduction` proof row `completed`. |
 | `public.completion_states` | Verified with `vpshr-level-0` / `introduction` proof state `1 of 13`, `7.69%`. |
-| ALP-CTRL-011 posture | Closable by PR #83 after merge; not closed while this PR is pending. |
+| ALP-CTRL-011 posture | Closed by PR #83 merge. |
 
 ---
 
@@ -57,8 +57,8 @@
 | W0 | Foundation / Scaffold | CLOSED FOR SCAFFOLD SCOPE | W0 evidence files | PR #71 and PR #72 merged | Checks accepted before merge | Full app delivery not claimed |
 | W1 | Auth + Profile + Files | CLOSED FOR W1 SCOPE | W1 evidence files | PR #73-#77 merged | Checks accepted before merge | Admin console proof deferred |
 | W2 | Dashboard + Course Shell + Unit Viewer | CLOSED FOR W2 SCOPE | W2 evidence files | PR #78 and PR #79 merged | Checks accepted before merge | ALP-CTRL-010 carried forward |
-| W3 | Progress + Completion | CLOSABLE AFTER PR #83 MERGE | `modules/ALP/11-build/evidence/20260701-W3-GOV-ALP-082-decision-deployed-proof-closure.md`; `modules/ALP/11-build/evidence/20260702-W3-GOV-ALP-083-decision-db-progress-closure.md` | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 pending | Pending PR #83 checks | ALP-CTRL-011 closes only after PR #83 merge; ALP-CTRL-010 remains open |
-| W4 | Enrolment + Payments | WAITING / NOT AUTHORIZED | Pending W4 evidence | No W4 PR yet | No checks run | Requires PR #83 merge for W3 closure |
+| W3 | Progress + Completion | CLOSED FOR APPROVED W3 SCOPE | `modules/ALP/11-build/evidence/20260701-W3-GOV-ALP-082-decision-deployed-proof-closure.md`; `modules/ALP/11-build/evidence/20260702-W3-GOV-ALP-083-decision-db-progress-closure.md` | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 merged | PR #83 merged | ALP-CTRL-011 closed; ALP-CTRL-010 remains open |
+| W4 | Enrolment + Payments | WAITING / AUTHORIZED FOR ENTRY | Pending W4 evidence | No W4 PR yet | No checks run | Requires W4 entry PR and evidence; carry ALP-CTRL-010 forward |
 | W5 | Assessment Submission | WAITING | Pending W5 evidence | No W5 PR yet | No checks run | Requires W1/W3/W4 closure |
 | W6 | AI Evaluation + Human Review | WAITING | Pending W6 evidence | No W6 PR yet | No checks run | Requires W5 closure |
 | W7 | Certificates | WAITING | Pending W7 evidence | No W7 PR yet | No checks run | Requires W3/W6 closure |
@@ -76,13 +76,13 @@
 | ALP-CTRL-005 | FUNCTIONAL_PASS not claimed | Open | Claim only after functional evidence exists. |
 | ALP-CTRL-006 | CWT_PASS not claimed | Open | Claim only after deployment/CWT evidence exists. |
 | ALP-CTRL-010 | Legacy iSpring embedded video objects do not consistently play. | Open | Inspect exported iSpring asset references, video file availability, MIME type, and browser errors. Owner wave: W3 content-hardening or later content QA. |
-| ALP-CTRL-011 | Live Supabase progress tables must be applied or verified before database-backed progress becomes the long-term source of truth. | Closable by PR #83 after merge | PR #83 records live migration verification for `public.progress_events`, `public.learner_progress`, and `public.completion_states`, plus `vpshr-level-0` / `introduction` proof rows; close only after merge and before W4 entry. |
+| ALP-CTRL-011 | Live Supabase progress tables must be applied or verified before database-backed progress becomes the long-term source of truth. | Closed by PR #83 | PR #83 records live migration verification for `public.progress_events`, `public.learner_progress`, and `public.completion_states`, plus `vpshr-level-0` / `introduction` proof rows. |
 
 ---
 
 ## Immediate Next Action
 
-Merge PR #83 to close ALP-CTRL-011. Do not start W4 until PR #83 is merged.
+Open W4 entry / implementation governance PR. Carry ALP-CTRL-010 forward and keep all non-claims intact.
 
 ---
 
@@ -90,14 +90,14 @@ Merge PR #83 to close ALP-CTRL-011. Do not start W4 until PR #83 is merged.
 
 W1 Closure: CLOSED FOR W1 SCOPE  
 W2 Closure: CLOSED FOR W2 SCOPE  
-W3 Closure: NOT CLAIMED until PR #83 is merged  
-W4 Start: NOT AUTHORIZED until PR #83 is merged  
+W3 Closure: CLOSED FOR APPROVED W3 SCOPE BY PR #83  
+W4 Start: AUTHORIZED FOR ENTRY AFTER PR #83 MERGE  
 Full App Delivery: NOT CLAIMED  
 CODE_PASS: NOT CLAIMED  
 FUNCTIONAL_PASS: NOT CLAIMED  
 CWT_PASS: NOT CLAIMED  
 Final content quality acceptance: NOT CLAIMED  
-Long-term database-backed progress source of truth: NOT CLAIMED until ALP-CTRL-011 is closed  
+Long-term database-backed progress source of truth: CLAIMED FOR W3 PROGRESS SCOPE ONLY  
 Deployment acceptance: NOT CLAIMED  
 Production readiness: NOT CLAIMED
 
@@ -112,5 +112,6 @@ Production readiness: NOT CLAIMED
 | 2.1 | 2026-06-30 | Filed W2 deployed proof closure and carried ALP-CTRL-010 forward. | AI-assisted draft | Merged by PR #79 |
 | 3.0 | 2026-06-30 | Filed W3 progress/completion implementation slice. | AI-assisted draft | Merged by PR #80 |
 | 3.1 | 2026-07-01 | Filed W3 progress proof fix after reviewer browser proof showed progress did not visibly update. | AI-assisted draft | Merged by PR #81 |
-| 3.2 | 2026-07-01 | Filed W3 deployed UI proof and kept W3 open pending ALP-CTRL-011 DB proof. | AI-assisted draft | Filed for review |
-| 3.3 | 2026-07-02 | Filed W3 database-backed progress proof as the closure PR; kept PR #82 as deployed UI proof only and left W4 blocked until merge. | AI-assisted draft | Filed for review as PR #83 |
+| 3.2 | 2026-07-01 | Filed W3 deployed UI proof and kept W3 open pending ALP-CTRL-011 DB proof. | AI-assisted draft | Filed by PR #82 as UI proof only |
+| 3.3 | 2026-07-02 | Filed W3 database-backed progress proof as the closure PR; kept PR #82 as deployed UI proof only and left W4 blocked until merge. | AI-assisted draft | Merged by PR #83 |
+| 3.4 | 2026-07-02 | Normalized GOV-ALP-083 post-merge status header and tracker posture after PR #83 merge. | AI-assisted draft | Filed for follow-up review |
