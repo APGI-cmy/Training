@@ -1,4 +1,4 @@
-# W3 Deployed Proof Closure Evidence
+# W3 Deployed UI Proof Evidence
 
 ## Status
 
@@ -6,7 +6,7 @@
 |---|---|
 | Module | ALP - APGI Learning Portal |
 | Wave | W3 - Progress + Completion |
-| Evidence Type | Deployed proof and closure decision |
+| Evidence Type | Deployed UI proof record |
 | Date | 2026-07-01 |
 | Status | Filed for review |
 | Branch | alp-w3-deployed-proof-closure |
@@ -16,17 +16,17 @@
 
 ---
 
-## Closure Basis
+## Proof Basis
 
 PR #80 added the first W3 progress and completion slice.
 
 PR #81 fixed the deployed proof gap after reviewer proof showed that completion did not visibly update progress.
 
-Reviewer then repeated deployed proof successfully.
+Reviewer then repeated deployed UI proof successfully.
 
 ---
 
-## Deployed Proof Results
+## Deployed UI Proof Results
 
 | Proof Item | Route or Action | Result | Notes |
 |---|---|---|---|
@@ -40,25 +40,27 @@ Reviewer then repeated deployed proof successfully.
 
 ---
 
-## Open Follow-Up Controls
+## Open Controls
 
 | Control ID | Control | Status | Required Action | Owner Wave |
 |---|---|---|---|---|
 | ALP-CTRL-010 | Legacy iSpring embedded video objects do not consistently play. | Open | Inspect exported iSpring asset references, video file availability, MIME type, and browser console or network errors. | W3 content-hardening or later content QA |
-| ALP-CTRL-011 | Live Supabase progress tables must be applied or verified before database-backed progress becomes the long-term source of truth. | Open | Apply or verify W3 progress migration tables: `progress_events`, `learner_progress`, and `completion_states`; then re-test database-backed progress persistence. | W3 follow-up before production hardening |
+| ALP-CTRL-011 | Live Supabase progress tables must be applied or verified before database-backed progress becomes the long-term source of truth. | Blocking W3 closure | Apply or verify W3 progress migration tables: `progress_events`, `learner_progress`, and `completion_states`; then capture database-backed progress proof. | W3 follow-up before W4 entry |
 
 ---
 
-## Closure Decision
+## Decision
 
-W3 may close for the approved Progress + Completion scope because the learner can mark a unit complete, the course shell shows a clear confirmation, course progress updates visibly, and dashboard progress updates visibly.
+This PR records W3 deployed UI proof only.
 
-The Supabase database-progress follow-up is carried forward as ALP-CTRL-011.
+W3 does not close in this PR because ALP-CTRL-011 remains open. W4 must not start until Supabase database-backed progress proof is captured.
 
 ---
 
 ## Non-Claims
 
+W3 closure: NOT CLAIMED.  
+W4 entry authorization: NOT CLAIMED.  
 Full app delivery: NOT CLAIMED.  
 CODE_PASS: NOT CLAIMED.  
 FUNCTIONAL_PASS: NOT CLAIMED.  
@@ -70,6 +72,6 @@ Production readiness: NOT CLAIMED.
 
 ---
 
-## W4 Entry Recommendation
+## Next Required Action
 
-After this closure PR is reviewed and merged, W4 may start for Enrolment + Payments while ALP-CTRL-010 and ALP-CTRL-011 remain open.
+Apply or verify the live Supabase progress tables and capture database-backed progress proof before filing W3 closure or authorizing W4.
