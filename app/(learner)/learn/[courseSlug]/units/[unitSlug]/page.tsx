@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
+import { CourseAccessDenied } from "@/components/course/CourseAccessDenied";
 import { UnitViewer } from "@/components/course/UnitViewer";
 import { getCourseBySlug } from "@/lib/courses";
 import { getCourseShell } from "@/lib/services/courses/get-course-shell";
 import { getUnitContent } from "@/lib/services/courses/get-unit-content";
+import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { getLearnerProgress } from "@/lib/services/progress/get-learner-progress";
 import { requireSession } from "@/server/auth/session";
 import { getCookieCompletedUnitIds } from "@/server/progress/progress-cookie";
@@ -23,6 +25,16 @@ export default async function Page({ params }: PageProps) {
 
   if (!course) {
     notFound();
+  }
+
+  const access = await getCourseAccess({
+    accessToken: session.accessToken,
+    userId: session.user.id,
+    courseId: course.id
+  });
+
+  if (!access.canAccess) {
+    return <CourseAccessDenied course={course} access={access} />;
   }
 
   const [progress, cookieCompletedUnitIds] = await Promise.all([
