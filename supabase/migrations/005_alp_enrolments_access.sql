@@ -46,34 +46,6 @@ using (
   )
 );
 
-drop policy if exists course_enrolments_insert_self_pending on public.course_enrolments;
-create policy course_enrolments_insert_self_pending
-on public.course_enrolments
-for insert
-with check (
-  user_id = auth.uid()
-  and status = 'pending'
-);
-
-drop policy if exists course_enrolments_admin_write on public.course_enrolments;
-create policy course_enrolments_admin_write
-on public.course_enrolments
-for all
-using (
-  exists (
-    select 1 from public.user_roles ur
-    where ur.user_id = auth.uid()
-      and ur.role = 'admin'
-  )
-)
-with check (
-  exists (
-    select 1 from public.user_roles ur
-    where ur.user_id = auth.uid()
-      and ur.role = 'admin'
-  )
-);
-
 drop policy if exists course_enrolment_events_select_self_or_admin on public.course_enrolment_events;
 create policy course_enrolment_events_select_self_or_admin
 on public.course_enrolment_events
@@ -87,18 +59,8 @@ using (
   )
 );
 
-drop policy if exists course_enrolment_events_insert_self_or_admin on public.course_enrolment_events;
-create policy course_enrolment_events_insert_self_or_admin
-on public.course_enrolment_events
-for insert
-with check (
-  user_id = auth.uid()
-  or exists (
-    select 1 from public.user_roles ur
-    where ur.user_id = auth.uid()
-      and ur.role = 'admin'
-  )
-);
+-- W4.1 is read-gating only. Enrolment writes are intentionally deferred to W4.2 admin/manual enrolment.
+-- No public enrolment insert/update policies are created in this migration.
 
 drop trigger if exists set_course_enrolments_updated_at on public.course_enrolments;
 create trigger set_course_enrolments_updated_at
