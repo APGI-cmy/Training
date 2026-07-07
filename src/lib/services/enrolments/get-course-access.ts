@@ -38,7 +38,7 @@ export function notEnrolledDecision(userId: string, courseId: string): CourseAcc
     userId,
     status: "not_enrolled",
     canAccess: false,
-    reason: "No enrolment record exists for this learner and course."
+    reason: "Course access could not be confirmed (enrolment missing or access check failed)."
   };
 }
 
