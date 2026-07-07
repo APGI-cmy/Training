@@ -1,0 +1,247 @@
+{
+  "id": "scannex-training-programme",
+  "slug": "scannex-training-programme",
+  "title": "Scannex Training Programme",
+  "level": "Operator training",
+  "description": "A staged Scannex training pathway for operators, using the published e-book package for LU 1 and placeholder module pages for the remaining learning units.",
+  "audience": "Scannex operators, supervisors, and training coordinators who need stable Thinkific lesson URLs for testing and rollout.",
+  "duration": "10 learning units",
+  "sourceRoot": "/courses/scannex-training-programme",
+  "integrationNotes": [
+    "Use the clean URL-module links in Thinkific Multimedia lessons.",
+    "LU 1 is prepared as an e-book package for Thinkific testing.",
+    "Later Scannex learning units currently use placeholder pages until the published packages are promoted."
+  ],
+  "units": [
+    {
+      "id": "lu1",
+      "slug": "lu1",
+      "legacySlug": "unit1",
+      "order": 1,
+      "title": "Introduction & The Case for Scannex",
+      "subtitle": "Start with the purpose of Scannex screening and the case for structured operator training.",
+      "duration": "E-book",
+      "assetBase": "/courses/Scannex Training Programme/LU 1 - Introduction & The Case for Scannex",
+      "publishedPath": "/courses/Scannex Training Programme/LU 1 - Introduction & The Case for Scannex/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Published e-book package",
+          "src": "/courses/Scannex Training Programme/LU 1 - Introduction & The Case for Scannex/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": []
+    },
+    {
+      "id": "lu2",
+      "slug": "lu2",
+      "legacySlug": "unit2",
+      "order": 2,
+      "title": "The X-ray",
+      "subtitle": "Placeholder for the forthcoming Scannex X-ray learning unit.",
+      "duration": "Coming soon",
+      "assetBase": "/courses/Scannex Training Programme/LU 2 - The X-ray",
+      "publishedPath": "/courses/Scannex Training Programme/LU 2 - The X-ray/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Placeholder package",
+          "src": "/courses/Scannex Training Programme/LU 2 - The X-ray/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": []
+    },
+    {
+      "id": "lu3",
+      "slug": "lu3",
+      "legacySlug": "unit3",
+      "order": 3,
+      "title": "Radiation Safety & International Standards",
+      "subtitle": "Placeholder for the forthcoming radiation safety and international standards learning unit.",
+      "duration": "Coming soon",
+      "assetBase": "/courses/Scannex Training Programme/LU 3 - Radiation Safety & International Standards",
+      "publishedPath": "/courses/Scannex Training Programme/LU 3 - Radiation Safety & International Standards/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Placeholder package",
+          "src": "/courses/Scannex Training Programme/LU 3 - Radiation Safety & International Standards/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": []
+    },
+    {
+      "id": "lu4",
+      "slug": "lu4",
+      "legacySlug": "unit4",
+      "order": 4,
+      "title": "The Legal & Human Rights Framework",
+      "subtitle": "Placeholder for the forthcoming legal and human rights framework learning unit.",
+      "duration": "Coming soon",
+      "assetBase": "/courses/Scannex Training Programme/LU 4 - The Legal & Human Rights Framework",
+      "publishedPath": "/courses/Scannex Training Programme/LU 4 - The Legal & Human Rights Framework/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Placeholder package",
+          "src": "/courses/Scannex Training Programme/LU 4 - The Legal & Human Rights Framework/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": []
+    },
+    {
+      "id": "lu5",
+      "slug": "lu5",
+      "legacySlug": "unit5",
+      "order": 5,
+      "title": "The Scannex System",
+      "subtitle": "Placeholder for the forthcoming Scannex system learning unit.",
+      "duration": "Coming soon",
+      "assetBase": "/courses/Scannex Training Programme/LU 5 - The Scannex System",
+      "publishedPath": "/courses/Scannex Training Programme/LU 5 - The Scannex System/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Placeholder package",
+          "src": "/courses/Scannex Training Programme/LU 5 - The Scannex System/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": []
+    },
+    {
+      "id": "lu6",
+      "slug": "lu6",
+      "legacySlug": "unit6",
+      "order": 6,
+      "title": "The Viewing System",
+      "subtitle": "Placeholder for the forthcoming viewing system learning unit.",
+      "duration": "Coming soon",
+      "assetBase": "/courses/Scannex Training Programme/LU 6 - The Viewing System",
+      "publishedPath": "/courses/Scannex Training Programme/LU 6 - The Viewing System/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Placeholder package",
+          "src": "/courses/Scannex Training Programme/LU 6 - The Viewing System/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": []
+    },
+    {
+      "id": "lu7",
+      "slug": "lu7",
+      "legacySlug": "unit7",
+      "order": 7,
+      "title": "Image Interpretation & Detection",
+      "subtitle": "Placeholder for the forthcoming image interpretation and detection learning unit.",
+      "duration": "Coming soon",
+      "assetBase": "/courses/Scannex Training Programme/LU 7 - Image Interpretation & Detection",
+      "publishedPath": "/courses/Scannex Training Programme/LU 7 - Image Interpretation & Detection/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Placeholder package",
+          "src": "/courses/Scannex Training Programme/LU 7 - Image Interpretation & Detection/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": []
+    },
+    {
+      "id": "lu8",
+      "slug": "lu8",
+      "legacySlug": "unit8",
+      "order": 8,
+      "title": "Human Anatomy for the Operator",
+      "subtitle": "Placeholder for the forthcoming human anatomy learning unit.",
+      "duration": "Coming soon",
+      "assetBase": "/courses/Scannex Training Programme/LU - 8 Human Anatomy for the operator",
+      "publishedPath": "/courses/Scannex Training Programme/LU - 8 Human Anatomy for the operator/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Placeholder package",
+          "src": "/courses/Scannex Training Programme/LU - 8 Human Anatomy for the operator/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": []
+    },
+    {
+      "id": "lu9",
+      "slug": "lu9",
+      "legacySlug": "unit9",
+      "order": 9,
+      "title": "To be announced",
+      "subtitle": "Placeholder for a future Scannex learning unit.",
+      "duration": "Coming soon",
+      "assetBase": "/courses/Scannex Training Programme/LU 9 to be anounced",
+      "publishedPath": "/courses/Scannex Training Programme/LU 9 to be anounced/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Placeholder package",
+          "src": "/courses/Scannex Training Programme/LU 9 to be anounced/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": []
+    },
+    {
+      "id": "lu10",
+      "slug": "lu10",
+      "legacySlug": "unit10",
+      "order": 10,
+      "title": "To be announced",
+      "subtitle": "Placeholder for a future Scannex learning unit.",
+      "duration": "Coming soon",
+      "assetBase": "/courses/Scannex Training Programme/LU 10 to be anounced",
+      "publishedPath": "/courses/Scannex Training Programme/LU 10 to be anounced/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Placeholder package",
+          "src": "/courses/Scannex Training Programme/LU 10 to be anounced/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": []
+    }
+  ]
+}

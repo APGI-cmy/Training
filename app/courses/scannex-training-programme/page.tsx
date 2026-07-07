@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { getVpshrLevel0Course } from "@/lib/courses";
+import { getScannexTrainingProgrammeCourse } from "@/lib/courses";
 
 export const metadata = {
-  title: "VPSHR Level 0 URL Index",
-  description: "Stable URL list for Thinkific multimedia lessons."
+  title: "Scannex Training Programme URL Index",
+  description: "Stable URL list for Scannex Training Programme Thinkific lessons."
 };
 
 const deploymentOrigin = process.env.NEXT_PUBLIC_DEPLOYMENT_ORIGIN?.replace(/\/$/, "");
@@ -16,18 +16,19 @@ function toAbsoluteUrl(path: string): string {
   return `${deploymentOrigin}${path}`;
 }
 
-export default function VpshrLevel0Page() {
-  const course = getVpshrLevel0Course();
+export default function ScannexTrainingProgrammePage() {
+  const course = getScannexTrainingProgrammeCourse();
   const urls = course.units.map((unit) => {
     const slug = unit.legacySlug ?? unit.slug;
     const path = `/courses/${course.slug}/${slug}`;
 
     return {
       id: unit.id,
-      label: unit.order === 0 ? "Introduction" : `Unit ${unit.order}`,
+      label: `LU ${unit.order}`,
       title: unit.title,
       path,
-      absoluteUrl: toAbsoluteUrl(path)
+      absoluteUrl: toAbsoluteUrl(path),
+      status: unit.order === 1 ? "E-book package" : "Placeholder package"
     };
   });
 
@@ -53,6 +54,7 @@ export default function VpshrLevel0Page() {
                   {unit.label}: {unit.title}
                 </strong>
                 <code>{unit.absoluteUrl}</code>
+                <small>{unit.status}</small>
               </div>
               <Link className="open-link" href={unit.path}>
                 Open
