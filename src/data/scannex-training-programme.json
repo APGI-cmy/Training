@@ -3,13 +3,13 @@
   "slug": "scannex-training-programme",
   "title": "Scannex Training Programme",
   "level": "Operator training",
-  "description": "A staged Scannex training pathway for operators, using the published e-book package for LU 1 and placeholder module pages for the remaining learning units.",
+  "description": "A staged Scannex training pathway for operators, using the published e-book packages for LU 1 and LU 2 and placeholder module pages for the remaining learning units.",
   "audience": "Scannex operators, supervisors, and training coordinators who need stable Thinkific lesson URLs for testing and rollout.",
   "duration": "10 learning units",
   "sourceRoot": "/courses/scannex-training-programme",
   "integrationNotes": [
     "Use the clean URL-module links in Thinkific Multimedia lessons.",
-    "LU 1 is prepared as an e-book package for Thinkific testing.",
+    "LU 1 and LU 2 are prepared as e-book packages for Thinkific testing.",
     "Later Scannex learning units currently use placeholder pages until the published packages are promoted."
   ],
   "units": [
@@ -42,15 +42,15 @@
       "legacySlug": "unit2",
       "order": 2,
       "title": "The X-ray",
-      "subtitle": "Placeholder for the forthcoming Scannex X-ray learning unit.",
-      "duration": "Coming soon",
+      "subtitle": "Learn the core X-ray concepts that support Scannex screening and image interpretation.",
+      "duration": "E-book",
       "assetBase": "/courses/Scannex Training Programme/LU 2 - The X-ray",
       "publishedPath": "/courses/Scannex Training Programme/LU 2 - The X-ray/index.html",
       "objectives": [],
       "media": [
         {
           "kind": "embed",
-          "title": "Placeholder package",
+          "title": "Published e-book package",
           "src": "/courses/Scannex Training Programme/LU 2 - The X-ray/index.html"
         }
       ],

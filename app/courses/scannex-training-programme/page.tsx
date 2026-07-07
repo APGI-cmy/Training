@@ -28,7 +28,7 @@ export default function ScannexTrainingProgrammePage() {
       title: unit.title,
       path,
       absoluteUrl: toAbsoluteUrl(path),
-      status: unit.order === 1 ? "E-book package" : "Placeholder package"
+      status: unit.duration === "E-book" ? "E-book package" : "Placeholder package"
     };
   });
 
