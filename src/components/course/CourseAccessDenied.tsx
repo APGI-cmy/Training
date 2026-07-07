@@ -2,6 +2,22 @@ import Link from "next/link";
 import type { CourseAccessDecision } from "@/lib/services/enrolments/get-course-access";
 import type { Course } from "@/types/course";
 
+function deniedHeading(status: CourseAccessDecision["status"]): string {
+  if (status === "pending") {
+    return "Course access pending";
+  }
+
+  if (status === "revoked") {
+    return "Course access revoked";
+  }
+
+  if (status === "unknown") {
+    return "Course access unavailable";
+  }
+
+  return "Course access required";
+}
+
 export function CourseAccessDenied({
   course,
   access
@@ -19,17 +35,14 @@ export function CourseAccessDenied({
             Back to dashboard
           </Link>
           <p className="eyebrow">W4 enrolment access gate</p>
-          <h1>Course access pending</h1>
+          <h1>{deniedHeading(access.status)}</h1>
           <p>
             {course.title} is available only when your enrolment status grants access to this course.
           </p>
           <p role="status">Current enrolment status: {statusLabel}.</p>
           <p>{access.reason}</p>
           <div className="button-row">
-            <Link className="primary-button" href={`/courses/${course.slug}`}>
-              View course overview
-            </Link>
-            <Link className="secondary-button" href="/dashboard">
+            <Link className="primary-button" href="/dashboard">
               Return to dashboard
             </Link>
           </div>
