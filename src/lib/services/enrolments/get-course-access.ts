@@ -1,6 +1,6 @@
 import { getSupabaseRestUrl } from "@/server/auth/session";
 
-export type CourseEnrolmentStatus = "not_enrolled" | "pending" | "enrolled" | "revoked";
+export type CourseEnrolmentStatus = "not_enrolled" | "pending" | "enrolled" | "revoked" | "unknown";
 
 export interface CourseAccessDecision {
   courseId: string;
@@ -42,6 +42,16 @@ export function notEnrolledDecision(userId: string, courseId: string): CourseAcc
   };
 }
 
+export function unknownAccessDecision(userId: string, courseId: string): CourseAccessDecision {
+  return {
+    courseId,
+    userId,
+    status: "unknown",
+    canAccess: false,
+    reason: "Course access could not be verified. Please try again or contact support."
+  };
+}
+
 export async function getCourseAccess({
   accessToken,
   userId,
@@ -57,7 +67,7 @@ export async function getCourseAccess({
   );
 
   if (!headers || !url) {
-    return notEnrolledDecision(userId, courseId);
+    return unknownAccessDecision(userId, courseId);
   }
 
   const response = await fetch(url, {
@@ -67,10 +77,17 @@ export async function getCourseAccess({
   });
 
   if (!response.ok) {
-    return notEnrolledDecision(userId, courseId);
+    return unknownAccessDecision(userId, courseId);
   }
 
-  const rows = (await response.json().catch(() => [])) as CourseEnrolmentRow[];
+  let rows: CourseEnrolmentRow[];
+
+  try {
+    rows = (await response.json()) as CourseEnrolmentRow[];
+  } catch {
+    return unknownAccessDecision(userId, courseId);
+  }
+
   const enrolment = rows[0];
 
   if (!enrolment?.status) {
