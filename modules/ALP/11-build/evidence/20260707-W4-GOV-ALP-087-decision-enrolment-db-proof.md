@@ -10,7 +10,7 @@
 | Date | 2026-07-07 |
 | Status | Filed for proof review |
 | Branch | `alp-w4-1-live-db-proof` |
-| Planned PR | W4.1 live DB proof PR |
+| Current PR | PR #87 - W4.1 live DB proof PR |
 | Repository | APGI-cmy/Training |
 | Supabase Project | `apgi-learning-portal` / `ooujszdvncwijbuzpjfp` |
 
@@ -23,8 +23,8 @@ This evidence records that migration `005_alp_enrolments_access` was applied to 
 The proof posture is deliberately narrow:
 
 - Direct tool verification confirmed only that the two W4.1 tables exist in the live `public` schema.
-- Deeper RLS/policy/catalog verification could not be completed through the Supabase connector because the metadata SQL checks were blocked by the tool safety layer.
-- RLS/policy verification must therefore be completed either through Supabase UI confirmation or manually run SQL before W4.1 can be closed as fully accepted.
+- Deeper RLS, policy, and catalog verification could not be completed through the Supabase connector because metadata checks were blocked by the tool safety layer.
+- RLS and policy verification must therefore be completed either through Supabase UI confirmation or manually run SQL before W4.1 can be closed as fully accepted.
 
 ---
 
@@ -43,15 +43,7 @@ The proof posture is deliberately narrow:
 
 ## Directly Verified Through Tool
 
-The following SQL was run through the Supabase connector after the migration was applied:
-
-```sql
-select table_name
-from information_schema.tables
-where table_schema = 'public'
-  and table_name in ('course_enrolments', 'course_enrolment_events')
-order by table_name;
-```
+After the migration was applied, the Supabase connector was used to inspect the live `public` schema for the two W4.1 enrolment tables.
 
 The returned result confirmed both W4.1 tables exist:
 
@@ -92,50 +84,14 @@ Based on the merged migration file in `main`, W4.1 is expected to provide:
 
 ---
 
-## Manual Verification SQL
+## Manual Verification Required
 
-Run the following manually in Supabase SQL editor if connector verification remains blocked.
+Manual verification should confirm:
 
-### RLS status
-
-```sql
-select tablename, rowsecurity
-from pg_tables
-where schemaname = 'public'
-  and tablename in ('course_enrolments', 'course_enrolment_events')
-order by tablename;
-```
-
-Expected result: both rows return `rowsecurity = true`.
-
-### Policy list
-
-```sql
-select tablename, policyname, cmd
-from pg_policies
-where schemaname = 'public'
-  and tablename in ('course_enrolments', 'course_enrolment_events')
-order by tablename, policyname;
-```
-
-Expected result: select policies exist for both tables. No public insert/update policies should exist in W4.1.
-
-### Table existence
-
-```sql
-select table_name
-from information_schema.tables
-where table_schema = 'public'
-  and table_name in ('course_enrolments', 'course_enrolment_events')
-order by table_name;
-```
-
-Expected result:
-
-```text
-course_enrolment_events
-course_enrolments
-```
+1. Both W4.1 tables have RLS enabled.
+2. Select policies exist for both tables.
+3. No public insert or update policies exist in W4.1.
+4. The migration is visible in Supabase migration history, if the UI exposes it.
 
 ---
 
@@ -147,7 +103,7 @@ W4.1 can be closed only after one of the following is captured:
 
 1. Supabase UI screenshots confirming RLS and policy posture; or
 2. manually run SQL results confirming RLS and policy posture; or
-3. successful connector SQL verification if the tool-blocking issue is later resolved.
+3. successful connector verification if the tool-blocking issue is later resolved.
 
 ---
 
