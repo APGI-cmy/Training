@@ -3,11 +3,11 @@
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
 **Last Updated**: 2026-07-07  
-**Updated By**: GOV-ALP-087 W4.1 live DB proof  
-> **Classification**: ACTIVE - W4.1 PARTIAL LIVE DB PROOF FILED  
+**Updated By**: GOV-ALP-088 W4.1 DB proof closure  
+> **Classification**: ACTIVE - W4.1 DB PROOF CLOSURE FILED  
 > **Repository**: APGI-cmy/Training  
 > **Current Workstream**: W4.1 Enrolment state and course access gating  
-> **Next Required Action**: Complete manual/UI DB control verification before W4.1 closure
+> **Next Required Action**: Review/merge W4.1 DB proof closure PR; then open W4.2 manual/admin enrolment if accepted
 
 ---
 
@@ -20,7 +20,7 @@
 | W2 Dashboard / Course Shell / Unit Viewer | Closed for W2 scope | PR #79 / `1b2ae564437a90349ccca95138ac430bf680089b` |
 | W3 Progress + Completion | Closed for approved W3 database-backed progress scope | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 merged; PR #84 normalized post-merge evidence |
 | W4 Enrolment + Payments | Entry merged; implementation started | PR #85 merged; W4.1 implementation merged by PR #86 |
-| W4.1 Enrolment state and access gating | Partial live DB proof filed; deeper DB control verification pending | `modules/ALP/11-build/evidence/20260707-W4-GOV-ALP-087-decision-enrolment-db-proof.md` |
+| W4.1 Enrolment state and access gating | DB proof closure filed for review | `modules/ALP/11-build/evidence/20260707-W4-GOV-ALP-088-decision-enrolment-db-proof-closure.md` |
 
 ---
 
@@ -74,19 +74,23 @@
 | Unit viewer gate | `/learn/[courseSlug]/units/[unitSlug]` now checks `getCourseAccess` before loading unit content. |
 | Negative path | `CourseAccessDenied` renders governed denied state. |
 | Static QA | `tests/qa-to-red/alp/enrolment-access.spec.ts` added. |
-| Live DB proof | Partial table-existence proof filed by GOV-ALP-087; deeper DB control proof pending. |
+| Live DB proof | DB-proof closure filed by GOV-ALP-088. |
 
 ---
 
-## W4.1 Live DB Proof Filed
+## W4.1 DB Proof Closure Filed
 
 | Proof Item | Status |
 |---|---|
-| Migration application | `005_alp_enrolments_access` applied to `apgi-learning-portal` and Supabase returned success. |
-| `public.course_enrolments` | Directly verified as existing through Supabase connector SQL. |
-| `public.course_enrolment_events` | Directly verified as existing through Supabase connector SQL. |
-| Deeper DB control checks | Not directly verified through connector; manual/UI confirmation required. |
-| W4.1 closure | Not claimed. |
+| Migration history | Verified `004_alp_progress_completion` and `005_alp_enrolments_access`. |
+| `public.course_enrolments` | Exists; row-count smoke read succeeded. |
+| `public.course_enrolment_events` | Exists; row-count smoke read succeeded. |
+| RLS on `public.course_enrolments` | Verified enabled. |
+| RLS on `public.course_enrolment_events` | Verified enabled. |
+| Policy on `public.course_enrolments` | Verified `course_enrolments_select_self_or_admin`, `SELECT`. |
+| Policy on `public.course_enrolment_events` | Verified `course_enrolment_events_select_self_or_admin`, `SELECT`. |
+| W4.1 DB proof closure | Filed for review; not merged yet. |
+| W4 closure | Not claimed. |
 
 ---
 
@@ -98,7 +102,7 @@
 | W1 | Auth + Profile + Files | CLOSED FOR W1 SCOPE | W1 evidence files | PR #73-#77 merged | Checks accepted before merge | Admin console proof deferred |
 | W2 | Dashboard + Course Shell + Unit Viewer | CLOSED FOR W2 SCOPE | W2 evidence files | PR #78 and PR #79 merged | Checks accepted before merge | ALP-CTRL-010 carried forward |
 | W3 | Progress + Completion | CLOSED FOR APPROVED W3 SCOPE | W3 evidence files | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 merged; PR #84 merged | PR #83 and PR #84 merged | ALP-CTRL-011 closed; ALP-CTRL-010 remains open |
-| W4 | Enrolment + Payments | IMPLEMENTATION STARTED | W4/W4.1 evidence files including GOV-ALP-087 | PR #85 and PR #86 merged; PR #87 current proof PR | Checks pending | W4.1 deeper DB control proof pending; no payment readiness claim |
+| W4 | Enrolment + Payments | IMPLEMENTATION STARTED | W4/W4.1 evidence files including GOV-ALP-088 | PR #85, PR #86, and PR #87 merged; W4.1 DB proof closure PR pending | Checks pending | No payment readiness claim; W4.2 not started |
 | W5 | Assessment Submission | WAITING | Pending W5 evidence | No W5 PR yet | No checks run | Requires W1/W3/W4 closure |
 | W6 | AI Evaluation + Human Review | WAITING | Pending W6 evidence | No W6 PR yet | No checks run | Requires W5 closure |
 | W7 | Certificates | WAITING | Pending W7 evidence | No W7 PR yet | No checks run | Requires W3/W6 closure |
@@ -122,7 +126,7 @@
 
 ## Immediate Next Action
 
-Complete manual/UI DB control verification for W4.1, then file W4.1 closure proof if the expected posture is confirmed.
+Review and merge W4.1 DB proof closure PR if accepted. After merge, open W4.2 manual/admin enrolment creation and audit-trail management.
 
 ---
 
@@ -134,8 +138,8 @@ W3 Closure: CLOSED FOR APPROVED W3 SCOPE BY PR #83
 W4 Entry: MERGED BY PR #85  
 W4 Start: IMPLEMENTATION STARTED WITH W4.1  
 W4.1 Implementation: MERGED BY PR #86  
-W4.1 Live DB Proof: PARTIAL TABLE-EXISTENCE PROOF FILED  
-W4.1 Closure: NOT CLAIMED  
+W4.1 DB Proof Closure: FILED FOR REVIEW  
+W4 Closure: NOT CLAIMED  
 Full App Delivery: NOT CLAIMED  
 CODE_PASS: NOT CLAIMED  
 FUNCTIONAL_PASS: NOT CLAIMED  
@@ -162,4 +166,5 @@ Production readiness: NOT CLAIMED
 | 3.4 | 2026-07-02 | Normalized GOV-ALP-083 post-merge status header and tracker posture after PR #83 merge. | AI-assisted draft | Merged by PR #84 |
 | 4.0 | 2026-07-02 | Filed W4 enrolment and payments entry governance. | AI-assisted draft | Merged by PR #85 |
 | 4.1 | 2026-07-02 | Filed W4.1 enrolment state and course access gating implementation. | AI-assisted draft | Merged by PR #86 |
-| 4.2 | 2026-07-07 | Filed W4.1 live DB table-existence proof after migration application. | AI-assisted draft | Filed for W4.1 proof review |
+| 4.2 | 2026-07-07 | Filed W4.1 live DB table-existence proof after migration application. | AI-assisted draft | Merged by PR #87 |
+| 4.3 | 2026-07-07 | Filed W4.1 DB proof closure after connector validation of tables, reads, RLS, policies, and migration history. | AI-assisted draft | Filed for review |
