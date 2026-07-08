@@ -89,6 +89,7 @@
 | RLS on `public.course_enrolment_events` | Verified enabled. |
 | Policy on `public.course_enrolments` | Verified `course_enrolments_select_self_or_admin`, `SELECT`. |
 | Policy on `public.course_enrolment_events` | Verified `course_enrolment_events_select_self_or_admin`, `SELECT`. |
+| Non-SELECT write policies | Verified absent on both W4.1 enrolment tables. |
 | W4.1 DB proof closure | Filed for review; not merged yet. |
 | W4 closure | Not claimed. |
 
@@ -167,4 +168,4 @@ Production readiness: NOT CLAIMED
 | 4.0 | 2026-07-02 | Filed W4 enrolment and payments entry governance. | AI-assisted draft | Merged by PR #85 |
 | 4.1 | 2026-07-02 | Filed W4.1 enrolment state and course access gating implementation. | AI-assisted draft | Merged by PR #86 |
 | 4.2 | 2026-07-07 | Filed W4.1 live DB table-existence proof after migration application. | AI-assisted draft | Merged by PR #87 |
-| 4.3 | 2026-07-07 | Filed W4.1 DB proof closure after connector validation of tables, reads, RLS, policies, and migration history. | AI-assisted draft | Filed for review |
+| 4.3 | 2026-07-07 | Filed W4.1 DB proof closure after connector validation of tables, reads, RLS, policies, no write policies, and migration history. | AI-assisted draft | Filed for review |
