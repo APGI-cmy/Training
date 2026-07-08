@@ -40,6 +40,7 @@ This closure is limited to W4.1 database proof for enrolment access gating. It d
 | RLS on `public.course_enrolment_events` | Verified `rowsecurity = true`. |
 | Policy on `public.course_enrolments` | Verified `course_enrolments_select_self_or_admin`, command `SELECT`. |
 | Policy on `public.course_enrolment_events` | Verified `course_enrolment_events_select_self_or_admin`, command `SELECT`. |
+| Write policy check | Verified no non-SELECT policies exist on either W4.1 enrolment table. |
 | Migration history | Verified migrations include `004_alp_progress_completion` and `005_alp_enrolments_access`. |
 
 ---
@@ -53,7 +54,8 @@ The following W4.1 DB proof items are now accepted for the W4.1 enrolment access
 3. Table reads succeed through the connector.
 4. RLS is enabled on both tables.
 5. Each table has the expected SELECT policy.
-6. No insert/update policy proof is claimed because W4.1 intentionally defers enrolment write management to W4.2.
+6. No non-SELECT write policies exist on either W4.1 enrolment table.
+7. Enrolment write management remains intentionally deferred to W4.2.
 
 ---
 
