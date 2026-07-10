@@ -6,7 +6,7 @@
 |---|---|
 | Module | ALP - APGI Learning Portal |
 | Artifact | Build Evidence Index |
-| Status | Updated for W4.1 final closure |
+| Status | Updated for W4.1 UI proof hold |
 | Date | 2026-07-10 |
 | Repository | APGI-cmy/Training |
 | Canonical Path | `modules/ALP/11-build/evidence/index.md` |
@@ -28,7 +28,7 @@
 | W4.1 | `modules/ALP/11-build/evidence/20260702-W4-GOV-ALP-086-decision-enrolment-access-gating.md` | GOV-ALP-086; enrolment-access-gating; QA-ALP-241-244 | Enrolled learner allowed; denied states blocked | GitHub PR evidence / Supabase migration | PR #86 / `28d6b23a79abc9835c4193b603d69e783a9fa0d4` | Merged | BC-ALP-CONSOLIDATED-001 | Implementation merged | W4.1 implementation slice merged; live DB proof captured later. |
 | W4.1 | `modules/ALP/11-build/evidence/20260707-W4-GOV-ALP-087-decision-enrolment-db-proof.md` | GOV-ALP-087; live-db-proof; table-existence-proof | Table existence verified; deeper DB controls pending | Live Supabase / connector SQL | PR #87 / `cf307dd31aa4086b1248481cc968e7459fc8ae23` | Merged | BC-ALP-CONSOLIDATED-001 | Partial DB proof filed; superseded by GOV-ALP-088 | Migration applied and both tables directly verified. |
 | W4.1 | `modules/ALP/11-build/evidence/20260707-W4-GOV-ALP-088-decision-enrolment-db-proof-closure.md` | GOV-ALP-088; db-proof-closure; connector-validation | DB proof closure for W4.1 enrolment access gating | Live Supabase / connector SQL | PR #88 / `06d80000f35cfe90ffbc1fec3cb07f312cee1cd7` | Merged | BC-ALP-CONSOLIDATED-001 | DB proof closed for W4.1 | RLS, select policies, no write policies, table reads, table existence, and migration history directly verified. |
-| W4.1 | `modules/ALP/11-build/evidence/20260710-W4-GOV-ALP-089-decision-w4-1-final-closure.md` | GOV-ALP-089; w4-1-final-closure | W4.1 final closure normalization | GitHub evidence chain / live Supabase proof chain | Current W4.1 closure normalization PR | Pending review | BC-ALP-CONSOLIDATED-001 | W4.1 closed for approved scope | Records that W4.1 is closed based on PR #86 implementation and PR #88 DB proof closure. |
+| W4.1 | `modules/ALP/11-build/evidence/20260710-W4-GOV-ALP-089-decision-w4-1-final-closure.md` | GOV-ALP-089; w4-1-ui-proof-hold | W4.1 UI proof hold | GitHub evidence chain / live Supabase proof chain | Current W4.1 UI proof hold PR | Pending review | BC-ALP-CONSOLIDATED-001 | W4.1 final closure held | Records that DB proof is closed but UI/browser proof is still required before final W4.1 closure. |
 
 ---
 
@@ -44,4 +44,4 @@ Production readiness: NOT CLAIMED.
 Live payment readiness: NOT CLAIMED.  
 ALP-CTRL-010: OPEN and carried forward.  
 W4: IMPLEMENTATION STARTED, but W4 implementation/closure is NOT CLAIMED.  
-W4.1: CLOSED FOR APPROVED SCOPE ONLY; W4.2 and W4 closure are NOT CLAIMED.
+W4.1: DB PROOF CLOSED, but W4.1 FINAL CLOSURE is HELD pending UI/browser proof.
