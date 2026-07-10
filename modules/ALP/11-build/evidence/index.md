@@ -6,7 +6,7 @@
 |---|---|
 | Module | ALP - APGI Learning Portal |
 | Artifact | Build Evidence Index |
-| Status | Updated for W4.1 live DB proof |
+| Status | Updated for W4.1 DB proof closure |
 | Date | 2026-07-07 |
 | Repository | APGI-cmy/Training |
 | Canonical Path | `modules/ALP/11-build/evidence/index.md` |
@@ -26,7 +26,8 @@
 | W3 | `modules/ALP/11-build/evidence/20260702-W3-GOV-ALP-083-decision-db-progress-closure.md` | GOV-ALP-083; db-progress-proof; ALP-CTRL-011 | W3 database-backed progress closure path | Live Supabase / GitHub PR evidence | PR #83 / `55c686aeda1dc293d6ad6de72526f86e2cb488c9` | Merged | BC-ALP-CONSOLIDATED-001 | Closed for approved W3 scope | Live migration verified for progress tables and W3 proof rows. |
 | W4 | `modules/ALP/11-build/evidence/20260702-W4-GOV-ALP-085-decision-enrolment-payments-entry.md` | GOV-ALP-085; enrolment-payments-entry | W4 enrolment + payments entry path | GitHub PR evidence | PR #85 / `1179887489a1e0f2dddc364b837b99251ee2adbb` | Merged | BC-ALP-CONSOLIDATED-001 | Entry merged; not closed | Opens W4 governance only; no payment readiness claim. |
 | W4.1 | `modules/ALP/11-build/evidence/20260702-W4-GOV-ALP-086-decision-enrolment-access-gating.md` | GOV-ALP-086; enrolment-access-gating; QA-ALP-241-244 | Enrolled learner allowed; denied states blocked | GitHub PR evidence / Supabase migration | PR #86 / `28d6b23a79abc9835c4193b603d69e783a9fa0d4` | Merged | BC-ALP-CONSOLIDATED-001 | Implementation merged; DB proof started | Direct table-existence proof captured later in GOV-ALP-087. |
-| W4.1 | `modules/ALP/11-build/evidence/20260707-W4-GOV-ALP-087-decision-enrolment-db-proof.md` | GOV-ALP-087; live-db-proof; table-existence-proof | Table existence verified; deeper DB controls pending | Live Supabase / connector SQL | PR #87 / current proof PR | Pending review | BC-ALP-CONSOLIDATED-001 | Partial DB proof filed; not closed | Migration applied and both tables directly verified; deeper DB control verification still required. |
+| W4.1 | `modules/ALP/11-build/evidence/20260707-W4-GOV-ALP-087-decision-enrolment-db-proof.md` | GOV-ALP-087; live-db-proof; table-existence-proof | Table existence verified; deeper DB controls pending | Live Supabase / connector SQL | PR #87 / `cf307dd31aa4086b1248481cc968e7459fc8ae23` | Merged | BC-ALP-CONSOLIDATED-001 | Partial DB proof filed; superseded by GOV-ALP-088 | Migration applied and both tables directly verified. |
+| W4.1 | `modules/ALP/11-build/evidence/20260707-W4-GOV-ALP-088-decision-enrolment-db-proof-closure.md` | GOV-ALP-088; db-proof-closure; connector-validation | DB proof closure for W4.1 enrolment access gating | Live Supabase / connector SQL | Pending W4.1 DB proof closure PR | Pending review | BC-ALP-CONSOLIDATED-001 | Closure filed for DB-proof scope only | RLS, select policies, no write policies, table reads, table existence, and migration history directly verified. |
 
 ---
 
@@ -42,4 +43,4 @@ Production readiness: NOT CLAIMED.
 Live payment readiness: NOT CLAIMED.  
 ALP-CTRL-010: OPEN and carried forward.  
 W4: IMPLEMENTATION STARTED, but W4 implementation/closure is NOT CLAIMED.  
-W4.1: PARTIAL LIVE DB PROOF FILED, but deeper DB control verification and full closure are NOT CLAIMED.
+W4.1: DB PROOF CLOSURE FILED for verified database-proof scope only; W4 closure is NOT CLAIMED.
