@@ -3,11 +3,11 @@
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
 **Last Updated**: 2026-07-10  
-**Updated By**: GOV-ALP-089 W4.1 final closure  
-> **Classification**: ACTIVE - W4.1 CLOSED FOR APPROVED SCOPE  
+**Updated By**: GOV-ALP-089 W4.1 UI proof hold  
+> **Classification**: ACTIVE - W4.1 UI PROOF REQUIRED BEFORE FINAL CLOSURE  
 > **Repository**: APGI-cmy/Training  
-> **Current Workstream**: W4.2 manual/admin enrolment creation and audit-trail management  
-> **Next Required Action**: Open W4.2 manual/admin enrolment creation and audit-trail management
+> **Current Workstream**: W4.1 UI/browser proof for enrolment access gating  
+> **Next Required Action**: Capture W4.1 UI/browser proof for enrolled access and denied states
 
 ---
 
@@ -19,8 +19,8 @@
 | W1 Closure / W2 Entry | Closed for W1 scope | PR #77 / `f492c8efd8c83cbca49481191315ac2869c62c3b` |
 | W2 Dashboard / Course Shell / Unit Viewer | Closed for W2 scope | PR #79 / `1b2ae564437a90349ccca95138ac430bf680089b` |
 | W3 Progress + Completion | Closed for approved W3 database-backed progress scope | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 merged; PR #84 normalized post-merge evidence |
-| W4 Enrolment + Payments | Entry merged; implementation started | PR #85 merged; W4.1 closed for approved scope; W4.2 not started |
-| W4.1 Enrolment state and access gating | Closed for approved W4.1 scope | PR #86 implementation merge; PR #88 DB proof closure merge; GOV-ALP-089 closure normalization |
+| W4 Enrolment + Payments | Entry merged; implementation started | PR #85 merged; W4.1 DB proof closed; W4.1 UI proof pending |
+| W4.1 Enrolment state and access gating | Held pending UI/browser proof | PR #86 implementation merge; PR #88 DB proof closure merge; GOV-ALP-089 UI proof hold |
 
 ---
 
@@ -63,19 +63,20 @@
 
 ---
 
-## W4.1 Closed for Approved Scope
+## W4.1 DB Proof Closed; UI Proof Pending
 
 | Proof Item | Status |
 |---|---|
 | Enrolment table | Added as `public.course_enrolments` in migration `005_alp_enrolments_access.sql`. |
 | Enrolment event table | Added as `public.course_enrolment_events` for audit trail. |
 | Enrolment statuses | `pending`, `enrolled`, `revoked`; application treats missing row as `not_enrolled`. |
-| Course shell gate | `/learn/[courseSlug]` checks `getCourseAccess` before loading progress/course content. |
-| Unit viewer gate | `/learn/[courseSlug]/units/[unitSlug]` checks `getCourseAccess` before loading unit content. |
-| Negative path | `CourseAccessDenied` renders governed denied state. |
+| Course shell gate implementation | `/learn/[courseSlug]` checks `getCourseAccess` before loading progress/course content. |
+| Unit viewer gate implementation | `/learn/[courseSlug]/units/[unitSlug]` checks `getCourseAccess` before loading unit content. |
+| Negative path implementation | `CourseAccessDenied` renders governed denied state. |
 | Static QA | `tests/qa-to-red/alp/enrolment-access.spec.ts` added. |
 | Live DB proof | Closed by PR #88 after connector validation. |
-| W4.1 final closure | Closed for approved W4.1 scope by GOV-ALP-089. |
+| UI/browser proof | Required before final W4.1 closure. |
+| W4.1 final closure | Not claimed. |
 
 ---
 
@@ -96,6 +97,18 @@
 
 ---
 
+## W4.1 UI Proof Still Required
+
+| UI Proof Item | Required Evidence |
+|---|---|
+| Enrolled learner allowed | Browser proof that a learner with `course_enrolments.status = enrolled` can access the course shell and unit viewer. |
+| Not enrolled denied | Browser proof that a learner with no enrolment row receives the governed access-denied state. |
+| Pending denied | Browser proof that a learner with `course_enrolments.status = pending` receives the governed access-denied state. |
+| Revoked denied | Browser proof that a learner with `course_enrolments.status = revoked` receives the governed access-denied state. |
+| Error/unknown denied | Browser proof or controlled evidence that unresolved enrolment access does not expose gated course content. |
+
+---
+
 ## W0-W9 Build Wave Status Table
 
 | Wave | Planned Scope | Status | Evidence Link(s) | Merge / PR Status | Check Status | Blocker / Risk |
@@ -104,7 +117,7 @@
 | W1 | Auth + Profile + Files | CLOSED FOR W1 SCOPE | W1 evidence files | PR #73-#77 merged | Checks accepted before merge | Admin console proof deferred |
 | W2 | Dashboard + Course Shell + Unit Viewer | CLOSED FOR W2 SCOPE | W2 evidence files | PR #78 and PR #79 merged | Checks accepted before merge | ALP-CTRL-010 carried forward |
 | W3 | Progress + Completion | CLOSED FOR APPROVED W3 SCOPE | W3 evidence files | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 merged; PR #84 merged | PR #83 and PR #84 merged | ALP-CTRL-011 closed; ALP-CTRL-010 remains open |
-| W4 | Enrolment + Payments | IMPLEMENTATION STARTED | W4/W4.1 evidence files including GOV-ALP-089 | PR #85, PR #86, PR #87, and PR #88 merged; W4.1 closed for approved scope | Checks pending | No payment readiness claim; W4.2 not started |
+| W4 | Enrolment + Payments | IMPLEMENTATION STARTED | W4/W4.1 evidence files including GOV-ALP-089 | PR #85, PR #86, PR #87, and PR #88 merged; W4.1 final closure held pending UI proof | Checks pending | No payment readiness claim; W4.1 UI proof pending; W4.2 not started |
 | W5 | Assessment Submission | WAITING | Pending W5 evidence | No W5 PR yet | No checks run | Requires W1/W3/W4 closure |
 | W6 | AI Evaluation + Human Review | WAITING | Pending W6 evidence | No W6 PR yet | No checks run | Requires W5 closure |
 | W7 | Certificates | WAITING | Pending W7 evidence | No W7 PR yet | No checks run | Requires W3/W6 closure |
@@ -128,7 +141,7 @@
 
 ## Immediate Next Action
 
-Open W4.2 manual/admin enrolment creation and audit-trail management.
+Capture W4.1 UI/browser proof for enrolled access and denied-state behaviour. File final W4.1 closure only after that proof is accepted.
 
 ---
 
@@ -141,7 +154,8 @@ W4 Entry: MERGED BY PR #85
 W4 Start: IMPLEMENTATION STARTED  
 W4.1 Implementation: MERGED BY PR #86  
 W4.1 DB Proof Closure: MERGED BY PR #88  
-W4.1 Closure: CLOSED FOR APPROVED W4.1 SCOPE  
+W4.1 UI Proof: REQUIRED BEFORE FINAL CLOSURE  
+W4.1 Closure: NOT CLAIMED  
 W4.2: NOT STARTED  
 W4 Closure: NOT CLAIMED  
 Full App Delivery: NOT CLAIMED  
@@ -172,4 +186,4 @@ Production readiness: NOT CLAIMED
 | 4.1 | 2026-07-02 | Filed W4.1 enrolment state and course access gating implementation. | AI-assisted draft | Merged by PR #86 |
 | 4.2 | 2026-07-07 | Filed W4.1 live DB table-existence proof after migration application. | AI-assisted draft | Merged by PR #87 |
 | 4.3 | 2026-07-07 | Filed W4.1 DB proof closure after connector validation of tables, reads, RLS, policies, no write policies, and migration history. | AI-assisted draft | Merged by PR #88 |
-| 4.4 | 2026-07-10 | Normalized W4.1 final closure after PR #88 merge and opened W4.2 as the next required action. | AI-assisted draft | Filed for review |
+| 4.4 | 2026-07-10 | Reframed W4.1 final closure as held pending required UI/browser proof. | AI-assisted draft | Filed for review |
