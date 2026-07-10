@@ -26,5 +26,5 @@ export async function signInAction(_state: SignInState, formData: FormData): Pro
 
 export async function signOutAction() {
   await signOut();
-  redirect("/login");
+  redirect("/alp-sign-in");
 }
