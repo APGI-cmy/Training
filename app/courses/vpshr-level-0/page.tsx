@@ -10,7 +10,6 @@ export const metadata = {
 
 export default function VpshrLevel0Page() {
   const course = getVpshrLevel0Course();
-  const firstUnit = course.units[0];
 
   return (
     <main>
@@ -20,9 +19,16 @@ export default function VpshrLevel0Page() {
             <p className="eyebrow">{course.level}</p>
             <h1>{course.title}</h1>
             <p>{course.description}</p>
+            <p>
+              This page is the public course landing page. The governed learner route for W4.1 access
+              proof is <strong>/learn/{course.slug}</strong>.
+            </p>
             <div className="button-row">
-              <Link className="primary-button" href={`/courses/${course.slug}/${firstUnit.slug}`}>
-                Start course
+              <Link className="primary-button" href={`/learn/${course.slug}`}>
+                Open learner course
+              </Link>
+              <Link className="secondary-button" href="/dashboard">
+                Go to dashboard
               </Link>
               <a className="secondary-button" href={`${course.sourceRoot}/index.html`}>
                 Open legacy landing
@@ -58,6 +64,10 @@ export default function VpshrLevel0Page() {
             <div>
               <p className="eyebrow">Learning units</p>
               <h2 id="units-heading">VPSHR Level 0 pathway</h2>
+              <p>
+                Unit links below use the governed learner routes so W4.1 access proof can confirm
+                enrolled, pending, revoked, and not-enrolled behaviour.
+              </p>
             </div>
           </div>
           <div className="unit-grid">

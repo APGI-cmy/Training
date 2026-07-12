@@ -33,4 +33,10 @@ describe("ALP W4.1 enrolment state and course access gating", () => {
     expectContains("src/components/course/CourseAccessDenied.tsx", "deniedHeading", "QA-ALP-245");
     expectContains("src/components/course/CourseAccessDenied.tsx", "Return to dashboard", "QA-ALP-245");
   });
+
+  it("QA-ALP-247 public course links clarify and use governed learner routes", () => {
+    expectContains("app/courses/vpshr-level-0/page.tsx", "/learn/{course.slug}", "QA-ALP-247");
+    expectContains("app/courses/vpshr-level-0/page.tsx", "governed learner route", "QA-ALP-247");
+    expectContains("src/components/LearningUnitCard.tsx", "/learn/vpshr-level-0/units/", "QA-ALP-247");
+  });
 });

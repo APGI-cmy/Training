@@ -14,7 +14,7 @@ export function LearningUnitCard({ unit }: LearningUnitCardProps) {
       </div>
       <h3>{unit.title}</h3>
       <p>{unit.subtitle}</p>
-      <Link href={`/courses/vpshr-level-0/${unit.slug}`}>Open unit</Link>
+      <Link href={`/learn/vpshr-level-0/units/${unit.slug}`}>Open gated unit</Link>
     </article>
   );
 }
