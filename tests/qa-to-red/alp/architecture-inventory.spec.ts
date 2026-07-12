@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 import { expectAnyPath, expectContains, expectPath } from "./helpers/project-root";
 
 const routes = [
-  ["QA-ALP-021", "app/(public)/login/page.tsx"],
+  ["QA-ALP-021", "app/alp-sign-in/page.tsx"],
   ["QA-ALP-022", "app/(public)/invite/[token]/page.tsx"],
   ["QA-ALP-023", "app/(public)/courses/[courseSlug]/buy/page.tsx"],
   ["QA-ALP-024", "app/(public)/checkout/status/page.tsx"],
