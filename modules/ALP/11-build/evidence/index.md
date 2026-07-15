@@ -6,8 +6,8 @@
 |---|---|
 | Module | ALP - APGI Learning Portal |
 | Artifact | Build Evidence Index |
-| Status | Updated for W4.1 UI-proof enabler |
-| Date | 2026-07-10 |
+| Status | Updated for W4.1 navigation/sidebar prebuild |
+| Date | 2026-07-12 |
 | Repository | APGI-cmy/Training |
 | Canonical Path | `modules/ALP/11-build/evidence/index.md` |
 
@@ -29,7 +29,8 @@
 | W4.1 | `modules/ALP/11-build/evidence/20260707-W4-GOV-ALP-087-decision-enrolment-db-proof.md` | GOV-ALP-087; live-db-proof; table-existence-proof | Table existence verified; deeper DB controls pending | Live Supabase / connector SQL | PR #87 / `cf307dd31aa4086b1248481cc968e7459fc8ae23` | Merged | BC-ALP-CONSOLIDATED-001 | Partial DB proof filed; superseded by GOV-ALP-088 | Migration applied and both tables directly verified. |
 | W4.1 | `modules/ALP/11-build/evidence/20260707-W4-GOV-ALP-088-decision-enrolment-db-proof-closure.md` | GOV-ALP-088; db-proof-closure; connector-validation | DB proof closure for W4.1 enrolment access gating | Live Supabase / connector SQL | PR #88 / `06d80000f35cfe90ffbc1fec3cb07f312cee1cd7` | Merged | BC-ALP-CONSOLIDATED-001 | DB proof closed for W4.1 | RLS, select policies, no write policies, table reads, table existence, and migration history directly verified. |
 | W4.1 | `modules/ALP/11-build/evidence/20260710-W4-GOV-ALP-089-decision-w4-1-final-closure.md` | GOV-ALP-089; w4-1-ui-proof-hold | W4.1 UI proof hold | GitHub evidence chain / live Supabase proof chain | PR #89 / `7663b5b514ec20642f43f2485f5035f16893734f` | Merged | BC-ALP-CONSOLIDATED-001 | W4.1 final closure held | Records that DB proof is closed but UI/browser proof is still required before final W4.1 closure. |
-| W4.1 | `modules/ALP/11-build/evidence/20260710-W4-GOV-ALP-091-decision-ui-proof-enabler.md` | GOV-ALP-091; QA-ALP-246; QA-ALP-247 | Sign-out, dashboard navigation, governed route clarification | GitHub PR evidence / Vercel preview | Current UI-proof enabler PR | Pending review | BC-ALP-CONSOLIDATED-001 | UI-proof enabler filed; W4.1 closure not claimed | Adds proof enablers only; actual browser proof still required after deployment. |
+| W4.1 | `modules/ALP/11-build/evidence/20260710-W4-GOV-ALP-091-decision-ui-proof-enabler.md` | GOV-ALP-091; QA-ALP-246; QA-ALP-247 | Sign-out, dashboard navigation, governed route clarification | GitHub PR evidence / Vercel preview | PR #90 / `23282af606334bd89925e31b00087d7c06c7a91f` | Merged | BC-ALP-CONSOLIDATED-001 | UI-proof enabler merged; W4.1 closure not claimed | Sign-out works; later browser proof found navigation loop still blocks final W4.1 proof. |
+| W4.1 | `modules/ALP/11-build/evidence/20260712-W4-GOV-ALP-092-decision-navigation-proof-prebuild.md` | GOV-ALP-092; prebuild-nav-proof | Sidebar/navigation prebuild for loop-free W4.1 proof | User browser screenshots / governance artifacts | Current prebuild PR | Pending review | BC-ALP-CONSOLIDATED-001 | Prebuild filed; no app code changes | Adds prebuild addenda before next sidebar/navigation build. |
 
 ---
 
@@ -45,4 +46,4 @@ Production readiness: NOT CLAIMED.
 Live payment readiness: NOT CLAIMED.  
 ALP-CTRL-010: OPEN and carried forward.  
 W4: IMPLEMENTATION STARTED, but W4 implementation/closure is NOT CLAIMED.  
-W4.1: DB PROOF CLOSED, UI-PROOF ENABLER FILED, but W4.1 FINAL CLOSURE is NOT CLAIMED pending browser proof.
+W4.1: DB PROOF CLOSED, UI-PROOF ENABLER MERGED, NAVIGATION PREBUILD FILED, but W4.1 FINAL CLOSURE is NOT CLAIMED pending browser proof.
