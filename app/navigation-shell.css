@@ -1,0 +1,106 @@
+.learner-shell {
+  display: grid;
+  min-height: calc(100vh - 75px);
+  grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
+}
+
+.learner-sidebar {
+  position: sticky;
+  top: 75px;
+  display: flex;
+  height: calc(100vh - 75px);
+  flex-direction: column;
+  gap: 24px;
+  align-self: start;
+  overflow-y: auto;
+  border-right: 1px solid var(--line);
+  padding: 28px 20px;
+  background: var(--surface);
+}
+
+.learner-sidebar h2 {
+  margin-bottom: 8px;
+  font-size: 1.45rem;
+}
+
+.sidebar-eyebrow {
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sidebar-guidance {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.sidebar-links {
+  display: grid;
+  gap: 8px;
+}
+
+.sidebar-links a {
+  display: grid;
+  gap: 2px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 11px 12px;
+  font-weight: 700;
+}
+
+.sidebar-links a:hover,
+.sidebar-links a:focus-visible {
+  border-color: var(--line);
+  background: var(--surface-strong);
+  text-decoration: none;
+}
+
+.sidebar-links small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.sidebar-actions {
+  margin-top: auto;
+}
+
+.sidebar-actions form,
+.sidebar-actions button {
+  width: 100%;
+}
+
+.learner-content {
+  min-width: 0;
+}
+
+@media (max-width: 860px) {
+  .learner-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .learner-sidebar {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding: 18px;
+  }
+
+  .sidebar-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sidebar-actions {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .sidebar-links {
+    grid-template-columns: 1fr;
+  }
+}
