@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { SignOutControl } from "@/components/auth/sign-out-control";
+import { LearnerSidebar } from "@/components/navigation/LearnerSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { getCurrentSession } from "@/server/auth/session";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,35 +14,31 @@ export const metadata: Metadata = {
   description: "Responsive VPSHR learning units for the APGI training platform."
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: ReactNode;
 }>) {
+  const session = await getCurrentSession();
+
   return (
     <html lang="en">
       <body>
         <header className="app-header">
-          <Link className="brand-link" href="/courses/vpshr-level-0">
+          <Link className="brand-link" href={session ? "/dashboard" : "/courses/vpshr-level-0"}>
             APGI Training
           </Link>
-          <nav aria-label="Primary navigation">
-            <Link href="/dashboard">Dashboard</Link>
-            <Link href="/profile">Profile</Link>
-            <Link href="/courses">Courses</Link>
-            <SignOutControl />
-            <ThemeToggle />
-          </nav>
+          <ThemeToggle />
         </header>
-        {children}
-        <footer className="app-footer">
-          <span>VPSHR learning platform</span>
-          <Link className="secondary-button" href="/dashboard">
-            Open dashboard
-          </Link>
-          <Link href="/learn/vpshr-level-0">Gated Level 0</Link>
-          <Link href="/courses/vpshr-level-0">Public Level 0 landing</Link>
-        </footer>
+
+        {session ? (
+          <div className="learner-shell">
+            <LearnerSidebar />
+            <div className="learner-content">{children}</div>
+          </div>
+        ) : (
+          children
+        )}
       </body>
     </html>
   );
