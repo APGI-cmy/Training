@@ -21,6 +21,7 @@ describe("ALP W4.1 navigation sidebar and loop-breaker", () => {
     expectContains("app/layout.tsx", "getCurrentSession", "QA-ALP-249");
     expectContains("app/layout.tsx", "LearnerSidebar", "QA-ALP-249");
     expectContains("app/layout.tsx", "learner-shell", "QA-ALP-249");
+    expectContains("app/layout.tsx", 'import "./navigation-shell.css"', "QA-ALP-249");
   });
 
   it("QA-ALP-250 denied state exposes loop-breaker navigation", () => {
@@ -32,8 +33,9 @@ describe("ALP W4.1 navigation sidebar and loop-breaker", () => {
   it("QA-ALP-251 sidebar replaces footer-only navigation and is responsive", () => {
     const layout = read("app/layout.tsx");
     expect(layout.includes("app-footer"), "QA-ALP-251: footer-only navigation must be removed").toBe(false);
-    expectContains("app/globals.css", ".learner-sidebar", "QA-ALP-251");
-    expectContains("app/globals.css", ".learner-shell", "QA-ALP-251");
-    expectContains("app/globals.css", "@media (max-width: 860px)", "QA-ALP-251");
+    expectPath("app/navigation-shell.css", "QA-ALP-251");
+    expectContains("app/navigation-shell.css", ".learner-sidebar", "QA-ALP-251");
+    expectContains("app/navigation-shell.css", ".learner-shell", "QA-ALP-251");
+    expectContains("app/navigation-shell.css", "@media (max-width: 860px)", "QA-ALP-251");
   });
 });
