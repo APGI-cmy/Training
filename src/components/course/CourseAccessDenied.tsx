@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SignOutControl } from "@/components/auth/sign-out-control";
 import type { CourseAccessDecision } from "@/lib/services/enrolments/get-course-access";
 import type { Course } from "@/types/course";
 
@@ -31,9 +32,6 @@ export function CourseAccessDenied({
     <main>
       <section className="course-masthead">
         <div className="content-inner">
-          <Link className="back-link" href="/dashboard">
-            Back to dashboard
-          </Link>
           <p className="eyebrow">W4 enrolment access gate</p>
           <h1>{deniedHeading(access.status)}</h1>
           <p>
@@ -41,10 +39,17 @@ export function CourseAccessDenied({
           </p>
           <p role="status">Current enrolment status: {statusLabel}.</p>
           <p>{access.reason}</p>
-          <div className="button-row">
+          <div className="button-row" aria-label="Course access recovery actions">
             <Link className="primary-button" href="/dashboard">
               Return to dashboard
             </Link>
+            <Link className="secondary-button" href="/profile">
+              Open profile
+            </Link>
+            <Link className="secondary-button" href="/courses/vpshr-level-0">
+              Open public course landing
+            </Link>
+            <SignOutControl />
           </div>
         </div>
       </section>
