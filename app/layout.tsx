@@ -5,6 +5,7 @@ import { LearnerSidebar } from "@/components/navigation/LearnerSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { getCurrentSession } from "@/server/auth/session";
 import "./globals.css";
+import "./navigation-shell.css";
 
 export const metadata: Metadata = {
   title: {
