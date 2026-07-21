@@ -1,14 +1,18 @@
+:root {
+  --app-header-height: 75px;
+}
+
 .learner-shell {
   display: grid;
-  min-height: calc(100vh - 75px);
+  min-height: calc(100vh - var(--app-header-height));
   grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
 }
 
 .learner-sidebar {
   position: sticky;
-  top: 75px;
+  top: var(--app-header-height);
   display: flex;
-  height: calc(100vh - 75px);
+  height: calc(100vh - var(--app-header-height));
   flex-direction: column;
   gap: 24px;
   align-self: start;
