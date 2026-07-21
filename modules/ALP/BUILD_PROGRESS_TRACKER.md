@@ -2,12 +2,12 @@
 
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
-**Last Updated**: 2026-07-15  
-**Updated By**: GOV-ALP-093 W4.1 navigation loop-breaker build  
-> **Classification**: ACTIVE - W4.1 NAVIGATION BUILD FILED  
+**Last Updated**: 2026-07-21  
+**Updated By**: GOV-ALP-094 W4.2 enrolment/catalogue prebuild and W4.3-W4.5 payment roadmap  
+> **Classification**: ACTIVE - W4.2 PREBUILD FILED  
 > **Repository**: APGI-cmy/Training  
-> **Current Workstream**: W4.1 persistent learner sidebar and navigation loop-breaker  
-> **Next Required Action**: Review/merge PR #92; then capture deployed W4.1 browser proof
+> **Current Workstream**: Review W4.2 catalogue/admin-enrolment prebuild; preserve W4.3-W4.5 payment gates  
+> **Next Required Action**: Review/merge PR #93; then file and prove executable W4.2 QA-to-Red before any W4.2 build
 
 ---
 
@@ -18,134 +18,109 @@
 | W0 Foundation / Scaffold | Closed for scaffold scope | PR #71 |
 | W1 Closure / W2 Entry | Closed for W1 scope | PR #77 / `f492c8efd8c83cbca49481191315ac2869c62c3b` |
 | W2 Dashboard / Course Shell / Unit Viewer | Closed for W2 scope | PR #79 / `1b2ae564437a90349ccca95138ac430bf680089b` |
-| W3 Progress + Completion | Closed for approved W3 database-backed progress scope | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 merged; PR #84 normalized post-merge evidence |
-| W4 Enrolment + Payments | Entry merged; implementation started | PR #85 merged; W4.1 DB proof closed; PR #90 UI-proof enabler merged; PR #91 navigation prebuild merged; PR #92 navigation build filed |
-| W4.1 Enrolment state and access gating | Navigation build filed; final closure still pending browser proof | PR #86 implementation merge; PR #88 DB proof closure merge; PR #89 UI proof hold; PR #90 UI-proof enabler merge; PR #91 prebuild merge; GOV-ALP-093 build |
+| W3 Progress + Completion | Closed for approved database-backed scope | PR #80-#84 |
+| W4 Enrolment + Payments | Implementation started; not closed | PR #85 entry; W4.1 chain PR #86-#92; GOV-ALP-094 current |
+| W4.1 Access gating | DB proof closed; partial browser proof accepted; final closure pending | PR #88 DB closure; PR #92 merged; product-owner screenshots |
+| W4.2 Manual/admin enrolment | Prebuild filed; implementation not started | GOV-ALP-094 / PR #93 current |
+| W4.3 Payment status model | Roadmap requirements only; not started | GOV-ALP-085 sequence preserved by GOV-ALP-094 |
+| W4.4 Provider integration decision | Not started | Architecture/security/risk decision required before execution |
+| W4.5 Payment execution | Not started and not authorized | Blocked until W4.1-W4.4 accepted |
 
 ---
 
-## W3 Deployed UI Proof Accepted
+## W3 Deployed and Database Proof Accepted
 
 | Proof Item | Status |
 |---|---|
-| Learner dashboard progress-enabled view | Accepted |
-| Unit viewer progress controls | Accepted |
-| Mark unit complete action | Accepted |
-| Completion confirmation message | Accepted |
-| Course shell progress update | Accepted |
-| Dashboard progress update | Accepted |
-| Supabase database-progress source of truth | Database proof closed by PR #83 merge |
+| Learner dashboard and unit progress UI | Accepted |
+| Mark unit complete and confirmation | Accepted |
+| Course/dashboard progress update | Accepted |
+| Supabase progress source of truth | Closed by PR #83 |
+| ALP-CTRL-011 | Closed by PR #83 |
 
 ---
 
-## W3 Database-Backed Proof Closed
-
-| Proof Item | Status |
-|---|---|
-| PR #82 posture | Deployed UI proof only; did not close W3. |
-| Live Supabase W3 progress migration | Applied and verified. |
-| `public.progress_events` | Verified with `vpshr-level-0` / `introduction` proof row `unit_completed`. |
-| `public.learner_progress` | Verified with `vpshr-level-0` / `introduction` proof row `completed`. |
-| `public.completion_states` | Verified with `vpshr-level-0` / `introduction` proof state `1 of 13`, `7.69%`. |
-| ALP-CTRL-011 posture | Closed by PR #83 merge. |
-
----
-
-## W4 Entry Governance Filed
+## W4 Entry Governance
 
 | Entry Item | Status |
 |---|---|
 | W4 entry evidence | Merged by PR #85. |
-| W4 implementation | Started with W4.1 implementation PR. |
-| Initial recommended slice | W4.1 Enrolment state and course access gating. |
-| Payment gateway integration | Not authorized by W4.1. Requires later gateway decision and sandbox proof. |
+| Authoritative sequence | W4.1 access gating; W4.2 manual/admin enrolment; W4.3 payment status model; W4.4 provider decision; W4.5 payment execution. |
+| Payment gateway execution | Not authorized before W4.4 acceptance and W4.5 sandbox scope. |
 | ALP-CTRL-010 | Open and carried forward. |
 
 ---
 
-## W4.1 DB Proof Closed; UI Proof Pending
+## W4.1 DB Proof Closed; Browser Proof Partially Accepted
 
 | Proof Item | Status |
 |---|---|
-| Enrolment table | Added as `public.course_enrolments` in migration `005_alp_enrolments_access.sql`. |
-| Enrolment event table | Added as `public.course_enrolment_events` for audit trail. |
-| Enrolment statuses | `pending`, `enrolled`, `revoked`; application treats missing row as `not_enrolled`. |
-| Course shell gate implementation | `/learn/[courseSlug]` checks `getCourseAccess` before loading progress/course content. |
-| Unit viewer gate implementation | `/learn/[courseSlug]/units/[unitSlug]` checks `getCourseAccess` before loading unit content. |
-| Negative path implementation | `CourseAccessDenied` renders governed denied state. |
-| Static QA | QA-ALP-241 through QA-ALP-251 filed across W4.1 access and navigation tests. |
-| Live DB proof | Closed by PR #88 after connector validation. |
-| UI-proof enabler | Merged by PR #90; visible sign-out, clearer navigation, and route clarification deployed. |
-| Browser finding | Sign-out works, but dashboard/denied-state navigation loop still blocks final proof until PR #92 is merged and deployed. |
-| Navigation prebuild | Merged by PR #91 before further app-code changes. |
-| Navigation build | Filed by GOV-ALP-093 in PR #92 for review. |
-| UI/browser proof | Required after PR #92 deployment before final W4.1 closure. |
+| `course_enrolments` and `course_enrolment_events` | Exist and smoke-read verified. |
+| Enrolment states | `pending`, `enrolled`, `revoked`; no row treated as not enrolled. |
+| Course and unit route gates | Implemented and database-backed. |
+| RLS and SELECT policies | Verified by PR #88. |
+| Non-SELECT write policies | Verified absent for the W4.1 read-gating scope. |
+| Navigation/sidebar loop-breaker | Merged by PR #92 / `a0c0944a8399c97c90817916f74140c5369daede`. |
+| Vercel post-merge deployment | Passed. |
+| Product-owner browser proof accepted | Sidebar on dashboard/profile; public/governed distinction; not-enrolled denial; recovery actions; narrow layout. |
+| Remaining W4.1 proof | Enrolled, pending, revoked and unknown/error controlled proof. |
 | W4.1 final closure | Not claimed. |
 
 ---
 
-## W4.1 Navigation Build Filed
+## W4.2 Prebuild Filed
 
-| Build Item | Status |
+| Prebuild Item | Status / Link |
 |---|---|
-| Persistent learner sidebar | Implemented in the authenticated learner route-group layout. |
-| Public root routes | Remain outside the learner shell and session-free. |
-| Dashboard and profile links | Included in sidebar. |
-| Public route | Clearly labelled `/courses/vpshr-level-0`. |
-| Governed course route | Clearly labelled `/learn/vpshr-level-0`. |
-| Governed first unit | Linked as `/learn/vpshr-level-0/units/introduction`. |
-| Sign out | Visible in sidebar and returns to `/alp-sign-in`. |
-| Denied-state recovery | Dashboard, profile, public landing, and sign-out actions added using semantic navigation. |
-| Responsive behaviour | Sidebar collapses into a stacked navigation region on narrow screens. |
-| Static QA | QA-ALP-248 through QA-ALP-251 filed. |
-| Final W4.1 closure | Not claimed pending deployed browser proof. |
+| App Description addendum | `modules/ALP/00-app-description/addenda/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-addendum.md` |
+| UX Workflow addendum | `modules/ALP/01-ux-workflow-wiring/addenda/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-workflows.md` |
+| FRS addendum | `modules/ALP/02-frs/addenda/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-requirements.md` |
+| Requirement Registry addendum | `modules/ALP/REQUIREMENT_REGISTRY_ADDENDA/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-registry.md` |
+| Canonical Stage 6 expansion QA plan | `modules/ALP/05-qa-to-red/addenda/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-qa-plan.md` |
+| Governance evidence | `modules/ALP/11-build/evidence/20260721-W4-GOV-ALP-094-decision-enrolment-catalogue-prebuild.md` |
+| Evidence index | Updated to include GOV-ALP-094 and PR #92 merged posture. |
+| W4.2 implementation | Not started. |
+| Executable W4.2 RED | Required after PR #93 merge and before build. |
+
+### W4.2 Authorized scope after RED acceptance
+
+- generic learner sidebar and multi-course catalogue;
+- learner-specific course state and actions;
+- admin-only navigation and authorization using the existing `admin` role;
+- invitation/manual enrolment with reason, basis, scope, expiry and protected token;
+- complimentary and externally-paid administrative enrolment bases;
+- revocation/reinstatement and full audit trail;
+- legacy-route inventory and tested redirects; and
+- controlled assignment of `admin` to `johan.ras@apginc.ca` during implementation/proof only.
 
 ---
 
-## W4.1 DB Proof Closed
+## Payment Roadmap Gate
 
-| Proof Item | Status |
-|---|---|
-| Migration history | Verified `004_alp_progress_completion` and `005_alp_enrolments_access`. |
-| `public.course_enrolments` | Exists; row-count smoke read succeeded. |
-| `public.course_enrolment_events` | Exists; row-count smoke read succeeded. |
-| RLS on `public.course_enrolments` | Verified enabled. |
-| RLS on `public.course_enrolment_events` | Verified enabled. |
-| Policy on `public.course_enrolments` | Verified `course_enrolments_select_self_or_admin`, `SELECT`. |
-| Policy on `public.course_enrolment_events` | Verified `course_enrolment_events_select_self_or_admin`, `SELECT`. |
-| Non-SELECT write policies | Verified absent on both W4.1 enrolment tables. |
-| W4.1 DB proof closure | Closed by PR #88 merge. |
-| W4 closure | Not claimed. |
+| Slice | Scope | Status |
+|---|---|---|
+| W4.3 | Explicit payment status model and audit trail | Not started; no checkout or webhook authority. |
+| W4.4 | Provider selection plus architecture, security, privacy and risk acceptance | Not started. |
+| W4.5 | Sandbox payment execution, authoritative confirmation and later offer controls | Not started; blocked. |
 
----
-
-## W4.1 UI Proof Still Required
-
-| UI Proof Item | Required Evidence |
-|---|---|
-| Enrolled learner allowed | Browser proof that a learner with `course_enrolments.status = enrolled` can access the course shell and unit viewer. |
-| Not enrolled denied | Browser proof that a learner with no enrolment row receives the governed access-denied state. |
-| Pending denied | Browser proof that a learner with `course_enrolments.status = pending` receives the governed access-denied state. |
-| Revoked denied | Browser proof that a learner with `course_enrolments.status = revoked` receives the governed access-denied state. |
-| Error/unknown denied | Browser proof or controlled evidence that unresolved enrolment access does not expose gated course content. |
-| Navigation loop removed | Sidebar/navigation allows learner to exit dashboard/denied-state loop and sign out. |
+Offer-code execution requires separate W4.5 or later commercial authorization and may not be treated as W4.3 authority.
 
 ---
 
 ## W0-W9 Build Wave Status Table
 
-| Wave | Planned Scope | Status | Evidence Link(s) | Merge / PR Status | Check Status | Blocker / Risk |
-|---|---|---|---|---|---|---|
-| W0 | Foundation / Scaffold | CLOSED FOR SCAFFOLD SCOPE | W0 evidence files | PR #71 and PR #72 merged | Checks accepted before merge | Full app delivery not claimed |
-| W1 | Auth + Profile + Files | CLOSED FOR W1 SCOPE | W1 evidence files | PR #73-#77 merged | Checks accepted before merge | Admin console proof deferred |
-| W2 | Dashboard + Course Shell + Unit Viewer | CLOSED FOR W2 SCOPE | W2 evidence files | PR #78 and PR #79 merged | Checks accepted before merge | ALP-CTRL-010 carried forward |
-| W3 | Progress + Completion | CLOSED FOR APPROVED W3 SCOPE | W3 evidence files | PR #80 and PR #81 merged; PR #82 deployed UI proof only; PR #83 merged; PR #84 merged | PR #83 and PR #84 merged | ALP-CTRL-011 closed; ALP-CTRL-010 remains open |
-| W4 | Enrolment + Payments | IMPLEMENTATION STARTED | W4/W4.1 evidence files including GOV-ALP-093 | PR #85-#91 merged; PR #92 navigation build current | Vercel passing; browser proof pending | No payment readiness claim; W4.1 UI browser proof pending; W4.2 not started |
-| W5 | Assessment Submission | WAITING | Pending W5 evidence | No W5 PR yet | No checks run | Requires W1/W3/W4 closure |
-| W6 | AI Evaluation + Human Review | WAITING | Pending W6 evidence | No W6 PR yet | No checks run | Requires W5 closure |
-| W7 | Certificates | WAITING | Pending W7 evidence | No W7 PR yet | No checks run | Requires W3/W6 closure |
-| W8 | Admin Reports + Audit | WAITING | Pending W8 evidence | No W8 PR yet | No checks run | Requires W1-W7 closure |
-| W9 | Deployment + CWT | WAITING | Pending W9 evidence | No W9 PR yet | No checks run | Requires W0-W8 closure |
+| Wave | Planned Scope | Status | Evidence / PR Status | Check Status | Blocker / Risk |
+|---|---|---|---|---|---|
+| W0 | Foundation / Scaffold | CLOSED FOR SCAFFOLD SCOPE | PR #71-#72 merged | Accepted | Full app delivery not claimed |
+| W1 | Auth + Profile + Files | CLOSED FOR W1 SCOPE | PR #73-#77 merged | Accepted | Admin console proof deferred |
+| W2 | Dashboard + Course Shell + Unit Viewer | CLOSED FOR W2 SCOPE | PR #78-#79 merged | Accepted | ALP-CTRL-010 carried forward |
+| W3 | Progress + Completion | CLOSED FOR APPROVED W3 SCOPE | PR #80-#84 merged | Accepted | ALP-CTRL-010 remains open |
+| W4 | Enrolment + Payments | IMPLEMENTATION STARTED | PR #85-#92 merged; PR #93 prebuild current | Vercel passing; W4.2 RED pending | W4.1 final proof pending; W4.2 not built; W4.3-W4.5 not started |
+| W5 | Assessment Submission | WAITING | No W5 PR | No checks | Requires W4 closure |
+| W6 | AI Evaluation + Human Review | WAITING | No W6 PR | No checks | Requires W5 closure |
+| W7 | Certificates | WAITING | No W7 PR | No checks | Requires W3/W6 closure |
+| W8 | Admin Reports + Audit | WAITING | No W8 PR | No checks | Requires W1-W7 closure |
+| W9 | Deployment + CWT | WAITING | No W9 PR | No checks | Requires W0-W8 closure |
 
 ---
 
@@ -153,18 +128,18 @@
 
 | Control ID | Control | Current Status | Required Next Action |
 |---|---|---|---|
-| ALP-CTRL-003 | Full app workflows not complete | Open | Complete W4-W9 implementation and evidence after W3 closure. |
-| ALP-CTRL-004 | CODE_PASS not claimed | Open | Claim only after code evidence exists. |
+| ALP-CTRL-003 | Full app workflows not complete | Open | Complete W4-W9 implementation and evidence. |
+| ALP-CTRL-004 | CODE_PASS not claimed | Open | Claim only after required code evidence exists. |
 | ALP-CTRL-005 | FUNCTIONAL_PASS not claimed | Open | Claim only after functional evidence exists. |
 | ALP-CTRL-006 | CWT_PASS not claimed | Open | Claim only after deployment/CWT evidence exists. |
-| ALP-CTRL-010 | Legacy iSpring embedded video objects do not consistently play. | Open | Inspect exported iSpring asset references, video file availability, MIME type, and browser errors. Owner wave: W3 content-hardening or later content QA. |
-| ALP-CTRL-011 | Live Supabase progress tables must be applied or verified before database-backed progress becomes the long-term source of truth. | Closed by PR #83 | PR #83 records live migration verification for W3 progress source-of-truth tables. |
+| ALP-CTRL-010 | Legacy iSpring embedded video objects do not consistently play | Open | Inspect exported assets, MIME types and browser errors in later content hardening. |
+| ALP-CTRL-011 | Live Supabase progress tables verified | Closed by PR #83 | No further W3 DB action unless regression is found. |
 
 ---
 
 ## Immediate Next Action
 
-Review and merge PR #92. After deployment, capture W4.1 UI/browser proof for navigation, enrolled access, and denied-state behaviour. File final W4.1 closure only after that proof is accepted.
+Review and merge PR #93 as a prebuild-only PR. After merge, file executable QA-ALP-252 through QA-ALP-267 tests and confirm correct RED. Only then open the W4.2 build branch. Do not assign admin rights or make live enrolment writes before that gate.
 
 ---
 
@@ -174,15 +149,16 @@ W1 Closure: CLOSED FOR W1 SCOPE
 W2 Closure: CLOSED FOR W2 SCOPE  
 W3 Closure: CLOSED FOR APPROVED W3 SCOPE BY PR #83  
 W4 Entry: MERGED BY PR #85  
-W4 Start: IMPLEMENTATION STARTED  
 W4.1 Implementation: MERGED BY PR #86  
 W4.1 DB Proof Closure: MERGED BY PR #88  
-W4.1 UI-Proof Enabler: MERGED BY PR #90  
-W4.1 Navigation Prebuild: MERGED BY PR #91  
-W4.1 Navigation Build: FILED FOR REVIEW IN PR #92  
-W4.1 UI Proof: REQUIRED BEFORE FINAL CLOSURE  
-W4.1 Closure: NOT CLAIMED  
-W4.2: NOT STARTED  
+W4.1 Navigation Build: MERGED BY PR #92  
+W4.1 Browser Proof: PARTIALLY ACCEPTED; FINAL CLOSURE NOT CLAIMED  
+W4.2 Prebuild: FILED FOR REVIEW IN PR #93  
+W4.2 Executable RED: NOT YET FILED  
+W4.2 Implementation: NOT STARTED  
+W4.3 Payment Status Model: NOT STARTED  
+W4.4 Provider Decision: NOT STARTED  
+W4.5 Payment Execution: NOT STARTED / NOT AUTHORIZED  
 W4 Closure: NOT CLAIMED  
 Full App Delivery: NOT CLAIMED  
 CODE_PASS: NOT CLAIMED  
@@ -204,15 +180,16 @@ Production readiness: NOT CLAIMED
 | 2.0 | 2026-06-29 | Filed W2 dashboard/course shell/unit viewer implementation slice. | AI-assisted draft | Merged by PR #78 |
 | 2.1 | 2026-06-30 | Filed W2 deployed proof closure and carried ALP-CTRL-010 forward. | AI-assisted draft | Merged by PR #79 |
 | 3.0 | 2026-06-30 | Filed W3 progress/completion implementation slice. | AI-assisted draft | Merged by PR #80 |
-| 3.1 | 2026-07-01 | Filed W3 progress proof fix after reviewer browser proof showed progress did not visibly update. | AI-assisted draft | Merged by PR #81 |
-| 3.2 | 2026-07-01 | Filed W3 deployed UI proof and kept W3 open pending ALP-CTRL-011 DB proof. | AI-assisted draft | Merged by PR #82 as deployed UI proof only |
-| 3.3 | 2026-07-02 | Filed W3 database-backed progress proof as the closure PR; kept PR #82 as deployed UI proof only and left W4 blocked until merge. | AI-assisted draft | Merged by PR #83 |
-| 3.4 | 2026-07-02 | Normalized GOV-ALP-083 post-merge status header and tracker posture after PR #83 merge. | AI-assisted draft | Merged by PR #84 |
-| 4.0 | 2026-07-02 | Filed W4 enrolment and payments entry governance. | AI-assisted draft | Merged by PR #85 |
-| 4.1 | 2026-07-02 | Filed W4.1 enrolment state and course access gating implementation. | AI-assisted draft | Merged by PR #86 |
-| 4.2 | 2026-07-07 | Filed W4.1 live DB table-existence proof after migration application. | AI-assisted draft | Merged by PR #87 |
-| 4.3 | 2026-07-07 | Filed W4.1 DB proof closure after connector validation of tables, reads, RLS, policies, no write policies, and migration history. | AI-assisted draft | Merged by PR #88 |
-| 4.4 | 2026-07-10 | Reframed W4.1 final closure as held pending required UI/browser proof. | AI-assisted draft | Merged by PR #89 |
-| 4.5 | 2026-07-10 | Filed W4.1 UI-proof enabler for sign-out, clearer navigation, and governed route clarification. | AI-assisted draft | Merged by PR #90 |
-| 4.6 | 2026-07-13 | Filed W4.1 navigation/sidebar prebuild after browser proof found a navigation loop. | AI-assisted draft | Merged by PR #91 |
-| 4.7 | 2026-07-15 | Filed W4.1 persistent sidebar and loop-breaker build. | AI-assisted draft | Filed for review in PR #92 |
+| 3.1 | 2026-07-01 | Filed W3 progress proof fix after browser proof showed progress did not visibly update. | AI-assisted draft | Merged by PR #81 |
+| 3.2 | 2026-07-01 | Filed W3 deployed UI proof while DB proof remained open. | AI-assisted draft | Merged by PR #82 |
+| 3.3 | 2026-07-02 | Filed W3 database-backed progress closure. | AI-assisted draft | Merged by PR #83 |
+| 3.4 | 2026-07-02 | Normalized W3 post-merge evidence. | AI-assisted draft | Merged by PR #84 |
+| 4.0 | 2026-07-02 | Filed W4 enrolment and payments entry governance and W4.1-W4.5 sequence. | AI-assisted draft | Merged by PR #85 |
+| 4.1 | 2026-07-02 | Filed W4.1 enrolment access gating implementation. | AI-assisted draft | Merged by PR #86 |
+| 4.2 | 2026-07-07 | Filed W4.1 live DB table-existence proof. | AI-assisted draft | Merged by PR #87 |
+| 4.3 | 2026-07-07 | Filed W4.1 DB proof closure. | AI-assisted draft | Merged by PR #88 |
+| 4.4 | 2026-07-10 | Held W4.1 final closure pending browser proof. | AI-assisted draft | Merged by PR #89 |
+| 4.5 | 2026-07-10 | Filed W4.1 UI-proof enabler. | AI-assisted draft | Merged by PR #90 |
+| 4.6 | 2026-07-13 | Filed W4.1 navigation/sidebar prebuild after loop finding. | AI-assisted draft | Merged by PR #91 |
+| 4.7 | 2026-07-15 | Filed W4.1 persistent sidebar and loop-breaker build. | AI-assisted draft | Merged by PR #92 |
+| 4.8 | 2026-07-21 | Filed W4.2 enrolment/catalogue prebuild and preserved W4.3-W4.5 payment gates. | AI-assisted draft | Filed for review in PR #93 |
