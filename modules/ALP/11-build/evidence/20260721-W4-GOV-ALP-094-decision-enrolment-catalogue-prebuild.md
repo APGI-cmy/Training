@@ -1,11 +1,11 @@
-# GOV-ALP-094 - W4.2/W4.3 Enrolment and Catalogue Prebuild Decision
+# GOV-ALP-094 - W4.2 Enrolment/Catalogue Prebuild and W4.3-W4.5 Payment Roadmap
 
 ## Status
 
 | Field | Value |
 |---|---|
 | Module | ALP - APGI Learning Portal |
-| Wave | W4.2 administrator enrolment / W4.3 paid self-enrolment |
+| Wave | W4.2 administrator enrolment; W4.3-W4.5 payment roadmap |
 | Evidence Type | Prebuild decision and browser-finding record |
 | Date | 2026-07-21 |
 | Status | Filed for prebuild review |
@@ -16,65 +16,60 @@
 
 User-supplied browser screenshots confirm:
 
-1. the learner sidebar renders on the dashboard;
-2. the learner sidebar renders on the profile page;
-3. Dashboard and Profile navigation work;
-4. Public Level 0 opens the public course landing route;
-5. the governed `/learn/vpshr-level-0` route blocks a learner with no enrolment row;
-6. the denied state reports `not enrolled` and provides Dashboard, Profile, public landing and Sign out recovery actions; and
-7. the narrow viewport renders a stacked learner navigation region.
+1. learner sidebar on dashboard and profile;
+2. working Dashboard and Profile navigation;
+3. public Level 0 landing access;
+4. governed denial for `/learn/vpshr-level-0` with no enrolment row;
+5. `not enrolled` status and Dashboard, Profile, public landing and Sign out recovery actions; and
+6. usable stacked navigation at narrow viewport.
 
-The observed navigation-loop blocker is therefore resolved for the tested not-enrolled path. W4.1 final closure remains held because controlled enrolled, pending, revoked and unknown/error proof is still outstanding.
+The navigation-loop blocker is resolved for the tested not-enrolled path. W4.1 final closure remains held because controlled enrolled, pending, revoked and unknown/error proof is outstanding.
 
 ## Repository and live-platform findings
 
-- PR #92 merged as `a0c0944a8399c97c90817916f74140c5369daede` and its Vercel deployment passed.
-- The current course source is still hard-coded to a single VPSHR Level 0 JSON object.
-- The public `/courses` route is already shaped as a catalogue but currently receives only that one course.
+- PR #92 merged as `a0c0944a8399c97c90817916f74140c5369daede`; Vercel passed.
+- Course source remains hard-coded to one VPSHR Level 0 object although `/courses` has catalogue structure.
 - Live Supabase includes `profiles`, `user_roles`, `course_enrolments` and `course_enrolment_events`.
-- Existing role values include `learner`, `admin`, `reviewer` and `course_publisher`.
-- Existing enrolment states include `pending`, `enrolled` and `revoked`.
-- Existing enrolment sources include `manual`, `admin`, `payment`, `migration` and `system`.
+- Existing roles include `learner`, `admin`, `reviewer` and `course_publisher`.
+- Enrolment states include `pending`, `enrolled` and `revoked`.
+- Enrolment sources include `manual`, `admin`, `payment`, `migration` and `system`.
 - The authenticated account `johan.ras@apginc.ca` exists.
-- No live admin-role assignment, enrolment write, invitation record, payment record or offer code was created during this prebuild investigation.
+- No live role, enrolment, invitation, payment or offer-code write was made during this review.
 
-## Decision
+## Authoritative sequencing decision
 
-The next governed implementation sequence is:
+GOV-ALP-085 remains authoritative and is not superseded:
+
+| Slice | Authorized purpose | Current posture |
+|---|---|---|
+| W4.2 | Generic catalogue/sidebar, administrator invitation/manual enrolment, revoke/reinstate and legacy redirect inventory | Prebuild filed; executable RED required before build |
+| W4.3 | Payment status model and audit trail | Requirements roadmap only; no provider execution authorized |
+| W4.4 | Payment provider selection plus architecture, security, privacy and risk decision | Not started |
+| W4.5 | Sandbox payment execution after W4.1-W4.4 acceptance | Not started; checkout/webhooks/offer execution blocked |
+
+## Next governed implementation sequence
 
 1. merge this prebuild-only PR;
-2. file executable W4.2 QA-to-Red tests mapped to QA-ALP-252 through QA-ALP-267;
-3. implement generic catalogue/sidebar, legacy-route redirect inventory, existing-role-based admin authorization, invitations/manual enrolment and revoke/reinstate controls;
-4. assign `admin` to `johan.ras@apginc.ca` only as a controlled implementation/proof action after the QA-to-Red suite is present;
-5. build to green and capture controlled enrolled, pending and revoked proof, with exact live rows and cleanup recorded; and
-6. open a later W4.3 sandbox-controlled cycle for checkout, payment-provider confirmation and offer codes mapped to QA-ALP-268 through QA-ALP-276.
+2. file executable W4.2 QA-ALP-252 through QA-ALP-267 tests and prove correct RED;
+3. implement only the W4.2 generic catalogue/sidebar, redirect inventory, existing-role-based admin authorization, invitations/manual enrolment and revoke/reinstate controls;
+4. assign `admin` to `johan.ras@apginc.ca` only as a controlled W4.2 implementation/proof action;
+5. build W4.2 to green and capture controlled enrolled, pending and revoked proof with exact rows and cleanup; and
+6. open separate reviewed cycles for W4.3, W4.4 and W4.5 in that order.
 
 ## Security and audit controls
 
-- Reuse the existing `admin` role; do not invent an ungoverned super-admin flag.
-- Invitation and offer secrets must be opaque and unguessable; persisted representations must be hashed or equivalently protected.
+- Reuse the existing `admin` role; do not invent a parallel super-admin flag.
+- Invitation secrets must be opaque and unguessable; persisted representations must be protected.
 - Complimentary access requires issuer, reason, course scope and expiry/audit evidence.
-- External-payment access requires a recorded basis/reference but must not store sensitive payment-card data.
-- Payment access must be based on authoritative provider confirmation, not browser redirect state.
-- Invitation redemption, enrolment transitions, revocation, reinstatement, payment confirmation and offer redemption must be idempotent and auditable.
-- RLS and server-side authorization must enforce all write paths.
+- External-payment access requires a recorded basis/reference without sensitive card data.
+- Invitation redemption and enrolment transitions must be idempotent and auditable.
+- RLS and server-side authorization must enforce write paths.
+- Payment entitlement may eventually follow authoritative provider confirmation only, but that execution is W4.5 authority, not W4.3.
 
 ## Legacy route decision
 
-Legacy landing pages are candidates for retirement, not immediate deletion. The W4.2 build must first create a route inventory and tested redirect matrix. Only routes confirmed obsolete and safely redirected may be removed.
+Legacy landing pages are candidates for retirement, not immediate deletion. W4.2 must first create a route inventory and tested redirect matrix. Only safely redirected obsolete routes may be removed.
 
 ## Explicit non-claims
 
-This prebuild does not claim or perform:
-
-- live admin assignment;
-- executable QA-to-Red completion;
-- application or database implementation;
-- invitation dispatch or enrolment creation;
-- payment integration or payment readiness;
-- offer-code implementation;
-- W4.1 final closure;
-- W4 closure;
-- CODE_PASS, FUNCTIONAL_PASS or CWT_PASS;
-- deployment acceptance; or
-- production readiness.
+This prebuild does not claim or perform live admin assignment, executable RED completion, implementation, migrations, invitation dispatch, enrolment creation, provider integration, offer-code execution, payment readiness, W4.1 closure, W4 closure, CODE_PASS, FUNCTIONAL_PASS, CWT_PASS, deployment acceptance or production readiness.
