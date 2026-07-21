@@ -39,7 +39,7 @@ export function CourseAccessDenied({
           </p>
           <p role="status">Current enrolment status: {statusLabel}.</p>
           <p>{access.reason}</p>
-          <div className="button-row" aria-label="Course access recovery actions">
+          <nav className="button-row" aria-label="Course access recovery actions">
             <Link className="primary-button" href="/dashboard">
               Return to dashboard
             </Link>
@@ -50,7 +50,7 @@ export function CourseAccessDenied({
               Open public course landing
             </Link>
             <SignOutControl />
-          </div>
+          </nav>
         </div>
       </section>
     </main>
