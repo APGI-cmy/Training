@@ -3,7 +3,7 @@
 **Module**: ALP - APGI Learning Portal  
 **Date**: 2026-07-22  
 **Status**: PR #94 merged; separate W4.2 build-to-green cycle authorized  
-**Repository**: APGI-cmy/Training
+**Repository**: APGI-cmy/Training  
 
 ## Status update
 
