@@ -43,21 +43,32 @@ jobs:
             exit 1
           fi
 
-          grep -Eq "16 failed|Tests[[:space:]]+16 failed" w4-2-red-output.txt
+          sed -E 's/\x1B\[[0-9;]*[mK]//g' w4-2-red-output.txt > w4-2-red-output-clean.txt
+
+          grep -Eq "Test Files[[:space:]]+1 failed[[:space:]]+\(1\)" w4-2-red-output-clean.txt
+          grep -Eq "Tests[[:space:]]+16 failed[[:space:]]+\(16\)" w4-2-red-output-clean.txt
+
+          if grep -Eq "Tests.*[1-9][0-9]* passed|Tests.*[1-9][0-9]* skipped|Tests.*[1-9][0-9]* todo" w4-2-red-output-clean.txt; then
+            echo "RED is invalid because one or more W4.2 tests passed, skipped, or remained todo."
+            exit 1
+          fi
+
           for id in $(seq 252 267); do
-            grep -q "QA-ALP-${id}" w4-2-red-output.txt
+            grep -q "QA-ALP-${id}" w4-2-red-output-clean.txt
           done
 
-          if grep -Eqi "failed to load|syntax error|transform error|no test files found|cannot find module.*vitest" w4-2-red-output.txt; then
+          if grep -Eqi "failed to load|syntax error|transform error|no test files found|cannot find module.*vitest" w4-2-red-output-clean.txt; then
             echo "RED is invalid because the runner or test module failed."
             exit 1
           fi
 
-          echo "Correct RED established: all 16 W4.2 tests executed and failed on absent behaviour."
+          echo "Correct RED established: exactly 16 W4.2 tests executed, all 16 failed, and none passed or skipped."
 
       - name: Upload RED output
         uses: actions/upload-artifact@v4
         with:
           name: alp-w4-2-red-output
-          path: w4-2-red-output.txt
+          path: |
+            w4-2-red-output.txt
+            w4-2-red-output-clean.txt
           if-no-files-found: error
