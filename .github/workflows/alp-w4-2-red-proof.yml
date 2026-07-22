@@ -1,0 +1,63 @@
+name: ALP W4.2 RED Proof
+
+on:
+  pull_request:
+    paths:
+      - "tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts"
+      - "package.json"
+      - ".github/workflows/alp-w4-2-red-proof.yml"
+      - "modules/ALP/05-qa-to-red/**"
+      - "modules/ALP/11-build/evidence/**"
+      - "modules/ALP/BUILD_PROGRESS_TRACKER.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-correct-red:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Execute W4.2 RED suite
+        shell: bash
+        run: |
+          set +e
+          npm run test:alp:w4-2:red 2>&1 | tee w4-2-red-output.txt
+          test_status=${PIPESTATUS[0]}
+          set -e
+
+          if [ "$test_status" -eq 0 ]; then
+            echo "W4.2 suite unexpectedly passed before implementation."
+            exit 1
+          fi
+
+          grep -Eq "16 failed|Tests[[:space:]]+16 failed" w4-2-red-output.txt
+          for id in $(seq 252 267); do
+            grep -q "QA-ALP-${id}" w4-2-red-output.txt
+          done
+
+          if grep -Eqi "failed to load|syntax error|transform error|no test files found|cannot find module.*vitest" w4-2-red-output.txt; then
+            echo "RED is invalid because the runner or test module failed."
+            exit 1
+          fi
+
+          echo "Correct RED established: all 16 W4.2 tests executed and failed on absent behaviour."
+
+      - name: Upload RED output
+        uses: actions/upload-artifact@v4
+        with:
+          name: alp-w4-2-red-output
+          path: w4-2-red-output.txt
+          if-no-files-found: error
