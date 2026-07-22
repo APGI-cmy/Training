@@ -8,7 +8,7 @@
 | Wave | W4.2 manual/admin enrolment and generic catalogue |
 | Evidence Type | Executable RED filing and proof decision |
 | Date | 2026-07-22 |
-| Status | Exact branch RED proof passed; filed for review; W4.2 build remains blocked pending merge |
+| Status | Exact-head RED proof passed; filed for review; W4.2 build remains blocked pending merge |
 | Branch | `agent/alp-w4-2-executable-red` |
 | Repository | APGI-cmy/Training |
 
@@ -27,7 +27,7 @@ The suite covers generic navigation and catalogue, multi-course sourcing, learne
 
 ## Correct RED validation
 
-A controlled local structural execution produced:
+A controlled structural execution produced:
 
 - test files executed: 1;
 - tests executed: 16;
@@ -36,24 +36,26 @@ A controlled local structural execution produced:
 - failure type: assertion failures for absent W4.2 behaviour and artifacts;
 - no syntax, transform, missing-runner or skipped-test failure observed.
 
-The exact GitHub branch proof independently completed successfully:
+The GitHub workflow independently validates the exact current PR head:
 
-| Proof item | Result |
+| Proof item | Required result |
 |---|---|
 | Workflow | `ALP W4.2 RED Proof` |
-| Run ID | `29897844810` |
+| Scope | Current PR head, not a frozen historical run number |
 | Job | `prove-correct-red` |
 | Job conclusion | Success |
 | Dependency installation | Success |
-| RED execution step | Success |
+| Test files | Exactly 1 failed test file out of 1 |
+| Tests | Exactly 16 failed tests out of 16 |
+| Passed/skipped/todo tests | Zero |
+| QA markers | Every ID from QA-ALP-252 through QA-ALP-267 present |
 | RED artifact upload | Success |
-| Expected interpretation | All sixteen W4.2 tests executed and failed on absent behaviour; workflow converted correct RED into a passing governance check |
 
-The workflow fails if the suite unexpectedly passes, any QA ID from QA-ALP-252 through QA-ALP-267 is absent, the expected sixteen failures are not present, or runner/setup failure markers appear.
+The workflow fails if the suite unexpectedly passes, any W4.2 test passes or is skipped/todo, any QA ID is absent, the exact one-file/sixteen-test result is not present, or runner/setup failure markers appear.
 
 ## Governance decision
 
-Correct executable RED is established for the PR branch. This does not authorize W4.2 implementation before review and merge. After this PR merges, a separate W4.2 build branch may implement only the approved catalogue, admin authorization, invitation/manual enrolment, revoke/reinstate and redirect-inventory scope.
+Correct executable RED is established only when the workflow is successful on the current PR head. This does not authorize W4.2 implementation before review and merge. After this PR merges, a separate W4.2 build branch may implement only the approved catalogue, admin authorization, invitation/manual enrolment, revoke/reinstate and redirect-inventory scope.
 
 ## Explicit non-claims
 
