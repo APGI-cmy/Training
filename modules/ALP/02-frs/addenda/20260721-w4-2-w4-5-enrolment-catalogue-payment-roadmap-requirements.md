@@ -8,8 +8,8 @@
 | Parent Artifact | `modules/ALP/02-frs/functional-requirements.md` |
 | Addendum ID | FRS-ALP-W4-2-W4-5-ENROL-20260721 |
 | Date | 2026-07-21 |
-| Status | Filed for prebuild review |
-| Branch | `alp-w4-2-w4-3-enrolment-catalogue-prebuild` |
+| Status | Merged/accepted by PR #93 |
+| Merge | PR #93 / `721be18e88d284ffffc4179e71e3dd936b14a319` |
 
 ## Functional requirement groups
 
