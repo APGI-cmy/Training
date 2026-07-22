@@ -81,7 +81,7 @@
 | Executable RED suite | `tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts` |
 | Dedicated RED command | `npm run test:alp:w4-2:red` |
 | Correct-RED workflow | `.github/workflows/alp-w4-2-red-proof.yml` |
-| Exact branch proof | Workflow run `29897844810`; job `prove-correct-red` succeeded |
+| Exact-head proof | The `ALP W4.2 RED Proof` check must succeed on the current PR head; no frozen historical run ID is authoritative |
 | Executable RED evidence | `modules/ALP/11-build/evidence/20260722-W4-GOV-ALP-095-decision-w4-2-executable-red.md` |
 | W4.2 implementation | Not started; blocked until PR #94 is reviewed and merged. |
 
@@ -157,7 +157,7 @@ W4.1 DB Proof Closure: MERGED BY PR #88
 W4.1 Navigation Build: MERGED BY PR #92  
 W4.1 Browser Proof: PARTIALLY ACCEPTED; FINAL CLOSURE NOT CLAIMED  
 W4.2 Prebuild: MERGED BY PR #93  
-W4.2 Executable RED: FILED AND EXACT BRANCH PROOF PASSED IN PR #94; MERGE PENDING  
+W4.2 Executable RED: FILED AND EXACT-HEAD PROOF REQUIRED SUCCESSFUL IN PR #94; MERGE PENDING  
 W4.2 Implementation: NOT STARTED / NOT AUTHORIZED BEFORE PR #94 MERGE  
 W4.3 Payment Status Model: NOT STARTED  
 W4.4 Provider Decision: NOT STARTED  
@@ -196,4 +196,4 @@ Production readiness: NOT CLAIMED
 | 4.6 | 2026-07-13 | Filed W4.1 navigation/sidebar prebuild after loop finding. | AI-assisted draft | Merged by PR #91 |
 | 4.7 | 2026-07-15 | Filed W4.1 persistent sidebar and loop-breaker build. | AI-assisted draft | Merged by PR #92 |
 | 4.8 | 2026-07-21 | Filed W4.2 enrolment/catalogue prebuild and preserved W4.3-W4.5 payment gates. | AI-assisted draft | Merged by PR #93 |
-| 4.9 | 2026-07-22 | Filed executable QA-ALP-252 through QA-ALP-267 and exact branch correct-RED proof. | AI-assisted draft | Filed for review in PR #94 |
+| 4.9 | 2026-07-22 | Filed executable QA-ALP-252 through QA-ALP-267 and exact-head correct-RED proof. | AI-assisted draft | Filed for review in PR #94 |
