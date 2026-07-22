@@ -8,12 +8,13 @@
 | Stage | 6 - QA-to-Red |
 | Parent Artifact | `modules/ALP/05-qa-to-red/qa-to-red.md` |
 | Date | 2026-07-21 |
-| Status | Prebuild QA specification only; executable tests not yet filed |
-| Branch | `alp-w4-2-w4-3-enrolment-catalogue-prebuild` |
+| Status | QA-ALP-252 through QA-ALP-267 filed and accepted by PR #94 |
+| Prebuild merge | PR #93 / `721be18e88d284ffffc4179e71e3dd936b14a319` |
+| Executable RED merge | PR #94 / `43e587ac651b687845c3406b2b31ab57fbf95e0e` |
 
 ## QA rule
 
-Only QA-ALP-252 through QA-ALP-267 may be converted into executable RED tests immediately after this prebuild merges. Payment QA remains staged: W4.3 status-model QA requires a later cycle, W4.4 is a provider/risk decision gate, and W4.5 execution QA remains blocked until W4.1-W4.4 are accepted.
+QA-ALP-252 through QA-ALP-267 are filed as executable tests and their correct RED proof is accepted. The next authorized action is the separate W4.2 build-to-green cycle. Payment QA remains staged: W4.3 status-model QA requires a later cycle, W4.4 is a provider/risk decision gate, and W4.5 execution QA remains blocked until W4.1-W4.4 are accepted.
 
 ## W4.2 catalogue and navigation QA
 
@@ -63,4 +64,4 @@ Only QA-ALP-252 through QA-ALP-267 may be converted into executable RED tests im
 
 ## Boundary
 
-This plan creates no executable tests, code, migrations, admin rights, invitations, payments or offer codes. Payment execution is not authorized.
+This plan itself created no application code, migrations, admin rights, invitations, payments or offer codes. Executable QA-ALP-252 through QA-ALP-267 and correct RED proof were filed separately and accepted by PR #94. Payment execution is not authorized.
