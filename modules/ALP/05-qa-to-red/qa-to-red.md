@@ -6,11 +6,11 @@
 |---|---|
 | Module | ALP — APGI Learning Portal |
 | Stage | 6 — QA-to-Red |
-| Version | 0.2 |
-| Status | Draft — executable RED tests added for prior scopes; W4.2 expansion RED proof still required |
+| Version | 0.3 |
+| Status | W4.2 executable RED filed; branch proof required before build authorization |
 | Repository | APGI-cmy/Training |
 | Canonical Path | modules/ALP/05-qa-to-red/qa-to-red.md |
-| Build Authorized? | No new W4.2 build until executable expansion RED is accepted |
+| Build Authorized? | No new W4.2 build until executable expansion RED is reviewed, accepted and merged |
 | PBFAG Authorized? | No |
 
 ## Purpose
@@ -34,6 +34,7 @@ tests/qa-to-red/alp/assessment-submission.spec.ts
 tests/qa-to-red/alp/certificate.spec.ts
 tests/qa-to-red/alp/security-privacy.spec.ts
 tests/qa-to-red/alp/deployment-cwt.spec.ts
+tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts
 ```
 
 ## QA Domains
@@ -48,6 +49,7 @@ tests/qa-to-red/alp/deployment-cwt.spec.ts
 | Certificates | Eligibility, generation, download, audit |
 | RLS/privacy | Table RLS, cross-learner denial, private files |
 | Deployment/CWT | Build/typecheck/test scripts, evidence, CWT closure |
+| W4.2 enrolment and catalogue | Generic navigation/catalogue, admin authorization, invitations, protected tokens, audit, revoke/reinstate and pending denial |
 
 ## W4 Expansion QA Specification
 
@@ -57,12 +59,14 @@ The discoverable Stage 6 expansion plan is:
 
 It defines:
 
-- QA-ALP-252 through QA-ALP-267 for the next W4.2 catalogue, administrator-invitation and access-management RED suite;
+- QA-ALP-252 through QA-ALP-267 for the W4.2 catalogue, administrator-invitation and access-management RED suite;
 - QA-ALP-268 through QA-ALP-272 as reserved for a later W4.3 payment-status-model cycle;
 - QA-ALP-273 as reserved for the W4.4 provider/security/risk decision gate; and
 - QA-ALP-274 through QA-ALP-276 as reserved for W4.5 sandbox payment and offer-control execution after W4.1-W4.4 acceptance.
 
-Only W4.2 executable RED work is authorized after the governing prebuild merges. Payment execution remains blocked.
+The W4.2 executable suite is filed at `tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts`. The dedicated command is `npm run test:alp:w4-2:red`. The proof workflow is `.github/workflows/alp-w4-2-red-proof.yml`.
+
+Payment execution remains blocked.
 
 ## RED Validity Rule
 
@@ -70,18 +74,17 @@ Valid RED means tests execute and fail because implementation artifacts are miss
 
 ## Stage Gate
 
-Stage 6 expansion is not complete until:
+Stage 6 W4.2 expansion is not complete until:
 
-- applicable executable tests exist;
-- `npm run test:alp:red` executes;
-- failures are confirmed correct RED;
-- `red-proof-report.md` is completed or supplemented for the expansion;
-- QA Catalog alignment is accepted;
-- no implementation has started before RED acceptance; and
-- build remains blocked until the applicable gate passes.
+- QA-ALP-252 through QA-ALP-267 exist as executable tests;
+- `npm run test:alp:w4-2:red` executes;
+- all sixteen tests are present and failures are confirmed correct RED;
+- GOV-ALP-095 records the proof result;
+- no W4.2 implementation has started before RED acceptance; and
+- the build remains blocked until this RED PR is reviewed and merged.
 
 ## Next Artifact
 
 ```text
-modules/ALP/05-qa-to-red/red-proof-report.md
+modules/ALP/11-build/evidence/20260722-W4-GOV-ALP-095-decision-w4-2-executable-red.md
 ```
