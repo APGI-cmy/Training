@@ -2,12 +2,12 @@
 
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
-**Last Updated**: 2026-07-21  
-**Updated By**: GOV-ALP-094 W4.2 enrolment/catalogue prebuild and W4.3-W4.5 payment roadmap  
-> **Classification**: ACTIVE - W4.2 PREBUILD FILED  
+**Last Updated**: 2026-07-22  
+**Updated By**: GOV-ALP-095 W4.2 executable QA-to-Red proof  
+> **Classification**: ACTIVE - W4.2 EXECUTABLE RED FILED  
 > **Repository**: APGI-cmy/Training  
-> **Current Workstream**: Review W4.2 catalogue/admin-enrolment prebuild; preserve W4.3-W4.5 payment gates  
-> **Next Required Action**: Review/merge PR #93; then file and prove executable W4.2 QA-to-Red before any W4.2 build
+> **Current Workstream**: Review W4.2 executable QA-to-Red proof; implementation remains blocked  
+> **Next Required Action**: Review and merge PR #94; only then open a separate W4.2 build branch
 
 ---
 
@@ -19,9 +19,9 @@
 | W1 Closure / W2 Entry | Closed for W1 scope | PR #77 / `f492c8efd8c83cbca49481191315ac2869c62c3b` |
 | W2 Dashboard / Course Shell / Unit Viewer | Closed for W2 scope | PR #79 / `1b2ae564437a90349ccca95138ac430bf680089b` |
 | W3 Progress + Completion | Closed for approved database-backed scope | PR #80-#84 |
-| W4 Enrolment + Payments | Implementation started; not closed | PR #85 entry; W4.1 chain PR #86-#92; GOV-ALP-094 current |
+| W4 Enrolment + Payments | Implementation started; not closed | PR #85 entry; W4.1 chain PR #86-#92; GOV-ALP-094 and GOV-ALP-095 current |
 | W4.1 Access gating | DB proof closed; partial browser proof accepted; final closure pending | PR #88 DB closure; PR #92 merged; product-owner screenshots |
-| W4.2 Manual/admin enrolment | Prebuild filed; implementation not started | GOV-ALP-094 / PR #93 current |
+| W4.2 Manual/admin enrolment | Prebuild merged; executable RED filed and proven; implementation not started | PR #93 merged; GOV-ALP-095 / PR #94 current |
 | W4.3 Payment status model | Roadmap requirements only; not started | GOV-ALP-085 sequence preserved by GOV-ALP-094 |
 | W4.4 Provider integration decision | Not started | Architecture/security/risk decision required before execution |
 | W4.5 Payment execution | Not started and not authorized | Blocked until W4.1-W4.4 accepted |
@@ -68,21 +68,24 @@
 
 ---
 
-## W4.2 Prebuild Filed
+## W4.2 Prebuild and Executable RED
 
-| Prebuild Item | Status / Link |
+| Item | Status / Link |
 |---|---|
 | App Description addendum | `modules/ALP/00-app-description/addenda/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-addendum.md` |
 | UX Workflow addendum | `modules/ALP/01-ux-workflow-wiring/addenda/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-workflows.md` |
 | FRS addendum | `modules/ALP/02-frs/addenda/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-requirements.md` |
 | Requirement Registry addendum | `modules/ALP/REQUIREMENT_REGISTRY_ADDENDA/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-registry.md` |
 | Canonical Stage 6 expansion QA plan | `modules/ALP/05-qa-to-red/addenda/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-qa-plan.md` |
-| Governance evidence | `modules/ALP/11-build/evidence/20260721-W4-GOV-ALP-094-decision-enrolment-catalogue-prebuild.md` |
-| Evidence index | Updated to include GOV-ALP-094 and PR #92 merged posture. |
-| W4.2 implementation | Not started. |
-| Executable W4.2 RED | Required after PR #93 merge and before build. |
+| Prebuild governance | GOV-ALP-094 merged by PR #93 / `721be18e88d284ffffc4179e71e3dd936b14a319` |
+| Executable RED suite | `tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts` |
+| Dedicated RED command | `npm run test:alp:w4-2:red` |
+| Correct-RED workflow | `.github/workflows/alp-w4-2-red-proof.yml` |
+| Exact-head proof | The `ALP W4.2 RED Proof` check must succeed on the current PR head; no frozen historical run ID is authoritative |
+| Executable RED evidence | `modules/ALP/11-build/evidence/20260722-W4-GOV-ALP-095-decision-w4-2-executable-red.md` |
+| W4.2 implementation | Not started; blocked until PR #94 is reviewed and merged. |
 
-### W4.2 Authorized scope after RED acceptance
+### W4.2 Authorized scope after RED PR merge
 
 - generic learner sidebar and multi-course catalogue;
 - learner-specific course state and actions;
@@ -115,7 +118,7 @@ Offer-code execution requires separate W4.5 or later commercial authorization an
 | W1 | Auth + Profile + Files | CLOSED FOR W1 SCOPE | PR #73-#77 merged | Accepted | Admin console proof deferred |
 | W2 | Dashboard + Course Shell + Unit Viewer | CLOSED FOR W2 SCOPE | PR #78-#79 merged | Accepted | ALP-CTRL-010 carried forward |
 | W3 | Progress + Completion | CLOSED FOR APPROVED W3 SCOPE | PR #80-#84 merged | Accepted | ALP-CTRL-010 remains open |
-| W4 | Enrolment + Payments | IMPLEMENTATION STARTED | PR #85-#92 merged; PR #93 prebuild current | Vercel passing; W4.2 RED pending | W4.1 final proof pending; W4.2 not built; W4.3-W4.5 not started |
+| W4 | Enrolment + Payments | IMPLEMENTATION STARTED | PR #85-#93 merged; PR #94 RED current | Correct RED passed; build blocked | W4.1 final proof pending; W4.2 not built; W4.3-W4.5 not started |
 | W5 | Assessment Submission | WAITING | No W5 PR | No checks | Requires W4 closure |
 | W6 | AI Evaluation + Human Review | WAITING | No W6 PR | No checks | Requires W5 closure |
 | W7 | Certificates | WAITING | No W7 PR | No checks | Requires W3/W6 closure |
@@ -139,7 +142,7 @@ Offer-code execution requires separate W4.5 or later commercial authorization an
 
 ## Immediate Next Action
 
-Review and merge PR #93 as a prebuild-only PR. After merge, file executable QA-ALP-252 through QA-ALP-267 tests and confirm correct RED. Only then open the W4.2 build branch. Do not assign admin rights or make live enrolment writes before that gate.
+Review and merge PR #94 as the executable W4.2 QA-to-Red proof. No W4.2 implementation, live admin-role assignment, invitation write or enrolment-management write is authorized before that merge. After merge, open a separate W4.2 build PR and build only to QA-ALP-252 through QA-ALP-267 green while preserving regression suites.
 
 ---
 
@@ -153,9 +156,9 @@ W4.1 Implementation: MERGED BY PR #86
 W4.1 DB Proof Closure: MERGED BY PR #88  
 W4.1 Navigation Build: MERGED BY PR #92  
 W4.1 Browser Proof: PARTIALLY ACCEPTED; FINAL CLOSURE NOT CLAIMED  
-W4.2 Prebuild: FILED FOR REVIEW IN PR #93  
-W4.2 Executable RED: NOT YET FILED  
-W4.2 Implementation: NOT STARTED  
+W4.2 Prebuild: MERGED BY PR #93  
+W4.2 Executable RED: FILED AND EXACT-HEAD PROOF REQUIRED SUCCESSFUL IN PR #94; MERGE PENDING  
+W4.2 Implementation: NOT STARTED / NOT AUTHORIZED BEFORE PR #94 MERGE  
 W4.3 Payment Status Model: NOT STARTED  
 W4.4 Provider Decision: NOT STARTED  
 W4.5 Payment Execution: NOT STARTED / NOT AUTHORIZED  
@@ -192,4 +195,5 @@ Production readiness: NOT CLAIMED
 | 4.5 | 2026-07-10 | Filed W4.1 UI-proof enabler. | AI-assisted draft | Merged by PR #90 |
 | 4.6 | 2026-07-13 | Filed W4.1 navigation/sidebar prebuild after loop finding. | AI-assisted draft | Merged by PR #91 |
 | 4.7 | 2026-07-15 | Filed W4.1 persistent sidebar and loop-breaker build. | AI-assisted draft | Merged by PR #92 |
-| 4.8 | 2026-07-21 | Filed W4.2 enrolment/catalogue prebuild and preserved W4.3-W4.5 payment gates. | AI-assisted draft | Filed for review in PR #93 |
+| 4.8 | 2026-07-21 | Filed W4.2 enrolment/catalogue prebuild and preserved W4.3-W4.5 payment gates. | AI-assisted draft | Merged by PR #93 |
+| 4.9 | 2026-07-22 | Filed executable QA-ALP-252 through QA-ALP-267 and exact-head correct-RED proof. | AI-assisted draft | Filed for review in PR #94 |
