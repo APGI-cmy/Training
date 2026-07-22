@@ -6,7 +6,7 @@
 |---|---|
 | Module | ALP - APGI Learning Portal |
 | Artifact | Build Evidence Index |
-| Status | Updated for W4.2 executable QA-to-Red filing |
+| Status | Updated for W4.2 executable RED post-merge normalization |
 | Date | 2026-07-22 |
 | Repository | APGI-cmy/Training |
 | Canonical Path | `modules/ALP/11-build/evidence/index.md` |
@@ -32,8 +32,8 @@
 | W4.1 | `modules/ALP/11-build/evidence/20260710-W4-GOV-ALP-091-decision-ui-proof-enabler.md` | GOV-ALP-091; QA-ALP-246-247 | Sign-out/navigation clarification | GitHub / Vercel | PR #90 | Merged | BC-ALP-CONSOLIDATED-001 | Enabler merged | Navigation loop found later. |
 | W4.1 | `modules/ALP/11-build/evidence/20260712-W4-GOV-ALP-092-decision-navigation-proof-prebuild.md` | GOV-ALP-092 | Navigation prebuild | User screenshots / governance | PR #91 | Merged | BC-ALP-CONSOLIDATED-001 | Prebuild merged | Narrow loop-breaker authorized. |
 | W4.1 | `modules/ALP/11-build/evidence/20260715-W4-GOV-ALP-093-decision-navigation-loop-breaker-build.md` | GOV-ALP-093; QA-ALP-248-251 | Sidebar, denied-state recovery and not-enrolled path | GitHub / Vercel / user screenshots | PR #92 / `a0c0944a8399c97c90817916f74140c5369daede` | Merged; Vercel passed | Product-owner browser proof | Partial UI proof accepted; W4.1 open | Enrolled, pending, revoked and unknown/error proof remains. |
-| W4.2 / W4.3-W4.5 roadmap | `modules/ALP/11-build/evidence/20260721-W4-GOV-ALP-094-decision-enrolment-catalogue-prebuild.md` | QA-ALP-252-267; reserved QA-ALP-268-276 | Catalogue, admin invitation/access management; payment roadmap gates | GitHub PR evidence / live-schema inspection | PR #93 / `721be18e88d284ffffc4179e71e3dd936b14a319` | Merged; Vercel passed | Product owner / reviewer | Prebuild merged; implementation not started | W4.2 RED is next; W4.3 status model, W4.4 decision and W4.5 execution remain separate later cycles. |
-| W4.2 | `modules/ALP/11-build/evidence/20260722-W4-GOV-ALP-095-decision-w4-2-executable-red.md` | QA-ALP-252-267 | Correct RED for absent catalogue/admin invitation/access management | Vitest / GitHub Actions | PR #94 current | Exact-head `ALP W4.2 RED Proof` required successful | Product owner / reviewer | Executable RED filed; build blocked pending merge | No application code, migration or live role/enrolment write. |
+| W4.2 / W4.3-W4.5 roadmap | `modules/ALP/11-build/evidence/20260721-W4-GOV-ALP-094-decision-enrolment-catalogue-prebuild.md` | QA-ALP-252-267; reserved QA-ALP-268-276 | Catalogue, admin invitation/access management; payment roadmap gates | GitHub PR evidence / live-schema inspection | PR #93 / `721be18e88d284ffffc4179e71e3dd936b14a319` | Merged; Vercel passed | Product owner / reviewer | Prebuild merged; implementation not started | W4.2 RED accepted later; W4.3 status model, W4.4 decision and W4.5 execution remain separate later cycles. |
+| W4.2 | `modules/ALP/11-build/evidence/20260722-W4-GOV-ALP-095-decision-w4-2-executable-red.md` | QA-ALP-252-267 | Correct RED for absent catalogue/admin invitation/access management | Vitest / GitHub Actions | PR #94 / `43e587ac651b687845c3406b2b31ab57fbf95e0e` | Exact-head RED proof passed; merged | Product owner / reviewer | Executable RED accepted; separate W4.2 build authorized | W4.2 implementation not started; no live role, migration or enrolment write performed. |
 
 ---
 
@@ -50,5 +50,5 @@ Live payment readiness: NOT CLAIMED.
 ALP-CTRL-010: OPEN and carried forward.  
 W4: IMPLEMENTATION STARTED, but W4 closure is NOT CLAIMED.  
 W4.1: DB proof closed and partial browser proof accepted; FINAL CLOSURE NOT CLAIMED.  
-W4.2: EXECUTABLE RED FILED; IMPLEMENTATION NOT STARTED.  
-W4.3-W4.5: ROADMAP ONLY; PAYMENT EXECUTION NOT AUTHORIZED.
+W4.2: EXECUTABLE RED MERGED; IMPLEMENTATION NOT STARTED; SEPARATE BUILD AUTHORIZED.  
+W4.3-W4.5: ROADMAP ONLY; PAYMENT EXECUTION NOT AUTHORIZED.  
