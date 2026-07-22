@@ -8,7 +8,7 @@
 | Wave | W4.2 manual/admin enrolment and generic catalogue |
 | Evidence Type | Executable RED filing and proof decision |
 | Date | 2026-07-22 |
-| Status | Filed for RED review; W4.2 build remains blocked |
+| Status | Exact branch RED proof passed; filed for review; W4.2 build remains blocked pending merge |
 | Branch | `agent/alp-w4-2-executable-red` |
 | Repository | APGI-cmy/Training |
 
@@ -23,28 +23,11 @@ PR #93 merged the prebuild authority for QA-ALP-252 through QA-ALP-267. That aut
 - Proof workflow: `.github/workflows/alp-w4-2-red-proof.yml`
 - QA range: QA-ALP-252 through QA-ALP-267
 
-The suite covers:
-
-1. generic learner navigation;
-2. multi-course catalogue source;
-3. learner-specific catalogue state and actions;
-4. admin-only authorization;
-5. legacy-route inventory and redirects;
-6. invitation creation;
-7. mandatory reasons;
-8. protected invitation tokens;
-9. invalid/expired/revoked/reused/email-mismatch denial;
-10. idempotent redemption;
-11. invitation lifecycle audit;
-12. batch recipient outcomes;
-13. governed revoke/reinstate evidence;
-14. revoked access denial;
-15. reinstatement audit and access restoration; and
-16. pending access denial.
+The suite covers generic navigation and catalogue, multi-course sourcing, learner-specific state, admin authorization, legacy redirects, invitation creation, mandatory reasons, protected tokens, negative redemption paths, idempotency, lifecycle audit, batch outcomes, revoke/reinstate evidence, revoked denial, reinstatement and pending denial.
 
 ## Correct RED validation
 
-A controlled local structural execution using the repository test helper and the current merged source markers produced:
+A controlled local structural execution produced:
 
 - test files executed: 1;
 - tests executed: 16;
@@ -53,18 +36,24 @@ A controlled local structural execution using the repository test helper and the
 - failure type: assertion failures for absent W4.2 behaviour and artifacts;
 - no syntax, transform, missing-runner or skipped-test failure observed.
 
-The GitHub proof workflow independently requires the exact branch suite to:
+The exact GitHub branch proof independently completed successfully:
 
-- exit non-zero;
-- report all sixteen failures;
-- contain every QA ID from QA-ALP-252 through QA-ALP-267; and
-- contain no runner/setup failure markers.
+| Proof item | Result |
+|---|---|
+| Workflow | `ALP W4.2 RED Proof` |
+| Run ID | `29897844810` |
+| Job | `prove-correct-red` |
+| Job conclusion | Success |
+| Dependency installation | Success |
+| RED execution step | Success |
+| RED artifact upload | Success |
+| Expected interpretation | All sixteen W4.2 tests executed and failed on absent behaviour; workflow converted correct RED into a passing governance check |
+
+The workflow fails if the suite unexpectedly passes, any QA ID from QA-ALP-252 through QA-ALP-267 is absent, the expected sixteen failures are not present, or runner/setup failure markers appear.
 
 ## Governance decision
 
-This PR files executable RED only. It does not authorize or perform W4.2 implementation. Build authorization may be considered only after this PR is reviewed, the branch proof is accepted, and the PR is merged.
-
-After merge, the next separately reviewed build may implement only the approved W4.2 catalogue, admin authorization, invitation/manual enrolment, revoke/reinstate and redirect-inventory scope.
+Correct executable RED is established for the PR branch. This does not authorize W4.2 implementation before review and merge. After this PR merges, a separate W4.2 build branch may implement only the approved catalogue, admin authorization, invitation/manual enrolment, revoke/reinstate and redirect-inventory scope.
 
 ## Explicit non-claims
 
