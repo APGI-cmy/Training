@@ -1,32 +1,26 @@
 import Link from "next/link";
 import { SignOutControl } from "@/components/auth/sign-out-control";
+import { getCurrentSession, getUserRoles } from "@/server/auth/session";
 
-export function LearnerSidebar() {
+export async function LearnerSidebar() {
+  const session = await getCurrentSession();
+  const roles = session ? await getUserRoles(session.accessToken) : [];
+  const isAdmin = roles.includes("admin");
+
   return (
     <aside className="learner-sidebar" aria-label="Learner navigation">
       <div>
         <p className="sidebar-eyebrow">Learner navigation</p>
         <h2>APGI Training</h2>
-        <p className="sidebar-guidance">
-          Public course information and governed learner routes are labelled separately.
-        </p>
+        <p className="sidebar-guidance">Browse your learning, discover courses, and manage your profile.</p>
       </div>
 
       <nav className="sidebar-links" aria-label="Learner route navigation">
         <Link href="/dashboard">Dashboard</Link>
+        <Link href="/catalogue">Course catalogue</Link>
+        <Link href="/catalogue?view=my-learning">My learning</Link>
         <Link href="/profile">Profile</Link>
-        <Link href="/courses/vpshr-level-0">
-          <span>Public Level 0 landing</span>
-          <small>Course information</small>
-        </Link>
-        <Link href="/learn/vpshr-level-0">
-          <span>Gated Level 0 course</span>
-          <small>Enrolment required</small>
-        </Link>
-        <Link href="/learn/vpshr-level-0/units/introduction">
-          <span>First gated unit</span>
-          <small>Enrolment required</small>
-        </Link>
+        {isAdmin ? <Link href="/admin">Administration</Link> : null}
       </nav>
 
       <div className="sidebar-actions">
