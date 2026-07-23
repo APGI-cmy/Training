@@ -34,14 +34,14 @@
 | W4.1 | `modules/ALP/11-build/evidence/20260715-W4-GOV-ALP-093-decision-navigation-loop-breaker-build.md` | GOV-ALP-093; QA-ALP-248-251 | Sidebar, denied-state recovery and not-enrolled path | GitHub / Vercel / user screenshots | PR #92 / `a0c0944a8399c97c90817916f74140c5369daede` | Merged; Vercel passed | Product-owner browser proof | Partial UI proof accepted; W4.1 open | Enrolled, pending, revoked and unknown/error proof remains. |
 | W4.2 / W4.3-W4.5 roadmap | `modules/ALP/11-build/evidence/20260721-W4-GOV-ALP-094-decision-enrolment-catalogue-prebuild.md` | QA-ALP-252-267; reserved QA-ALP-268-276 | Catalogue, admin invitation/access management; payment roadmap gates | GitHub PR evidence / live-schema inspection | PR #93 / `721be18e88d284ffffc4179e71e3dd936b14a319` | Merged; Vercel passed | Product owner / reviewer | Prebuild merged | W4.2 RED accepted later; W4.3-W4.5 remain separate later cycles. |
 | W4.2 | `modules/ALP/11-build/evidence/20260722-W4-GOV-ALP-095-decision-w4-2-executable-red.md` | QA-ALP-252-267 | Correct RED for absent catalogue/admin invitation/access management | Vitest / GitHub Actions | PR #94 / `43e587ac651b687845c3406b2b31ab57fbf95e0e` | Exact-head RED proof passed; merged | Product owner / reviewer | Executable RED accepted | Separate W4.2 build authorized. |
-| W4.2 | `modules/ALP/11-build/evidence/20260723-W4-GOV-ALP-098-decision-w4-2-build-to-green.md` | QA-ALP-252-267 | Catalogue/admin invitation/access management build | TypeScript / Vitest / Next.js / Vercel | PR #98 current | Exact-head typecheck, 16/16 W4.2 tests, build and Vercel passed | Product owner / reviewer | Implementation filed; live proof pending | No live migration, role assignment or test-data write performed. |
+| W4.2 | `modules/ALP/11-build/evidence/20260723-W4-GOV-ALP-098-decision-w4-2-build-to-green.md` | QA-ALP-252-267 | Catalogue/admin invitation/access management build | TypeScript / Vitest / Next.js / Vercel | PR #98 current | Current-head typecheck, 16/16 W4.2 tests, build and Vercel required | Product owner / reviewer | Implementation filed; live proof pending | No live migration, role assignment or test-data write performed. |
 
 ---
 
 ## Current Non-Claims
 
 Full app delivery: NOT CLAIMED.  
-CODE_PASS: CLAIMED FOR PR #98 AUTOMATED W4.2 IMPLEMENTATION SCOPE ONLY.  
+CODE_PASS: NOT CLAIMED.  
 FUNCTIONAL_PASS: NOT CLAIMED.  
 CWT_PASS: NOT CLAIMED.  
 Final content quality acceptance: NOT CLAIMED.  
@@ -51,5 +51,5 @@ Live payment readiness: NOT CLAIMED.
 ALP-CTRL-010: OPEN and carried forward.  
 W4: IMPLEMENTATION STARTED, but W4 closure is NOT CLAIMED.  
 W4.1: DB proof closed and partial browser proof accepted; FINAL CLOSURE NOT CLAIMED.  
-W4.2: IMPLEMENTATION FILED; AUTOMATED GREEN; LIVE DB/BROWSER PROOF PENDING.  
+W4.2: IMPLEMENTATION FILED; AUTOMATED GREEN REQUIRED ON CURRENT HEAD; LIVE DB/BROWSER PROOF PENDING.  
 W4.3-W4.5: ROADMAP ONLY; PAYMENT EXECUTION NOT AUTHORIZED.  
