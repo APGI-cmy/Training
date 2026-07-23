@@ -9,14 +9,14 @@ export async function adminRest(path: string, init: RequestInit = {}) {
     throw new Error("SUPABASE_ADMIN_NOT_CONFIGURED");
   }
 
+  const headers = new Headers(init.headers);
+  headers.set("content-type", "application/json");
+  headers.set("apikey", serviceRoleKey);
+  headers.set("authorization", `Bearer ${serviceRoleKey}`);
+
   return fetch(url, {
     ...init,
-    headers: {
-      apikey: serviceRoleKey,
-      authorization: `Bearer ${serviceRoleKey}`,
-      "content-type": "application/json",
-      ...(init.headers ?? {})
-    },
+    headers,
     cache: "no-store"
   });
 }
