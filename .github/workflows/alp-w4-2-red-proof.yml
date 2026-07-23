@@ -33,7 +33,10 @@ jobs:
         run: npm ci
 
       - name: Typecheck
-        run: npm run typecheck
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run typecheck 2>&1 | tee w4-2-typecheck-output.txt
 
       - name: Execute W4.2 GREEN suite
         run: npm run test:alp:w4-2
@@ -47,10 +50,12 @@ jobs:
           set -o pipefail
           npm run build 2>&1 | tee w4-2-build-output.txt
 
-      - name: Upload build output
+      - name: Upload validation output
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: alp-w4-2-build-output
-          path: w4-2-build-output.txt
+          name: alp-w4-2-validation-output
+          path: |
+            w4-2-typecheck-output.txt
+            w4-2-build-output.txt
           if-no-files-found: warn
