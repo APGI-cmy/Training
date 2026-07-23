@@ -23,7 +23,7 @@ PR #98 implements the authorized W4.2 code slice:
 - fail-closed and idempotent invitation redemption;
 - invitation and enrolment audit events;
 - governed revoke/reinstate action;
-- invitation schema, indexes and RLS migration;
+- invitation schema, indexes and RLS migration `010_alp_admin_invitations.sql`;
 - legacy-route retain/redirect matrix; and
 - conversion of the W4.2 proof workflow from correct RED to build-to-green.
 
@@ -34,6 +34,7 @@ The authoritative evidence is the successful `ALP W4.2 Build to Green` check and
 - dependency installation successful;
 - TypeScript typecheck successful;
 - QA-ALP-252 through QA-ALP-267 successful;
+- W1 and W4.1 regression suites successful;
 - Next.js production build successful; and
 - build-output artifact uploaded successfully.
 
@@ -43,7 +44,7 @@ A passed check on an older head does not authorize merge after the branch change
 
 This evidence does not close W4.2. The following remain required:
 
-1. Review and apply `006_alp_admin_invitations.sql` to the controlled Supabase project.
+1. Review and apply `010_alp_admin_invitations.sql` to the controlled Supabase project.
 2. Confirm exact `admin` role assignment row for `johan.ras@apginc.ca` before any write.
 3. Capture admin and learner browser proof for invitation creation, redemption and catalogue state.
 4. Capture pending, enrolled, revoked, reinstated, invalid, expired, reused and email-mismatch paths.
