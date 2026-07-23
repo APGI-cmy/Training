@@ -26,7 +26,7 @@ export function getUnitContent(courseSlug: string, unitSlug: string): UnitConten
     return undefined;
   }
 
-  const { previous, next } = getAdjacentUnits(unit);
+  const { previous, next } = getAdjacentUnits(unit, course);
   const embed = unit.media.find((media) => media.kind === "embed");
 
   return {

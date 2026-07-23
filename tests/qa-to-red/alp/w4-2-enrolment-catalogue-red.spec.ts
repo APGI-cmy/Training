@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { expectContains, expectPath, read } from "./helpers/project-root";
 
-const invitationMigration = "supabase/migrations/006_alp_admin_invitations.sql";
+const invitationMigration = "supabase/migrations/010_alp_admin_invitations.sql";
 const createInvitationAction = "src/server/actions/invitations/create-invitation.ts";
 const acceptInvitationAction = "src/server/actions/invitations/accept-invitation.ts";
 const changeEnrolmentAction = "src/server/actions/enrolments/change-enrolment-status.ts";
@@ -18,6 +18,7 @@ describe("ALP W4.2 executable QA-to-Red", () => {
     const source = read("src/lib/courses.ts");
     expect(source.includes("const courses = [vpshrLevel0 as Course]"), "QA-ALP-253: single-course source remains").toBe(false);
     expect(source.toLowerCase().includes("scannex"), "QA-ALP-253: second published course is not registered").toBe(true);
+    expectPath("app/courses/scannex-training-programme/page.tsx", "QA-ALP-253");
   });
 
   it("QA-ALP-254 signed-in catalogue presents learner-specific states and actions", () => {

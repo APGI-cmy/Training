@@ -36,6 +36,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   const access = await getCourseAccess({
     accessToken: session.accessToken,
     userId: session.user.id,
+    userEmail: session.user.email,
     courseId: course.id
   });
 

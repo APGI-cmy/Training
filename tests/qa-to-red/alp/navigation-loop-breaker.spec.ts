@@ -2,19 +2,15 @@ import { describe, expect, it } from "vitest";
 import { expectContains, expectPath, read } from "./helpers/project-root";
 
 describe("ALP W4.1 navigation sidebar and loop-breaker", () => {
-  it("QA-ALP-248 persistent learner sidebar exposes proof-critical routes", () => {
+  it("QA-ALP-248 persistent learner sidebar exposes proof-critical generic routes", () => {
     expectPath("src/components/navigation/LearnerSidebar.tsx", "QA-ALP-248");
     expectContains("src/components/navigation/LearnerSidebar.tsx", "Learner navigation", "QA-ALP-248");
     expectContains("src/components/navigation/LearnerSidebar.tsx", 'href="/dashboard"', "QA-ALP-248");
     expectContains("src/components/navigation/LearnerSidebar.tsx", 'href="/profile"', "QA-ALP-248");
-    expectContains("src/components/navigation/LearnerSidebar.tsx", 'href="/courses/vpshr-level-0"', "QA-ALP-248");
-    expectContains("src/components/navigation/LearnerSidebar.tsx", 'href="/learn/vpshr-level-0"', "QA-ALP-248");
-    expectContains(
-      "src/components/navigation/LearnerSidebar.tsx",
-      'href="/learn/vpshr-level-0/units/introduction"',
-      "QA-ALP-248"
-    );
+    expectContains("src/components/navigation/LearnerSidebar.tsx", 'href="/catalogue"', "QA-ALP-248");
+    expectContains("src/components/navigation/LearnerSidebar.tsx", "My learning", "QA-ALP-248");
     expectContains("src/components/navigation/LearnerSidebar.tsx", "SignOutControl", "QA-ALP-248");
+    expect(read("src/components/navigation/LearnerSidebar.tsx").includes("vpshr-level-0"), "QA-ALP-248: persistent sidebar must remain course-generic").toBe(false);
   });
 
   it("QA-ALP-249 learner route group renders the sidebar without making public routes session-aware", () => {

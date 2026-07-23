@@ -8,8 +8,10 @@ describe("ALP Stage 6 auth and route protection", () => {
   });
 
   it("QA-ALP-071 admin route is protected", () => {
-    expectPath("src/components/auth/protected-layout.tsx", "QA-ALP-071");
-    expectContains("src/components/auth/protected-layout.tsx", "admin", "QA-ALP-071");
+    expectPath("app/(admin)/admin/layout.tsx", "QA-ALP-071");
+    expectPath("src/lib/auth/require-admin.ts", "QA-ALP-071");
+    expectContains("app/(admin)/admin/layout.tsx", "requireAdmin", "QA-ALP-071");
+    expectContains("src/lib/auth/require-admin.ts", 'requireRole(["admin"])', "QA-ALP-071");
   });
 
   it("QA-ALP-077 user roles are schema-backed", () => {
@@ -23,7 +25,7 @@ describe("ALP Stage 6 auth and route protection", () => {
   it("QA-ALP-246 visible sign out control exists and resets to ALP sign in", () => {
     expectPath("src/components/auth/sign-out-control.tsx", "QA-ALP-246");
     expectContains("src/components/auth/sign-out-control.tsx", "Sign out", "QA-ALP-246");
-    expectContains("src/server/actions/auth/sign-in.ts", "redirect(\"/alp-sign-in\")", "QA-ALP-246");
-    expectContains("app/layout.tsx", "SignOutControl", "QA-ALP-246");
+    expectContains("src/server/actions/auth/sign-in.ts", 'redirect("/alp-sign-in")', "QA-ALP-246");
+    expectContains("src/components/navigation/LearnerSidebar.tsx", "SignOutControl", "QA-ALP-246");
   });
 });
