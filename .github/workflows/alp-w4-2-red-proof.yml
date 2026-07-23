@@ -5,7 +5,7 @@ on:
     paths:
       - "app/**"
       - "src/**"
-      - "supabase/migrations/006_alp_admin_invitations.sql"
+      - "supabase/migrations/010_alp_admin_invitations.sql"
       - "tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts"
       - "package.json"
       - ".github/workflows/alp-w4-2-red-proof.yml"
@@ -37,6 +37,9 @@ jobs:
 
       - name: Execute W4.2 GREEN suite
         run: npm run test:alp:w4-2
+
+      - name: Execute W1 and W4.1 regression suites
+        run: npx vitest run tests/qa-to-red/alp/auth.spec.ts tests/qa-to-red/alp/enrolment-access.spec.ts tests/qa-to-red/alp/navigation-loop-breaker.spec.ts
 
       - name: Build application
         shell: bash
