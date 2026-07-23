@@ -4,11 +4,11 @@ import { createHash, randomBytes } from "node:crypto";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { adminRest } from "@/server/supabase/admin-rest";
 
-export const INVITATION_REASON_REQUIRED = "INVITATION_REASON_REQUIRED";
+const INVITATION_REASON_REQUIRED = "INVITATION_REASON_REQUIRED";
 
 type InvitationBasis = "external_payment" | "corporate_order" | "complimentary_marketing" | "internal_allocation" | "other";
 
-export type CreateInvitationResult = {
+type CreateInvitationResult = {
   ok: boolean;
   invitationId?: string;
   token?: string;
