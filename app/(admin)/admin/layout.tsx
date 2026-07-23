@@ -14,7 +14,8 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         <h1>Learning administration</h1>
         <nav aria-label="Administration navigation">
           <Link href="/admin">Overview</Link>{" "}
-          <Link href="/admin/invitations">Invitations</Link>
+          <Link href="/admin/invitations">Invitations</Link>{" "}
+          <Link href="/admin/enrolments">Access management</Link>
         </nav>
       </header>
       {children}
