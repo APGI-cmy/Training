@@ -1,6 +1,6 @@
 "use server";
 
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { adminRest } from "@/server/supabase/admin-rest";
 
@@ -14,6 +14,10 @@ export type CreateInvitationState = {
   token?: string;
   error?: string;
 };
+
+async function deleteInvitation(invitationId: string) {
+  await adminRest(`/rest/v1/course_invitations?id=eq.${encodeURIComponent(invitationId)}`, { method: "DELETE" });
+}
 
 export async function createInvitation(formData: FormData): Promise<CreateInvitationState> {
   const { session } = await requireAdmin();
@@ -56,19 +60,81 @@ export async function createInvitation(formData: FormData): Promise<CreateInvita
     return { ok: false, error: "INVITATION_CREATE_FAILED" };
   }
 
-  const rows = (await response.json()) as Array<{ id: string }>;
+  const rows = (await response.json()) as Array<{ id?: string }>;
   const invitationId = rows[0]?.id;
+  if (!invitationId) {
+    return { ok: false, error: "INVITATION_CREATE_FAILED" };
+  }
 
-  if (invitationId) {
-    await adminRest("/rest/v1/course_invitation_events", {
+  const profileResponse = await adminRest(
+    `/rest/v1/profiles?select=user_id&email=ilike.${encodeURIComponent(recipientEmail)}&limit=1`
+  );
+  if (!profileResponse.ok) {
+    await deleteInvitation(invitationId);
+    return { ok: false, error: "INVITATION_RECIPIENT_LOOKUP_FAILED" };
+  }
+
+  const profiles = (await profileResponse.json()) as Array<{ user_id?: string }>;
+  const recipientUserId = profiles[0]?.user_id;
+
+  if (recipientUserId) {
+    const pendingResponse = await adminRest("/rest/v1/course_enrolments?on_conflict=user_id,course_id", {
       method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=representation" },
       body: JSON.stringify({
-        invitation_id: invitationId,
-        event_type: "created",
-        actor_id: session.user.id,
-        metadata: { basis, reason }
+        user_id: recipientUserId,
+        course_id: courseId,
+        status: "pending",
+        source: "admin",
+        access_granted_at: null,
+        access_revoked_at: null,
+        metadata: { invitation_id: invitationId, actorId: session.user.id, reason }
       })
     });
+
+    if (!pendingResponse.ok) {
+      await deleteInvitation(invitationId);
+      return { ok: false, error: "PENDING_ENROLMENT_CREATE_FAILED" };
+    }
+
+    const pendingRows = (await pendingResponse.json()) as Array<{ user_id?: string }>;
+    if (!pendingRows[0]?.user_id) {
+      await deleteInvitation(invitationId);
+      return { ok: false, error: "PENDING_ENROLMENT_CREATE_FAILED" };
+    }
+
+    const pendingEvent = await adminRest("/rest/v1/course_enrolment_events", {
+      method: "POST",
+      body: JSON.stringify({
+        event_key: `invitation:${invitationId}:pending:${randomUUID()}`,
+        user_id: recipientUserId,
+        course_id: courseId,
+        event_type: "enrolment_requested",
+        previous_status: null,
+        next_status: "pending",
+        metadata: { invitation_id: invitationId, actorId: session.user.id, reason }
+      })
+    });
+
+    if (!pendingEvent.ok) {
+      await deleteInvitation(invitationId);
+      return { ok: false, error: "PENDING_ENROLMENT_AUDIT_FAILED" };
+    }
+  }
+
+  const invitationEvent = await adminRest("/rest/v1/course_invitation_events", {
+    method: "POST",
+    body: JSON.stringify({
+      invitation_id: invitationId,
+      event_type: "created",
+      actor_id: session.user.id,
+      metadata: { basis, reason, pending_enrolment_created: Boolean(recipientUserId) }
+    })
+  });
+
+  if (!invitationEvent.ok) {
+    await deleteInvitation(invitationId);
+    return { ok: false, error: "INVITATION_AUDIT_FAILED" };
   }
 
   return { ok: true, invitationId, token };
