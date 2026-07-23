@@ -99,7 +99,7 @@
 
 ### W4.2 proof still required
 
-- controlled application of `006_alp_admin_invitations.sql`;
+- controlled application of `010_alp_admin_invitations.sql`;
 - exact approved `admin` assignment for `johan.ras@apginc.ca`;
 - browser proof for admin and learner paths;
 - live database proof for pending, enrolled, revoked, reinstated and invitation negative paths;
