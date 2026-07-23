@@ -17,30 +17,43 @@ const stateLabels = {
   unknown: "Not enrolled"
 } as const;
 
-export default async function CataloguePage() {
+type CatalogueProps = {
+  searchParams?: Promise<{ view?: string }>;
+};
+
+export default async function CataloguePage({ searchParams }: CatalogueProps) {
   const session = await requireSession();
+  const { view } = (await searchParams) ?? {};
   const courses = getCourses();
   const access = await Promise.all(
     courses.map((course) =>
       getCourseAccess({
         accessToken: session.accessToken,
         userId: session.user.id,
+        userEmail: session.user.email,
         courseId: course.id
       })
     )
   );
+  const entries = courses
+    .map((course, index) => ({ course, decision: access[index] }))
+    .filter(({ decision }) => view !== "my-learning" || decision.status !== "not_enrolled" && decision.status !== "unknown");
 
   return (
     <main className="page-shell">
       <header className="page-header">
-        <p className="eyebrow">Course catalogue</p>
-        <h1>Choose your next learning journey</h1>
-        <p>Every published course is shown with your current enrolment state and the action available to you.</p>
+        <p className="eyebrow">{view === "my-learning" ? "My learning" : "Course catalogue"}</p>
+        <h1>{view === "my-learning" ? "Your current learning" : "Choose your next learning journey"}</h1>
+        <p>
+          {view === "my-learning"
+            ? "Courses with an enrolled, pending, or revoked relationship are shown here."
+            : "Every published course is shown with your current enrolment state and the action available to you."}
+        </p>
       </header>
 
-      <section className="course-grid" aria-label="Published courses">
-        {courses.map((course, index) => {
-          const decision = access[index];
+      <section className="course-grid" aria-label={view === "my-learning" ? "My learning courses" : "Published courses"}>
+        {entries.length === 0 ? <p>No courses are currently linked to your learning profile.</p> : null}
+        {entries.map(({ course, decision }) => {
           const state = stateLabels[decision.status];
 
           return (
