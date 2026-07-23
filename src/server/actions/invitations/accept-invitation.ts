@@ -32,22 +32,17 @@ export async function acceptInvitation(token: string) {
   const sessionEmail = session.user.email?.trim().toLowerCase();
   let failed = "";
 
-  if (!invitation) failed = "invalid";
+  if (!invitation?.id || !invitation.course_id) failed = "invalid";
   else if (!invitationEmail || invitationEmail !== sessionEmail) failed = "email_mismatch";
   else if (invitation.expires_at && new Date(invitation.expires_at) <= now) failed = "expired";
   else if (invitation.revoked_at || invitation.status === "revoked") failed = "revoked";
   else if (invitation.redeemed_at || invitation.status === "redeemed") failed = "reused";
 
-  if (failed || !invitation) {
+  if (failed || !invitation?.id || !invitation.course_id) {
     if (invitation?.id) {
       const failedEvent = await adminRest("/rest/v1/course_invitation_events", {
         method: "POST",
-        body: JSON.stringify({
-          invitation_id: invitation.id,
-          event_type: "failed",
-          actor_id: session.user.id,
-          metadata: { failed }
-        })
+        body: JSON.stringify({ invitation_id: invitation.id, event_type: "failed", actor_id: session.user.id, metadata: { failed } })
       });
       if (!failedEvent.ok) return { ok: false, error: "failed_event_write_failed" };
     } else {
@@ -56,18 +51,20 @@ export async function acceptInvitation(token: string) {
     return { ok: false, error: failed || "invalid" };
   }
 
-  const idempotencyKey = `invitation:${invitation.id}:redeemed`;
+  const invitationId = invitation.id;
+  const courseId = invitation.course_id;
+  const idempotencyKey = `invitation:${invitationId}:redeemed`;
   const upsert = await adminRest("/rest/v1/course_enrolments?on_conflict=user_id,course_id", {
     method: "POST",
     headers: { Prefer: "resolution=merge-duplicates,return=representation" },
     body: JSON.stringify({
       user_id: session.user.id,
-      course_id: invitation.course_id,
+      course_id: courseId,
       status: "enrolled",
       source: "admin",
       access_granted_at: now.toISOString(),
       access_revoked_at: null,
-      metadata: { invitation_id: invitation.id, idempotent: true }
+      metadata: { invitation_id: invitationId, idempotent: true }
     })
   });
 
@@ -75,7 +72,7 @@ export async function acceptInvitation(token: string) {
   const enrolmentRows = (await upsert.json()) as Array<{ user_id?: string }>;
   if (!enrolmentRows[0]?.user_id) return { ok: false, error: "enrolment_failed" };
 
-  const invitationUpdate = await adminRest(`/rest/v1/course_invitations?id=eq.${encodeURIComponent(invitation.id)}`, {
+  const invitationUpdate = await adminRest(`/rest/v1/course_invitations?id=eq.${encodeURIComponent(invitationId)}`, {
     method: "PATCH",
     headers: { Prefer: "return=representation" },
     body: JSON.stringify({ status: "redeemed", redeemed_at: now.toISOString(), redeemed_by: session.user.id })
@@ -86,12 +83,7 @@ export async function acceptInvitation(token: string) {
 
   const invitationEvent = await adminRest("/rest/v1/course_invitation_events", {
     method: "POST",
-    body: JSON.stringify({
-      invitation_id: invitation.id,
-      event_type: "redeemed",
-      actor_id: session.user.id,
-      metadata: { idempotencyKey }
-    })
+    body: JSON.stringify({ invitation_id: invitationId, event_type: "redeemed", actor_id: session.user.id, metadata: { idempotencyKey } })
   });
   if (!invitationEvent.ok) return { ok: false, error: "invitation_audit_failed" };
 
@@ -100,14 +92,14 @@ export async function acceptInvitation(token: string) {
     body: JSON.stringify({
       event_key: `${idempotencyKey}:${randomUUID()}`,
       user_id: session.user.id,
-      course_id: invitation.course_id,
+      course_id: courseId,
       event_type: "enrolment_granted",
       previous_status: "pending",
       next_status: "enrolled",
-      metadata: { invitation_id: invitation.id, idempotencyKey }
+      metadata: { invitation_id: invitationId, idempotencyKey }
     })
   });
   if (!enrolmentEvent.ok) return { ok: false, error: "enrolment_audit_failed" };
 
-  return { ok: true, courseId: invitation.course_id };
+  return { ok: true, courseId };
 }
