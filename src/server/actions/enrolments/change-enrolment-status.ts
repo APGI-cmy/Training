@@ -17,18 +17,24 @@ export async function changeEnrolmentStatus(input: {
   if (!reason) return { ok: false, error: "ENROLMENT_REASON_REQUIRED" };
 
   const currentResponse = await adminRest(
-    `/rest/v1/course_enrolments?select=status&user_id=eq.${input.userId}&course_id=eq.${input.courseId}&limit=1`
+    `/rest/v1/course_enrolments?select=status&user_id=eq.${encodeURIComponent(input.userId)}&course_id=eq.${encodeURIComponent(input.courseId)}&limit=1`
   );
-  const currentRows = currentResponse.ok ? ((await currentResponse.json()) as Array<{ status?: string }>) : [];
-  const previousStatus = currentRows[0]?.status ?? "pending";
+  if (!currentResponse.ok) return { ok: false, error: "ENROLMENT_LOOKUP_FAILED" };
+
+  const currentRows = (await currentResponse.json()) as Array<{ status?: "pending" | "enrolled" | "revoked" }>;
+  const current = currentRows[0];
+  if (!current?.status) return { ok: false, error: "ENROLMENT_NOT_FOUND" };
+
+  const previousStatus = current.status;
   const nextStatus = input.nextStatus;
   const now = new Date().toISOString();
   const reinstated = previousStatus === "revoked" && nextStatus === "enrolled";
 
   const updateResponse = await adminRest(
-    `/rest/v1/course_enrolments?user_id=eq.${input.userId}&course_id=eq.${input.courseId}`,
+    `/rest/v1/course_enrolments?user_id=eq.${encodeURIComponent(input.userId)}&course_id=eq.${encodeURIComponent(input.courseId)}`,
     {
       method: "PATCH",
+      headers: { Prefer: "return=representation" },
       body: JSON.stringify({
         status: nextStatus,
         access_granted_at: nextStatus === "enrolled" ? now : null,
@@ -39,8 +45,10 @@ export async function changeEnrolmentStatus(input: {
   );
 
   if (!updateResponse.ok) return { ok: false, error: "ENROLMENT_UPDATE_FAILED" };
+  const updatedRows = (await updateResponse.json()) as Array<{ user_id?: string }>;
+  if (!updatedRows[0]?.user_id) return { ok: false, error: "ENROLMENT_NOT_FOUND" };
 
-  await adminRest("/rest/v1/course_enrolment_events", {
+  const eventResponse = await adminRest("/rest/v1/course_enrolment_events", {
     method: "POST",
     body: JSON.stringify({
       event_key: `admin:${randomUUID()}`,
@@ -52,6 +60,8 @@ export async function changeEnrolmentStatus(input: {
       metadata: { actorId, reason, reinstated: reinstated ? "reinstated" : false }
     })
   });
+
+  if (!eventResponse.ok) return { ok: false, error: "ENROLMENT_AUDIT_FAILED" };
 
   return { ok: true, actorId, reason, previousStatus, nextStatus, reinstated };
 }
