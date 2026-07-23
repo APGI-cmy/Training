@@ -60,8 +60,8 @@ export function InvitationForm({
       {state.ok && state.token ? (
         <section className="notice-card" aria-live="polite">
           <h3>Invitation created</h3>
-          <p>Copy this one-time invitation link now. The raw token is not stored and will not be shown again.</p>
-          <code>{`${typeof window === "undefined" ? "" : window.location.origin}/invitations/${state.token}`}</code>
+          <p>Copy this one-time invitation path now. The raw token is not stored and will not be shown again.</p>
+          <code>{`/invitations/${state.token}`}</code>
         </section>
       ) : null}
     </>
