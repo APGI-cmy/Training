@@ -9,7 +9,7 @@
 
 - W4.2 prebuild merged by PR #93 / `721be18e88d284ffffc4179e71e3dd936b14a319`.
 - Executable QA-ALP-252 through QA-ALP-267 and correct RED accepted by PR #94 / `43e587ac651b687845c3406b2b31ab57fbf95e0e`.
-- Post-merge tracker normalization accepted by PR #95 and PR #97.
+- PR #95 normalized the PR #94 post-merge tracker posture; PR #97 / `75451d27c7583ba0bd63d58adeeed6e55e7ad08b` normalized the merged W4.2 prebuild and QA statuses.
 
 ## Implementation merged
 
