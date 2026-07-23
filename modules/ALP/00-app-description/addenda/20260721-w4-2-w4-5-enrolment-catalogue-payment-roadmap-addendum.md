@@ -8,8 +8,8 @@
 | Parent Artifact | `modules/ALP/00-app-description/APGI_LEARNING_PORTAL_APP_DESCRIPTION.md` |
 | Addendum ID | AD-ALP-W4-2-W4-5-ENROL-20260721 |
 | Date | 2026-07-21 |
-| Status | Filed for prebuild review |
-| Branch | `alp-w4-2-w4-3-enrolment-catalogue-prebuild` |
+| Status | Merged/accepted by PR #93 |
+| Merge Evidence | `721be18e88d284ffffc4179e71e3dd936b14a319` |
 
 ## Trigger and accepted browser evidence
 

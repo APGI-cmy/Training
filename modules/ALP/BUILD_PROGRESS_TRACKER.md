@@ -180,7 +180,7 @@ Production readiness: NOT CLAIMED
 
 | Version | Date | Change Description | Changed By | Approval |
 |---|---|---|---|---|
-| 5.0 | 2026-07-22 | Normalized PR #94 merged posture and authorized the separate W4.2 build-to-green cycle without claiming implementation. | AI-assisted draft | Draft PR |
+| 5.0 | 2026-07-22 | Normalized PR #94 merged posture and authorized the separate W4.2 build-to-green cycle without claiming implementation. | AI-assisted draft | Merged by PR #95 |
 | 1.7 | 2026-06-29 | Filed W1 closure and W2 entry authorization. | AI-assisted draft | Merged by PR #77 |
 | 2.0 | 2026-06-29 | Filed W2 dashboard/course shell/unit viewer implementation slice. | AI-assisted draft | Merged by PR #78 |
 | 2.1 | 2026-06-30 | Filed W2 deployed proof closure and carried ALP-CTRL-010 forward. | AI-assisted draft | Merged by PR #79 |
@@ -198,4 +198,4 @@ Production readiness: NOT CLAIMED
 | 4.6 | 2026-07-13 | Filed W4.1 navigation/sidebar prebuild after loop finding. | AI-assisted draft | Merged by PR #91 |
 | 4.7 | 2026-07-15 | Filed W4.1 persistent sidebar and loop-breaker build. | AI-assisted draft | Merged by PR #92 |
 | 4.8 | 2026-07-21 | Filed W4.2 enrolment/catalogue prebuild and preserved W4.3-W4.5 payment gates. | AI-assisted draft | Merged by PR #93 |
-| 4.9 | 2026-07-22 | Filed executable QA-ALP-252 through QA-ALP-267 and exact-head correct-RED proof. | AI-assisted draft | Filed for review in PR #94 |
+| 4.9 | 2026-07-22 | Filed executable QA-ALP-252 through QA-ALP-267 and exact-head correct-RED proof. | AI-assisted draft | Merged by PR #94 |
