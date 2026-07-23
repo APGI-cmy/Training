@@ -1,12 +1,14 @@
-name: ALP W4.2 RED Proof
+name: ALP W4.2 Build to Green
 
 on:
   pull_request:
     paths:
+      - "app/**"
+      - "src/**"
+      - "supabase/migrations/006_alp_admin_invitations.sql"
       - "tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts"
       - "package.json"
       - ".github/workflows/alp-w4-2-red-proof.yml"
-      - "modules/ALP/05-qa-to-red/**"
       - "modules/ALP/11-build/evidence/**"
       - "modules/ALP/BUILD_PROGRESS_TRACKER.md"
   workflow_dispatch:
@@ -15,7 +17,7 @@ permissions:
   contents: read
 
 jobs:
-  prove-correct-red:
+  prove-build-green:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -30,45 +32,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Execute W4.2 RED suite
-        shell: bash
-        run: |
-          set +e
-          npm run test:alp:w4-2:red 2>&1 | tee w4-2-red-output.txt
-          test_status=${PIPESTATUS[0]}
-          set -e
+      - name: Typecheck
+        run: npm run typecheck
 
-          if [ "$test_status" -eq 0 ]; then
-            echo "W4.2 suite unexpectedly passed before implementation."
-            exit 1
-          fi
+      - name: Execute W4.2 GREEN suite
+        run: npm run test:alp:w4-2
 
-          sed -E 's/\x1B\[[0-9;]*[mK]//g' w4-2-red-output.txt > w4-2-red-output-clean.txt
-
-          grep -Eq "Test Files[[:space:]]+1 failed[[:space:]]+\(1\)" w4-2-red-output-clean.txt
-          grep -Eq "Tests[[:space:]]+16 failed[[:space:]]+\(16\)" w4-2-red-output-clean.txt
-
-          if grep -Eq "Tests.*[1-9][0-9]* passed|Tests.*[1-9][0-9]* skipped|Tests.*[1-9][0-9]* todo" w4-2-red-output-clean.txt; then
-            echo "RED is invalid because one or more W4.2 tests passed, skipped, or remained todo."
-            exit 1
-          fi
-
-          for id in $(seq 252 267); do
-            grep -q "QA-ALP-${id}" w4-2-red-output-clean.txt
-          done
-
-          if grep -Eqi "failed to load|syntax error|transform error|no test files found|cannot find module.*vitest" w4-2-red-output-clean.txt; then
-            echo "RED is invalid because the runner or test module failed."
-            exit 1
-          fi
-
-          echo "Correct RED established: exactly 16 W4.2 tests executed, all 16 failed, and none passed or skipped."
-
-      - name: Upload RED output
-        uses: actions/upload-artifact@v4
-        with:
-          name: alp-w4-2-red-output
-          path: |
-            w4-2-red-output.txt
-            w4-2-red-output-clean.txt
-          if-no-files-found: error
+      - name: Build application
+        run: npm run build
