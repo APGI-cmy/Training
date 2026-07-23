@@ -8,14 +8,14 @@ const INVITATION_REASON_REQUIRED = "INVITATION_REASON_REQUIRED";
 
 type InvitationBasis = "external_payment" | "corporate_order" | "complimentary_marketing" | "internal_allocation" | "other";
 
-type CreateInvitationResult = {
+export type CreateInvitationState = {
   ok: boolean;
   invitationId?: string;
   token?: string;
   error?: string;
 };
 
-export async function createInvitation(formData: FormData): Promise<CreateInvitationResult> {
+export async function createInvitation(formData: FormData): Promise<CreateInvitationState> {
   const { session } = await requireAdmin();
   const recipientEmail = String(formData.get("recipientEmail") ?? "").trim().toLowerCase();
   const courseId = String(formData.get("courseId") ?? "").trim();
@@ -72,4 +72,11 @@ export async function createInvitation(formData: FormData): Promise<CreateInvita
   }
 
   return { ok: true, invitationId, token };
+}
+
+export async function createInvitationWithState(
+  _previousState: CreateInvitationState,
+  formData: FormData
+): Promise<CreateInvitationState> {
+  return createInvitation(formData);
 }
