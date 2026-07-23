@@ -1,7 +1,23 @@
 import vpshrLevel0 from "@/data/vpshr-level-0.json";
 import type { Course, LearningUnit } from "@/types/course";
 
-const courses = [vpshrLevel0 as Course];
+const scannexTrainingProgramme: Course = {
+  id: "scannex-training-programme",
+  slug: "scannex-training-programme",
+  title: "Scannex Training Programme",
+  level: "Programme",
+  description: "Professional Scannex viewing and decision training delivered through governed learning units.",
+  audience: "Authorized Scannex operators and reviewers",
+  duration: "Self-paced",
+  sourceRoot: "/courses/Scannex Training Programme",
+  integrationNotes: [
+    "Course content is published progressively.",
+    "Governed learner access is controlled through ALP enrolment state."
+  ],
+  units: []
+};
+
+const courses: Course[] = [vpshrLevel0 as Course, scannexTrainingProgramme];
 
 export function getCourses(): Course[] {
   return courses;
