@@ -3,7 +3,7 @@
 **Module:** ALP - APGI Learning Portal  
 **Date:** 2026-07-23  
 **PR:** #98  
-**Status:** Implementation filed; exact-head code gate green; live database and browser proof pending
+**Status:** Implementation filed; current-head automated gate required; live database and browser proof pending
 
 ## Authorized authority
 
@@ -27,11 +27,9 @@ PR #98 implements the authorized W4.2 code slice:
 - legacy-route retain/redirect matrix; and
 - conversion of the W4.2 proof workflow from correct RED to build-to-green.
 
-## Exact-head automated evidence
+## Automated evidence rule
 
-Reviewed implementation head: `4a2bbf7c84b1bb7fde7a162616971dce640c7c52`.
-
-The `ALP W4.2 Build to Green` workflow passed on that head with:
+The authoritative evidence is the successful `ALP W4.2 Build to Green` check and successful Vercel status on the current PR head. The workflow must show:
 
 - dependency installation successful;
 - TypeScript typecheck successful;
@@ -39,7 +37,7 @@ The `ALP W4.2 Build to Green` workflow passed on that head with:
 - Next.js production build successful; and
 - build-output artifact uploaded successfully.
 
-Vercel preview deployment also passed on the reviewed head.
+A passed check on an older head does not authorize merge after the branch changes.
 
 ## Proof still required before closure
 
@@ -66,7 +64,7 @@ PR #98 does not itself perform or claim:
 - W4.3 payment-status implementation;
 - W4.4 provider/security/risk acceptance;
 - W4.5 payment or offer-code execution;
-- FUNCTIONAL_PASS or CWT_PASS;
+- CODE_PASS, FUNCTIONAL_PASS or CWT_PASS;
 - deployment acceptance or production readiness.
 
 Automated code/build green is evidence for the PR implementation scope only and is not a substitute for controlled live functional proof.
