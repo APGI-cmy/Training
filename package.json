@@ -9,7 +9,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test:alp:red": "vitest run tests/qa-to-red/alp",
-    "test:alp:w4-2": "vitest run tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts",
+    "test:alp:w4-2": "vitest run tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts tests/qa-to-red/alp/w4-2-migration-security.spec.ts",
     "test:alp:w4-2:red": "vitest run tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts",
     "test:alp:red:static": "vitest run tests/qa-to-red/alp/governance-artifacts.spec.ts tests/qa-to-red/alp/architecture-inventory.spec.ts",
     "test:alp:red:integration": "vitest run tests/qa-to-red/alp --exclude tests/qa-to-red/alp/deployment-cwt.spec.ts",

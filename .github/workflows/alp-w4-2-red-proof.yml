@@ -7,6 +7,7 @@ on:
       - "src/**"
       - "supabase/migrations/010_alp_admin_invitations.sql"
       - "tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts"
+      - "tests/qa-to-red/alp/w4-2-migration-security.spec.ts"
       - "package.json"
       - ".github/workflows/alp-w4-2-red-proof.yml"
       - "modules/ALP/11-build/evidence/**"

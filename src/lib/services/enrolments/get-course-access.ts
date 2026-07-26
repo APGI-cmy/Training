@@ -18,10 +18,6 @@ interface CourseEnrolmentRow {
   access_revoked_at?: string | null;
 }
 
-interface PendingInvitationRow {
-  id?: string;
-}
-
 function enrolmentHeaders(accessToken: string) {
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -58,31 +54,29 @@ export function unknownAccessDecision(userId: string, courseId: string): CourseA
 
 async function hasPendingInvitation({
   accessToken,
-  userEmail,
   courseId
 }: {
   accessToken: string;
-  userEmail?: string;
   courseId: string;
 }) {
-  if (!userEmail) return false;
   const headers = enrolmentHeaders(accessToken);
-  const now = new Date().toISOString();
-  const url = getSupabaseRestUrl(
-    `/rest/v1/course_invitations?select=id&recipient_email=ilike.${encodeURIComponent(userEmail.toLowerCase())}&course_id=eq.${encodeURIComponent(courseId)}&status=in.(pending,sent)&revoked_at=is.null&redeemed_at=is.null&expires_at=gt.${encodeURIComponent(now)}&limit=1`
-  );
+  const url = getSupabaseRestUrl("/rest/v1/rpc/alp_has_pending_invitation");
 
   if (!headers || !url) return false;
-  const response = await fetch(url, { method: "GET", headers, cache: "no-store" });
+  const response = await fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ p_course_id: courseId }),
+    cache: "no-store"
+  });
   if (!response.ok) return false;
-  const rows = (await response.json().catch(() => [])) as PendingInvitationRow[];
-  return Boolean(rows[0]?.id);
+  return (await response.json().catch(() => false)) === true;
 }
 
 export async function getCourseAccess({
   accessToken,
   userId,
-  userEmail,
+  userEmail: _userEmail,
   courseId
 }: {
   accessToken: string;
@@ -120,7 +114,7 @@ export async function getCourseAccess({
   const enrolment = rows[0];
 
   if (!enrolment?.status) {
-    if (await hasPendingInvitation({ accessToken, userEmail, courseId })) {
+    if (await hasPendingInvitation({ accessToken, courseId })) {
       return {
         courseId,
         userId,
