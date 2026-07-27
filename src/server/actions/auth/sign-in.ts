@@ -1,7 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { signInWithPassword, signOut } from "@/server/auth/session";
+import { getPostSignInDestination } from "@/lib/auth/post-sign-in-destination";
+import { getCurrentSession, getUserRoles, signInWithPassword, signOut } from "@/server/auth/session";
 
 export type SignInState = {
   error?: string;
@@ -21,7 +22,9 @@ export async function signInAction(_state: SignInState, formData: FormData): Pro
     return { error: result.error };
   }
 
-  redirect("/profile");
+  const session = await getCurrentSession();
+  const roles = session ? await getUserRoles(session.accessToken) : [];
+  redirect(getPostSignInDestination(roles));
 }
 
 export async function signOutAction() {
