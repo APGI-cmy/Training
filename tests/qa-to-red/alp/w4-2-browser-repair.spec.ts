@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getPostSignInDestination } from "../../../src/lib/auth/post-sign-in-destination";
-import { encodeAssetPath } from "../../../src/lib/courses";
+import { encodeAssetPath } from "../../../src/lib/asset-path";
 
 describe("ALP W4.2 Batch 3 browser repair", () => {
   it("routes administrators to the administration landing after sign-in", () => {
