@@ -1,6 +1,8 @@
 import vpshrLevel0 from "@/data/vpshr-level-0.json";
 import type { Course, LearningUnit } from "@/types/course";
 
+export { encodeAssetPath } from "@/lib/asset-path";
+
 const scannexSourceRoot = "/courses/Scannex%20Training%20Programme";
 
 function scannexUnit(order: number, folder: string, title: string, subtitle: string): LearningUnit {
@@ -105,19 +107,4 @@ export function getUnitStaticParams(): { unitSlug: string }[] {
 
     return params;
   });
-}
-
-function decodeAssetSegment(segment: string): string {
-  try {
-    return decodeURIComponent(segment);
-  } catch {
-    return segment;
-  }
-}
-
-export function encodeAssetPath(path: string): string {
-  return path
-    .split("/")
-    .map((segment, index) => (index === 0 ? segment : encodeURIComponent(decodeAssetSegment(segment))))
-    .join("/");
 }
