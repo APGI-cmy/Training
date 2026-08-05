@@ -5,10 +5,10 @@
 **Base**: `a056b51d9353426d5ba96154d190ca71ac44f008`  
 **Scope**: Portal and course-flow stabilisation only  
 **IAA Pre-Brief**: `.agent-admin/assurance/iaa-prebrief-batch3-lane-a.md`  
-**IAA Session**: `IAA-20260728-PREBRIEF-BATCH3-LANE-A`  
+**IAA Session**: `IAA-20260805-FINAL-BATCH3-LANE-A`  
 **Appointed Builder**: `BC-ALP-B3-LA-001`  
 **Appointment**: `APPT-ALP-B3-LA-001`  
-**Status**: CODE / BUILD GREEN — final assurance NO-GO pending browser proof and dependency-audit disposition
+**Status**: PEER-REVIEW CORRECTION — the prior exact-head evidence and Final IAA peer-review GO are complete. The successor review correction requires fresh exact-head CI, preview validation and an amended Final IAA before any merge decision.
 
 ## Pre-build gate tasks
 
@@ -50,7 +50,7 @@
 - [x] `TASK-B3-LA-104` — Render VPSHR and Scannex through one shared, status-aware course overview.
       builder: BC-ALP-B3-LA-001
       qp_verdict: PASS
-      notes: Shared presentation and governed launch model.
+      notes: Implementation authorised only within frozen Lane A scope.
 - [x] `TASK-B3-LA-105` — Remove public protected-asset bypasses and use course-specific recovery links.
       builder: BC-ALP-B3-LA-001
       qp_verdict: PASS
@@ -78,18 +78,18 @@
       builder: BC-ALP-B3-LA-001
       qp_verdict: PASS
       notes: No Regression.
-- [ ] `TASK-B3-LA-203` — Verify exact-head GitHub and relevant Vercel deployments.
+- [x] `TASK-B3-LA-203` — Verify exact-head GitHub and relevant Vercel deployments.
       builder: BC-ALP-B3-LA-001
-      qp_verdict: PARTIAL
-      notes: Historical exact-head deployments and browser proof passed through Correction 2. After the 2026-08-05 rebase, fresh exact-head CI and training-platform preview evidence are required before final handover.
-- [ ] `TASK-B3-LA-204` — Pass administrator and learner browser proof for both VPSHR and Scannex.
+      qp_verdict: PASS at the prior release candidate
+      notes: GitHub Actions run `30987669988` and the `training-platform` preview were green at product head `5636afa…`. A successor code correction is now awaiting its own exact-head validation.
+- [x] `TASK-B3-LA-204` — Pass administrator and learner browser proof for both VPSHR and Scannex.
       builder: BC-ALP-B3-LA-001
-      qp_verdict: BLOCKED
-      notes: Product-owner authenticated proof passed on Correction 2: administrator portal shell, VPSHR and Scannex playback, next-unit navigation, and learner-only sidebar. A short smoke test remains required on the rebased preview.
-- [ ] `TASK-B3-LA-205` — Complete Foreman QP, ECAP and independent final IAA before any merge recommendation.
+      qp_verdict: PASS at the prior release candidate
+      notes: Product-owner smoke proof confirmed VPSHR and Scannex playback plus learner-only navigation; see `modules/ALP/11-build/evidence/20260805-W4-ALP-102-final-release-gate.md`. The successor correction needs targeted browser confirmation.
+- [x] `TASK-B3-LA-205` — Complete Foreman QP, ECAP and independent final IAA before any merge recommendation.
       builder: Foreman / ECAP administrator / independent-assurance-agent
-      qp_verdict: REBASE-GATE
-      notes: The prior NO-GO evidence is retained as historical. The 2026-08-05 release candidate has clean scoped gates and audit; final disposition awaits exact-head CI and preview smoke.
+      qp_verdict: GO FOR PEER REVIEW at the prior release candidate
+      notes: `IAA-20260805-FINAL-BATCH3-LANE-A-GO-PEER-REVIEW` issued at `f71e9e3…`; it is not merge authority. Any post-token product change requires an amended Final IAA after fresh exact-head evidence.
 
 ## Excluded work
 
