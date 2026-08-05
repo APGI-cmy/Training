@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <header className="app-header">
-          <Link className="brand-link" href="/alp-sign-in">
+          <Link className="brand-link" href="/">
             APGI Training
           </Link>
           <ThemeToggle />
