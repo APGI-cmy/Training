@@ -1,4 +1,4 @@
-import { getCourseBySlug } from "@/lib/courses";
+import { encodeAssetPath, getCourseBySlug } from "@/lib/courses";
 import { getNextLearningAction, type NextLearningAction } from "@/lib/services/completion/get-next-learning-action";
 import type { LearnerProgressSnapshot } from "@/lib/services/progress/get-learner-progress";
 import type { Course, LearningUnit } from "@/types/course";
@@ -11,6 +11,7 @@ export interface CourseShellUnit {
   title: string;
   subtitle: string;
   duration: string;
+  assetHref: string;
   href: string;
   isOpened: boolean;
   isCompleted: boolean;
@@ -46,6 +47,7 @@ export function getCourseShell(
       title: unit.title,
       subtitle: unit.subtitle,
       duration: unit.duration,
+      assetHref: encodeAssetPath(unit.publishedPath),
       href: `/learn/${course.slug}/units/${unit.slug}`,
       isOpened: progress?.openedUnitIds.has(unit.id) ?? false,
       isCompleted: progress?.completedUnitIds.has(unit.id) ?? false

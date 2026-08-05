@@ -21,6 +21,21 @@ type CatalogueProps = {
   searchParams?: Promise<{ view?: string }>;
 };
 
+type CourseEntry = {
+  course: ReturnType<typeof getCourses>[number];
+  decision: Awaited<ReturnType<typeof getCourseAccess>>;
+};
+
+export function getCatalogueEntries(entries: CourseEntry[]) {
+  return entries;
+}
+
+export function getMyLearningEntries(entries: CourseEntry[]) {
+  return entries.filter(
+    ({ decision }) => decision.status !== "not_enrolled" && decision.status !== "unknown"
+  );
+}
+
 export default async function CataloguePage({ searchParams }: CatalogueProps) {
   const session = await requireSession();
   const { view } = (await searchParams) ?? {};
@@ -35,9 +50,10 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
       })
     )
   );
-  const entries = courses
-    .map((course, index) => ({ course, decision: access[index] }))
-    .filter(({ decision }) => view !== "my-learning" || decision.status !== "not_enrolled" && decision.status !== "unknown");
+  const sourceEntries = courses.map((course, index) => ({ course, decision: access[index] }));
+  const entries = view === "my-learning"
+    ? getMyLearningEntries(sourceEntries)
+    : getCatalogueEntries(sourceEntries);
 
   return (
     <main className="page-shell">

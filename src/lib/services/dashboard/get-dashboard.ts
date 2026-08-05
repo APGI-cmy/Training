@@ -1,4 +1,5 @@
 import { getCourses } from "@/lib/courses";
+import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { getLearnerProgress } from "@/lib/services/progress/get-learner-progress";
 import type { AlpSession } from "@/server/auth/session";
 import { getCookieCompletedUnitIds } from "@/server/progress/progress-cookie";
@@ -25,63 +26,70 @@ export interface LearnerDashboard {
 
 export async function getDashboard(session?: AlpSession): Promise<LearnerDashboard> {
   const sourceCourses = getCourses();
-  const courses: DashboardCourseCard[] = [];
 
-  const progressSnapshots = session
-    ? await Promise.all(
-        sourceCourses.map(async (course) => {
-          const [databaseProgress, cookieCompletedUnitIds] = await Promise.all([
-            getLearnerProgress({
+  const enrolledCourses = session
+    ? (
+        await Promise.all(
+          sourceCourses.map(async (course) => ({
+            course,
+            access: await getCourseAccess({
               accessToken: session.accessToken,
               userId: session.user.id,
-              courseId: course.id
-            }),
-            getCookieCompletedUnitIds({
-              userId: session.user.id,
+              userEmail: session.user.email,
               courseId: course.id
             })
-          ]);
-
-          return {
-            databaseProgress,
-            cookieCompletedUnitIds
-          };
-        })
+          }))
+        )
       )
+        .filter(({ access }) => access.status === "enrolled")
+        .map(({ course }) => course)
     : [];
 
-  sourceCourses.forEach((course, index) => {
-    const progress = session ? progressSnapshots[index] : undefined;
-    const knownUnitIds = new Set(course.units.map((unit) => unit.id));
-    const completedUnitIds = new Set<string>();
+  const courses = await Promise.all(
+    enrolledCourses.map(async (course) => {
+      const [databaseProgress, cookieCompletedUnitIds] = await Promise.all([
+        getLearnerProgress({
+          accessToken: session!.accessToken,
+          userId: session!.user.id,
+          courseId: course.id
+        }),
+        getCookieCompletedUnitIds({
+          userId: session!.user.id,
+          courseId: course.id
+        })
+      ]);
 
-    progress?.databaseProgress.completedUnitIds.forEach((unitId) => {
-      if (knownUnitIds.has(unitId)) {
-        completedUnitIds.add(unitId);
-      }
-    });
+      const knownUnitIds = new Set(course.units.map((unit) => unit.id));
+      const completedUnitIds = new Set<string>();
 
-    progress?.cookieCompletedUnitIds.forEach((unitId) => {
-      if (knownUnitIds.has(unitId)) {
-        completedUnitIds.add(unitId);
-      }
-    });
+      databaseProgress.completedUnitIds.forEach((unitId) => {
+        if (knownUnitIds.has(unitId)) {
+          completedUnitIds.add(unitId);
+        }
+      });
 
-    const completedUnits = completedUnitIds.size;
-    const unitCount = course.units.length;
+      cookieCompletedUnitIds.forEach((unitId) => {
+        if (knownUnitIds.has(unitId)) {
+          completedUnitIds.add(unitId);
+        }
+      });
 
-    courses.push({
-      id: course.id,
-      slug: course.slug,
-      title: course.title,
-      level: course.level,
-      description: course.description,
-      unitCount,
-      completedUnits,
-      progressPercent: unitCount === 0 ? 0 : Math.round((completedUnits / unitCount) * 100),
-      href: `/learn/${course.slug}`
-    });
-  });
+      const completedUnits = completedUnitIds.size;
+      const unitCount = course.units.length;
+
+      return {
+        id: course.id,
+        slug: course.slug,
+        title: course.title,
+        level: course.level,
+        description: course.description,
+        unitCount,
+        completedUnits,
+        progressPercent: unitCount === 0 ? 0 : Math.round((completedUnits / unitCount) * 100),
+        href: `/learn/${course.slug}`
+      };
+    })
+  );
 
   return {
     learnerName: "APGI learner",

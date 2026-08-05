@@ -1,4 +1,4 @@
-name: ALP W4.2 Build to Green
+name: ALP Batch 3 Build to Green
 
 on:
   pull_request:
@@ -9,10 +9,26 @@ on:
       - "tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts"
       - "tests/qa-to-red/alp/w4-2-migration-security.spec.ts"
       - "tests/qa-to-red/alp/w4-2-browser-repair.spec.ts"
+      - "tests/qa-to-red/alp/batch3-stabilisation-red.spec.ts"
       - "package.json"
+      - ".gitattributes"
+      - "scripts/verify-course-media.mjs"
+      - "public/courses/**/*.mp4"
       - ".github/workflows/alp-w4-2-red-proof.yml"
+      - "modules/ALP/00-app-description/addenda/**"
+      - "modules/ALP/01-ux-workflow-wiring/addenda/**"
+      - "modules/ALP/02-frs/addenda/**"
+      - "modules/ALP/03-trs/addenda/**"
+      - "modules/ALP/04-architecture/addenda/**"
+      - "modules/ALP/05-qa-to-red/addenda/**"
+      - "modules/ALP/06-pbfag/addenda/**"
+      - "modules/ALP/07-implementation-plan/addenda/**"
+      - "modules/ALP/08-builder-checklist/addenda/**"
+      - "modules/ALP/09-iaa-pre-brief/addenda/**"
+      - "modules/ALP/REQUIREMENT_REGISTRY_ADDENDA/**"
       - "modules/ALP/11-build/evidence/**"
       - "modules/ALP/BUILD_PROGRESS_TRACKER.md"
+      - ".agent-admin/waves/**"
   workflow_dispatch:
 
 permissions:
@@ -24,6 +40,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -40,17 +58,31 @@ jobs:
           set -o pipefail
           npm run typecheck 2>&1 | tee w4-2-typecheck-output.txt
 
-      - name: Execute W4.2 GREEN suite
+      - name: Execute established W4.2 regression suites
         shell: bash
         run: |
           set -o pipefail
-          npm run test:alp:w4-2 2>&1 | tee w4-2-green-output.txt
+          NO_COLOR=1 npx vitest run \
+            tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts \
+            tests/qa-to-red/alp/w4-2-migration-security.spec.ts \
+            tests/qa-to-red/alp/w4-2-browser-repair.spec.ts \
+            2>&1 | tee w4-2-regression-output.txt
 
       - name: Execute W1 and W4.1 regression suites
         shell: bash
         run: |
           set -o pipefail
-          npx vitest run tests/qa-to-red/alp/auth.spec.ts tests/qa-to-red/alp/enrolment-access.spec.ts tests/qa-to-red/alp/navigation-loop-breaker.spec.ts 2>&1 | tee w4-2-regression-output.txt
+          NO_COLOR=1 npx vitest run \
+            tests/qa-to-red/alp/auth.spec.ts \
+            tests/qa-to-red/alp/enrolment-access.spec.ts \
+            tests/qa-to-red/alp/navigation-loop-breaker.spec.ts \
+            2>&1 | tee w1-w4-1-regression-output.txt
+
+      - name: Execute Batch 3 GREEN suite
+        shell: bash
+        run: |
+          set -o pipefail
+          NO_COLOR=1 npm run test:alp:batch3 2>&1 | tee batch3-green-output.txt
 
       - name: Build application
         shell: bash
@@ -65,7 +97,8 @@ jobs:
           name: alp-w4-2-validation-output
           path: |
             w4-2-typecheck-output.txt
-            w4-2-green-output.txt
             w4-2-regression-output.txt
+            w1-w4-1-regression-output.txt
+            batch3-green-output.txt
             w4-2-build-output.txt
           if-no-files-found: warn

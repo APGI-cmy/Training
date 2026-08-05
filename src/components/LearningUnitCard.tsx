@@ -1,11 +1,14 @@
 import Link from "next/link";
 import type { LearningUnit } from "@/types/course";
 
+export const legacyVpshrGovernedUnitHrefPattern = "/learn/vpshr-level-0/units/";
+
 interface LearningUnitCardProps {
+  courseSlug: string;
   unit: LearningUnit;
 }
 
-export function LearningUnitCard({ unit }: LearningUnitCardProps) {
+export function LearningUnitCard({ courseSlug, unit }: LearningUnitCardProps) {
   return (
     <article className="unit-card">
       <div className="unit-card-header">
@@ -14,7 +17,7 @@ export function LearningUnitCard({ unit }: LearningUnitCardProps) {
       </div>
       <h3>{unit.title}</h3>
       <p>{unit.subtitle}</p>
-      <Link href={`/learn/vpshr-level-0/units/${unit.slug}`}>Open gated unit</Link>
+      <Link href={`/learn/${courseSlug}/units/${unit.slug}`}>View governed unit</Link>
     </article>
   );
 }
