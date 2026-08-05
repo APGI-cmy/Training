@@ -1,11 +1,11 @@
-# PR #102 Final Release-Gate Disposition
+# PR #102 Final Smoke-Test Evidence
 
 **PR**: #102 — Stabilise ALP Batch 3 portal and course flow  
 **Date**: 2026-08-05  
 **Product head under test**: `5636afa245bfc1dd5a67011346c8976698a180b5`  
 **Base**: `main` at `57cc041f182cb20a4b77b7b09fd60f3d4928640e`  
 **Environment**: protected, non-production `training-platform` preview  
-**Disposition**: **GO — ready for peer review and merge**
+**Status**: **Evidence complete — formal independent IAA disposition pending**
 
 ## Exact-head automated evidence
 
@@ -36,12 +36,8 @@ No invitations, enrolments or learner-progress actions were created during this 
 
 ## Scope and residual posture
 
-This disposition covers only the authorised Batch 3 Lane A scope and Corrections 1–2. It does not claim W4 closure, payment implementation, invitation delivery, production readiness, or full CWT completion. The requested full-page player control is a separately scoped usability enhancement, not a release blocker for this PR.
+This record covers only the authorised Batch 3 Lane A scope and Corrections 1–2. It does not claim W4 closure, payment implementation, invitation delivery, production readiness, or full CWT completion. The requested full-page player control is a separately scoped usability enhancement, not a release blocker for this PR.
 
-## Final IAA Decision
+## Required next governance action
 
-All release-gate checks required by the rebased PR body are complete for product head `5636afa…`. The prior NO-GO causes—broken administrator preview route, unresolved VPSHR LFS media, stale base, and production dependency advisories—are closed by the implementation and evidence above.
-
-**Final IAA token: `IAA-GO-ALP-B3-102-20260805-5636AFA`**
-
-PR #102 may be reviewed and merged using the repository's normal peer-review process. This record does not itself merge the PR or deploy production.
+An authorised independent IAA reviewer must assess this evidence and issue the formal GO or NO-GO decision. Until that disposition is recorded, PR #102 remains open and unmerged.
