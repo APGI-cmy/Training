@@ -3,6 +3,7 @@ import { join, relative } from 'node:path';
 
 const courseRoot = join(process.cwd(), 'public', 'courses');
 const lfsPointerPrefix = 'version https://git-lfs.github.com/spec/v1';
+const lfsPointerMaximumBytes = 1024;
 
 async function collectMedia(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -24,8 +25,15 @@ const media = await collectMedia(courseRoot);
 const invalid = [];
 
 for (const path of media) {
-  const [bytes, details] = await Promise.all([readFile(path), stat(path)]);
-  const header = bytes.subarray(0, 128).toString('utf8');
+  const details = await stat(path);
+
+  // Git LFS pointers are tiny text files. Do not load real course media merely
+  // to inspect the pointer header.
+  if (details.size > lfsPointerMaximumBytes) {
+    continue;
+  }
+
+  const header = (await readFile(path)).subarray(0, 128).toString('utf8');
 
   if (header.startsWith(lfsPointerPrefix)) {
     invalid.push(`${relative(process.cwd(), path)} (Git LFS pointer, ${details.size} bytes)`);
