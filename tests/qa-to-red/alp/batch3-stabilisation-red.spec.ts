@@ -18,10 +18,13 @@ describe("ALP Batch 3 stabilisation QA-to-Red", () => {
     const root = source("app/page.tsx");
     const signIn = source("app/alp-sign-in/actions.ts");
     const layout = source("app/layout.tsx");
+    const signInAction = source("src/server/actions/auth/sign-in.ts");
 
     expect(root).toContain("getPortalEntryDestination");
     expect(signIn).toContain("getPortalEntryDestination");
-    expect(layout).not.toContain('href="/courses/vpshr-level-0"');
+    expect(layout).toContain('href="/"');
+    expect(signInAction).toContain("if (!session)");
+    expect(signInAction).toContain('redirect("/alp-sign-in")');
   });
 
   it("places administration destinations in the persistent sidebar model", () => {
