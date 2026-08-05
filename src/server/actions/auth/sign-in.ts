@@ -23,7 +23,12 @@ export async function signInAction(_state: SignInState, formData: FormData): Pro
   }
 
   const session = await getCurrentSession();
-  const roles = session ? await getUserRoles(session.accessToken) : [];
+
+  if (!session) {
+    redirect("/alp-sign-in");
+  }
+
+  const roles = await getUserRoles(session.accessToken);
   redirect(getPortalEntryDestination(roles));
 }
 
