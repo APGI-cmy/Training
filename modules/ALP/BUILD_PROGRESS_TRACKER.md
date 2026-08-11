@@ -25,8 +25,9 @@
 | W4.3 Payment status model | Roadmap requirements only; not started | Payment sequence preserved |
 | W4.4 Provider decision | Not started | Required before payment execution |
 | W4.5 Payment execution | Not authorised | Blocked |
-| Batch 3 Lane A | Rebased release candidate; scoped suites, typecheck, production build, LFS guard and production dependency audit are GREEN; exact-head CI/preview smoke pending | PR #102; 2026-08-05 reconciliation evidence |
+| Batch 3 Lane A | Released stabilisation scope; production Git deployment smoke-tested | PR #102 merged at `312e551`; 2026-08 production reconciliation |
 | Invitation delivery preflight | CS2 authorised as separate no-send lane | No provider, secret or send implementation authorised |
+| W4.2 Learner Management Experience | Local build candidate complete; scoped QA GREEN; preview evidence pending | 2026-08-11 LMX authority stack and build evidence |
 
 ### Production release reconciliation — PR #102
 
@@ -203,7 +204,7 @@ Batch 3 Lane A IAA Pre-Brief: ACTIVE — `IAA-20260728-PREBRIEF-BATCH3-LANE-A`; 
 Batch 3 Lane A Builder Candidate: `BC-ALP-B3-LA-001` DESIGNATED AND ACKNOWLEDGED
 Batch 3 Lane A Builder Appointment: COMPLETE — `APPT-ALP-B3-LA-001`
 Batch 3 Lane A Implementation: CODE / BUILD GREEN AT `15422413d1ccf7d36c9069ca24e07fa22604516c`
-Batch 3 Lane A Final Assurance: REBASE CANDIDATE — historic browser proof is accepted and the dependency audit is clean; exact-head CI and fresh preview smoke remain required
+Batch 3 Lane A Final Assurance: RELEASED FOR STABILISATION SCOPE — PR #102 was merged and the successful Git-integrated production deployment was smoke-tested; no wider W4 closure is implied
 Invitation Delivery Preflight: AUTHORISED AS SEPARATE NO-SEND LANE  
 W4.3-W4.5: NOT STARTED / PAYMENT EXECUTION NOT AUTHORISED  
 W4 Closure: NOT CLAIMED  
@@ -220,6 +221,7 @@ Production Readiness: NOT CLAIMED
 | Version | Date | Change | Authority |
 |---|---|---|---|
 | 6.6 | 2026-08-05 | Rebased PR #102 onto `main` after PR #103; applied the non-breaking Next/PostCSS remediation; recorded a clean production dependency audit and release-candidate local gates. | CS2-authorised final gate continuation |
+| 6.7 | 2026-08-11 | Reconciled PR #102 merged/production-smoke posture and filed the W4.2 Learner Management Experience authority stack. | Product-owner authorised safe UI scope |
 | 6.5 | 2026-07-28 | Built Batch 3 Lane A to code/build GREEN, recorded exact-head CI/Vercel evidence, and recorded final IAA NO-GO pending browser proof and dependency-audit disposition. | CS2-authorised build-to-Green |
 | 6.4 | 2026-07-28 | Completed Stage 11 and appointed `BC-ALP-B3-LA-001` under `APPT-ALP-B3-LA-001` for the frozen Batch 3 Lane A build-to-Green scope only. | CS2-authorised Stage 11 appointment |
 | 6.3 | 2026-07-28 | Activated independent IAA Pre-Brief `IAA-20260728-PREBRIEF-BATCH3-LANE-A`; recorded Foreman and `BC-ALP-B3-LA-001` acknowledgements; passed Stage 10 while preserving separate appointment and implementation blocks. | CS2-authorised Stage 10 activation |

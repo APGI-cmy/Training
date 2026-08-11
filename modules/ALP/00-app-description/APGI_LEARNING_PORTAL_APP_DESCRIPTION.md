@@ -4,11 +4,11 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
-| Status | Draft |
+| Version | 0.2 |
+| Status | Active |
 | Owner | Johan Ras / APGI Product Owner |
 | Approval Date | Pending CS2 approval |
-| Last Updated | 2026-06-03 |
+| Last Updated | 2026-08-11 |
 | Authority | Johan Ras |
 | Canonical Location | docs/governance/APGI_LEARNING_PORTAL_APP_DESCRIPTION.md |
 | Policy Authority | governance/policy/APP_DESCRIPTION_REQUIREMENT_POLICY.md v2.0 |
