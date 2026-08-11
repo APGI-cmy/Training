@@ -616,6 +616,377 @@ textarea {
   margin-top: 32px;
 }
 
+.admin-page {
+  width: min(1440px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: clamp(32px, 5vw, 64px) 0;
+}
+
+.admin-page-header,
+.admin-card-heading,
+.directory-toolbar,
+.directory-pagination,
+.preview-toolbar,
+.admin-full-preview-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.admin-page-header {
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 28px;
+}
+
+.admin-page-header h1,
+.admin-full-preview h1 {
+  font-size: clamp(2.5rem, 5vw, 4.3rem);
+}
+
+.admin-page-header p,
+.admin-full-preview-header p,
+.form-guidance,
+.admin-side-card > p,
+.import-workspace > p,
+.disabled-guidance,
+.directory-empty {
+  max-width: 760px;
+  color: var(--muted);
+}
+
+.header-actions,
+.import-actions,
+.directory-pagination > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-launch-grid,
+.admin-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.admin-launch-grid {
+  margin-top: 28px;
+}
+
+.admin-launch-grid a,
+.admin-metrics article,
+.directory-card,
+.admin-form-card,
+.admin-side-card,
+.import-workspace,
+.enrolment-context {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.admin-launch-grid a {
+  display: grid;
+  gap: 8px;
+  min-height: 150px;
+  padding: 22px;
+}
+
+.admin-launch-grid a:hover,
+.admin-launch-grid a:focus-visible {
+  border-color: var(--primary);
+  text-decoration: none;
+}
+
+.admin-launch-grid strong {
+  font-size: 1.15rem;
+}
+
+.admin-launch-grid span {
+  color: var(--muted);
+}
+
+.admin-metrics {
+  margin-bottom: 20px;
+}
+
+.admin-metrics article {
+  display: grid;
+  gap: 2px;
+  padding: 18px;
+}
+
+.admin-metrics strong {
+  font-size: 1.8rem;
+}
+
+.admin-metrics span {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.directory-card,
+.import-workspace,
+.enrolment-workspace {
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.directory-toolbar {
+  align-items: flex-end;
+  margin-bottom: 18px;
+}
+
+.search-field {
+  display: grid;
+  flex: 1 1 320px;
+  gap: 6px;
+  font-weight: 800;
+}
+
+.search-field input,
+.admin-form-card input,
+.admin-form-card select,
+.admin-form-card textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 12px;
+  background: var(--surface-strong);
+  color: var(--ink);
+}
+
+.text-button,
+.table-action {
+  color: var(--primary-strong);
+  font-weight: 800;
+}
+
+.directory-table-wrap {
+  overflow-x: auto;
+}
+
+.directory-table {
+  width: 100%;
+  min-width: 880px;
+  border-collapse: collapse;
+}
+
+.directory-table th,
+.directory-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 16px 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.directory-table th {
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.directory-table td > strong,
+.directory-table td > span {
+  display: block;
+}
+
+.directory-table td > span:not(.status-badge) {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.directory-pagination {
+  align-items: center;
+  margin-top: 18px;
+}
+
+.directory-pagination span {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.admin-workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.7fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.admin-form-card,
+.admin-side-card,
+.import-workspace,
+.enrolment-context {
+  padding: clamp(20px, 3vw, 30px);
+}
+
+.admin-card-heading h2,
+.admin-side-card h2,
+.import-workspace h2,
+.enrolment-context h2 {
+  margin-bottom: 0;
+  font-size: 1.55rem;
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.admin-form-grid label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.admin-span-two {
+  grid-column: span 2;
+}
+
+.status-badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.status-draft,
+.status-pending {
+  background: var(--accent-soft);
+}
+
+.status-enrolled {
+  background: var(--green-soft);
+}
+
+.status-revoked {
+  background: var(--red-soft);
+}
+
+.status-no_enrolments {
+  background: color-mix(in srgb, var(--surface-strong) 70%, var(--line));
+}
+
+.safety-note,
+.draft-summary,
+.import-summary {
+  display: grid;
+  gap: 8px;
+  margin-top: 22px;
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--accent-soft);
+}
+
+.safety-note span,
+.import-summary span {
+  color: var(--muted);
+}
+
+.import-workspace {
+  margin-top: 20px;
+}
+
+.file-choice {
+  position: relative;
+  overflow: hidden;
+}
+
+.file-choice input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.import-hint {
+  font-size: 0.92rem;
+}
+
+.import-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 22px 0;
+}
+
+.import-steps span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.import-steps .active {
+  border-color: var(--primary);
+  background: var(--green-soft);
+  color: var(--ink);
+}
+
+.disabled-guidance {
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+}
+
+.enrolment-context {
+  margin-bottom: 20px;
+}
+
+.admin-full-preview {
+  display: grid;
+  min-height: calc(100vh - 75px);
+  grid-template-rows: auto minmax(0, 1fr);
+  background: #111412;
+}
+
+.admin-full-preview-header {
+  padding: 24px clamp(20px, 4vw, 48px);
+  background: var(--surface);
+}
+
+.admin-full-preview-frame {
+  width: 100%;
+  min-height: 72vh;
+  border: 0;
+  background: #111412;
+}
+
+.preview-toolbar {
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--surface);
+}
+
+.preview-toolbar p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
 .loading-line,
 .loading-block {
   position: relative;
@@ -677,6 +1048,12 @@ textarea {
   .unit-card {
     min-height: 210px;
   }
+
+  .admin-launch-grid,
+  .admin-metrics,
+  .admin-workspace-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media (max-width: 680px) {
@@ -703,5 +1080,34 @@ textarea {
 
   .media-item iframe {
     min-height: 300px;
+  }
+
+  .admin-page,
+  .admin-full-preview-header {
+    width: min(100% - 28px, 1440px);
+  }
+
+  .admin-page-header,
+  .directory-toolbar,
+  .directory-pagination,
+  .preview-toolbar,
+  .admin-full-preview-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-launch-grid,
+  .admin-metrics,
+  .admin-workspace-grid,
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-span-two {
+    grid-column: span 1;
+  }
+
+  .admin-full-preview-header {
+    padding: 22px 0;
   }
 }

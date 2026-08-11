@@ -40,9 +40,13 @@ export default async function AdminCourseUnitPreviewPage({ params }: PageProps) 
 
       <section className="content-band">
         <div className="content-inner media-stack">
+          <div className="preview-toolbar">
+            <p>Need more room for the published content?</p>
+            <Link className="primary-button" href={`${previewBase}/${unit.slug}/full`}>Open full-page preview</Link>
+          </div>
           <figure className="media-item">
             <iframe title={`${unit.title} administrator preview`} src={embeddedSrc} loading="lazy" allowFullScreen />
-            <figcaption>Published training content is embedded inside the governed administrator preview.</figcaption>
+            <figcaption>Published training content is embedded inside the governed administrator preview. Use full-page preview for a larger workspace; neither view records learner progress.</figcaption>
           </figure>
 
           <nav className="unit-navigation" aria-label="Administrator preview navigation">

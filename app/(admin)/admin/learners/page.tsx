@@ -1,0 +1,36 @@
+import Link from "next/link";
+import { getAdminLearners } from "@/lib/services/admin/get-admin-learners";
+
+export const dynamic = "force-dynamic";
+
+type PageProps = { searchParams: Promise<{ q?: string; page?: string }> };
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
+}
+
+export default async function LearnersPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const page = Number(params.page ?? "1");
+  const directory = await getAdminLearners({ search: params.q, page });
+  const query = params.q?.trim() ?? "";
+
+  return (
+    <main className="admin-page" data-mode="learner-directory">
+      <header className="admin-page-header">
+        <div><p className="eyebrow">Administration</p><h1>Learners</h1><p>Find learner records, inspect course relationships and prepare governed access work without exposing opaque IDs.</p></div>
+        <div className="header-actions"><Link className="secondary-button" href="/admin/invitations#import">Import learners</Link><Link className="primary-button" href="/admin/invitations">Invite learner</Link></div>
+      </header>
+
+      <section className="admin-metrics" aria-label="Learner directory summary"><article><strong>{directory.total}</strong><span>learner records</span></article><article><strong>{directory.learners.filter((learner) => learner.status === "enrolled").length}</strong><span>active on this page</span></article><article><strong>{directory.page}</strong><span>of {directory.totalPages} pages</span></article></section>
+
+      <section className="directory-card">
+        <form className="directory-toolbar" action="/admin/learners"><label className="search-field"><span>Search learners</span><input name="q" type="search" defaultValue={query} placeholder="Name or email" /></label><button className="secondary-button" type="submit">Search</button>{query ? <Link className="text-button" href="/admin/learners">Clear</Link> : null}</form>
+        {directory.unavailable ? <p className="directory-empty">Learner records are temporarily unavailable. No data has been changed; check the secure admin configuration and try again.</p> : null}
+        {!directory.unavailable && !directory.learners.length ? <p className="directory-empty">No learners match this search. Change the search term or invite a learner after the lifecycle is agreed.</p> : null}
+        {directory.learners.length ? <div className="directory-table-wrap"><table className="directory-table"><thead><tr><th>Learner</th><th>Course relationships</th><th>Status</th><th>Joined</th><th>Last activity</th><th><span className="sr-only">Actions</span></th></tr></thead><tbody>{directory.learners.map((learner) => <tr key={learner.id}><td><strong>{learner.name}</strong><span>{learner.email}</span></td><td><strong>{learner.enrolmentCount}</strong><span>{learner.courseSummary}</span></td><td><span className={`status-badge status-${learner.status}`}>{learner.status.replaceAll("_", " ")}</span></td><td>{formatDate(learner.createdAt)}</td><td>{formatDate(learner.lastActivityAt)}</td><td><Link className="table-action" href={`/admin/enrolments?learnerId=${encodeURIComponent(learner.id)}&learner=${encodeURIComponent(learner.name)}&email=${encodeURIComponent(learner.email)}`}>Manage enrolments</Link></td></tr>)}</tbody></table></div> : null}
+        <nav className="directory-pagination" aria-label="Learner directory pages"><span>Showing page {directory.page} of {directory.totalPages}</span><div>{directory.page > 1 ? <Link className="secondary-button" href={`/admin/learners?page=${directory.page - 1}&q=${encodeURIComponent(query)}`}>Previous</Link> : null}{directory.page < directory.totalPages ? <Link className="secondary-button" href={`/admin/learners?page=${directory.page + 1}&q=${encodeURIComponent(query)}`}>Next</Link> : null}</div></nav>
+      </section>
+    </main>
+  );
+}
