@@ -45,6 +45,8 @@
 - AI-supported evaluation for uploaded written, practical, or video evidence, routed through the approved AI gateway.
 - Certificate generation/printing after successful completion.
 - Basic admin course, learner, enrolment, assessment, certificate, and reporting management.
+- A role-gated learner-management workspace with searchable learner records, visible enrolment/invitation state, validated administrative drafts and staged bulk-import review before any write is permitted.
+- Administrator-only full-page course preview that enlarges published learning content without generating learner progress, enrolment or access events.
 - E-commerce checkout for paid enrolment.
 - Governance evidence, test-first delivery, deployment runbooks, and audit logs required by canon.
 

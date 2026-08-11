@@ -2,12 +2,12 @@
 
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
-**Last Updated**: 2026-08-05
-**Updated By**: Batch 3 rebase and release-gate reconciliation
-> **Classification**: ACTIVE — W4.2 LIVE PROOF REOPENED; BATCH 3 STABILISATION AUTHORISED  
+**Last Updated**: 2026-08-11
+**Updated By**: Production release reconciliation and Learner Management Experience authority
+> **Classification**: ACTIVE — BATCH 3 STABILISATION RELEASED; W4.2 LEARNER MANAGEMENT EXPERIENCE AUTHORISED
 > **Repository**: APGI-cmy/Training  
-> **Current Workstream**: Batch 3 Lane A rebased release candidate on PR #102; historical browser proof is accepted and the production dependency audit is remediated
-> **Next Required Action**: Obtain exact-head CI and a fresh non-production preview smoke test before final IAA disposition
+> **Current Workstream**: W4.2 Learner Management Experience (LMX): safe admin learner directory, staged invitation/import UX and administrator full-page course preview
+> **Next Required Action**: Build, test and independently review the LMX release candidate. No invitation, enrolment, email, payment or bulk-import write is authorised in this slice.
 
 ---
 
@@ -27,6 +27,24 @@
 | W4.5 Payment execution | Not authorised | Blocked |
 | Batch 3 Lane A | Rebased release candidate; scoped suites, typecheck, production build, LFS guard and production dependency audit are GREEN; exact-head CI/preview smoke pending | PR #102; 2026-08-05 reconciliation evidence |
 | Invitation delivery preflight | CS2 authorised as separate no-send lane | No provider, secret or send implementation authorised |
+
+### Production release reconciliation — PR #102
+
+PR #102 was merged to `main` at `312e551` and its successful Git-integrated production deployment was smoke-tested. The authenticated proof covers administrator sign-in, VPSHR and Scannex playback, learner sign-in/navigation and learner-side absence of administration destinations. A separate duplicate command-line deployment failed because it did not materialise Git LFS media; it was not aliased to production and did not replace the successful Git deployment.
+
+Batch 3 Lane A is therefore **released for its stabilisation scope**. Its former rebase-candidate, pending-preview and pending-IAA wording is historical only. W4 and platform-wide closure are still not claimed.
+
+### W4.2 Learner Management Experience (LMX) — authorised 2026-08-11
+
+The product owner has authorised a Thinkific-inspired admin learner-management experience as the next bounded W4.2 improvement:
+
+- searchable, paginated, read-only learner directory with course relationship/status information;
+- a clear, validated single-learner invitation workspace that remains in **draft/preview** mode;
+- enrolment management selected from a learner record rather than by manually entering an opaque user ID;
+- a staged bulk-import workspace with CSV template, local parsing and validation only; and
+- a full-page administrator course-preview route with no learner progress or enrolment mutation.
+
+This is not authority to create learners, send email, create invitations, alter enrolments, upload source rows to the server, configure an email provider, perform payment work or make production writes. These continue to require a separately agreed test learner and lifecycle.
 
 ---
 
