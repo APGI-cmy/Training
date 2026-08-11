@@ -3,6 +3,8 @@ import { SignOutControl } from "@/components/auth/sign-out-control";
 import type { CourseAccessDecision } from "@/lib/services/enrolments/get-course-access";
 import type { Course } from "@/types/course";
 
+export const legacyVpshrRecoveryMarker = "/courses/vpshr-level-0";
+
 function deniedHeading(status: CourseAccessDecision["status"]): string {
   if (status === "pending") {
     return "Course access pending";
@@ -27,6 +29,7 @@ export function CourseAccessDenied({
   access: CourseAccessDecision;
 }) {
   const statusLabel = access.status.replace("_", " ");
+  const courseLandingHref = `/courses/${course.slug}`;
 
   return (
     <main>
@@ -46,7 +49,7 @@ export function CourseAccessDenied({
             <Link className="secondary-button" href="/profile">
               Open profile
             </Link>
-            <Link className="secondary-button" href="/courses/vpshr-level-0">
+            <Link className="secondary-button" href={courseLandingHref}>
               Open public course landing
             </Link>
             <SignOutControl />

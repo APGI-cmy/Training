@@ -1,6 +1,7 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
+import { LearnerSidebar } from "@/components/navigation/LearnerSidebar";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import "../../navigation-shell.css";
 
 export const dynamic = "force-dynamic";
 
@@ -8,17 +9,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   await requireAdmin();
 
   return (
-    <div className="page-shell">
-      <header className="page-header">
-        <p className="eyebrow">Administration</p>
-        <h1>Learning administration</h1>
-        <nav aria-label="Administration navigation">
-          <Link href="/admin">Overview</Link>{" "}
-          <Link href="/admin/invitations">Invitations</Link>{" "}
-          <Link href="/admin/enrolments">Access management</Link>
-        </nav>
-      </header>
-      {children}
+    <div className="learner-shell">
+      <LearnerSidebar />
+      <div className="learner-content">{children}</div>
     </div>
   );
 }

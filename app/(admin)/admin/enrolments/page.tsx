@@ -15,9 +15,12 @@ export default function EnrolmentAdministrationPage() {
   const courses = getCourses();
 
   return (
-    <main>
-      <h2>Revoke or reinstate course access</h2>
-      <p>Use the learner&apos;s authenticated user ID. Every change requires a reason and creates an audit event.</p>
+    <main className="page-shell">
+      <header className="page-header">
+        <p className="eyebrow">Administration</p>
+        <h1>Revoke or reinstate course access</h1>
+        <p>Use the learner&apos;s authenticated user ID. Every change requires a reason and creates an audit event.</p>
+      </header>
       <form action={submitStatusChange} className="form-stack">
         <label>
           Learner user ID

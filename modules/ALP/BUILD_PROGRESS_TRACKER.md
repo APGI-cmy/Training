@@ -2,12 +2,12 @@
 
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
-**Last Updated**: 2026-07-23  
-**Updated By**: PR #99 post-merge normalization  
-> **Classification**: ACTIVE - W4.2 IMPLEMENTATION MERGED; CONTROLLED LIVE PROOF PENDING  
+**Last Updated**: 2026-08-05
+**Updated By**: Batch 3 rebase and release-gate reconciliation
+> **Classification**: ACTIVE — W4.2 LIVE PROOF REOPENED; BATCH 3 STABILISATION AUTHORISED  
 > **Repository**: APGI-cmy/Training  
-> **Current Workstream**: Prepare and execute controlled W4.2 database and browser proof  
-> **Next Required Action**: Review the exact migration and approved admin-role row, then authorize controlled Supabase and browser proof with cleanup
+> **Current Workstream**: Batch 3 Lane A rebased release candidate on PR #102; historical browser proof is accepted and the production dependency audit is remediated
+> **Next Required Action**: Obtain exact-head CI and a fresh non-production preview smoke test before final IAA disposition
 
 ---
 
@@ -15,199 +15,205 @@
 
 | Item | Status | Evidence |
 |---|---|---|
-| W0 Foundation / Scaffold | Closed for scaffold scope | PR #71 |
-| W1 Closure / W2 Entry | Closed for W1 scope | PR #77 / `f492c8efd8c83cbca49481191315ac2869c62c3b` |
-| W2 Dashboard / Course Shell / Unit Viewer | Closed for W2 scope | PR #79 / `1b2ae564437a90349ccca95138ac430bf680089b` |
+| W0 Foundation / Scaffold | Closed for scaffold scope | PR #71-#72 |
+| W1 Auth / Profile / Files | Closed for approved W1 scope | PR #73-#77 |
+| W2 Dashboard / Course Shell / Unit Viewer | Closed for approved W2 scope | PR #78-#79 |
 | W3 Progress + Completion | Closed for approved database-backed scope | PR #80-#84 |
-| W4 Enrolment + Payments | Implementation started; not closed | PR #85 entry; W4.1 chain PR #86-#92; W4.2 implementation merged by PR #98 |
-| W4.1 Access gating | DB proof closed; partial browser proof accepted; final closure pending | PR #88 DB closure; PR #92 merged; product-owner screenshots |
-| W4.2 Manual/admin enrolment | Code/build implementation merged and automated GREEN accepted; live DB/browser proof pending | PR #93-#98; merge `85431882b9f8824c5b1f544649e6305bf700d60d`; GOV-ALP-098 |
-| W4.3 Payment status model | Roadmap requirements only; not started | GOV-ALP-085 sequence preserved by GOV-ALP-094 |
-| W4.4 Provider integration decision | Not started | Architecture/security/risk decision required before execution |
-| W4.5 Payment execution | Not started and not authorized | Blocked until W4.1-W4.4 accepted |
+| W4 Enrolment + Payments | Active; not closed | PR #85 entry; W4.1 PR #86-#92; W4.2 PR #93-#101 |
+| W4.1 Access gating | Database proof accepted; browser acceptance reopened by Batch 3 course-flow findings | PR #88, #92; 2026-07-28 browser evidence |
+| W4.2 Manual/admin enrolment | Migration and live lifecycle proof substantially passed; functional acceptance reopened for portal/course-flow stabilisation | PR #93-#101; live Supabase Batch 1-3 evidence |
+| W4.3 Payment status model | Roadmap requirements only; not started | Payment sequence preserved |
+| W4.4 Provider decision | Not started | Required before payment execution |
+| W4.5 Payment execution | Not authorised | Blocked |
+| Batch 3 Lane A | Rebased release candidate; scoped suites, typecheck, production build, LFS guard and production dependency audit are GREEN; exact-head CI/preview smoke pending | PR #102; 2026-08-05 reconciliation evidence |
+| Invitation delivery preflight | CS2 authorised as separate no-send lane | No provider, secret or send implementation authorised |
 
 ---
 
-## W3 Deployed and Database Proof Accepted
+## Accepted Historical Posture
 
-| Proof Item | Status |
+### W3
+
+- Learner progress UI, database-backed progress and completion proof accepted for approved W3 scope.
+- `ALP-CTRL-011` closed by PR #83.
+
+### W4 entry and payment boundary
+
+- W4 entry merged by PR #85.
+- Sequence remains W4.1 access gating, W4.2 manual/admin enrolment, W4.3 payment status, W4.4 provider decision, W4.5 payment execution.
+- Payment execution, checkout, provider webhooks and offer-code execution remain outside current authority.
+
+### W4.1
+
+- `course_enrolments` and `course_enrolment_events` exist and are database-backed.
+- Pending, enrolled and revoked states are implemented.
+- Course and unit routes fail closed.
+- Navigation/sidebar loop repair merged by PR #92.
+- Final W4.1 closure remains unclaimed.
+
+### W4.2 prebuild and build history
+
+| Item | Evidence |
 |---|---|
-| Learner dashboard and unit progress UI | Accepted |
-| Mark unit complete and confirmation | Accepted |
-| Course/dashboard progress update | Accepted |
-| Supabase progress source of truth | Closed by PR #83 |
-| ALP-CTRL-011 | Closed by PR #83 |
+| Original W4.2 prebuild | PR #93 |
+| Original executable QA-to-Red | PR #94 |
+| Original implementation build-to-Green | PR #98 |
+| Post-merge normalization | PR #99 |
+| Migration-security correction | PR #100 |
+| First Batch 3 browser repair | PR #101 |
+
+Migration `010_alp_admin_invitations` was applied live after PR #100. The exact administrator role for `johan.ras@apginc.ca` was added. Controlled live proof covered pending, redeemed, enrolled, revoked, reinstated, reused, expired, wrong-email, wrong-course and invalid-token paths. Direct invitation-table access and anonymous RPC execution were denied as designed.
 
 ---
 
-## W4 Entry Governance
+## Batch 3 Browser Failure and Recovery Record
 
-| Entry Item | Status |
-|---|---|
-| W4 entry evidence | Merged by PR #85. |
-| Authoritative sequence | W4.1 access gating; W4.2 manual/admin enrolment; W4.3 payment status model; W4.4 provider decision; W4.5 payment execution. |
-| Payment gateway execution | Not authorized before W4.4 acceptance and W4.5 sandbox scope. |
-| ALP-CTRL-010 | Open and carried forward. |
+### Deviation ID
 
----
+`DEV-ALP-B3-20260728-PORTAL-COURSE-FLOW`
 
-## W4.1 DB Proof Closed; Browser Proof Partially Accepted
+### Trigger
 
-| Proof Item | Status |
-|---|---|
-| `course_enrolments` and `course_enrolment_events` | Exist and smoke-read verified. |
-| Enrolment states | `pending`, `enrolled`, `revoked`; no row treated as not enrolled. |
-| Course and unit route gates | Implemented and database-backed. |
-| RLS and SELECT policies | Verified by PR #88. |
-| Non-SELECT write policies | Verified absent for the W4.1 read-gating scope. |
-| Navigation/sidebar loop-breaker | Merged by PR #92 / `a0c0944a8399c97c90817916f74140c5369daede`. |
-| Vercel post-merge deployment | Passed. |
-| Product-owner browser proof accepted | Sidebar on dashboard/profile; public/governed distinction; not-enrolled denial; recovery actions; narrow layout. |
-| Remaining W4.1 proof | Enrolled, pending, revoked and unknown/error controlled proof. |
-| W4.1 final closure | Not claimed. |
+Post-PR #101 browser proof confirmed that role-aware sign-in and Scannex single-encoding were repaired, but exposed broader functional and UX failures that prevented full W4.2 functional acceptance.
 
----
+### Observed failures
 
-## W4.2 Prebuild, Executable RED and Implementation
+1. Deployment root and APGI Training brand route to the VPSHR public page instead of the role-aware portal entry.
+2. Administrator pages use an incomplete parallel navigation shell; Invitations and Access management are not integrated into the persistent sidebar.
+3. Dashboard lists all published courses and counts inaccessible units instead of showing enrolled learning only.
+4. My Learning, Catalogue and Dashboard responsibilities are blurred.
+5. VPSHR public pages expose gated-unit actions that lead not-enrolled or pending users into avoidable denial loops.
+6. Course-access recovery is hard-coded to the VPSHR public route.
+7. Scannex public pages expose raw published unit links outside the governed course shell.
+8. VPSHR and Scannex use inconsistent course-overview patterns.
+9. Enrolled Scannex content loads, but VPSHR governed unit launch does not yet produce equivalent end-to-end content access.
+10. Invitation creation does not send email; it creates a one-time token/path only. No `sent` claim is valid without a provider operation and audit event.
 
-| Item | Status / Link |
-|---|---|
-| App Description addendum | `modules/ALP/00-app-description/addenda/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-addendum.md` |
-| UX Workflow addendum | `modules/ALP/01-ux-workflow-wiring/addenda/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-workflows.md` |
-| FRS addendum | `modules/ALP/02-frs/addenda/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-requirements.md` |
-| Requirement Registry addendum | `modules/ALP/REQUIREMENT_REGISTRY_ADDENDA/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-registry.md` |
-| Canonical Stage 6 expansion QA plan | `modules/ALP/05-qa-to-red/addenda/20260721-w4-2-w4-5-enrolment-catalogue-payment-roadmap-qa-plan.md` |
-| Prebuild governance | GOV-ALP-094 merged by PR #93 / `721be18e88d284ffffc4179e71e3dd936b14a319` |
-| Executable suite | `tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts` |
-| Build-to-green command | `npm run test:alp:w4-2` |
-| Build-to-green workflow | `.github/workflows/alp-w4-2-red-proof.yml` / `ALP W4.2 Build to Green` |
-| Executable RED evidence | `modules/ALP/11-build/evidence/20260722-W4-GOV-ALP-095-decision-w4-2-executable-red.md`; accepted by merged PR #94 |
-| Implementation evidence | `modules/ALP/11-build/evidence/20260723-W4-GOV-ALP-098-decision-w4-2-build-to-green.md`; merged by PR #98 |
-| W4.2 implementation | Merged by PR #98 / `85431882b9f8824c5b1f544649e6305bf700d60d`; exact-head automated GREEN and Vercel accepted for code/build scope; live proof pending. |
-| Migration authority | `supabase/migrations/010_alp_admin_invitations.sql` is merged but not applied. |
-| Live role / invitation / enrolment writes | Not performed. |
+### Disposition
 
-### W4.2 Implemented scope merged by PR #98
-
-- generic learner sidebar and multi-course catalogue;
-- learner-specific course state and actions;
-- admin-only navigation and authorization using the existing `admin` role;
-- invitation/manual enrolment with reason, basis, scope, expiry and protected token;
-- complimentary and externally-paid administrative enrolment bases;
-- revocation/reinstatement and full audit trail;
-- legacy-route inventory and retain/redirect decisions; and
-- migration authority for invitation tables, events, indexes and RLS.
-
-### W4.2 proof still required
-
-- controlled review and application of `010_alp_admin_invitations.sql`;
-- exact approved `admin` assignment for `johan.ras@apginc.ca`;
-- browser proof for admin and learner paths;
-- live database proof for pending, enrolled, revoked, reinstated and invitation negative paths;
-- cleanup evidence for all controlled test data; and
-- post-proof regression confirmation.
+- W4.2 code/build history remains valid but **FUNCTIONAL_PASS remains open**.
+- Batch 4 cleanup is blocked; controlled evidence tagged `ALP-BATCH3-20260727` must be retained.
+- CS2 authorised a bounded Batch 3 stabilisation wave on 2026-07-28.
+- Lane A covers portal entry, navigation, dashboard/My Learning projections, shared course presentation, governed launch, generic links, admin preview and executable regressions.
+- Invitation delivery is a separate preflight lane and may not add a provider, credentials or send implementation.
 
 ---
 
-## Payment Roadmap Gate
+## Batch 3 Stabilisation Authority Stack
 
-| Slice | Scope | Status |
+| Stage | Artifact | Status |
 |---|---|---|
-| W4.3 | Explicit payment status model and audit trail | Not started; no checkout or webhook authority. |
-| W4.4 | Provider selection plus architecture, security, privacy and risk acceptance | Not started. |
-| W4.5 | Sandbox payment execution, authoritative confirmation and later offer controls | Not started; blocked. |
+| App Description | `modules/ALP/00-app-description/addenda/20260728-batch3-stabilisation-addendum.md` | Filed on Lane A branch |
+| UX Workflow | `modules/ALP/01-ux-workflow-wiring/addenda/20260728-batch3-stabilisation-workflows.md` | Filed on Lane A branch |
+| FRS | `modules/ALP/02-frs/addenda/20260728-batch3-stabilisation-requirements.md` | Filed on Lane A branch |
+| TRS | `modules/ALP/03-trs/addenda/20260728-batch3-stabilisation-technical-requirements.md` | Filed on Lane A branch |
+| Architecture | `modules/ALP/04-architecture/addenda/20260728-batch3-stabilisation-architecture.md` | Filed on Lane A branch |
+| Requirement Registry | `modules/ALP/REQUIREMENT_REGISTRY_ADDENDA/20260728-batch3-stabilisation-registry.md` | Filed on Lane A branch |
+| QA-to-Red Plan | `modules/ALP/05-qa-to-red/addenda/20260728-batch3-stabilisation-qa-plan.md` | Filed on Lane A branch |
+| Implementation Plan | `modules/ALP/07-implementation-plan/addenda/20260728-batch3-stabilisation-implementation-plan.md` | Filed on Lane A branch |
+| Builder Checklist | `modules/ALP/08-builder-checklist/addenda/20260728-batch3-stabilisation-builder-checklist.md` | Filed on Lane A branch |
+| PBFAG | `modules/ALP/06-pbfag/addenda/20260728-batch3-stabilisation-pbfag.md` | PASS at exact-head run `30342160476` |
+| Wave Checklist | `.agent-admin/waves/wave-batch3-lane-a-current-tasks.md` | Stage 11 complete; `BC-ALP-B3-LA-001` appointed |
+| IAA Pre-Brief Invocation | `modules/ALP/09-iaa-pre-brief/addenda/20260728-batch3-stabilisation-iaa-invocation.md` | Completed by independent IAA session |
+| Active IAA Pre-Brief | `.agent-admin/assurance/iaa-prebrief-batch3-lane-a.md` | ACTIVE — session `IAA-20260728-PREBRIEF-BATCH3-LANE-A` |
+| Stage 10 acknowledgements | `modules/ALP/09-iaa-pre-brief/addenda/20260728-batch3-stabilisation-iaa-acknowledgements.md` | Foreman and `BC-ALP-B3-LA-001` COMPLETE before Stage 11 appointment |
+| Stage 11 appointment | `modules/ALP/10-builder-appointment/addenda/20260728-batch3-lane-a-builder-appointment.md` | `APPT-ALP-B3-LA-001`; `BC-ALP-B3-LA-001` appointed for frozen Lane A only |
+| Executable RED | `tests/qa-to-red/alp/batch3-stabilisation-red.spec.ts` | Exact-head correct RED accepted at commit `3d9cc74f83c64e46a9134977e57fec5115691e54` |
 
-Offer-code execution requires separate W4.5 or later commercial authorization and may not be treated as W4.3 authority.
+### QA/governance correction
+
+Run `30336426460` at head `54d61067ff34da0fc6a98a1da0a2c7e66c4a8c72` produced typecheck PASS, 26 established W4.2 tests PASS and 10 Batch 3 failures. Eight failures were controlled assertions; two were invalid `ENOENT` file reads. CS2 authorised a bounded PR #102 QA/governance correction on 2026-07-28.
+
+The correction converts both missing-file failures into explicit missing-capability assertions and hardens the exact-head workflow to accept only:
+
+- typecheck PASS;
+- 26/26 established W4.2 tests PASS;
+- 10/10 Batch 3 tests FAIL for the declared missing capabilities;
+- zero Batch 3 pass/skip/todo; and
+- no file-read, syntax, runner, transform or module-resolution failure.
+
+Exact-head workflow run `30342160476` at commit `3d9cc74f83c64e46a9134977e57fec5115691e54` satisfies that contract: typecheck PASS, 26/26 established W4.2 tests PASS, 15/15 W1/W4.1 tests PASS, 10/10 controlled Batch 3 failures and evidence upload PASS. No Lane A product implementation or builder appointment is authorised by this correction.
 
 ---
 
-## W0-W9 Build Wave Status Table
+## Lane A Gate Sequence
 
-| Wave | Planned Scope | Status | Evidence / PR Status | Check Status | Blocker / Risk |
-|---|---|---|---|---|---|
-| W0 | Foundation / Scaffold | CLOSED FOR SCAFFOLD SCOPE | PR #71-#72 merged | Accepted | Full app delivery not claimed |
-| W1 | Auth + Profile + Files | CLOSED FOR W1 SCOPE | PR #73-#77 merged | Accepted | Admin console proof deferred |
-| W2 | Dashboard + Course Shell + Unit Viewer | CLOSED FOR W2 SCOPE | PR #78-#79 merged | Accepted | ALP-CTRL-010 carried forward |
-| W3 | Progress + Completion | CLOSED FOR APPROVED W3 SCOPE | PR #80-#84 merged | Accepted | ALP-CTRL-010 remains open |
-| W4 | Enrolment + Payments | IMPLEMENTATION STARTED | PR #85-#98 merged | W4.2 code/build GREEN accepted; live proof pending | W4.1 final proof pending; W4.2 live proof pending; W4.3-W4.5 not started |
-| W5 | Assessment Submission | WAITING | No W5 PR | No checks | Requires W4 closure |
-| W6 | AI Evaluation + Human Review | WAITING | No W6 PR | No checks | Requires W5 closure |
-| W7 | Certificates | WAITING | No W7 PR | No checks | Requires W3/W6 closure |
-| W8 | Admin Reports + Audit | WAITING | No W8 PR | No checks | Requires W1-W7 closure |
-| W9 | Deployment + CWT | WAITING | No W9 PR | No checks | Requires W0-W8 closure |
+1. Commit the complete authority stack and this tracker deviation record.
+2. Commit executable tests derived from QA-ALP-B3-001..020.
+3. Prove the suite fails correctly against PR #101 merge commit `a056b51d9353426d5ba96154d190ca71ac44f008`.
+4. Publish the independent IAA Pre-Brief and record Foreman and designated-candidate acknowledgements.
+5. Complete Stage 10, then separately complete the builder checklist and formal Stage 11 appointment.
+6. Implement only the authorised Lane A scope after appointment.
+7. Build the frozen tests to Green without weakening assertions.
+8. Run existing W1, W4.1 and W4.2 suites, typecheck and production build.
+9. Verify exact-head GitHub and Vercel deployments.
+10. Perform browser retest using preserved controlled learner state.
+11. Start cleanup only after browser proof is accepted.
 
 ---
 
 ## Active Controls
 
-| Control ID | Control | Current Status | Required Next Action |
+| Control ID | Control | Status | Required next action |
 |---|---|---|---|
-| ALP-CTRL-003 | Full app workflows not complete | Open | Complete W4-W9 implementation and evidence. |
-| ALP-CTRL-004 | CODE_PASS not claimed | Open | Claim only after required code evidence is reviewed and accepted. |
-| ALP-CTRL-005 | FUNCTIONAL_PASS not claimed | Open | Claim only after controlled live functional evidence exists. |
-| ALP-CTRL-006 | CWT_PASS not claimed | Open | Claim only after deployment/CWT evidence exists. |
-| ALP-CTRL-010 | Legacy iSpring embedded video objects do not consistently play | Open | Inspect exported assets, MIME types and browser errors in later content hardening. |
-| ALP-CTRL-011 | Live Supabase progress tables verified | Closed by PR #83 | No further W3 DB action unless regression is found. |
-
----
-
-## Immediate Next Action
-
-PR #98 has merged and post-merge Vercel passed. Prepare the controlled W4.2 live-proof cycle: review the exact `010_alp_admin_invitations.sql` migration, confirm the exact approved `user_roles` row and cleanup plan, then obtain explicit authorization before any Supabase migration, admin-role assignment, invitation or enrolment write. Capture database and browser evidence for pending, enrolled, revoked, reinstated and negative invitation paths. W4.3-W4.5 payment work remains unauthorized.
+| ALP-CTRL-003 | Full app workflows not complete | Open | Complete remaining governed waves. |
+| ALP-CTRL-004 | CODE_PASS not claimed | Open | Review exact-head code/build evidence. |
+| ALP-CTRL-005 | FUNCTIONAL_PASS not claimed | Partially satisfied | Batch 3 browser proof passed; retain broader W4 functional-proof boundary. |
+| ALP-CTRL-006 | CWT_PASS not claimed | Open | Complete later deployment/CWT wave. |
+| ALP-CTRL-010 | Legacy iSpring media inconsistency | Open | Carry to content hardening unless encountered in Lane A. |
+| ALP-CTRL-011 | Live Supabase progress tables | Closed | Reopen only on regression. |
+| ALP-CTRL-012 | Portal/course-flow stabilisation | Rebase gate | Complete exact-head CI and fresh preview smoke, then final IAA. |
+| ALP-CTRL-013 | Invitation delivery not implemented | Open | Complete separate provider preflight; no send claim before authorised build. |
 
 ---
 
 ## Build Authorization Posture
 
-W1 Closure: CLOSED FOR W1 SCOPE  
-W2 Closure: CLOSED FOR W2 SCOPE  
-W3 Closure: CLOSED FOR APPROVED W3 SCOPE BY PR #83  
-W4 Entry: MERGED BY PR #85  
-W4.1 Implementation: MERGED BY PR #86  
-W4.1 DB Proof Closure: MERGED BY PR #88  
-W4.1 Navigation Build: MERGED BY PR #92  
-W4.1 Browser Proof: PARTIALLY ACCEPTED; FINAL CLOSURE NOT CLAIMED  
-W4.2 Prebuild: MERGED BY PR #93  
-W4.2 Executable RED: MERGED BY PR #94 / `43e587ac651b687845c3406b2b31ab57fbf95e0e`  
-W4.2 Implementation: MERGED BY PR #98 / `85431882b9f8824c5b1f544649e6305bf700d60d`; AUTOMATED GREEN ACCEPTED FOR CODE/BUILD SCOPE; LIVE PROOF PENDING  
-W4.3 Payment Status Model: NOT STARTED  
-W4.4 Provider Decision: NOT STARTED  
-W4.5 Payment Execution: NOT STARTED / NOT AUTHORIZED  
+W1 Closure: CLOSED FOR APPROVED W1 SCOPE  
+W2 Closure: CLOSED FOR APPROVED W2 SCOPE  
+W3 Closure: CLOSED FOR APPROVED W3 SCOPE  
+W4 Entry: MERGED  
+W4.1 Final Closure: NOT CLAIMED  
+W4.2 Functional Acceptance: REOPENED FOR BATCH 3 STABILISATION  
+Batch 3 Lane A Prebuild: CS2 AUTHORISED; FILED ON BRANCH  
+Batch 3 Lane A QA-to-Red: EXACT-HEAD CORRECT RED ACCEPTED — RUN `30342160476`
+
+Batch 3 Lane A PBFAG: PASS
+
+Batch 3 Lane A IAA Pre-Brief: ACTIVE — `IAA-20260728-PREBRIEF-BATCH3-LANE-A`; ACKNOWLEDGEMENTS COMPLETE; STAGE 10 PASS
+
+Batch 3 Lane A Builder Candidate: `BC-ALP-B3-LA-001` DESIGNATED AND ACKNOWLEDGED
+Batch 3 Lane A Builder Appointment: COMPLETE — `APPT-ALP-B3-LA-001`
+Batch 3 Lane A Implementation: CODE / BUILD GREEN AT `15422413d1ccf7d36c9069ca24e07fa22604516c`
+Batch 3 Lane A Final Assurance: REBASE CANDIDATE — historic browser proof is accepted and the dependency audit is clean; exact-head CI and fresh preview smoke remain required
+Invitation Delivery Preflight: AUTHORISED AS SEPARATE NO-SEND LANE  
+W4.3-W4.5: NOT STARTED / PAYMENT EXECUTION NOT AUTHORISED  
 W4 Closure: NOT CLAIMED  
-Full App Delivery: NOT CLAIMED  
 CODE_PASS: NOT CLAIMED  
 FUNCTIONAL_PASS: NOT CLAIMED  
 CWT_PASS: NOT CLAIMED  
-Final content quality acceptance: NOT CLAIMED  
-Long-term database-backed progress source of truth: CLAIMED FOR W3 PROGRESS SCOPE ONLY  
-Live payment readiness: NOT CLAIMED  
-Deployment acceptance: NOT CLAIMED  
-Production readiness: NOT CLAIMED
+Deployment Acceptance: NOT CLAIMED  
+Production Readiness: NOT CLAIMED
 
 ---
 
 ## Change History
 
-| Version | Date | Change Description | Changed By | Approval |
-|---|---|---|---|---|
-| 5.2 | 2026-07-23 | Normalized PR #98 merged posture, accepted automated GREEN for code/build scope and moved the workstream to controlled live proof. | AI-assisted draft | PR #99 |
-| 5.1 | 2026-07-23 | Filed W4.2 build-to-green implementation and preserved live-proof and payment boundaries. | AI-assisted draft | Merged by PR #98 |
-| 5.0 | 2026-07-22 | Normalized PR #94 merged posture and authorized the separate W4.2 build-to-green cycle without claiming implementation. | AI-assisted draft | Merged by PR #95 |
-| 1.7 | 2026-06-29 | Filed W1 closure and W2 entry authorization. | AI-assisted draft | Merged by PR #77 |
-| 2.0 | 2026-06-29 | Filed W2 dashboard/course shell/unit viewer implementation slice. | AI-assisted draft | Merged by PR #78 |
-| 2.1 | 2026-06-30 | Filed W2 deployed proof closure and carried ALP-CTRL-010 forward. | AI-assisted draft | Merged by PR #79 |
-| 3.0 | 2026-06-30 | Filed W3 progress/completion implementation slice. | AI-assisted draft | Merged by PR #80 |
-| 3.1 | 2026-07-01 | Filed W3 progress proof fix after browser proof showed progress did not visibly update. | AI-assisted draft | Merged by PR #81 |
-| 3.2 | 2026-07-01 | Filed W3 deployed UI proof while DB proof remained open. | AI-assisted draft | Merged by PR #82 |
-| 3.3 | 2026-07-02 | Filed W3 database-backed progress closure. | AI-assisted draft | Merged by PR #83 |
-| 3.4 | 2026-07-02 | Normalized W3 post-merge evidence. | AI-assisted draft | Merged by PR #84 |
-| 4.0 | 2026-07-02 | Filed W4 enrolment and payments entry governance and W4.1-W4.5 sequence. | AI-assisted draft | Merged by PR #85 |
-| 4.1 | 2026-07-02 | Filed W4.1 enrolment access gating implementation. | AI-assisted draft | Merged by PR #86 |
-| 4.2 | 2026-07-07 | Filed W4.1 live DB table-existence proof. | AI-assisted draft | Merged by PR #87 |
-| 4.3 | 2026-07-07 | Filed W4.1 DB proof closure. | AI-assisted draft | Merged by PR #88 |
-| 4.4 | 2026-07-10 | Held W4.1 final closure pending browser proof. | AI-assisted draft | Merged by PR #89 |
-| 4.5 | 2026-07-10 | Filed W4.1 UI-proof enabler. | AI-assisted draft | Merged by PR #90 |
-| 4.6 | 2026-07-13 | Filed W4.1 navigation/sidebar prebuild after loop finding. | AI-assisted draft | Merged by PR #91 |
-| 4.7 | 2026-07-15 | Filed W4.1 persistent sidebar and loop-breaker build. | AI-assisted draft | Merged by PR #92 |
-| 4.8 | 2026-07-21 | Filed W4.2 enrolment/catalogue prebuild and preserved W4.3-W4.5 payment gates. | AI-assisted draft | Merged by PR #93 |
-| 4.9 | 2026-07-22 | Filed executable QA-ALP-252 through QA-ALP-267 and exact-head correct-RED proof. | AI-assisted draft | Merged by PR #94 |
+| Version | Date | Change | Authority |
+|---|---|---|---|
+| 6.6 | 2026-08-05 | Rebased PR #102 onto `main` after PR #103; applied the non-breaking Next/PostCSS remediation; recorded a clean production dependency audit and release-candidate local gates. | CS2-authorised final gate continuation |
+| 6.5 | 2026-07-28 | Built Batch 3 Lane A to code/build GREEN, recorded exact-head CI/Vercel evidence, and recorded final IAA NO-GO pending browser proof and dependency-audit disposition. | CS2-authorised build-to-Green |
+| 6.4 | 2026-07-28 | Completed Stage 11 and appointed `BC-ALP-B3-LA-001` under `APPT-ALP-B3-LA-001` for the frozen Batch 3 Lane A build-to-Green scope only. | CS2-authorised Stage 11 appointment |
+| 6.3 | 2026-07-28 | Activated independent IAA Pre-Brief `IAA-20260728-PREBRIEF-BATCH3-LANE-A`; recorded Foreman and `BC-ALP-B3-LA-001` acknowledgements; passed Stage 10 while preserving separate appointment and implementation blocks. | CS2-authorised Stage 10 activation |
+| 6.2 | 2026-07-28 | Accepted exact-head correct RED from commit `3d9cc74f83c64e46a9134977e57fec5115691e54` / run `30342160476`; recorded PBFAG PASS; preserved Stage 10, appointment and implementation blocks. | CS2-authorised bounded correction |
+| 6.1 | 2026-07-28 | Recorded CS2-authorised PR #102 QA/governance correction, malformed RED run, local clean-RED preflight, PBFAG disposition, wave checklist and independent-IAA unavailability. | CS2 Johan Ras |
+| 6.0 | 2026-07-28 | Recorded PR #100-#101 outcomes, live Batch 1-3 proof, browser failure deviation, full stabilisation authority stack, QA-to-Red requirement and separate invitation-delivery preflight. | CS2 Johan Ras |
+| 5.2 | 2026-07-23 | Normalized PR #98 merged posture and moved to controlled live proof. | PR #99 |
+| 5.1 | 2026-07-23 | Filed W4.2 build-to-Green implementation while preserving proof boundaries. | PR #98 |
+| 5.0 | 2026-07-22 | Normalized executable W4.2 RED posture. | PR #95 |
+| 4.9 | 2026-07-22 | Filed executable QA-ALP-252..267. | PR #94 |
+| 4.8 | 2026-07-21 | Filed W4.2 enrolment/catalogue prebuild. | PR #93 |
+| 4.7 | 2026-07-15 | Filed W4.1 persistent sidebar and loop-breaker build. | PR #92 |
+| 4.0-4.6 | 2026-07-02..13 | W4 entry, access gating, DB proof and navigation preparation. | PR #85-#91 |
+| 3.0-3.4 | 2026-06-30..07-02 | W3 progress/completion delivery and closure. | PR #80-#84 |
+| 1.0-2.1 | 2026-06-26..29 | W0-W2 foundation, auth/profile, dashboard, shell and unit viewer. | PR #71-#79 |

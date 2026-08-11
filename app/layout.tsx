@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <header className="app-header">
-          <Link className="brand-link" href="/courses/vpshr-level-0">
+          <Link className="brand-link" href="/">
             APGI Training
           </Link>
           <ThemeToggle />

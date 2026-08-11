@@ -14,6 +14,7 @@ export type CreateInvitationState = {
   ok: boolean;
   invitationId?: string;
   token?: string;
+  deliveryStatus?: "created_not_sent";
   error?: string;
 };
 
@@ -164,7 +165,7 @@ export async function createInvitation(formData: FormData): Promise<CreateInvita
     return { ok: false, error: "INVITATION_AUDIT_FAILED" };
   }
 
-  return { ok: true, invitationId, token };
+  return { ok: true, invitationId, token, deliveryStatus: "created_not_sent" };
 }
 
 export async function createInvitationWithState(

@@ -5,11 +5,13 @@
   "description": "Next.js learning platform for APGI VPSHR training content.",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/verify-course-media.mjs",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test:alp:red": "vitest run tests/qa-to-red/alp",
-    "test:alp:w4-2": "vitest run tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts tests/qa-to-red/alp/w4-2-migration-security.spec.ts tests/qa-to-red/alp/w4-2-browser-repair.spec.ts",
+    "test:alp:w4-2": "vitest run tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts tests/qa-to-red/alp/w4-2-migration-security.spec.ts tests/qa-to-red/alp/w4-2-browser-repair.spec.ts tests/qa-to-red/alp/batch3-stabilisation-red.spec.ts",
+    "test:alp:batch3": "vitest run tests/qa-to-red/alp/batch3-stabilisation-red.spec.ts",
     "test:alp:w4-2:red": "vitest run tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts",
     "test:alp:red:static": "vitest run tests/qa-to-red/alp/governance-artifacts.spec.ts tests/qa-to-red/alp/architecture-inventory.spec.ts",
     "test:alp:red:integration": "vitest run tests/qa-to-red/alp --exclude tests/qa-to-red/alp/deployment-cwt.spec.ts",
@@ -17,12 +19,12 @@
     "test:alp:red:cwt": "vitest run tests/qa-to-red/alp/deployment-cwt.spec.ts"
   },
   "dependencies": {
-    "next": "16.2.6",
+    "next": "16.3.0",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },
   "overrides": {
-    "postcss": "8.5.15"
+    "postcss": "8.5.23"
   },
   "devDependencies": {
     "@types/node": "25.9.1",
