@@ -23,14 +23,14 @@ describe("ALP W4.2 learner management experience", () => {
   it("QA-ALP-LMX-003 keeps invitation preparation as a non-mutating, future-expiry draft", () => {
     expectPath(invitationDraft, "QA-ALP-LMX-003");
     const source = read(invitationDraft);
-    for (const marker of ["Review invitation draft", "created_not_sent", "expiry.getTime() <= Date.now()"] ) expect(source).toContain(marker);
+    for (const marker of ["Review invitation draft", "created_not_sent", "expiry.getTime() <= Date.now()", "nationalIdentityNumber", "type=\"password\""] ) expect(source).toContain(marker);
     expect(source).not.toContain("createInvitation");
     expect(source).not.toContain("useActionState");
   });
   it("QA-ALP-LMX-004 stages CSV or Excel imports locally, prepares a visible draft, and never executes them", () => {
     expectPath(importWorkspace, "QA-ALP-LMX-004");
     const source = read(importWorkspace);
-    for (const marker of ["Download CSV template", "Choose spreadsheet", "parseWorkbookRows", ".xlsx", "company,country,operation_subdivision,department_team", "requiredReportingHeaders", "missingRequiredReportingHeaders.length === 0", "Import draft prepared", "Import execution is disabled", "setTimeout(() => URL.revokeObjectURL(url)"]) expect(source).toContain(marker);
+    for (const marker of ["Download CSV template", "Choose spreadsheet", "parseWorkbookRows", ".xlsx", "national_identity_number,company,country,operation_subdivision,department_team", "requiredReportingHeaders", "missingRequiredReportingHeaders.length === 0", "Import draft prepared", "Identity numbers remain browser-local", "Import execution is disabled", "setTimeout(() => URL.revokeObjectURL(url)"]) expect(source).toContain(marker);
     expect(source).not.toContain("createBatchInvitations");
     expect(source).not.toContain("fetch(");
   });
