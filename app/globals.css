@@ -1111,3 +1111,28 @@ textarea {
     padding: 22px 0;
   }
 }
+
+
+/* W4.2 presentation-only administrator preview: intentionally removes portal chrome. */
+body:has(.admin-presentation-only) {
+  overflow: hidden;
+  background: #000;
+}
+
+body:has(.admin-presentation-only) .app-header {
+  display: none;
+}
+
+.admin-presentation-only {
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+}
+
+.admin-presentation-only-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+}

@@ -10,3 +10,9 @@
 | QA-ALP-LMX-006 | New UI lacks executable assertions that exclude invitation/enrolment/progress mutation. |
 
 The test suite must be proved RED before the implementation commit, then GREEN alongside typecheck, the established W4.2/B3 suites and production build. Browser validation is limited to read-only admin workflow and full-page preview; it must not create an invitation or alter an enrolment.
+
+
+| QA-ALP-LMX-009 | A local Excel workbook cannot be selected or cannot form a visible no-write review draft; the reporting columns do not distinguish required company/country from optional organisational fields. |
+| QA-ALP-LMX-010 | A VPSHR preview cannot open a separately admin-gated presentation-only viewport without portal chrome, or that route writes learner state. |
+
+Exact-head checks must include `test:alp:lm`, the established W4.2 regression suite, typecheck and the LFS-aware production build. The authenticated smoke must stage (but not execute) both the CSV template and a representative `.xlsx` workbook.

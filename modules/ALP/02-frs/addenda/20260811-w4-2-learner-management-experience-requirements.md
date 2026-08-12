@@ -8,3 +8,8 @@
 | FR-ALP-LMX-004 | Bulk intake is understandable before execution is authorised. | CSV template download, local file selection, delimiter/header validation and row summaries are available; execute/import remains disabled. |
 | FR-ALP-LMX-005 | Administrator preview can use the full viewport. | An administrator-only route launches the same published content in a full-page viewport with return navigation and an explicit non-mutation boundary. |
 | FR-ALP-LMX-006 | Existing invitation and enrolment authority remains protected. | No new data mutation, provider call, email dispatch or lifecycle event is introduced. |
+
+
+| FR-ALP-LMX-007 | Bulk staging accepts the administrator's Excel workbooks as well as CSV. | The first worksheet of an `.xlsx` workbook is parsed locally; the source file is not uploaded. |
+| FR-ALP-LMX-008 | Bulk staging captures reporting dimensions for later feedback reports. | `email`, `company` and `country` are required before an import draft; `operation_subdivision` and `department_team` are optional. |
+| FR-ALP-LMX-009 | Administrators can open VPSHR content in a presentation-only viewport. | A separately admin-gated new-tab route contains only the embedded presentation, fills the viewport, exposes browser/fullscreen controls, and writes no learner state. |

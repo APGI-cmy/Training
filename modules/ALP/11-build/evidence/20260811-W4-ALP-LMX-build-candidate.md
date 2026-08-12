@@ -20,3 +20,11 @@
 4. Open VPSHR full-page preview; confirm it renders in the larger administrator-only workspace and writes no learner progress.
 
 No production deployment or merge is authorised by this evidence.
+
+
+## 2026-08-12 correction candidate — checks pending exact head
+
+- Scope: local CSV/XLSX staging and visible import draft; required `email`, `company` and `country`; optional `operation_subdivision` and `department_team`; a separate presentation-only VPSHR preview.
+- Boundary: no source row is uploaded; no learner, invitation, enrolment, email, progress or import record is created.
+- Required exact-head evidence: `test:alp:lm`, established W4.2 regression suite, typecheck, LFS-aware production build, GitHub Actions, and both Vercel previews.
+- Required authenticated smoke: stage a valid CSV and `.xlsx` workbook without execution; verify the presentation-only tab contains no portal chrome and uses no learner state.

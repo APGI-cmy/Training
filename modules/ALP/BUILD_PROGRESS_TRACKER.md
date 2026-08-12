@@ -216,6 +216,13 @@ Production Readiness: NOT CLAIMED
 
 ---
 
+
+## W4.2 learner-management extension — 2026-08-12
+
+The post-preview correction extends the existing read/draft-only W4.2 scope. It adds browser-local `.xlsx` alongside CSV staging, requires `email`, `company` and `country` for a review draft, recognises optional `operation_subdivision` and `department_team`, and adds a separately admin-gated VPSHR presentation-only preview. It does **not** authorise import execution, account matching, invitation creation, enrolment mutation, email delivery, learner-progress writes, or production deployment.
+
+Exact-head GitHub and Vercel evidence is required before a new authenticated no-write smoke and any revised merge disposition.
+
 ## Change History
 
 | Version | Date | Change | Authority |
