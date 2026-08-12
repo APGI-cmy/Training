@@ -12,6 +12,7 @@
     "test:alp:red": "vitest run tests/qa-to-red/alp",
     "test:alp:w4-2": "vitest run tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts tests/qa-to-red/alp/w4-2-migration-security.spec.ts tests/qa-to-red/alp/w4-2-browser-repair.spec.ts tests/qa-to-red/alp/batch3-stabilisation-red.spec.ts",
     "test:alp:lm": "vitest run tests/qa-to-red/alp/w4-2-learner-management.spec.ts",
+    "test:alp:invitation-lifecycle:red": "node scripts/verify-invitation-lifecycle-red.mjs",
     "test:alp:batch3": "vitest run tests/qa-to-red/alp/batch3-stabilisation-red.spec.ts",
     "test:alp:w4-2:red": "vitest run tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts",
     "test:alp:red:static": "vitest run tests/qa-to-red/alp/governance-artifacts.spec.ts tests/qa-to-red/alp/architecture-inventory.spec.ts",
