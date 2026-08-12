@@ -2,12 +2,12 @@
 
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
-**Last Updated**: 2026-08-05
-**Updated By**: Batch 3 rebase and release-gate reconciliation
-> **Classification**: ACTIVE — W4.2 LIVE PROOF REOPENED; BATCH 3 STABILISATION AUTHORISED  
+**Last Updated**: 2026-08-11
+**Updated By**: Production release reconciliation and Learner Management Experience authority
+> **Classification**: ACTIVE — BATCH 3 STABILISATION RELEASED; W4.2 LEARNER MANAGEMENT EXPERIENCE AUTHORISED
 > **Repository**: APGI-cmy/Training  
-> **Current Workstream**: Batch 3 Lane A rebased release candidate on PR #102; historical browser proof is accepted and the production dependency audit is remediated
-> **Next Required Action**: Obtain exact-head CI and a fresh non-production preview smoke test before final IAA disposition
+> **Current Workstream**: W4.2 Learner Management Experience (LMX): safe admin learner directory, staged invitation/import UX and administrator full-page course preview
+> **Next Required Action**: Build, test and independently review the LMX release candidate. No invitation, enrolment, email, payment or bulk-import write is authorised in this slice.
 
 ---
 
@@ -25,8 +25,27 @@
 | W4.3 Payment status model | Roadmap requirements only; not started | Payment sequence preserved |
 | W4.4 Provider decision | Not started | Required before payment execution |
 | W4.5 Payment execution | Not authorised | Blocked |
-| Batch 3 Lane A | Rebased release candidate; scoped suites, typecheck, production build, LFS guard and production dependency audit are GREEN; exact-head CI/preview smoke pending | PR #102; 2026-08-05 reconciliation evidence |
+| Batch 3 Lane A | Released stabilisation scope; production Git deployment smoke-tested | PR #102 merged at `312e551`; 2026-08 production reconciliation |
 | Invitation delivery preflight | CS2 authorised as separate no-send lane | No provider, secret or send implementation authorised |
+| W4.2 Learner Management Experience | Local build candidate complete; scoped QA GREEN; preview evidence pending | 2026-08-11 LMX authority stack and build evidence |
+
+### Production release reconciliation — PR #102
+
+PR #102 was merged to `main` at `312e551` and its successful Git-integrated production deployment was smoke-tested. The authenticated proof covers administrator sign-in, VPSHR and Scannex playback, learner sign-in/navigation and learner-side absence of administration destinations. A separate duplicate command-line deployment failed because it did not materialise Git LFS media; it was not aliased to production and did not replace the successful Git deployment.
+
+Batch 3 Lane A is therefore **released for its stabilisation scope**. Its former rebase-candidate, pending-preview and pending-IAA wording is historical only. W4 and platform-wide closure are still not claimed.
+
+### W4.2 Learner Management Experience (LMX) — authorised 2026-08-11
+
+The product owner has authorised a Thinkific-inspired admin learner-management experience as the next bounded W4.2 improvement:
+
+- searchable, paginated, read-only learner directory with course relationship/status information;
+- a clear, validated single-learner invitation workspace that remains in **draft/preview** mode;
+- enrolment management selected from a learner record rather than by manually entering an opaque user ID;
+- a staged bulk-import workspace with CSV template, local parsing and validation only; and
+- a full-page administrator course-preview route with no learner progress or enrolment mutation.
+
+This is not authority to create learners, send email, create invitations, alter enrolments, upload source rows to the server, configure an email provider, perform payment work or make production writes. These continue to require a separately agreed test learner and lifecycle.
 
 ---
 
@@ -185,7 +204,7 @@ Batch 3 Lane A IAA Pre-Brief: ACTIVE — `IAA-20260728-PREBRIEF-BATCH3-LANE-A`; 
 Batch 3 Lane A Builder Candidate: `BC-ALP-B3-LA-001` DESIGNATED AND ACKNOWLEDGED
 Batch 3 Lane A Builder Appointment: COMPLETE — `APPT-ALP-B3-LA-001`
 Batch 3 Lane A Implementation: CODE / BUILD GREEN AT `15422413d1ccf7d36c9069ca24e07fa22604516c`
-Batch 3 Lane A Final Assurance: REBASE CANDIDATE — historic browser proof is accepted and the dependency audit is clean; exact-head CI and fresh preview smoke remain required
+Batch 3 Lane A Final Assurance: RELEASED FOR STABILISATION SCOPE — PR #102 was merged and the successful Git-integrated production deployment was smoke-tested; no wider W4 closure is implied
 Invitation Delivery Preflight: AUTHORISED AS SEPARATE NO-SEND LANE  
 W4.3-W4.5: NOT STARTED / PAYMENT EXECUTION NOT AUTHORISED  
 W4 Closure: NOT CLAIMED  
@@ -197,11 +216,19 @@ Production Readiness: NOT CLAIMED
 
 ---
 
+
+## W4.2 learner-management extension — 2026-08-12
+
+The post-preview correction extends the existing read/draft-only W4.2 scope. It adds browser-local `.xlsx` alongside CSV staging, requires `email`, `company` and `country` for a review draft, recognises optional `national_identity_number`, `operation_subdivision` and `department_team` (with national identity numbers browser-local, masked in the manual draft and excluded from summaries, URLs, logs and persistence), and adds a separately admin-gated VPSHR presentation-only preview. It does **not** authorise import execution, account matching, invitation creation, enrolment mutation, email delivery, learner-progress writes, or production deployment.
+
+Exact-head GitHub and Vercel evidence is required before a new authenticated no-write smoke and any revised merge disposition.
+
 ## Change History
 
 | Version | Date | Change | Authority |
 |---|---|---|---|
 | 6.6 | 2026-08-05 | Rebased PR #102 onto `main` after PR #103; applied the non-breaking Next/PostCSS remediation; recorded a clean production dependency audit and release-candidate local gates. | CS2-authorised final gate continuation |
+| 6.7 | 2026-08-11 | Reconciled PR #102 merged/production-smoke posture and filed the W4.2 Learner Management Experience authority stack. | Product-owner authorised safe UI scope |
 | 6.5 | 2026-07-28 | Built Batch 3 Lane A to code/build GREEN, recorded exact-head CI/Vercel evidence, and recorded final IAA NO-GO pending browser proof and dependency-audit disposition. | CS2-authorised build-to-Green |
 | 6.4 | 2026-07-28 | Completed Stage 11 and appointed `BC-ALP-B3-LA-001` under `APPT-ALP-B3-LA-001` for the frozen Batch 3 Lane A build-to-Green scope only. | CS2-authorised Stage 11 appointment |
 | 6.3 | 2026-07-28 | Activated independent IAA Pre-Brief `IAA-20260728-PREBRIEF-BATCH3-LANE-A`; recorded Foreman and `BC-ALP-B3-LA-001` acknowledgements; passed Stage 10 while preserving separate appointment and implementation blocks. | CS2-authorised Stage 10 activation |

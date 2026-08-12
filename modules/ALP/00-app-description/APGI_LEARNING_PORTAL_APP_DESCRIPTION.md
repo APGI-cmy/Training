@@ -4,11 +4,11 @@
 
 | Field | Value |
 |---|---|
-| Version | 0.1 |
-| Status | Draft |
+| Version | 0.2 |
+| Status | Active |
 | Owner | Johan Ras / APGI Product Owner |
 | Approval Date | Pending CS2 approval |
-| Last Updated | 2026-06-03 |
+| Last Updated | 2026-08-11 |
 | Authority | Johan Ras |
 | Canonical Location | docs/governance/APGI_LEARNING_PORTAL_APP_DESCRIPTION.md |
 | Policy Authority | governance/policy/APP_DESCRIPTION_REQUIREMENT_POLICY.md v2.0 |
@@ -45,6 +45,8 @@
 - AI-supported evaluation for uploaded written, practical, or video evidence, routed through the approved AI gateway.
 - Certificate generation/printing after successful completion.
 - Basic admin course, learner, enrolment, assessment, certificate, and reporting management.
+- A role-gated learner-management workspace with searchable learner records, visible enrolment/invitation state, validated administrative drafts and staged bulk-import review before any write is permitted.
+- Administrator-only full-page course preview that enlarges published learning content without generating learner progress, enrolment or access events.
 - E-commerce checkout for paid enrolment.
 - Governance evidence, test-first delivery, deployment runbooks, and audit logs required by canon.
 

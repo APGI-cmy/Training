@@ -1,50 +1,13 @@
+import Link from "next/link";
 import { getCourses } from "@/lib/courses";
-import { changeEnrolmentStatus } from "@/server/actions/enrolments/change-enrolment-status";
+import { EnrolmentManagementWorkspace } from "@/components/admin/EnrolmentManagementWorkspace";
+import { getAdminLearner } from "@/lib/services/admin/get-admin-learners";
 
-async function submitStatusChange(formData: FormData) {
-  "use server";
-  await changeEnrolmentStatus({
-    userId: String(formData.get("userId") ?? "").trim(),
-    courseId: String(formData.get("courseId") ?? "").trim(),
-    nextStatus: String(formData.get("nextStatus") ?? "revoked") as "enrolled" | "revoked",
-    reason: String(formData.get("reason") ?? "").trim()
-  });
-}
-
-export default function EnrolmentAdministrationPage() {
-  const courses = getCourses();
-
-  return (
-    <main className="page-shell">
-      <header className="page-header">
-        <p className="eyebrow">Administration</p>
-        <h1>Revoke or reinstate course access</h1>
-        <p>Use the learner&apos;s authenticated user ID. Every change requires a reason and creates an audit event.</p>
-      </header>
-      <form action={submitStatusChange} className="form-stack">
-        <label>
-          Learner user ID
-          <input name="userId" required />
-        </label>
-        <label>
-          Course
-          <select name="courseId" required>
-            {courses.map((course) => <option key={course.id} value={course.id}>{course.title}</option>)}
-          </select>
-        </label>
-        <label>
-          Access action
-          <select name="nextStatus" required>
-            <option value="revoked">Revoke access</option>
-            <option value="enrolled">Reinstate access</option>
-          </select>
-        </label>
-        <label>
-          Reason
-          <textarea name="reason" required />
-        </label>
-        <button type="submit">Record access change</button>
-      </form>
-    </main>
-  );
+export default async function EnrolmentAdministrationPage({ searchParams }: { searchParams: Promise<{ learnerId?: string }> }) {
+  const params = await searchParams;
+  const [courses, learner] = await Promise.all([
+    Promise.resolve(getCourses().map(({ id, title }) => ({ id, title }))),
+    getAdminLearner(params.learnerId)
+  ]);
+  return <main className="admin-page"><header className="admin-page-header"><div><p className="eyebrow">Administration</p><h1>Manage enrolments</h1><p>Access decisions start with a learner record—not a copied system identifier—and remain review-only until lifecycle testing is agreed.</p></div><Link className="secondary-button" href="/admin/learners">Browse learners</Link></header><EnrolmentManagementWorkspace learner={learner} courses={courses} /></main>;
 }

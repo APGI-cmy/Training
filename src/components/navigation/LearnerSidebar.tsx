@@ -21,6 +21,7 @@ export async function LearnerSidebar() {
         <Link href="/catalogue?view=my-learning">My learning</Link>
         <Link href="/profile">Profile</Link>
         {isAdmin ? <Link href="/admin">Administration</Link> : null}
+        {isAdmin ? <Link href="/admin/learners">Learners</Link> : null}
         {isAdmin ? <Link href="/admin/invitations">Invitations</Link> : null}
         {isAdmin ? <Link href="/admin/enrolments">Manage enrolments</Link> : null}
         {isAdmin ? <Link href="/admin/courses">Course preview</Link> : null}
