@@ -2,12 +2,12 @@
 
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
-**Last Updated**: 2026-08-11
-**Updated By**: Production release reconciliation and Learner Management Experience authority
-> **Classification**: ACTIVE — BATCH 3 STABILISATION RELEASED; W4.2 LEARNER MANAGEMENT EXPERIENCE AUTHORISED
+**Last Updated**: 2026-08-12
+**Updated By**: PR #104 merge reconciliation and product-owner authenticated smoke evidence
+> **Classification**: ACTIVE — BATCH 3 STABILISATION RELEASED; W4.2 LEARNER MANAGEMENT EXPERIENCE MERGED (DRAFT-ONLY)
 > **Repository**: APGI-cmy/Training  
 > **Current Workstream**: W4.2 Learner Management Experience (LMX): safe admin learner directory, staged invitation/import UX and administrator full-page course preview
-> **Next Required Action**: Build, test and independently review the LMX release candidate. No invitation, enrolment, email, payment or bulk-import write is authorised in this slice.
+> **Next Required Action**: Authorise and design the Supabase-backed invitation, profile and enrolment execution lifecycle, including a controlled test invitation. No production write is authorised by the merged W4.2 UI slice.
 
 ---
 
@@ -27,7 +27,21 @@
 | W4.5 Payment execution | Not authorised | Blocked |
 | Batch 3 Lane A | Released stabilisation scope; production Git deployment smoke-tested | PR #102 merged at `312e551`; 2026-08 production reconciliation |
 | Invitation delivery preflight | CS2 authorised as separate no-send lane | No provider, secret or send implementation authorised |
-| W4.2 Learner Management Experience | Local build candidate complete; scoped QA GREEN; preview evidence pending | 2026-08-11 LMX authority stack and build evidence |
+| W4.2 Learner Management Experience | Merged; safe draft/read-only workflow accepted | PR #104 merged a58579f; exact-head CI/Vercel PASS and authenticated no-write smoke |
+
+### PR #104 merge reconciliation — W4.2 Learner Management Experience
+
+PR #104 merged into `main` at `a58579f9f2cc4e00586fd3fff1c3040299d8a0a0` on 2026-08-12, after exact-head GitHub Actions PASS (run 31601095027), both Vercel previews PASS, all review threads resolved, and authenticated product-owner smoke evidence.
+
+Delivered and accepted:
+
+- admin-gated searchable learner directory and selected-learner, non-mutating enrolment review;
+- invitation draft review with future-expiry validation, still with no token, send, invitation, account or enrolment write;
+- browser-local CSV/XLSX intake, template download and visible import-review draft; required `email`, `company`, `country`; optional `national_identity_number`, `operation_subdivision`, `department_team`;
+- masked, browser-local national-identity input in the manual draft, excluded from URLs, logs, summaries and persistence;
+- full-page administrator unit preview plus a separate admin-gated presentation-only VPSHR viewport; neither records learner progress.
+
+Deferred deliberately: source-row upload, account matching, import execution, invitation creation/acceptance/sending, email provider integration, enrolment mutation and persistent identity-number storage. These are the next governed Supabase lifecycle wave, not defects in PR #104.
 
 ### Production release reconciliation — PR #102
 
@@ -221,14 +235,14 @@ Production Readiness: NOT CLAIMED
 
 The post-preview correction extends the existing read/draft-only W4.2 scope. It adds browser-local `.xlsx` alongside CSV staging, requires `email`, `company` and `country` for a review draft, recognises optional `national_identity_number`, `operation_subdivision` and `department_team` (with national identity numbers browser-local, masked in the manual draft and excluded from summaries, URLs, logs and persistence), and adds a separately admin-gated VPSHR presentation-only preview. It does **not** authorise import execution, account matching, invitation creation, enrolment mutation, email delivery, learner-progress writes, or production deployment.
 
-Exact-head GitHub and Vercel evidence is required before a new authenticated no-write smoke and any revised merge disposition.
+Exact-head GitHub/Vercel evidence and authenticated no-write smoke are complete; PR #104 was merged. The next action is a separately governed persistent-lifecycle wave.
 
 ## Change History
 
 | Version | Date | Change | Authority |
 |---|---|---|---|
 | 6.6 | 2026-08-05 | Rebased PR #102 onto `main` after PR #103; applied the non-breaking Next/PostCSS remediation; recorded a clean production dependency audit and release-candidate local gates. | CS2-authorised final gate continuation |
-| 6.7 | 2026-08-11 | Reconciled PR #102 merged/production-smoke posture and filed the W4.2 Learner Management Experience authority stack. | Product-owner authorised safe UI scope |
+| 6.8 | 2026-08-12 | PR #104 merged; reconciled the safe W4.2 learner-management workflow, exact-head checks and authenticated smoke evidence. | Product-owner GO / PR #104 a58579f |\n| 6.7 | 2026-08-11 | Reconciled PR #102 merged/production-smoke posture and filed the W4.2 Learner Management Experience authority stack. | Product-owner authorised safe UI scope |
 | 6.5 | 2026-07-28 | Built Batch 3 Lane A to code/build GREEN, recorded exact-head CI/Vercel evidence, and recorded final IAA NO-GO pending browser proof and dependency-audit disposition. | CS2-authorised build-to-Green |
 | 6.4 | 2026-07-28 | Completed Stage 11 and appointed `BC-ALP-B3-LA-001` under `APPT-ALP-B3-LA-001` for the frozen Batch 3 Lane A build-to-Green scope only. | CS2-authorised Stage 11 appointment |
 | 6.3 | 2026-07-28 | Activated independent IAA Pre-Brief `IAA-20260728-PREBRIEF-BATCH3-LANE-A`; recorded Foreman and `BC-ALP-B3-LA-001` acknowledgements; passed Stage 10 while preserving separate appointment and implementation blocks. | CS2-authorised Stage 10 activation |
