@@ -3,8 +3,8 @@ import { expectPath, read } from "./helpers/project-root";
 
 describe("ALP W4.2 persistent invitation lifecycle — RED", () => {
   it("QA-IL-001 exposes only an authorised server-side invitation lifecycle", () => {
-    expectPath("src/lib/services/invitations/create-invitation.ts", "QA-IL-001");
-    expect(read("src/lib/services/invitations/create-invitation.ts")).toContain("requireAdmin");
+    expectPath("src/server/actions/invitations/create-invitation.ts", "QA-IL-001");
+    expect(read("src/server/actions/invitations/create-invitation.ts")).toContain("requireAdmin");
   });
   it("QA-IL-004 routes a valid accepted invitation to mandatory onboarding", () => {
     expectPath("app/invitations/[token]/page.tsx", "QA-IL-004");
