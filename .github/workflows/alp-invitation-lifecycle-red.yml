@@ -1,0 +1,22 @@
+name: ALP Invitation Lifecycle Correct RED
+
+on:
+  pull_request:
+    paths:
+      - "tests/qa-to-red/alp/w4-2-invitation-lifecycle-red.spec.ts"
+      - "scripts/verify-invitation-lifecycle-red.mjs"
+      - "modules/ALP/**"
+      - "package.json"
+  workflow_dispatch:
+
+jobs:
+  correct-red:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:alp:invitation-lifecycle:red

@@ -2,12 +2,12 @@
 
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
-**Last Updated**: 2026-08-12 (Invitation Lifecycle prebuild)
+**Last Updated**: 2026-08-12 (Invitation Lifecycle RED accepted / builder appointed)
 **Updated By**: PR #104 merge reconciliation and product-owner authenticated smoke evidence
 > **Classification**: ACTIVE — BATCH 3 STABILISATION RELEASED; W4.2 LEARNER MANAGEMENT EXPERIENCE MERGED (DRAFT-ONLY)
 > **Repository**: APGI-cmy/Training  
 > **Current Workstream**: W4.2 Persistent Invitation Lifecycle: Supabase-backed invitation → onboarding → enrolment → learner access
-> **Next Required Action**: Execute and accept correct QA-to-Red for the frozen invitation lifecycle, then appoint a builder. No implementation, database migration, provider configuration or invitation send is authorised yet.
+> **Next Required Action**: Builder implements the frozen invitation lifecycle to GREEN, resolves recorded RLS/Auth security blockers, and files exact-head proof. No controlled learner or invitation send is authorised until preview readiness.
 
 ---
 
@@ -28,6 +28,10 @@
 | Batch 3 Lane A | Released stabilisation scope; production Git deployment smoke-tested | PR #102 merged at `312e551`; 2026-08 production reconciliation |
 | Invitation delivery preflight | CS2 authorised as separate no-send lane | No provider, secret or send implementation authorised |
 | W4.2 Learner Management Experience | Merged; safe draft/read-only workflow accepted | PR #104 merged a58579f; exact-head CI/Vercel PASS and authenticated no-write smoke |
+
+### W4.2 Persistent Invitation Lifecycle — correct RED accepted / builder appointed 2026-08-12
+
+Dedicated workflow run `31611852576` reproduced the expected RED: QA-IL-001..010 fail solely for the declared missing persistent lifecycle capabilities, while QA-IL-011 verifies the AMC manifest. Schema-to-hook, table-pathway and RLS RED evidence is filed at `.agent-admin/evidence/*/w4-2-20260812.md`. Security Advisor findings are retained as mandatory build remediation: invitation-table policies, exposed SECURITY DEFINER execution, leaked-password protection and deprecated GoTrue group configuration. Builder `BC-ALP-W4.2-IL-001` is appointed under `APPT-ALP-W4.2-IL-001` for the frozen scope only. No test learner is nominated yet.
 
 ### W4.2 Persistent Invitation Lifecycle — prebuild filed 2026-08-12
 
