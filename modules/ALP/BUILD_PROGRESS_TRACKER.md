@@ -2,12 +2,12 @@
 
 **Module**: ALP (APGI Learning Portal)  
 **Module Slug**: ALP  
-**Last Updated**: 2026-08-12
+**Last Updated**: 2026-08-12 (Invitation Lifecycle prebuild)
 **Updated By**: PR #104 merge reconciliation and product-owner authenticated smoke evidence
 > **Classification**: ACTIVE — BATCH 3 STABILISATION RELEASED; W4.2 LEARNER MANAGEMENT EXPERIENCE MERGED (DRAFT-ONLY)
 > **Repository**: APGI-cmy/Training  
-> **Current Workstream**: W4.2 Learner Management Experience (LMX): safe admin learner directory, staged invitation/import UX and administrator full-page course preview
-> **Next Required Action**: Authorise and design the Supabase-backed invitation, profile and enrolment execution lifecycle, including a controlled test invitation. No production write is authorised by the merged W4.2 UI slice.
+> **Current Workstream**: W4.2 Persistent Invitation Lifecycle: Supabase-backed invitation → onboarding → enrolment → learner access
+> **Next Required Action**: Execute and accept correct QA-to-Red for the frozen invitation lifecycle, then appoint a builder. No implementation, database migration, provider configuration or invitation send is authorised yet.
 
 ---
 
@@ -28,6 +28,10 @@
 | Batch 3 Lane A | Released stabilisation scope; production Git deployment smoke-tested | PR #102 merged at `312e551`; 2026-08 production reconciliation |
 | Invitation delivery preflight | CS2 authorised as separate no-send lane | No provider, secret or send implementation authorised |
 | W4.2 Learner Management Experience | Merged; safe draft/read-only workflow accepted | PR #104 merged a58579f; exact-head CI/Vercel PASS and authenticated no-write smoke |
+
+### W4.2 Persistent Invitation Lifecycle — prebuild filed 2026-08-12
+
+A complete prebuild set has been filed on `agent/w4-2-invitation-lifecycle-prebuild`: App Description, UX workflow, FRS, TRS, architecture, requirement registry, QA-to-Red plan, implementation plan and AMC-consumable app-wide QA coverage manifest. Executable lifecycle QA-to-Red exists at `tests/qa-to-red/alp/w4-2-invitation-lifecycle-red.spec.ts` and must now demonstrate correct RED against the merged baseline. AI is explicitly deferred pending a separate, purpose-led learner-support/career-guidance decision.
 
 ### PR #104 merge reconciliation — W4.2 Learner Management Experience
 
