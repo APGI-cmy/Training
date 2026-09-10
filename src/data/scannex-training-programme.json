@@ -34,8 +34,7 @@
       "slides": [],
       "quiz": [],
       "survey": [],
-      "summary": [],
-      "learningInterventionPath": "/courses/Scannex Training Programme/LU 1 - Introduction & The Case for Scannex/LU 1 (Published)/index.html"
+      "summary": []
     },
     {
       "id": "lu2",
@@ -58,7 +57,8 @@
       "slides": [],
       "quiz": [],
       "survey": [],
-      "summary": []
+      "summary": [],
+      "learningInterventionPath": "/courses/Scannex Training Programme/LU 2 - The X-ray/LU 2 (Published)/index.html"
     },
     {
       "id": "lu3",
