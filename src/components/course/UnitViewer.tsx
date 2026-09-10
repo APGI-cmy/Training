@@ -16,6 +16,8 @@ export function UnitViewer({
   const activeUnit = units.find((candidate) => candidate.id === unit.id);
   const embeddedSrc = embeddedContentHref ? encodeAssetPath(embeddedContentHref) : undefined;
   const originalHref = encodeAssetPath(originalContentHref);
+  const trainingHref = unit.trainingPath ? encodeAssetPath(unit.trainingPath) : undefined;
+  const isScannexUnit = course.slug === "scannex-training-programme";
   const isCompleted = activeUnit?.isCompleted ?? false;
 
   const completeUnit = recordProgressEvent.bind(null, {
@@ -37,7 +39,7 @@ export function UnitViewer({
           <div className="unit-meta">
             <span>{unit.duration}</span>
             <span>{isCompleted ? "Completed" : "Opened"}</span>
-            <a href={originalHref}>Open original unit</a>
+            <a href={originalHref}>{isScannexUnit ? "Open Scannex e-book" : "Open original unit"}</a>
           </div>
         </div>
       </section>
@@ -46,24 +48,54 @@ export function UnitViewer({
         <div className="content-inner objectives-layout">
           <CourseSidebar courseSlug={course.slug} units={units} activeUnitSlug={unit.slug} />
           <div className="media-stack">
+            {isScannexUnit ? (
+              <section aria-labelledby="scannex-resources-heading">
+                <p className="eyebrow">Unit resources</p>
+                <h2 id="scannex-resources-heading">Read, then practise</h2>
+                <p>
+                  Use the e-book for reference. The activities and quizzes apply the same material in
+                  an interactive learning experience.
+                </p>
+                <div className="button-row">
+                  <a className="secondary-button" href={originalHref}>
+                    Open Scannex e-book
+                  </a>
+                  {trainingHref ? (
+                    <a className="primary-button" href={trainingHref}>
+                      Open activities and quizzes
+                    </a>
+                  ) : (
+                    <span>Activities and quizzes will appear here when this unit is published.</span>
+                  )}
+                </div>
+              </section>
+            ) : null}
             <figure className="media-item">
               <iframe
-                title={`${unit.title} published unit`}
+                title={`${unit.title} ${isScannexUnit ? "e-book" : "published unit"}`}
                 src={embeddedSrc}
                 loading="lazy"
                 allowFullScreen
               />
               <figcaption>
-                Embedded published unit. Use the fallback link below if the embedded view is blocked.
+                {isScannexUnit
+                  ? "Embedded Scannex e-book. Use the link above if the embedded view is blocked."
+                  : "Embedded published unit. Use the fallback link below if the embedded view is blocked."}
               </figcaption>
             </figure>
             <div className="button-row">
               <a className="primary-button" href={originalHref}>
-                Open expanded unit
+                {isScannexUnit ? "Open e-book in a full window" : "Open expanded unit"}
               </a>
-              <Link className="secondary-button" href={`/courses/${course.slug}/${unit.slug}`}>
-                Open legacy responsive unit
-              </Link>
+              {isScannexUnit && trainingHref ? (
+                <a className="secondary-button" href={trainingHref}>
+                  Open activities and quizzes
+                </a>
+              ) : (
+                <Link className="secondary-button" href={`/courses/${course.slug}/${unit.slug}`}>
+                  Open legacy responsive unit
+                </Link>
+              )}
             </div>
             <form action={completeUnit}>
               <button className="primary-button" type="submit" disabled={isCompleted}>
