@@ -16,6 +16,17 @@ export default async function PresentationOnlyAdminPreview({ params }: PageProps
 
   const { unit, embeddedContentHref } = content;
   const embeddedSrc = encodeAssetPath(embeddedContentHref ?? unit.publishedPath);
+  const eBookHref = encodeAssetPath(unit.publishedPath);
+  const hasSeparateEBook = embeddedContentHref !== unit.publishedPath;
 
-  return <PresentationOnlyMode><iframe className="admin-presentation-only-frame" title={`${unit.title} presentation-only administrator preview`} src={embeddedSrc} allowFullScreen /></PresentationOnlyMode>;
+  return (
+    <PresentationOnlyMode eBookHref={hasSeparateEBook ? eBookHref : undefined}>
+      <iframe
+        className="admin-presentation-only-frame"
+        title={`${unit.title} presentation-only administrator preview`}
+        src={embeddedSrc}
+        allowFullScreen
+      />
+    </PresentationOnlyMode>
+  );
 }

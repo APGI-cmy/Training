@@ -1136,3 +1136,27 @@ body:has(.admin-presentation-only) .app-header {
   border: 0;
   background: #000;
 }
+
+
+.presentation-resource-link {
+  position: fixed;
+  z-index: 10;
+  top: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 8px;
+  background: rgba(15, 118, 110, 0.96);
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.presentation-resource-link:hover,
+.presentation-resource-link:focus-visible {
+  background: #0b5d56;
+}

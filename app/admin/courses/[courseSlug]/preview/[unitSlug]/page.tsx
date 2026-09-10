@@ -26,6 +26,8 @@ export default async function AdminCourseUnitPreviewPage({ params }: PageProps) 
   const { course, unit, previous, next, embeddedContentHref } = content;
   const previewBase = `/admin/courses/${course.slug}/preview`;
   const embeddedSrc = encodeAssetPath(embeddedContentHref ?? unit.publishedPath);
+  const eBookHref = encodeAssetPath(unit.publishedPath);
+  const hasSeparateEBook = embeddedContentHref !== unit.publishedPath;
 
   return (
     <main className="page-shell" data-mode="preview-unit">
@@ -42,7 +44,10 @@ export default async function AdminCourseUnitPreviewPage({ params }: PageProps) 
         <div className="content-inner media-stack">
           <div className="preview-toolbar">
             <p>Need more room for the published content?</p>
-            <Link className="primary-button" href={`${previewBase}/${unit.slug}/full`}>Open full-page preview</Link>
+            <div className="header-actions">
+              {hasSeparateEBook && <a className="secondary-button" href={eBookHref} target="_blank" rel="noreferrer">Open e-book</a>}
+              <Link className="primary-button" href={`${previewBase}/${unit.slug}/full`}>Open full-page preview</Link>
+            </div>
           </div>
           <figure className="media-item">
             <iframe title={`${unit.title} administrator preview`} src={embeddedSrc} loading="lazy" allowFullScreen />
