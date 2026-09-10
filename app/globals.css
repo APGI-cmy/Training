@@ -175,3 +175,28 @@ p {
     height: calc(100vh - 124px);
   }
 }
+
+.url-module-status {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+}
+
+.url-module-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.open-link-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+@media (max-width: 760px) {
+  .url-module-actions {
+    justify-content: flex-start;
+  }
+}

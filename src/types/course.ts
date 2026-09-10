@@ -83,6 +83,7 @@ export interface LearningUnit {
   duration: string;
   assetBase: string;
   publishedPath: string;
+  learningInterventionPath?: string;
   objectives: string[];
   media: CourseMedia[];
   slides: ContentSlide[];
