@@ -84,6 +84,7 @@ export interface LearningUnit {
   assetBase: string;
   publishedPath: string;
   trainingPath?: string;
+  scormPath?: string;
   objectives: string[];
   media: CourseMedia[];
   slides: ContentSlide[];

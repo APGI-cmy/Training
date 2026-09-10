@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest identifier="ZxEJTFF7dIKcX" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:imsss="http://www.imsglobal.org/xsd/imsss" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3" xmlns:adlseq="http://www.adlnet.org/xsd/adlseq_v1p3" xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3" xmlns:lom="http://ltsc.ieee.org/xsd/LOM" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://www.imsglobal.org/xsd/imsss imsss_v1p0.xsd http://www.adlnet.org/xsd/adlcp_v1p3 adlcp_v1p3.xsd http://www.adlnet.org/xsd/adlseq_v1p3 adlseq_v1p3.xsd http://www.adlnet.org/xsd/adlnav_v1p3 adlnav_v1p3.xsd http://ltsc.ieee.org/xsd/LOM lom.xsd">
+<metadata>
+<schema>ADL SCORM</schema>
+<schemaversion>2004 4th Edition</schemaversion>
+<lom:lom>
+<lom:general>
+<lom:title>
+<lom:string>Scannex Training Programme</lom:string>
+</lom:title>
+<lom:description>
+<lom:string>Interactive learning intervention and knowledge checks for the Scannex Training Programme, Learning Unit 2: The X-ray</lom:string>
+</lom:description>
+</lom:general>
+<lom:educational>
+<lom:typicalLearningTime>
+<lom:duration>PT1H0M0S</lom:duration>
+</lom:typicalLearningTime>
+</lom:educational>
+</lom:lom>
+</metadata>
+<organizations default="scannex_training_programme_organization">
+<organization identifier="scannex_training_programme_organization">
+<title>Scannex Training Programme</title>
+<item identifier="B9D4CB69-4E92-4DE3-8FA0-064F09D94637" identifierref="resource">
+<title>LU 1 - The - x-ray</title>
+<imsss:sequencing>
+<imsss:deliveryControls completionSetByContent="true" objectiveSetByContent="true"/>
+</imsss:sequencing>
+</item>
+<imsss:sequencing>
+<imsss:controlMode flow="true"/>
+</imsss:sequencing>
+</organization>
+</organizations>
+<resources>
+<resource identifier="resource" type="webcontent" adlcp:scormType="sco" href="res/index.html">
+<file href="res/index.html"/>
+<file href="res/lms.js"/>
+<file href="res/data/intr1.js"/>
+<file href="res/data/intr1/fonts/fnt0.woff"/>
+<file href="res/data/intr1/fonts/fnt1.woff"/>
+<file href="res/data/intr1/fonts/fnt2.woff"/>
+<file href="res/data/intr1/fonts/fnt3.woff"/>
+<file href="res/data/intr1/fonts/fnt4.woff"/>
+<file href="res/data/intr1/fonts/fnt5.woff"/>
+<file href="res/data/intr1/fonts/fnt6.woff"/>
+<file href="res/data/intr1/images/img-000338da4c3845c97bc75ff0eaee26e102892d5c.jpg"/>
+<file href="res/data/intr1/images/img-2b8a36a83978a33b19cdc1cea5f0f79af818f1e0.jpg"/>
+<file href="res/data/intr1/images/img-34f8554e01d117528cbce5d71e17f9d676957519.png"/>
+<file href="res/data/intr1/images/img-4eda6bdd2aafa8414a45369b75a55c9ca701580a.jpg"/>
+<file href="res/data/intr1/images/img-cde10af5ea2e8ef1f19362d98e104b9ca4f7db0b.png"/>
+<file href="res/data/intr1/images/interaction_bg_0.png"/>
+<file href="res/data/thmb1.jpg"/>
+<file href="res/data/quiz1.js"/>
+<file href="res/data/quiz1/fonts/fnt0.woff"/>
+<file href="res/data/quiz1/fonts/fnt1.woff"/>
+<file href="res/data/quiz1/fonts/fnt2.woff"/>
+<file href="res/data/quiz1/fonts/fnt3.woff"/>
+<file href="res/data/quiz1/fonts/fnt4.woff"/>
+<file href="res/data/quiz1/fonts/fnt5.woff"/>
+<file href="res/data/quiz1/fonts/fnt6.woff"/>
+<file href="res/data/quiz1/fonts/fnt7.woff"/>
+<file href="res/data/quiz1/images/img-55ef0115ed8ff21fda0ff9f9e87d8688c0c187cb.png"/>
+<file href="res/data/quiz1/images/quiz_bg_0.png"/>
+<file href="res/data/thmb2.jpg"/>
+<file href="res/data/intr2.js"/>
+<file href="res/data/intr2/fonts/fnt0.woff"/>
+<file href="res/data/intr2/fonts/fnt1.woff"/>
+<file href="res/data/intr2/fonts/fnt2.woff"/>
+<file href="res/data/intr2/fonts/fnt3.woff"/>
+<file href="res/data/intr2/fonts/fnt4.woff"/>
+<file href="res/data/intr2/fonts/fnt5.woff"/>
+<file href="res/data/intr2/fonts/fnt6.woff"/>
+<file href="res/data/intr2/fonts/fnt7.woff"/>
+<file href="res/data/intr2/images/img-1483d9ef4cf9a2bd86b7476eff001d2825013595.jpg"/>
+<file href="res/data/intr2/images/img-24eca862a17579fa42ed5d4678d97b184cced681.png"/>
+<file href="res/data/intr2/images/img-9d0f9766a80488a22e18d1c258c0ad35280f35ec.jpg"/>
+<file href="res/data/intr2/images/img-aafd25d44cfb6c770971571687e6cbc6657c1e78.jpg"/>
+<file href="res/data/intr2/images/img-d4b5c628e01684417eb08038af3845651d129ff3.jpg"/>
+<file href="res/data/intr2/images/interaction_bg_0.png"/>
+<file href="res/data/thmb3.jpg"/>
+<file href="res/data/quiz2.js"/>
+<file href="res/data/quiz2/fonts/fnt0.woff"/>
+<file href="res/data/quiz2/fonts/fnt1.woff"/>
+<file href="res/data/quiz2/fonts/fnt2.woff"/>
+<file href="res/data/quiz2/fonts/fnt3.woff"/>
+<file href="res/data/quiz2/fonts/fnt4.woff"/>
+<file href="res/data/quiz2/fonts/fnt5.woff"/>
+<file href="res/data/quiz2/fonts/fnt6.woff"/>
+<file href="res/data/quiz2/fonts/fnt7.woff"/>
+<file href="res/data/quiz2/images/img-55ef0115ed8ff21fda0ff9f9e87d8688c0c187cb.png"/>
+<file href="res/data/quiz2/images/quiz_bg_0.png"/>
+<file href="res/data/thmb4.jpg"/>
+<file href="res/data/intr3.js"/>
+<file href="res/data/intr3/fonts/fnt0.woff"/>
+<file href="res/data/intr3/fonts/fnt1.woff"/>
+<file href="res/data/intr3/fonts/fnt2.woff"/>
+<file href="res/data/intr3/fonts/fnt3.woff"/>
+<file href="res/data/intr3/fonts/fnt4.woff"/>
+<file href="res/data/intr3/fonts/fnt5.woff"/>
+<file href="res/data/intr3/fonts/fnt6.woff"/>
+<file href="res/data/intr3/images/img-0bce1f2f4b0e5cec102d6a9c94ede731200a2be3.png"/>
+<file href="res/data/intr3/images/interaction_bg_0.png"/>
+<file href="res/data/thmb5.jpg"/>
+<file href="res/data/quiz3.js"/>
+<file href="res/data/quiz3/fonts/fnt0.woff"/>
+<file href="res/data/quiz3/fonts/fnt1.woff"/>
+<file href="res/data/quiz3/fonts/fnt2.woff"/>
+<file href="res/data/quiz3/fonts/fnt3.woff"/>
+<file href="res/data/quiz3/fonts/fnt4.woff"/>
+<file href="res/data/quiz3/fonts/fnt5.woff"/>
+<file href="res/data/quiz3/fonts/fnt6.woff"/>
+<file href="res/data/quiz3/fonts/fnt7.woff"/>
+<file href="res/data/quiz3/images/img-55ef0115ed8ff21fda0ff9f9e87d8688c0c187cb.png"/>
+<file href="res/data/quiz3/images/quiz_bg_0.png"/>
+<file href="res/data/thmb6.jpg"/>
+<file href="res/data/intr4.js"/>
+<file href="res/data/intr4/fonts/fnt0.woff"/>
+<file href="res/data/intr4/fonts/fnt1.woff"/>
+<file href="res/data/intr4/fonts/fnt2.woff"/>
+<file href="res/data/intr4/fonts/fnt3.woff"/>
+<file href="res/data/intr4/fonts/fnt4.woff"/>
+<file href="res/data/intr4/fonts/fnt5.woff"/>
+<file href="res/data/intr4/fonts/fnt6.woff"/>
+<file href="res/data/intr4/fonts/fnt7.woff"/>
+<file href="res/data/intr4/images/img-2fb04bebcd7ac8c4dd3f7b842588a752590698b8.jpg"/>
+<file href="res/data/intr4/images/img-3e67ee61c00286ff14f0ecf2342de399198bedfe.jpg"/>
+<file href="res/data/intr4/images/img-442c840233e7c68c15936b528f6a1531d1ebfcf8.jpg"/>
+<file href="res/data/intr4/images/img-bcb4e8c0271583b4040adb062700e74724021ec7.jpg"/>
+<file href="res/data/intr4/images/img-f8acdba1bad64ae55108be125b0c14539094da6a.jpg"/>
+<file href="res/data/intr4/images/interaction_bg_0.png"/>
+<file href="res/data/thmb7.jpg"/>
+<file href="res/data/quiz4.js"/>
+<file href="res/data/quiz4/fonts/fnt0.woff"/>
+<file href="res/data/quiz4/fonts/fnt1.woff"/>
+<file href="res/data/quiz4/fonts/fnt2.woff"/>
+<file href="res/data/quiz4/fonts/fnt3.woff"/>
+<file href="res/data/quiz4/fonts/fnt4.woff"/>
+<file href="res/data/quiz4/fonts/fnt5.woff"/>
+<file href="res/data/quiz4/fonts/fnt6.woff"/>
+<file href="res/data/quiz4/fonts/fnt7.woff"/>
+<file href="res/data/quiz4/images/img-55ef0115ed8ff21fda0ff9f9e87d8688c0c187cb.png"/>
+<file href="res/data/quiz4/images/quiz_bg_0.png"/>
+<file href="res/data/thmb8.jpg"/>
+<file href="res/data/intr5.js"/>
+<file href="res/data/intr5/fonts/fnt0.woff"/>
+<file href="res/data/intr5/fonts/fnt1.woff"/>
+<file href="res/data/intr5/fonts/fnt2.woff"/>
+<file href="res/data/intr5/fonts/fnt3.woff"/>
+<file href="res/data/intr5/fonts/fnt4.woff"/>
+<file href="res/data/intr5/fonts/fnt5.woff"/>
+<file href="res/data/intr5/fonts/fnt6.woff"/>
+<file href="res/data/intr5/images/img-cc4d06495acfe2866a20fe38286048e760291488.png"/>
+<file href="res/data/intr5/images/interaction_bg_0.png"/>
+<file href="res/data/thmb9.jpg"/>
+<file href="res/data/quiz5.js"/>
+<file href="res/data/quiz5/fonts/fnt0.woff"/>
+<file href="res/data/quiz5/fonts/fnt1.woff"/>
+<file href="res/data/quiz5/fonts/fnt2.woff"/>
+<file href="res/data/quiz5/fonts/fnt3.woff"/>
+<file href="res/data/quiz5/fonts/fnt4.woff"/>
+<file href="res/data/quiz5/fonts/fnt5.woff"/>
+<file href="res/data/quiz5/fonts/fnt6.woff"/>
+<file href="res/data/quiz5/fonts/fnt7.woff"/>
+<file href="res/data/quiz5/images/img-137f1c1c3edd49c1ba5c6717b58f24d24029539a.png"/>
+<file href="res/data/quiz5/images/img-18750adf3f083e9fbe102a63e73e94666092002b.png"/>
+<file href="res/data/quiz5/images/img-2a218f3c728b78ab7f4d169f7d592c3281855d59.png"/>
+<file href="res/data/quiz5/images/img-3b74cde0d0ba554667bbbe5d77d483ce06adfb1a.png"/>
+<file href="res/data/quiz5/images/img-55ef0115ed8ff21fda0ff9f9e87d8688c0c187cb.png"/>
+<file href="res/data/quiz5/images/img-6efae38cd8033549d6f690adefd1dfe071d3a4b2.png"/>
+<file href="res/data/quiz5/images/img-8c3ddedf8dd291060769cad84f6d8f00590c43ba.png"/>
+<file href="res/data/quiz5/images/img-b310e9c481d02e6b362b23115c2df0f3967b30f7.png"/>
+<file href="res/data/quiz5/images/img-c058e01dd93052bf4d0265c1f892e43b68d15a1a.png"/>
+<file href="res/data/quiz5/images/img-fa3125e12187be3ef3c404636c2a58ee8ac8488d.png"/>
+<file href="res/data/quiz5/images/quiz_bg_0.png"/>
+<file href="res/data/thmb10.jpg"/>
+<file href="res/data/intr6.js"/>
+<file href="res/data/intr6/fonts/fnt0.woff"/>
+<file href="res/data/intr6/fonts/fnt1.woff"/>
+<file href="res/data/intr6/fonts/fnt2.woff"/>
+<file href="res/data/intr6/fonts/fnt3.woff"/>
+<file href="res/data/intr6/fonts/fnt4.woff"/>
+<file href="res/data/intr6/fonts/fnt5.woff"/>
+<file href="res/data/intr6/fonts/fnt6.woff"/>
+<file href="res/data/intr6/images/img-24e364835ba022eb13d9fdccd6c4e593422a01d1.jpg"/>
+<file href="res/data/intr6/images/img-28efbd00c33496b2ec5254a547fc7bb9bd3f8862.jpg"/>
+<file href="res/data/intr6/images/img-3545ede5c03cda9b5556dca68382b13fca04cb3c.jpg"/>
+<file href="res/data/intr6/images/img-89fd889c6a08b288b504c35a79109433c4a3696f.jpg"/>
+<file href="res/data/intr6/images/interaction_bg_1.png"/>
+<file href="res/data/thmb11.jpg"/>
+<file href="res/data/quiz6.js"/>
+<file href="res/data/quiz6/fonts/fnt0.woff"/>
+<file href="res/data/quiz6/fonts/fnt1.woff"/>
+<file href="res/data/quiz6/fonts/fnt2.woff"/>
+<file href="res/data/quiz6/fonts/fnt3.woff"/>
+<file href="res/data/quiz6/fonts/fnt4.woff"/>
+<file href="res/data/quiz6/fonts/fnt5.woff"/>
+<file href="res/data/quiz6/fonts/fnt6.woff"/>
+<file href="res/data/quiz6/fonts/fnt7.woff"/>
+<file href="res/data/quiz6/images/img-55ef0115ed8ff21fda0ff9f9e87d8688c0c187cb.png"/>
+<file href="res/data/quiz6/images/quiz_bg_0.png"/>
+<file href="res/data/thmb12.jpg"/>
+<file href="res/data/intr7.js"/>
+<file href="res/data/intr7/fonts/fnt0.woff"/>
+<file href="res/data/intr7/fonts/fnt1.woff"/>
+<file href="res/data/intr7/fonts/fnt2.woff"/>
+<file href="res/data/intr7/fonts/fnt3.woff"/>
+<file href="res/data/intr7/fonts/fnt4.woff"/>
+<file href="res/data/intr7/fonts/fnt5.woff"/>
+<file href="res/data/intr7/fonts/fnt6.woff"/>
+<file href="res/data/intr7/images/img-0934058646d862f576fd0b5d677eaf20ed3e6569.jpg"/>
+<file href="res/data/intr7/images/img-10a38eae39681d40f3964586315c30c6505540bc.jpg"/>
+<file href="res/data/intr7/images/img-184802cc0ee1a53f25c6663d833830fc05a715a3.jpg"/>
+<file href="res/data/intr7/images/img-5e57b0bc95328e908794b0273561b20b82d7abb0.jpg"/>
+<file href="res/data/intr7/images/interaction_bg_0.png"/>
+<file href="res/data/thmb13.jpg"/>
+<file href="res/data/quiz7.js"/>
+<file href="res/data/quiz7/fonts/fnt0.woff"/>
+<file href="res/data/quiz7/fonts/fnt1.woff"/>
+<file href="res/data/quiz7/fonts/fnt2.woff"/>
+<file href="res/data/quiz7/fonts/fnt3.woff"/>
+<file href="res/data/quiz7/fonts/fnt4.woff"/>
+<file href="res/data/quiz7/fonts/fnt5.woff"/>
+<file href="res/data/quiz7/fonts/fnt6.woff"/>
+<file href="res/data/quiz7/fonts/fnt7.woff"/>
+<file href="res/data/quiz7/images/img-55ef0115ed8ff21fda0ff9f9e87d8688c0c187cb.png"/>
+<file href="res/data/quiz7/images/quiz_bg_0.png"/>
+<file href="res/data/thmb14.jpg"/>
+<file href="res/data/intr8.js"/>
+<file href="res/data/intr8/fonts/fnt0.woff"/>
+<file href="res/data/intr8/fonts/fnt1.woff"/>
+<file href="res/data/intr8/fonts/fnt2.woff"/>
+<file href="res/data/intr8/fonts/fnt3.woff"/>
+<file href="res/data/intr8/fonts/fnt4.woff"/>
+<file href="res/data/intr8/fonts/fnt5.woff"/>
+<file href="res/data/intr8/fonts/fnt6.woff"/>
+<file href="res/data/intr8/images/img-2a0f30fd0a3d81febaf1ee4ba6e0f3d93abd814a.jpg"/>
+<file href="res/data/intr8/images/img-4b886034730665995000b23d38736f1ddd8371f5.jpg"/>
+<file href="res/data/intr8/images/img-a9ef5718b7cb8cdc274ac64aa6c9d70235465ba6.jpg"/>
+<file href="res/data/intr8/images/img-c906b4f4eabe858b038437167609f2b45cace907.jpg"/>
+<file href="res/data/intr8/images/img-cc442307b78232d655d4b82bcbbdb9a92840a778.jpg"/>
+<file href="res/data/intr8/images/interaction_bg_0.png"/>
+<file href="res/data/thmb15.jpg"/>
+<file href="res/data/quiz8.js"/>
+<file href="res/data/quiz8/fonts/fnt0.woff"/>
+<file href="res/data/quiz8/fonts/fnt1.woff"/>
+<file href="res/data/quiz8/fonts/fnt2.woff"/>
+<file href="res/data/quiz8/fonts/fnt3.woff"/>
+<file href="res/data/quiz8/fonts/fnt4.woff"/>
+<file href="res/data/quiz8/fonts/fnt5.woff"/>
+<file href="res/data/quiz8/fonts/fnt6.woff"/>
+<file href="res/data/quiz8/fonts/fnt7.woff"/>
+<file href="res/data/quiz8/images/img-55ef0115ed8ff21fda0ff9f9e87d8688c0c187cb.png"/>
+<file href="res/data/quiz8/images/quiz_bg_0.png"/>
+<file href="res/data/thmb16.jpg"/>
+<file href="res/data/quizplayer.js"/>
+<file href="res/data/intplayer1.js"/>
+<file href="res/data/intplayer2.js"/>
+<file href="res/data/intplayer3.js"/>
+<file href="res/data/intplayer4.js"/>
+<file href="res/data/intplayer5.js"/>
+<file href="res/data/intplayer6.js"/>
+<file href="res/data/intplayer7.js"/>
+<file href="res/index.html"/>
+<file href="res/data/player.js"/>
+<file href="res/data/eraser.cur"/>
+<file href="res/data/highlighter.cur"/>
+<file href="res/data/marker.cur"/>
+<file href="res/data/lock.cur"/>
+<file href="res/data/browsersupport.js"/>
+<file href="res/data/apple-touch-icon.png"/>
+<file href="res/data/favicon.ico"/>
+<file href="res/data/fnt0.woff"/>
+<file href="res/data/fnt4.woff"/>
+<file href="res/data/fnt6.woff"/>
+<file href="res/data/fnt7.woff"/>
+<file href="res/data/html5-unsupported.html"/>
+<file href="res/data/img0.png"/>
+<file href="res/data/img1.png"/>
+<file href="res/data/img10.png"/>
+<file href="res/data/img11.png"/>
+<file href="res/data/img12.png"/>
+<file href="res/data/img13.png"/>
+<file href="res/data/img14.png"/>
+<file href="res/data/img15.png"/>
+<file href="res/data/img16.png"/>
+<file href="res/data/img17.png"/>
+<file href="res/data/img18.png"/>
+<file href="res/data/img19.png"/>
+<file href="res/data/img2.png"/>
+<file href="res/data/img20.png"/>
+<file href="res/data/img21.png"/>
+<file href="res/data/img22.png"/>
+<file href="res/data/img23.png"/>
+<file href="res/data/img24.png"/>
+<file href="res/data/img25.png"/>
+<file href="res/data/img26.png"/>
+<file href="res/data/img27.png"/>
+<file href="res/data/img28.png"/>
+<file href="res/data/img29.png"/>
+<file href="res/data/img3.png"/>
+<file href="res/data/img30.png"/>
+<file href="res/data/img31.png"/>
+<file href="res/data/img32.png"/>
+<file href="res/data/img33.png"/>
+<file href="res/data/img34.png"/>
+<file href="res/data/img35.png"/>
+<file href="res/data/img36.png"/>
+<file href="res/data/img37.png"/>
+<file href="res/data/img38.png"/>
+<file href="res/data/img39.png"/>
+<file href="res/data/img4.png"/>
+<file href="res/data/img5.png"/>
+<file href="res/data/img6.png"/>
+<file href="res/data/img7.png"/>
+<file href="res/data/img8.png"/>
+<file href="res/data/img9.png"/>
+<file href="res/data/goodbye.html"/>
+</resource>
+</resources>
+</manifest>

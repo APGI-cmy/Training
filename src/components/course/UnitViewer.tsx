@@ -17,6 +17,7 @@ export function UnitViewer({
   const embeddedSrc = embeddedContentHref ? encodeAssetPath(embeddedContentHref) : undefined;
   const originalHref = encodeAssetPath(originalContentHref);
   const trainingHref = unit.trainingPath ? encodeAssetPath(unit.trainingPath) : undefined;
+  const scormHref = unit.scormPath ? `/learn/${course.slug}/units/${unit.slug}/scorm` : undefined;
   const isScannexUnit = course.slug === "scannex-training-programme";
   const isCompleted = activeUnit?.isCompleted ?? false;
 
@@ -60,7 +61,11 @@ export function UnitViewer({
                   <a className="secondary-button" href={originalHref}>
                     Open Scannex e-book
                   </a>
-                  {trainingHref ? (
+                  {scormHref ? (
+                    <Link className="primary-button" href={scormHref}>
+                      Open activities and quizzes
+                    </Link>
+                  ) : trainingHref ? (
                     <a className="primary-button" href={trainingHref}>
                       Open activities and quizzes
                     </a>
@@ -87,7 +92,11 @@ export function UnitViewer({
               <a className="primary-button" href={originalHref}>
                 {isScannexUnit ? "Open e-book in a full window" : "Open expanded unit"}
               </a>
-              {isScannexUnit && trainingHref ? (
+              {isScannexUnit && scormHref ? (
+                <Link className="secondary-button" href={scormHref}>
+                  Open activities and quizzes
+                </Link>
+              ) : isScannexUnit && trainingHref ? (
                 <a className="secondary-button" href={trainingHref}>
                   Open activities and quizzes
                 </a>

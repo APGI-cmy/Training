@@ -10,12 +10,16 @@ function scannexUnit(
   folder: string,
   title: string,
   subtitle: string,
-  trainingFolder?: string
+  trainingFolder?: string,
+  scormFolder?: string
 ): LearningUnit {
   const unitRoot = `${scannexSourceRoot}/${encodeURIComponent(folder)}`;
   const publishedPath = `${unitRoot}/index.html`;
   const trainingPath = trainingFolder
     ? `${unitRoot}/${encodeURIComponent(trainingFolder)}/index.html`
+    : undefined;
+  const scormPath = scormFolder
+    ? `${unitRoot}/${encodeURIComponent(scormFolder)}/res/index.html`
     : undefined;
 
   return {
@@ -28,6 +32,7 @@ function scannexUnit(
     assetBase: unitRoot,
     publishedPath,
     trainingPath,
+    scormPath,
     objectives: [],
     media: [{ kind: "embed", title, src: trainingPath ?? publishedPath }],
     slides: [],
@@ -52,7 +57,7 @@ const scannexTrainingProgramme: Course = {
   ],
   units: [
     scannexUnit(1, "LU 1 - Introduction & The Case for Scannex", "Introduction and the Case for Scannex", "Programme orientation and operational purpose"),
-    scannexUnit(2, "LU 2 - The X-ray", "The X-ray", "X-ray principles and image formation", "LU 2 (Published)"),
+    scannexUnit(2, "LU 2 - The X-ray", "The X-ray", "X-ray principles and image formation", "LU 2 (Published)", "LU 2 (SCORM)"),
     scannexUnit(3, "LU 3 - Radiation Safety & International Standards", "Radiation Safety and International Standards", "Safe and compliant operation"),
     scannexUnit(4, "LU 4 - The Legal & Human Rights Framework", "The Legal and Human Rights Framework", "Lawful, proportionate and respectful screening"),
     scannexUnit(5, "LU 5 - The Scannex System", "The Scannex System", "System components and operating context"),
