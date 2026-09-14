@@ -70,13 +70,15 @@ export function ScormPlayer({
   unitSlug,
   launchSrc,
   title,
-  mode = "learner"
+  mode = "learner",
+  immersive = false
 }: {
   courseSlug: string;
   unitSlug: string;
   launchSrc: string;
   title: string;
   mode?: "learner" | "preview";
+  immersive?: boolean;
 }) {
   const valuesRef = useRef<ScormValues | null>(null);
   const [ready, setReady] = useState(false);
@@ -150,16 +152,18 @@ export function ScormPlayer({
   }, [courseSlug, mode, unitSlug]);
 
   return (
-    <section aria-label={`${title} SCORM learning activity`}>
-      <p className="scorm-status" role="status">{status}</p>
+    <section className={immersive ? "scorm-player-immersive" : undefined} aria-label={`${title} SCORM learning activity`}>
+      {!immersive && <p className="scorm-status" role="status">{status}</p>}
       {ready ? (
         <figure className="media-item">
           <iframe title={`${title} activities and quizzes`} src={launchSrc} allow="fullscreen" allowFullScreen />
-          <figcaption>
-            {mode === "preview"
-              ? "Administrator preview only — this activity cannot create or change learner progress."
-              : "Complete the learning activities and quizzes here. Your resume point and results belong to your learner account."}
-          </figcaption>
+          {!immersive && (
+            <figcaption>
+              {mode === "preview"
+                ? "Administrator preview only — this activity cannot create or change learner progress."
+                : "Complete the learning activities and quizzes here. Your resume point and results belong to your learner account."}
+            </figcaption>
+          )}
         </figure>
       ) : null}
     </section>
