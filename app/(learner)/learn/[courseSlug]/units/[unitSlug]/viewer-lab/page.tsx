@@ -14,19 +14,6 @@ type PageProps = {
   }>;
 };
 
-function getViewerLabUrl(): string | undefined {
-  const configuredUrl = process.env.SCANNEX_VIEWER_LAB_URL?.trim();
-
-  if (!configuredUrl) return undefined;
-
-  try {
-    const parsed = new URL(configuredUrl);
-    return parsed.protocol === "https:" ? parsed.toString() : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
 export default async function ViewerLabPage({ params }: PageProps) {
   const session = await requireSession();
   const { courseSlug, unitSlug } = await params;
@@ -48,8 +35,6 @@ export default async function ViewerLabPage({ params }: PageProps) {
     return <CourseAccessDenied course={course} access={access} />;
   }
 
-  const viewerLabUrl = getViewerLabUrl();
-
   return (
     <main>
       <section className="unit-masthead">
@@ -58,8 +43,8 @@ export default async function ViewerLabPage({ params }: PageProps) {
             Back to summative assessment
           </Link>
           <p className="eyebrow">Controlled practical environment</p>
-          <h1>Scannex Viewer Lab</h1>
-          <p>Complete the practical assessment in the genuine Scannex Viewer, hosted in an isolated Windows session.</p>
+          <h1>Scannex Practical Assessment</h1>
+          <p>Complete the final practical exercise in the genuine Scannex Viewer at an approved training station.</p>
         </div>
       </section>
 
@@ -67,35 +52,23 @@ export default async function ViewerLabPage({ params }: PageProps) {
         <div className="content-inner">
           <section className="unit-resources" aria-labelledby="viewer-lab-session-heading">
             <p className="eyebrow">Assessment session</p>
-            <h2 id="viewer-lab-session-heading">Your Viewer session</h2>
-            {viewerLabUrl ? (
-              <>
-                <p>
-                  Open the secure Viewer Lab in a new window. It runs the approved Windows application rather than a browser imitation of the Viewer.
-                </p>
-                <div className="button-row">
-                  <a className="primary-button" href={viewerLabUrl} target="_blank" rel="noreferrer">
-                    Launch Scannex Viewer Lab
-                  </a>
-                </div>
-              </>
-            ) : (
-              <>
-                <p>
-                  The secure Windows Viewer host is being prepared. This assessment area is ready, but no remote application session is issued until the host, licensing and pilot controls are approved.
-                </p>
-                <p className="resource-status" role="status">
-                  Your course progress is not marked complete merely by opening this page.
-                </p>
-              </>
-            )}
+            <h2 id="viewer-lab-session-heading">Attend your practical session</h2>
+            <ol>
+              <li>Complete the required learning units and formative checks.</li>
+              <li>Arrange a supervised assessment session with the Scannex assessment lead.</li>
+              <li>At the approved training station, complete the assigned Trainer exercise in the genuine Viewer.</li>
+              <li>The assessor saves the approved result and Viewer Movement Log for review.</li>
+            </ol>
+            <p className="resource-status" role="status">
+              Your course progress is not marked complete merely by opening this page or attending the station.
+            </p>
           </section>
 
           <section className="unit-resources" aria-labelledby="viewer-lab-evidence-heading">
             <p className="eyebrow">Evidence and review</p>
             <h2 id="viewer-lab-evidence-heading">What is assessed</h2>
             <p>
-              The assessor reviews the approved exercise result, the Viewer Movement Log and the marking rubric. A separate assessment record will hold the final decision and any remediation required.
+              The assessor reviews the approved exercise result, the Viewer Movement Log and the marking rubric. A separate assessment record holds the final decision and any remediation required.
             </p>
           </section>
         </div>

@@ -51,7 +51,7 @@ const scannexTrainingProgramme: Course = {
   level: "Operator programme",
   description: "Professional Scannex viewing and decision training delivered through governed learning units.",
   audience: "Authorized Scannex operators and reviewers",
-  duration: "9 learning units",
+  duration: "8 learning units and a summative assessment",
   sourceRoot: scannexSourceRoot,
   integrationNotes: [
     "Each learning unit contains its Scannex e-book and, once published, its interactive activities and quizzes.",
@@ -69,13 +69,13 @@ const scannexTrainingProgramme: Course = {
     scannexUnit(
       9,
       "LU 9 Procedures, Records, and profesional conduct",
-      "Summative Assessment: Scannex Viewer Practical",
-      "A supervised end-to-end practical assessment using the genuine Scannex Viewer.",
+      "Summative Assessment: Scannex Practical",
+      "A supervised end-to-end practical assessment at an approved Scannex training station.",
       undefined,
       undefined,
       {
         labPath: "/learn/scannex-training-programme/units/lu9/viewer-lab",
-        description: "Use the Scannex Viewer Lab to complete the controlled practical exercise assigned to you."
+        description: "Complete the controlled practical exercise at your approved Scannex training station."
       }
     )
   ]
