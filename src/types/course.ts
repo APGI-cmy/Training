@@ -73,6 +73,11 @@ export interface SurveyPrompt {
   options?: QuizOption[];
 }
 
+export interface PracticalAssessment {
+  labPath: string;
+  description: string;
+}
+
 export interface LearningUnit {
   id: string;
   slug: string;
@@ -85,6 +90,7 @@ export interface LearningUnit {
   publishedPath: string;
   trainingPath?: string;
   scormPath?: string;
+  practicalAssessment?: PracticalAssessment;
   objectives: string[];
   media: CourseMedia[];
   slides: ContentSlide[];

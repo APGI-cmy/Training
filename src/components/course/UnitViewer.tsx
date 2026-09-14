@@ -19,6 +19,7 @@ export function UnitViewer({
   const originalHref = encodeAssetPath(originalContentHref);
   const scormLaunchSrc = unit.scormPath ? encodeAssetPath(unit.scormPath) : undefined;
   const isScannexUnit = course.slug === "scannex-training-programme";
+  const isPracticalAssessment = Boolean(unit.practicalAssessment);
   const isCompleted = activeUnit?.isCompleted ?? false;
 
   const completeUnit = recordProgressEvent.bind(null, {
@@ -40,7 +41,9 @@ export function UnitViewer({
           <div className="unit-meta">
             <span>{unit.duration}</span>
             <span>{isCompleted ? "Completed" : "Opened"}</span>
-            <a href={originalHref}>{isScannexUnit ? "Open Scannex e-book" : "Open original unit"}</a>
+            {!isPracticalAssessment ? (
+              <a href={originalHref}>{isScannexUnit ? "Open Scannex e-book" : "Open original unit"}</a>
+            ) : null}
           </div>
         </div>
       </section>
@@ -48,21 +51,35 @@ export function UnitViewer({
       <section className="content-band">
         <div className="content-inner">
           <div className="media-stack">
-            {isScannexUnit ? (
+            {isPracticalAssessment && unit.practicalAssessment ? (
+              <section className="unit-resources" aria-labelledby="summative-assessment-heading">
+                <p className="eyebrow">Final assessment</p>
+                <h2 id="summative-assessment-heading">Scannex Viewer Lab</h2>
+                <p>{unit.practicalAssessment.description}</p>
+                <p className="resource-status">
+                  This is a controlled Windows application session. Your practical evidence is reviewed against the approved assessment rubric.
+                </p>
+                <div className="button-row">
+                  <Link className="primary-button" href={unit.practicalAssessment.labPath}>
+                    Enter the summative assessment area
+                  </Link>
+                </div>
+              </section>
+            ) : isScannexUnit ? (
               <UnitResources
                 eBookHref={originalHref}
                 activityHref={scormLaunchSrc ? `/learn/${course.slug}/units/${unit.slug}/scorm` : undefined}
                 activityAvailable={Boolean(scormLaunchSrc)}
               />
             ) : null}
-            {scormLaunchSrc ? (
+            {!isPracticalAssessment && scormLaunchSrc ? (
               <ScormPlayer
                 courseSlug={course.slug}
                 unitSlug={unit.slug}
                 launchSrc={scormLaunchSrc}
                 title={unit.title}
               />
-            ) : (
+            ) : !isPracticalAssessment ? (
               <>
                 <figure className="media-item">
                   <iframe
@@ -92,7 +109,7 @@ export function UnitViewer({
                   </button>
                 </form>
               </>
-            )}
+            ) : null}
           </div>
         </div>
       </section>

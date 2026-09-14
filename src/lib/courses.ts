@@ -11,7 +11,8 @@ function scannexUnit(
   title: string,
   subtitle: string,
   trainingFolder?: string,
-  scormFolder?: string
+  scormFolder?: string,
+  practicalAssessment?: LearningUnit["practicalAssessment"]
 ): LearningUnit {
   const unitRoot = `${scannexSourceRoot}/${encodeURIComponent(folder)}`;
   const publishedPath = `${unitRoot}/index.html`;
@@ -33,6 +34,7 @@ function scannexUnit(
     publishedPath,
     trainingPath,
     scormPath,
+    practicalAssessment,
     objectives: [],
     media: [{ kind: "embed", title, src: trainingPath ?? publishedPath }],
     slides: [],
@@ -64,7 +66,18 @@ const scannexTrainingProgramme: Course = {
     scannexUnit(6, "LU 6 - The Viewing System", "The Viewing System", "Viewer controls and systematic examination", undefined, "LU 6 (SCORM)"),
     scannexUnit(7, "LU 7 - Image Interpretation & Detection", "Image Interpretation and Detection", "Recognition, comparison and decision support", undefined, "LU 7 (SCORM)"),
     scannexUnit(8, "LU 8 Human Anatomy for the operator", "Human Anatomy for the Operator", "Anatomical orientation for professional viewing", undefined, "LU 8 (SCORM)"),
-    scannexUnit(9, "LU 9 Procedures, Records, and profesional conduct", "Procedures, Records and Professional Conduct", "Summative assessment and professional practice")
+    scannexUnit(
+      9,
+      "LU 9 Procedures, Records, and profesional conduct",
+      "Summative Assessment: Scannex Viewer Practical",
+      "A supervised end-to-end practical assessment using the genuine Scannex Viewer.",
+      undefined,
+      undefined,
+      {
+        labPath: "/learn/scannex-training-programme/units/lu9/viewer-lab",
+        description: "Use the Scannex Viewer Lab to complete the controlled practical exercise assigned to you."
+      }
+    )
   ]
 };
 

@@ -98,6 +98,65 @@ A material safety breach, such as an unsafe release or clear failure to escalate
 - Training images, result files and Movement Logs must be handled as controlled assessment evidence. Only approved, appropriately anonymised training material may be used in browser simulations or uploaded to the platform.
 - The browser simulation must identify itself as a training simulation and must never be described as a production operational control system.
 
+## Hosted Windows Viewer Lab
+
+### Approved hosting route
+
+The initial hosted route is **Azure Virtual Desktop RemoteApp**. It provides the genuine Scannex Viewer in a managed Windows session while keeping the APGI Training Platform as the learner, evidence and assessment record.
+
+The Viewer is not placed in an iSpring Web Object or embedded in an ordinary browser frame. The platform provides a protected **Launch Scannex Viewer Lab** hand-off. The learner opens the remote Windows session in a separate, secure window and works in the actual approved Viewer application.
+
+This is deliberate: a direct browser embedding cannot faithfully provide the native Viewer, its image-delivery components or its Movement Log. It also creates unnecessary security and authentication risks.
+
+### Hosted-session architecture
+
+| Component | Responsibility |
+| --- | --- |
+| APGI Training Platform | Confirms course access, shows the summative-assessment entry point, creates the assessment record and retains the final decision. |
+| Azure Virtual Desktop | Provides the managed remote Windows session and RemoteApp publication. |
+| Windows session host | Contains only the approved Scannex Viewer, supporting Trainer/IVServer components, approved exercise material and required audit controls. |
+| Scannex Viewer/Trainer | Delivers the practical exercise and produces the result and Movement Log evidence. |
+| Assessor | Reviews evidence against the rubric and records pass, remediation or re-attempt. |
+
+The platform must never transmit a Windows administrator credential, a shared Viewer password or a learner identity in a browser query string. The later connection will use a short-lived, signed launch request and the learner's approved authentication route.
+
+### Windows host controls
+
+- Use a dedicated resource group, virtual network and host pool for the assessment environment.
+- Publish only the required Viewer application as a RemoteApp. Do not offer an unrestricted desktop.
+- Build the host image from a supported Windows image, then install the licensed Scannex Viewer, Training Tool and required IVServer components.
+- Restrict clipboard, drive, printer and file-transfer redirection unless a documented assessment reason requires a specific exception.
+- Use a non-persistent or reset-on-logoff session configuration so one learner cannot see another learner's material or history.
+- Keep the training-image set, answer key, result files and Movement Logs in the controlled assessment environment. Only approved, anonymised training material may be used.
+- Send diagnostic, sign-in and session events to the approved audit location. A Viewer Movement Log remains the authoritative record of Viewer use.
+
+### What the first launch does and does not do
+
+The first deployed version will open the Viewer Lab in a separate secure window. This preserves native Viewer operation and avoids presenting a browser imitation as the real tool.
+
+It will not yet automatically score individual toolbar clicks. The first practical score is based on the approved Trainer result and assessor review of the Movement Log. Automated collection can be considered only after a pilot confirms that the native application exposes sufficient reliable evidence and that its licence permits the integration.
+
+### Provisioning sequence
+
+1. Confirm in writing that the Scannex licence permits the Viewer and Trainer to be installed and used in a hosted remote-session environment.
+2. Create the Azure subscription resource group, network and Azure Virtual Desktop host pool.
+3. Build and test a hardened Windows image with the approved Scannex components and one non-production exercise set.
+4. Publish the Viewer as a RemoteApp to a small pilot group using the agreed Microsoft Entra identity route.
+5. Verify that result evidence and Movement Logs can be recovered by an assessor without allowing learners to access other cases.
+6. Connect the APGI Viewer Lab launcher to the approved remote-session address. The `SCANNEX_VIEWER_LAB_URL` setting contains only that public launch address, never a secret.
+7. Run a supervised pilot, calibrate the marking rubric and then release to wider learner groups.
+
+### Required decisions before provisioning
+
+- Azure subscription owner and location of the assessment environment.
+- The identity route for learners: existing Microsoft Entra accounts, controlled guest accounts, or a separately approved secure session broker.
+- Scannex supplier/licence approval for hosted use and the number of concurrent assessment seats.
+- The named assessment lead, approved image set, answer key, pass standard and remediation rules.
+
+### Future image upload service
+
+The image-upload service is a separate next step. It will be an assessor-only controlled repository with scenario metadata, approval status and audit history. It will not be a general learner file browser and will not expose raw training images to a learner before the assigned exercise begins.
+
 ## Phased delivery
 
 ### Phase 1 - now: course availability
