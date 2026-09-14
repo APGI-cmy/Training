@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { encodeAssetPath } from "@/lib/courses";
+import { ScormPlayer } from "@/components/course/ScormPlayer";
+import { UnitResources } from "@/components/course/UnitResources";
 import { getCourseShell } from "@/lib/services/courses/get-course-shell";
 import { getUnitContent } from "@/lib/services/courses/get-unit-content";
 
@@ -25,9 +27,9 @@ export default async function AdminCourseUnitPreviewPage({ params }: PageProps) 
 
   const { course, unit, previous, next, embeddedContentHref } = content;
   const previewBase = `/admin/courses/${course.slug}/preview`;
+  const scormLaunchSrc = unit.scormPath ? encodeAssetPath(unit.scormPath) : undefined;
   const embeddedSrc = encodeAssetPath(embeddedContentHref ?? unit.publishedPath);
   const eBookHref = encodeAssetPath(unit.publishedPath);
-  const hasSeparateEBook = embeddedContentHref !== unit.publishedPath;
 
   return (
     <main className="page-shell" data-mode="preview-unit">
@@ -43,16 +45,27 @@ export default async function AdminCourseUnitPreviewPage({ params }: PageProps) 
       <section className="content-band">
         <div className="content-inner media-stack">
           <div className="preview-toolbar">
-            <p>Need more room for the published content?</p>
+            <p>Use the same learning resources and navigation that learners receive. This preview never writes learner progress.</p>
             <div className="header-actions">
-              {hasSeparateEBook && <a className="secondary-button" href={eBookHref} target="_blank" rel="noreferrer">Open e-book</a>}
               <Link className="primary-button" href={`${previewBase}/${unit.slug}/full`}>Open full-page preview</Link>
             </div>
           </div>
-          <figure className="media-item">
-            <iframe title={`${unit.title} administrator preview`} src={embeddedSrc} loading="lazy" allowFullScreen />
-            <figcaption>Published training content is embedded inside the governed administrator preview. Use full-page preview for a larger workspace; neither view records learner progress.</figcaption>
-          </figure>
+          {course.slug === "scannex-training-programme" && (
+            <UnitResources
+              eBookHref={eBookHref}
+              activityHref={scormLaunchSrc ? `${previewBase}/${unit.slug}/full` : undefined}
+              activityAvailable={Boolean(scormLaunchSrc)}
+              activityLabel="Open learning activity in a full-page preview"
+            />
+          )}
+          {scormLaunchSrc ? (
+            <ScormPlayer courseSlug={course.slug} unitSlug={unit.slug} launchSrc={scormLaunchSrc} title={unit.title} mode="preview" />
+          ) : (
+            <figure className="media-item">
+              <iframe title={`${unit.title} administrator preview`} src={embeddedSrc} loading="lazy" allow="fullscreen" allowFullScreen />
+              <figcaption>Published e-book is embedded inside the governed administrator preview. The learning activity will replace this view once its SCORM package is verified.</figcaption>
+            </figure>
+          )}
 
           <nav className="unit-navigation" aria-label="Administrator preview navigation">
             {previous ? (

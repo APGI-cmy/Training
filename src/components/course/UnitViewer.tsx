@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { encodeAssetPath } from "@/lib/courses";
 import { ScormPlayer } from "@/components/course/ScormPlayer";
+import { UnitResources } from "@/components/course/UnitResources";
 import type { CourseShellUnit } from "@/lib/services/courses/get-course-shell";
 import type { UnitContent } from "@/lib/services/courses/get-unit-content";
 import { recordProgressEvent } from "@/server/actions/progress/record-progress-event";
@@ -48,22 +49,11 @@ export function UnitViewer({
         <div className="content-inner">
           <div className="media-stack">
             {isScannexUnit ? (
-              <section aria-labelledby="scannex-resources-heading">
-                <p className="eyebrow">Unit resources</p>
-                <h2 id="scannex-resources-heading">
-                  {scormLaunchSrc ? "Complete the learning activity" : "Read the unit material"}
-                </h2>
-                <p>
-                  {scormLaunchSrc
-                    ? "Complete the activity below. The e-book remains available as a reference whenever you need it."
-                    : "Use the e-book as your reference for this learning unit."}
-                </p>
-                <div className="button-row">
-                  <a className="secondary-button" href={originalHref}>
-                    Open Scannex e-book
-                  </a>
-                </div>
-              </section>
+              <UnitResources
+                eBookHref={originalHref}
+                activityHref={scormLaunchSrc ? `/learn/${course.slug}/units/${unit.slug}/scorm` : undefined}
+                activityAvailable={Boolean(scormLaunchSrc)}
+              />
             ) : null}
             {scormLaunchSrc ? (
               <ScormPlayer
@@ -79,6 +69,7 @@ export function UnitViewer({
                     title={`${unit.title} ${isScannexUnit ? "e-book" : "published unit"}`}
                     src={embeddedSrc}
                     loading="lazy"
+                    allow="fullscreen"
                     allowFullScreen
                   />
                   <figcaption>
@@ -88,7 +79,7 @@ export function UnitViewer({
                   </figcaption>
                 </figure>
                 <div className="button-row">
-                  <a className="primary-button" href={originalHref}>
+                  <a className="primary-button" href={originalHref} target="_blank" rel="noreferrer">
                     {isScannexUnit ? "Open e-book in a full window" : "Open expanded unit"}
                   </a>
                   <Link className="secondary-button" href={`/courses/${course.slug}/${unit.slug}`}>

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { encodeAssetPath } from "@/lib/courses";
+import { ScormPlayer } from "@/components/course/ScormPlayer";
+import { UnitResources } from "@/components/course/UnitResources";
 import { getUnitContent } from "@/lib/services/courses/get-unit-content";
 
 export const dynamic = "force-dynamic";
@@ -15,9 +17,9 @@ export default async function FullPageAdminPreview({ params }: PageProps) {
   if (!content) notFound();
 
   const { course, unit, embeddedContentHref } = content;
+  const scormLaunchSrc = unit.scormPath ? encodeAssetPath(unit.scormPath) : undefined;
   const embeddedSrc = encodeAssetPath(embeddedContentHref ?? unit.publishedPath);
   const eBookHref = encodeAssetPath(unit.publishedPath);
-  const hasSeparateEBook = embeddedContentHref !== unit.publishedPath;
   const previewHref = `/admin/courses/${course.slug}/preview/${unit.slug}`;
 
   return (
@@ -26,11 +28,19 @@ export default async function FullPageAdminPreview({ params }: PageProps) {
         <div><p className="eyebrow">Full-page administrator preview</p><h1>{unit.title}</h1><p>{course.title} · Preview only — no learner progress, enrolment or access events are written.</p></div>
         <div className="header-actions">
           <Link className="secondary-button" href={previewHref}>Return to preview</Link>
-          {hasSeparateEBook && <a className="secondary-button" href={eBookHref} target="_blank" rel="noreferrer">Open e-book</a>}
           <Link className="primary-button" href={`${previewHref}/presentation`} target="_blank" rel="noreferrer">Open presentation only</Link>
         </div>
       </header>
-      <iframe className="admin-full-preview-frame" title={`${unit.title} full-page administrator preview`} src={embeddedSrc} allowFullScreen />
+      <div className="admin-full-preview-content">
+        {course.slug === "scannex-training-programme" && (
+          <UnitResources eBookHref={eBookHref} activityAvailable={Boolean(scormLaunchSrc)} />
+        )}
+        {scormLaunchSrc ? (
+          <ScormPlayer courseSlug={course.slug} unitSlug={unit.slug} launchSrc={scormLaunchSrc} title={unit.title} mode="preview" />
+        ) : (
+          <iframe className="admin-full-preview-frame" title={`${unit.title} full-page administrator preview`} src={embeddedSrc} allow="fullscreen" allowFullScreen />
+        )}
+      </div>
     </main>
   );
 }

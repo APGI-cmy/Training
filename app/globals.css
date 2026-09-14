@@ -243,6 +243,28 @@ h3 {
   margin-top: 24px;
 }
 
+.unit-resources {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.unit-resources h2 {
+  margin: 0 0 8px;
+}
+
+.resource-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
 .unit-meta span,
 .unit-meta a,
 .saved-indicator,
@@ -964,6 +986,14 @@ textarea {
   background: #111412;
 }
 
+.admin-full-preview-content {
+  display: grid;
+  gap: 18px;
+  min-height: 0;
+  padding: 20px clamp(20px, 4vw, 48px) 32px;
+  background: #111412;
+}
+
 .preview-toolbar {
   align-items: center;
   border: 1px solid var(--line);
@@ -1135,6 +1165,44 @@ body:has(.admin-presentation-only) .app-header {
   height: 100%;
   border: 0;
   background: #000;
+}
+
+.admin-presentation-only > section,
+.admin-presentation-only .media-item,
+.admin-presentation-only .media-item iframe {
+  height: 100%;
+}
+
+.admin-presentation-only .media-item {
+  border: 0;
+  border-radius: 0;
+}
+
+.admin-presentation-only .media-item iframe {
+  min-height: 100vh;
+}
+
+.admin-presentation-only .scorm-status {
+  position: fixed;
+  z-index: 10;
+  bottom: 12px;
+  left: 16px;
+  margin: 0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+  font-size: 0.82rem;
+}
+
+body:has(.learner-scorm-full) .app-header,
+body:has(.learner-scorm-full) .learner-sidebar {
+  display: none;
+}
+
+body:has(.learner-scorm-full) .learner-shell {
+  display: block;
+  min-height: 100vh;
 }
 
 

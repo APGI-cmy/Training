@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { PresentationOnlyMode } from "@/components/admin/PresentationOnlyMode";
+import { ScormPlayer } from "@/components/course/ScormPlayer";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { encodeAssetPath } from "@/lib/courses";
 import { getUnitContent } from "@/lib/services/courses/get-unit-content";
@@ -14,19 +15,24 @@ export default async function PresentationOnlyAdminPreview({ params }: PageProps
   const content = getUnitContent(courseSlug, unitSlug);
   if (!content) notFound();
 
-  const { unit, embeddedContentHref } = content;
+  const { course, unit, embeddedContentHref } = content;
+  const scormLaunchSrc = unit.scormPath ? encodeAssetPath(unit.scormPath) : undefined;
   const embeddedSrc = encodeAssetPath(embeddedContentHref ?? unit.publishedPath);
   const eBookHref = encodeAssetPath(unit.publishedPath);
-  const hasSeparateEBook = embeddedContentHref !== unit.publishedPath;
 
   return (
-    <PresentationOnlyMode eBookHref={hasSeparateEBook ? eBookHref : undefined}>
-      <iframe
-        className="admin-presentation-only-frame"
-        title={`${unit.title} presentation-only administrator preview`}
-        src={embeddedSrc}
-        allowFullScreen
-      />
+    <PresentationOnlyMode eBookHref={eBookHref}>
+      {scormLaunchSrc ? (
+        <ScormPlayer courseSlug={course.slug} unitSlug={unit.slug} launchSrc={scormLaunchSrc} title={unit.title} mode="preview" />
+      ) : (
+        <iframe
+          className="admin-presentation-only-frame"
+          title={`${unit.title} presentation-only administrator preview`}
+          src={embeddedSrc}
+          allow="fullscreen"
+          allowFullScreen
+        />
+      )}
     </PresentationOnlyMode>
   );
 }

@@ -69,12 +69,14 @@ export function ScormPlayer({
   courseSlug,
   unitSlug,
   launchSrc,
-  title
+  title,
+  mode = "learner"
 }: {
   courseSlug: string;
   unitSlug: string;
   launchSrc: string;
   title: string;
+  mode?: "learner" | "preview";
 }) {
   const valuesRef = useRef<ScormValues | null>(null);
   const [ready, setReady] = useState(false);
@@ -83,6 +85,36 @@ export function ScormPlayer({
   useEffect(() => {
     let active = true;
     const endpoint = `/api/scorm?courseSlug=${encodeURIComponent(courseSlug)}&unitSlug=${encodeURIComponent(unitSlug)}`;
+
+    const installApi = (saveProgress?: () => void) => {
+      let initialized = false;
+      window.API_1484_11 = {
+        Initialize: () => { initialized = true; return "true"; },
+        Terminate: () => { saveProgress?.(); initialized = false; return "true"; },
+        GetValue: (key: string) => valuesRef.current?.[key] ?? "",
+        SetValue: (key: string, value: string) => {
+          if (!initialized || !valuesRef.current) return "false";
+          valuesRef.current[key] = String(value ?? "");
+          return "true";
+        },
+        Commit: () => { saveProgress?.(); return "true"; },
+        GetLastError: () => "0",
+        GetErrorString: () => "No error",
+        GetDiagnostic: () => ""
+      };
+    };
+
+    if (mode === "preview") {
+      valuesRef.current = initialValues();
+      installApi();
+      setStatus("Administrator preview — learner progress is not recorded.");
+      setReady(true);
+
+      return () => {
+        active = false;
+        delete window.API_1484_11;
+      };
+    }
 
     const save = async () => {
       if (!valuesRef.current) return;
@@ -101,21 +133,7 @@ export function ScormPlayer({
       const payload = response.ok ? await response.json() : { attempt: null };
       if (!active) return;
       valuesRef.current = initialValues(payload.attempt);
-      let initialized = false;
-      window.API_1484_11 = {
-        Initialize: () => { initialized = true; return "true"; },
-        Terminate: () => { void save(); initialized = false; return "true"; },
-        GetValue: (key: string) => valuesRef.current?.[key] ?? "",
-        SetValue: (key: string, value: string) => {
-          if (!initialized || !valuesRef.current) return "false";
-          valuesRef.current[key] = String(value ?? "");
-          return "true";
-        },
-        Commit: () => { void save(); return "true"; },
-        GetLastError: () => "0",
-        GetErrorString: () => "No error",
-        GetDiagnostic: () => ""
-      };
+      installApi(() => { void save(); });
       setStatus("Your progress is saved to your learner record.");
       setReady(true);
     };
@@ -129,15 +147,19 @@ export function ScormPlayer({
       void save();
       delete window.API_1484_11;
     };
-  }, [courseSlug, unitSlug]);
+  }, [courseSlug, mode, unitSlug]);
 
   return (
     <section aria-label={`${title} SCORM learning activity`}>
       <p className="scorm-status" role="status">{status}</p>
       {ready ? (
         <figure className="media-item">
-          <iframe title={`${title} activities and quizzes`} src={launchSrc} allowFullScreen />
-          <figcaption>Complete the learning activities and quizzes here. Your resume point and results belong to your learner account.</figcaption>
+          <iframe title={`${title} activities and quizzes`} src={launchSrc} allow="fullscreen" allowFullScreen />
+          <figcaption>
+            {mode === "preview"
+              ? "Administrator preview only — this activity cannot create or change learner progress."
+              : "Complete the learning activities and quizzes here. Your resume point and results belong to your learner account."}
+          </figcaption>
         </figure>
       ) : null}
     </section>

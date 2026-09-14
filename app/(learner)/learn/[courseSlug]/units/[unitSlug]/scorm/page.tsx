@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 import { ScormPlayer } from "@/components/course/ScormPlayer";
+import { UnitResources } from "@/components/course/UnitResources";
 import { getCourseBySlug } from "@/lib/courses";
 import { encodeAssetPath } from "@/lib/asset-path";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { requireSession } from "@/server/auth/session";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -25,11 +27,18 @@ export default async function ScormLaunchPage({ params }: PageProps) {
   if (!access.canAccess) notFound();
 
   return (
-    <main className="content-band">
+    <main className="content-band learner-scorm-full">
       <div className="content-inner">
         <p className="eyebrow">Learning Unit {unit.order}</p>
         <h1>{unit.title}</h1>
         <p>{unit.subtitle}</p>
+        <div className="button-row">
+          <Link className="secondary-button" href={`/learn/${course.slug}/units/${unit.slug}`}>Return to unit</Link>
+        </div>
+        <UnitResources
+          eBookHref={encodeAssetPath(unit.publishedPath)}
+          activityAvailable
+        />
         <ScormPlayer
           courseSlug={course.slug}
           unitSlug={unit.slug}
