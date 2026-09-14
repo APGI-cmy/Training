@@ -56,14 +56,14 @@ const scannexTrainingProgramme: Course = {
     "Governed learner access is controlled through ALP enrolment state."
   ],
   units: [
-    scannexUnit(1, "LU 1 - Introduction & The Case for Scannex", "Introduction and the Case for Scannex", "Programme orientation and operational purpose"),
+    scannexUnit(1, "LU 1 - Introduction & The Case for Scannex", "Introduction and the Case for Scannex", "Programme orientation and operational purpose", undefined, "LU 1 (SCORM)"),
     scannexUnit(2, "LU 2 - The X-ray", "The X-ray", "X-ray principles and image formation", "LU 2 (Published)", "LU 2 (SCORM)"),
     scannexUnit(3, "LU 3 - Radiation Safety & International Standards", "Radiation Safety and International Standards", "Safe and compliant operation"),
     scannexUnit(4, "LU 4 - The Legal & Human Rights Framework", "The Legal and Human Rights Framework", "Lawful, proportionate and respectful screening"),
-    scannexUnit(5, "LU 5 - The Scannex System", "The Scannex System", "System components and operating context"),
-    scannexUnit(6, "LU 6 - The Viewing System", "The Viewing System", "Viewer controls and systematic examination"),
-    scannexUnit(7, "LU 7 - Image Interpretation & Detection", "Image Interpretation and Detection", "Recognition, comparison and decision support"),
-    scannexUnit(8, "LU 8 Human Anatomy for the operator", "Human Anatomy for the Operator", "Anatomical orientation for professional viewing"),
+    scannexUnit(5, "LU 5 - The Scannex System", "The Scannex System", "System components and operating context", undefined, "LU 5 (SCORM)"),
+    scannexUnit(6, "LU 6 - The Viewing System", "The Viewing System", "Viewer controls and systematic examination", undefined, "LU 6 (SCORM)"),
+    scannexUnit(7, "LU 7 - Image Interpretation & Detection", "Image Interpretation and Detection", "Recognition, comparison and decision support", undefined, "LU 7 (SCORM)"),
+    scannexUnit(8, "LU 8 Human Anatomy for the operator", "Human Anatomy for the Operator", "Anatomical orientation for professional viewing", undefined, "LU 8 (SCORM)"),
     scannexUnit(9, "LU 9 Procedures, Records, and profesional conduct", "Procedures, Records and Professional Conduct", "Summative assessment and professional practice")
   ]
 };
