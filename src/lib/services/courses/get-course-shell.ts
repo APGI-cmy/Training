@@ -11,6 +11,7 @@ export interface CourseShellUnit {
   title: string;
   subtitle: string;
   duration: string;
+  kind: "learning_unit" | "summative_assessment";
   assetHref: string;
   href: string;
   isOpened: boolean;
@@ -39,7 +40,7 @@ export function getCourseShell(
   const units = course.units
     .slice()
     .sort((left, right) => left.order - right.order)
-    .map((unit: LearningUnit) => ({
+    .map((unit: LearningUnit): CourseShellUnit => ({
       id: unit.id,
       slug: unit.slug,
       legacySlug: unit.legacySlug,
@@ -47,6 +48,7 @@ export function getCourseShell(
       title: unit.title,
       subtitle: unit.subtitle,
       duration: unit.duration,
+      kind: unit.practicalAssessment ? "summative_assessment" : "learning_unit",
       assetHref: encodeAssetPath(unit.publishedPath),
       href: `/learn/${course.slug}/units/${unit.slug}`,
       isOpened: progress?.openedUnitIds.has(unit.id) ?? false,

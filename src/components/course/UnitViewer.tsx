@@ -35,7 +35,7 @@ export function UnitViewer({
           <Link className="back-link" href={`/learn/${course.slug}`}>
             Back to course shell
           </Link>
-          <p className="eyebrow">{unit.order === 0 ? "Orientation" : `Learning Unit ${unit.order}`}</p>
+          <p className="eyebrow">{isPracticalAssessment ? "Summative assessment" : unit.order === 0 ? "Orientation" : `Learning Unit ${unit.order}`}</p>
           <h1>{unit.title}</h1>
           <p>{unit.subtitle}</p>
           <div className="unit-meta">

@@ -12,7 +12,7 @@ export function LearningUnitCard({ courseSlug, unit }: LearningUnitCardProps) {
   return (
     <article className="unit-card">
       <div className="unit-card-header">
-        <span>{unit.order === 0 ? "Intro" : `LU ${unit.order}`}</span>
+        <span>{unit.practicalAssessment ? "Summative assessment" : unit.order === 0 ? "Intro" : `LU ${unit.order}`}</span>
         <small>{unit.duration}</small>
       </div>
       <h3>{unit.title}</h3>

@@ -29,7 +29,7 @@ export function CourseSidebar({
                   aria-current={isActive ? "page" : undefined}
                   href={`/learn/${courseSlug}/units/${unit.slug}`}
                 >
-                  {unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}: {unit.title}
+                  {unit.kind === "summative_assessment" ? "Summative assessment" : unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}: {unit.title}
                 </Link>
                 <span> {status}</span>
                 {isActive ? <span> Current</span> : null}

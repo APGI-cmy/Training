@@ -36,7 +36,7 @@ export default async function AdminCoursePreviewPage({ params }: PageProps) {
       <section className="course-grid" aria-label={`${course.title} preview units`}>
         {units.map((unit) => (
           <article className="course-card" key={unit.id}>
-            <p className="eyebrow">{unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}</p>
+            <p className="eyebrow">{unit.kind === "summative_assessment" ? "Summative assessment" : unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}</p>
             <h2>{unit.title}</h2>
             <p>{unit.subtitle}</p>
             <Link

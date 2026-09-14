@@ -45,22 +45,24 @@ export function CourseShell({
       <section className="content-band">
         <div className="content-inner">
           <p className="eyebrow">Learning units</p>
-          <h2>Choose a learning unit</h2>
+          <h2>Choose where to continue</h2>
           <p>
-            Select a unit to begin or continue. Required assessment results are recorded against your
+            Select a learning unit or the final assessment. Required assessment results are recorded against your
             learner account.
           </p>
           <div className="unit-grid">
             {units.map((unit) => (
               <article className="unit-card" key={unit.id}>
                 <div className="unit-card-header">
-                  <span>{unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}</span>
+                  <span>{unit.kind === "summative_assessment" ? "Summative assessment" : unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}</span>
                   <small>{unit.isCompleted ? "Completed" : unit.isOpened ? "Opened" : unit.duration}</small>
                 </div>
                 <h3>{unit.title}</h3>
                 <p>{unit.subtitle}</p>
                 <Link className="secondary-button" href={unit.href}>
-                  {unit.isCompleted ? "Review unit" : unit.isOpened ? "Continue unit" : "Open unit"}
+                  {unit.kind === "summative_assessment"
+                    ? "Open assessment"
+                    : unit.isCompleted ? "Review unit" : unit.isOpened ? "Continue unit" : "Open unit"}
                 </Link>
               </article>
             ))}
