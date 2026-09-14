@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { CourseSidebar } from "@/components/course/CourseSidebar";
 import { ProgressIndicator } from "@/components/progress/ProgressIndicator";
 import type { CourseShell as CourseShellModel } from "@/lib/services/courses/get-course-shell";
 
@@ -37,9 +36,6 @@ export function CourseShell({
                   Open first unit
                 </Link>
               ) : null}
-              <Link className="secondary-button" href={`/courses/${course.slug}`}>
-                Open legacy course overview
-              </Link>
             </div>
           </div>
           <ProgressIndicator completedUnits={completedUnits} totalUnits={units.length} />
@@ -47,30 +43,27 @@ export function CourseShell({
       </section>
 
       <section className="content-band">
-        <div className="content-inner objectives-layout">
-          <CourseSidebar courseSlug={course.slug} units={units} />
-          <div>
-            <p className="eyebrow">W3 progress status</p>
-            <h2>Course progress ready</h2>
-            <p>
-              This shell now presents saved learner progress, unit status, and a safe handoff to the
-              next learning action.
-            </p>
-            <div className="unit-grid">
-              {units.map((unit) => (
-                <article className="unit-card" key={unit.id}>
-                  <div className="unit-card-header">
-                    <span>{unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}</span>
-                    <small>{unit.isCompleted ? "Completed" : unit.isOpened ? "Opened" : unit.duration}</small>
-                  </div>
-                  <h3>{unit.title}</h3>
-                  <p>{unit.subtitle}</p>
-                  <Link className="secondary-button" href={unit.href}>
-                    {unit.isCompleted ? "Review unit" : unit.isOpened ? "Continue unit" : "View unit"}
-                  </Link>
-                </article>
-              ))}
-            </div>
+        <div className="content-inner">
+          <p className="eyebrow">Learning units</p>
+          <h2>Choose a learning unit</h2>
+          <p>
+            Select a unit to begin or continue. Required assessment results are recorded against your
+            learner account.
+          </p>
+          <div className="unit-grid">
+            {units.map((unit) => (
+              <article className="unit-card" key={unit.id}>
+                <div className="unit-card-header">
+                  <span>{unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}</span>
+                  <small>{unit.isCompleted ? "Completed" : unit.isOpened ? "Opened" : unit.duration}</small>
+                </div>
+                <h3>{unit.title}</h3>
+                <p>{unit.subtitle}</p>
+                <Link className="secondary-button" href={unit.href}>
+                  {unit.isCompleted ? "Review unit" : unit.isOpened ? "Continue unit" : "Open unit"}
+                </Link>
+              </article>
+            ))}
           </div>
         </div>
       </section>
