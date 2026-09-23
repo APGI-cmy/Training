@@ -3,7 +3,7 @@
 import { createHash } from "node:crypto";
 import { adminRest } from "@/server/supabase/admin-rest";
 
-export type InvitationRegistrationState = { ok?: boolean; error?: string; message?: string };
+export type InvitationRegistrationState = { ok?: boolean; error?: string; message?: string; continueUrl?: string };
 
 function getPublicAuthConfig() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim().replace(/\/$/, "");
@@ -12,11 +12,15 @@ function getPublicAuthConfig() {
   return { url, anonKey };
 }
 
+function getInvitationSignInPath(token: string) {
+  return `/alp-sign-in?next=${encodeURIComponent(`/invitations/${token}`)}`;
+}
+
 function getInvitationReturnUrl(token: string) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
   if (!appUrl) return null;
   try {
-    return new URL(`/alp-sign-in?next=${encodeURIComponent(`/invitations/${token}`)}`, appUrl).toString();
+    return new URL(getInvitationSignInPath(token), appUrl).toString();
   } catch {
     return null;
   }
@@ -56,5 +60,9 @@ export async function registerInvitedUser(_previousState: InvitationRegistration
     return { error: "We could not complete registration. If you already have an account, sign in using the invitation link instead." };
   }
 
-  return { ok: true, message: "Account request received. Confirm your email if asked, then sign in from the invitation email to accept your course access." };
+  return {
+    ok: true,
+    message: "Your account has been created. Confirm your email if asked, then sign in to accept your course invitation.",
+    continueUrl: getInvitationSignInPath(token)
+  };
 }

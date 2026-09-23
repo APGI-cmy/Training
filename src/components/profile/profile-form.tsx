@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { updateProfileAction, type ProfileActionState } from "@/server/actions/profiles/update-profile";
 import type { AlpProfile } from "@/server/services/profiles";
 
 const initialState: ProfileActionState = {};
 
-export function ProfileForm({ profile }: { profile: AlpProfile | null }) {
+export function ProfileForm({ profile, continueTo }: { profile: AlpProfile | null; continueTo?: string }) {
   const [state, formAction, pending] = useActionState(updateProfileAction, initialState);
 
   return (
@@ -32,7 +33,10 @@ export function ProfileForm({ profile }: { profile: AlpProfile | null }) {
         <input name="country" defaultValue={profile?.country ?? ""} autoComplete="country-name" />
       </label>
       {state.error ? <p className="feedback feedback-review">{state.error}</p> : null}
-      {state.success ? <p className="feedback feedback-correct">{state.success}</p> : null}
+      {state.success ? <>
+        <p className="feedback feedback-correct">{state.success}</p>
+        {continueTo ? <Link className="primary-button" href={continueTo}>Continue to your course</Link> : null}
+      </> : null}
       <button className="primary-button" type="submit" disabled={pending}>
         {pending ? "Saving..." : "Save profile"}
       </button>
