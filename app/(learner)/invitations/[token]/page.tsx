@@ -23,7 +23,7 @@ export default async function InvitationRedemptionPage({
     "use server";
     const result = await acceptInvitation(token);
     if (result.ok && result.courseId) {
-      redirect(`/learn/${result.courseId}`);
+      redirect(`/profile?onboarding=invitation&next=${encodeURIComponent(`/learn/${result.courseId}`)}`);
     }
     redirect(`/invitations/${token}?error=${encodeURIComponent(result.error ?? "redemption_failed")}`);
   }
@@ -33,10 +33,10 @@ export default async function InvitationRedemptionPage({
       <header className="page-header">
         <p className="eyebrow">Course invitation</p>
         <h1>Accept your course invitation</h1>
-        <p>The invitation will only grant access when it is valid, unexpired and matches your signed-in email address.</p>
+        <p>The invitation will only grant access when it is valid, unexpired and matches your signed-in email address. You will then be guided to complete your learner profile.</p>
       </header>
       <form action={redeem}>
-        <button type="submit">Accept invitation</button>
+        <button type="submit">Accept invitation and complete profile</button>
       </form>
     </main>
   );
