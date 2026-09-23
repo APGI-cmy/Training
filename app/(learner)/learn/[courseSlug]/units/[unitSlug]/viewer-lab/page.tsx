@@ -61,11 +61,11 @@ export default async function ViewerLabPage({ params }: PageProps) {
             <ol>
               <li>Complete the required learning units and formative checks.</li>
               <li>Arrange a supervised assessment session with the Scannex assessment lead.</li>
-              <li>At the approved training station, complete the assigned Trainer exercise in the genuine Viewer.</li>
-              <li>The assessor saves the approved result and Viewer Movement Log for review.</li>
+              <li>At the approved training station, receive the assigned Trainer exercise reference and complete it in the genuine Viewer.</li>
+              <li>The assessor observes the practical rubric, then saves the approved result and Viewer Movement Log for review.</li>
             </ol>
             <p className="resource-status" role="status">
-              The 100-point practical rubric is converted to 32 marks. Your course is not complete merely by opening this page or attending the station.
+              The practical instrument is recorded as 99 raw marks, normalised to 100, then converted to the 32 practical marks. Your course is not complete merely by opening this page or attending the station.
             </p>
           </section>
 
@@ -73,7 +73,7 @@ export default async function ViewerLabPage({ params }: PageProps) {
             <p className="eyebrow">Evidence and review</p>
             <h2 id="viewer-lab-evidence-heading">What is assessed</h2>
             <p>
-              The assessor reviews the approved exercise result, the Viewer Movement Log and the marking rubric. The platform records the 68-mark theory result, 32-mark practical result, evidence references and final decision against your assessment reference.
+              The assessor reviews your use of the Viewer, systematic image interrogation and application of the Scannex checklist, alongside the approved exercise result and Viewer Movement Log. A material safety or role-boundary concern must be reviewed before a pass can be recorded.
             </p>
           </section>
         </div>

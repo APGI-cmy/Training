@@ -1,10 +1,12 @@
 "use client";
 
 import { useActionState } from "react";
+import { SCANNEX_PRACTICAL_RAW_MAX_SCORE, SCANNEX_PRACTICAL_RUBRIC } from "@/lib/assessments/scannex-practical-rubric";
 import { createAssessmentBooking, recordAssessmentEvidence, type AssessmentActionState } from "@/server/actions/assessments/manage-scannex-assessment";
 import type { AssessmentBooking } from "@/server/services/assessments/get-assessment-bookings";
 
 const initialState: AssessmentActionState = {};
+const practicalSections = [...new Set(SCANNEX_PRACTICAL_RUBRIC.map((criterion) => criterion.section))];
 
 export function ScannexAssessmentWorkspace({
   learners,
@@ -34,14 +36,31 @@ export function ScannexAssessmentWorkspace({
       </form>
     </section>
     <section className="admin-form-card">
-      <div className="admin-card-heading"><div><p className="eyebrow">Evidence and decision</p><h2>Record Scannex outcome</h2></div></div>
-      <p className="form-guidance">Record the local file names or approved evidence references. The practical rubric is marked out of 100 and converted to 32 marks. Do not enter Scannex passwords or personal identity numbers.</p>
+      <div className="admin-card-heading"><div><p className="eyebrow">Practical rubric, evidence and decision</p><h2>Record Scannex outcome</h2></div></div>
+      <p className="form-guidance">Record the controlled Trainer exercise and the approved evidence references. The source instrument has {SCANNEX_PRACTICAL_RAW_MAX_SCORE} raw marks, which the platform normalises to 100 before converting it to the 32 practical marks. Do not enter Scannex passwords or personal identity numbers.</p>
       <form className="form-stack" action={evidenceAction}>
         <label>Assessment reference<select name="assessmentId" required defaultValue=""><option value="" disabled>Select an assessment</option>{bookings.filter((booking) => !["passed", "failed", "cancelled"].includes(booking.status)).map((booking) => <option key={booking.id} value={booking.id}>{booking.reference} — {booking.learnerName}</option>)}</select></label>
+        <label>Trainer exercise / case-set reference<input name="trainerExerciseReference" placeholder="e.g. SCN-TRAINER-PILOT-A-01" /></label>
+        <fieldset className="practical-rubric-fieldset">
+          <legend>Practical marking rubric</legend>
+          <p>Enter every item when recording the practical score. Leave the whole rubric blank if you are only adding evidence at this stage.</p>
+          {practicalSections.map((section) => (
+            <section className="practical-rubric-section" key={section}>
+              <h3>{section}</h3>
+              {SCANNEX_PRACTICAL_RUBRIC.filter((criterion) => criterion.section === section).map((criterion) => (
+                <label className="practical-rubric-row" key={criterion.id}>
+                  <span>{criterion.label}<small>Maximum {criterion.maximumScore}</small></span>
+                  <input aria-label={`${criterion.label} score out of ${criterion.maximumScore}`} name={`practicalScore_${criterion.id}`} type="number" min="0" max={criterion.maximumScore} step="1" inputMode="numeric" />
+                </label>
+              ))}
+            </section>
+          ))}
+        </fieldset>
+        <label className="checkbox-label"><input name="materialSafetyConcern" type="checkbox" /> A material safety or role-boundary concern requires review before a pass decision.</label>
+        <label>Safety review notes<textarea name="safetyReviewNotes" placeholder="Required when a material safety or role-boundary concern is identified" /></label>
         <label>Saved Scannex result<input name="scannexResult" placeholder="e.g. SCN-260923-1234ABCD-results.txt" /></label>
         <label>Viewer Movement Log<input name="movementLog" placeholder="e.g. SCN-260923-1234ABCD-movement.log" /></label>
         <label>Assessor checklist reference<input name="checklist" placeholder="e.g. SCN-260923-1234ABCD-checklist.pdf" /></label>
-        <label>Practical rubric score out of 100<input name="practicalScore" type="number" min="0" max="100" step="0.01" placeholder="e.g. 82" /></label>
         <label>Assessor notes<textarea name="assessorNotes" placeholder="Evidence review and any remediation required" /></label>
         <label>Decision<select name="decision" defaultValue="evidence_pending"><option value="evidence_pending">Evidence recorded — awaiting decision</option><option value="passed">Passed — requires all evidence and 75/100 overall</option><option value="failed">Not yet competent</option></select></label>
         {evidenceState.error ? <p className="form-error" role="alert">{evidenceState.error}</p> : null}

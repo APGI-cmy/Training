@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "node:crypto";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { calculateScannexPracticalScore, SCANNEX_PRACTICAL_RUBRIC, SCANNEX_PRACTICAL_RUBRIC_VERSION, type ScannexPracticalScores } from "@/lib/assessments/scannex-practical-rubric";
 import { getCourseBySlug } from "@/lib/courses";
 import { SCANNEX_PRACTICAL_MAX_SCORE, SCANNEX_SUMMATIVE_PASS_MARK } from "@/server/assessments/scannex-theory-bank";
 import { getLatestScannexTheoryAttempt } from "@/server/services/assessments/theory-attempts";
@@ -14,6 +15,55 @@ const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}
 
 function clean(value: FormDataEntryValue | null) {
   return String(value ?? "").trim();
+}
+
+type PracticalRubricPayload = {
+  trainerExerciseReference: string;
+  scores: ScannexPracticalScores;
+  rawScore: number;
+  normalizedScore: number;
+  materialSafetyConcern: boolean;
+  safetyReviewNotes: string | null;
+};
+
+function parsePracticalRubric(formData: FormData): { payload: PracticalRubricPayload | null; error?: string } {
+  const trainerExerciseReference = clean(formData.get("trainerExerciseReference"));
+  const safetyReviewNotes = clean(formData.get("safetyReviewNotes"));
+  const materialSafetyConcern = formData.get("materialSafetyConcern") === "on";
+  const values = SCANNEX_PRACTICAL_RUBRIC.map((criterion) => ({ criterion, value: clean(formData.get(`practicalScore_${criterion.id}`)) }));
+  const hasScores = values.some(({ value }) => value !== "");
+
+  if (!hasScores) {
+    if (trainerExerciseReference || materialSafetyConcern || safetyReviewNotes) {
+      return { payload: null, error: "Enter every practical-rubric score when recording a Trainer exercise or safety review." };
+    }
+    return { payload: null };
+  }
+  if (!trainerExerciseReference) return { payload: null, error: "Enter the controlled Trainer exercise or case-set reference." };
+  if (values.some(({ value }) => value === "")) return { payload: null, error: "Enter a score for every practical-rubric criterion." };
+
+  const scores: ScannexPracticalScores = {};
+  for (const { criterion, value } of values) {
+    const score = Number(value);
+    if (!Number.isInteger(score) || score < 0 || score > criterion.maximumScore) {
+      return { payload: null, error: `Enter a whole-number score from 0 to ${criterion.maximumScore} for “${criterion.label}”.` };
+    }
+    scores[criterion.id] = score;
+  }
+  if (materialSafetyConcern && !safetyReviewNotes) {
+    return { payload: null, error: "Record safety-review notes when a material safety or role-boundary concern is identified." };
+  }
+  const { rawScore, normalizedScore } = calculateScannexPracticalScore(scores);
+  return {
+    payload: {
+      trainerExerciseReference,
+      scores,
+      rawScore,
+      normalizedScore,
+      materialSafetyConcern,
+      safetyReviewNotes: materialSafetyConcern ? safetyReviewNotes : null
+    }
+  };
 }
 
 async function isEnrolled(learnerId: string, courseId: string) {
@@ -76,6 +126,14 @@ type BookingRow = {
   practical_rubric_score?: number | null;
 };
 
+type StoredPracticalRubricRow = {
+  trainer_exercise_reference: string;
+  raw_score: number;
+  normalized_score: number;
+  material_safety_concern: boolean;
+  safety_review_notes: string | null;
+};
+
 export async function recordAssessmentEvidence(_previous: AssessmentActionState, formData: FormData): Promise<AssessmentActionState> {
   const { session } = await requireAdmin();
   const assessmentId = clean(formData.get("assessmentId"));
@@ -84,19 +142,20 @@ export async function recordAssessmentEvidence(_previous: AssessmentActionState,
   const checklist = clean(formData.get("checklist"));
   const notes = clean(formData.get("assessorNotes"));
   const decision = clean(formData.get("decision"));
-  const practicalScoreInput = clean(formData.get("practicalScore"));
   if (!uuidPattern.test(assessmentId)) return { error: "Choose an assessment booking." };
   if (!["evidence_pending", "passed", "failed"].includes(decision)) return { error: "Choose an assessor decision." };
-
-  const practicalScore = practicalScoreInput === "" ? null : Number(practicalScoreInput);
-  if (practicalScore !== null && (!Number.isFinite(practicalScore) || practicalScore < 0 || practicalScore > 100)) {
-    return { error: "Enter a practical rubric score from 0 to 100." };
-  }
+  const parsedPracticalRubric = parsePracticalRubric(formData);
+  if (parsedPracticalRubric.error) return { error: parsedPracticalRubric.error };
 
   const bookingLookup = await adminRest(`/rest/v1/assessment_bookings?select=learner_user_id,course_id,theory_attempt_id,theory_score,theory_max_score,practical_rubric_score&id=eq.${encodeURIComponent(assessmentId)}&limit=1`);
   if (!bookingLookup.ok) return { error: "The assessment booking could not be found." };
   const booking = ((await bookingLookup.json()) as BookingRow[])[0];
   if (!booking?.learner_user_id || !booking.course_id) return { error: "The assessment booking could not be found." };
+
+  const storedPracticalRubricResponse = await adminRest(`/rest/v1/assessment_practical_rubrics?select=trainer_exercise_reference,raw_score,normalized_score,material_safety_concern,safety_review_notes&assessment_id=eq.${encodeURIComponent(assessmentId)}&limit=1`);
+  const storedPracticalRubric = storedPracticalRubricResponse.ok
+    ? ((await storedPracticalRubricResponse.json()) as StoredPracticalRubricRow[])[0] ?? null
+    : null;
 
   const existingEvidenceResponse = await adminRest(`/rest/v1/assessment_evidence?select=evidence_type&assessment_id=eq.${encodeURIComponent(assessmentId)}`);
   const existingEvidence = existingEvidenceResponse.ok ? (await existingEvidenceResponse.json()) as Array<{ evidence_type?: string }> : [];
@@ -105,7 +164,7 @@ export async function recordAssessmentEvidence(_previous: AssessmentActionState,
   if (movementLog) evidenceTypes.add("viewer_movement_log");
   if (checklist) evidenceTypes.add("assessor_checklist");
 
-  if (decision !== "passed" && !scannexResult && !movementLog && !checklist && practicalScore === null) {
+  if (decision !== "passed" && !scannexResult && !movementLog && !checklist && !parsedPracticalRubric.payload) {
     return { error: "Record evidence, a practical score, or select Passed only after the complete evidence set is already recorded." };
   }
 
@@ -113,20 +172,24 @@ export async function recordAssessmentEvidence(_previous: AssessmentActionState,
     ?? (booking.theory_attempt_id && booking.theory_score != null
       ? { id: booking.theory_attempt_id, score: Number(booking.theory_score), maxScore: Number(booking.theory_max_score ?? 68) }
       : null);
-  const effectivePracticalScore = practicalScore ?? (booking.practical_rubric_score == null ? null : Number(booking.practical_rubric_score));
+  const effectivePracticalScore = parsedPracticalRubric.payload?.normalizedScore
+    ?? (storedPracticalRubric ? Number(storedPracticalRubric.normalized_score) : (booking.practical_rubric_score == null ? null : Number(booking.practical_rubric_score)));
   const practicalConvertedScore = effectivePracticalScore === null ? null : Math.round((effectivePracticalScore / 100) * SCANNEX_PRACTICAL_MAX_SCORE * 100) / 100;
   const finalScore = latestTheoryAttempt && practicalConvertedScore !== null
     ? Math.round((latestTheoryAttempt.score + practicalConvertedScore) * 100) / 100
     : null;
+  const materialSafetyConcern = parsedPracticalRubric.payload?.materialSafetyConcern ?? storedPracticalRubric?.material_safety_concern ?? false;
+  const hasPracticalRubric = Boolean(parsedPracticalRubric.payload || storedPracticalRubric);
 
   if (decision === "passed") {
     const requiredEvidence = ["scannex_result", "viewer_movement_log", "assessor_checklist"];
     if (requiredEvidence.some((type) => !evidenceTypes.has(type))) {
       return { error: "A pass decision requires the saved Scannex result, Viewer Movement Log and assessor checklist." };
     }
-    if (!latestTheoryAttempt || effectivePracticalScore === null || finalScore === null) {
-      return { error: "A pass decision requires a recorded theory result and a practical rubric score." };
+    if (!latestTheoryAttempt || !hasPracticalRubric || effectivePracticalScore === null || finalScore === null) {
+      return { error: "A pass decision requires a recorded theory result and the completed detailed practical rubric." };
     }
+    if (materialSafetyConcern) return { error: "A pass cannot be recorded while a material safety or role-boundary concern requires review." };
     if (finalScore < SCANNEX_SUMMATIVE_PASS_MARK) {
       return { error: `The calculated final score is ${finalScore}/100. A pass requires ${SCANNEX_SUMMATIVE_PASS_MARK}/100 or above.` };
     }
@@ -140,6 +203,26 @@ export async function recordAssessmentEvidence(_previous: AssessmentActionState,
   if (records.length) {
     const evidenceResponse = await adminRest("/rest/v1/assessment_evidence", { method: "POST", body: JSON.stringify(records) });
     if (!evidenceResponse.ok) return { error: "The assessment evidence could not be recorded." };
+  }
+
+  if (parsedPracticalRubric.payload) {
+    const rubricResponse = await adminRest("/rest/v1/assessment_practical_rubrics?on_conflict=assessment_id", {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify({
+        assessment_id: assessmentId,
+        rubric_version: SCANNEX_PRACTICAL_RUBRIC_VERSION,
+        trainer_exercise_reference: parsedPracticalRubric.payload.trainerExerciseReference,
+        item_scores: parsedPracticalRubric.payload.scores,
+        raw_score: parsedPracticalRubric.payload.rawScore,
+        normalized_score: parsedPracticalRubric.payload.normalizedScore,
+        material_safety_concern: parsedPracticalRubric.payload.materialSafetyConcern,
+        safety_review_notes: parsedPracticalRubric.payload.safetyReviewNotes,
+        assessed_by: session.user.id,
+        assessed_at: new Date().toISOString()
+      })
+    });
+    if (!rubricResponse.ok) return { error: "The practical rubric could not be recorded. Do not issue a completion result yet." };
   }
 
   const now = new Date().toISOString();
@@ -165,6 +248,10 @@ export async function recordAssessmentEvidence(_previous: AssessmentActionState,
     body: JSON.stringify({ assessment_id: assessmentId, event_type: "evidence_recorded", actor_user_id: session.user.id, metadata: { decision, evidence_count: records.length, theory_score: latestTheoryAttempt?.score ?? null, practical_rubric_score: effectivePracticalScore, practical_converted_score: practicalConvertedScore, final_score: finalScore, idempotency_key: `assessment-evidence:${assessmentId}:${randomUUID()}` } })
   });
   if (!eventResponse.ok) return { error: "Evidence was recorded, but its audit event could not be saved. Do not issue a completion result yet." };
+  if (parsedPracticalRubric.payload) await adminRest("/rest/v1/assessment_events", {
+    method: "POST",
+    body: JSON.stringify({ assessment_id: assessmentId, event_type: "practical_rubric_recorded", actor_user_id: session.user.id, metadata: { rubric_version: SCANNEX_PRACTICAL_RUBRIC_VERSION, trainer_exercise_reference: parsedPracticalRubric.payload.trainerExerciseReference, raw_score: parsedPracticalRubric.payload.rawScore, normalized_score: parsedPracticalRubric.payload.normalizedScore, material_safety_concern: parsedPracticalRubric.payload.materialSafetyConcern } })
+  });
   if (decision !== "evidence_pending") await adminRest("/rest/v1/assessment_events", { method: "POST", body: JSON.stringify({ assessment_id: assessmentId, event_type: "decision_recorded", actor_user_id: session.user.id, metadata: { decision, final_score: finalScore } }) });
   revalidatePath("/admin/assessments");
   revalidatePath("/learn/scannex-training-programme/units/lu9");

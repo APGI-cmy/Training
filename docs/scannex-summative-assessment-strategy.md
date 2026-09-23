@@ -87,16 +87,15 @@ The platform must not automatically award competency merely because a learner ha
 
 ## Initial marking rubric
 
-The approved rubric must be finalised before the first formal assessment. It should separately score:
+The platform now records the controlled assessor instrument item by item. It covers:
 
-1. **Viewing discipline** - methodical examination and purposeful use of the available viewing tools.
-2. **Image interpretation** - distinguishes a credible anomaly from normal anatomy or an expected image feature.
-3. **Object detection** - correct, wrong and missed annotations from the Trainer result.
-4. **Operational decision** - appropriate hold, release or escalation action.
-5. **Recordkeeping and communication** - appropriate comment, explanation and escalation record.
-6. **Safety and role boundaries** - follows the approved process and does not attempt unauthorised technical adjustment.
+1. **Use of the Scannex application** (20 raw marks) - viewing modes, invert, contrast and density, core application features, annotation and comments.
+2. **Interrogation of images** (25 raw marks) - systematic scanning, viewer use, detection, annotation and distinguishing normal anatomy from a credible diamond anomaly.
+3. **Use of the Scannex checklist** (54 raw marks) - checklist application, diamond characteristics, density check, accurate records, conclusion, detection, required actions and sign-off.
 
-A material safety breach, such as an unsafe release or clear failure to escalate, should be a mandatory review item rather than being hidden by an average score.
+The source instrument totals **99 raw marks** (20 + 25 + 54). The platform keeps that source score and normalises it to 100 before calculating the agreed 32 practical marks. The existing worksheet's `Recordable Mark` formula (`total / 9`) does not match its displayed maximum of 10, so the platform does not use that formula. This should be formally ratified before the first certification cohort.
+
+A material safety or role-boundary concern is recorded separately and blocks a pass decision until it has been reviewed. It cannot be hidden by a high average score.
 
 ## Technical boundaries and guardrails
 
