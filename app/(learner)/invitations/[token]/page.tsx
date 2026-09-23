@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { acceptInvitation } from "@/server/actions/invitations/accept-invitation";
-import { requireSession } from "@/server/auth/session";
+import { getCurrentSession } from "@/server/auth/session";
 
 export const dynamic = "force-dynamic";
 
@@ -9,8 +10,14 @@ export default async function InvitationRedemptionPage({
 }: {
   params: Promise<{ token: string }>;
 }) {
-  await requireSession();
   const { token } = await params;
+  const session = await getCurrentSession();
+
+  if (!session) {
+    const signInHref = `/alp-sign-in?next=${encodeURIComponent(`/invitations/${token}`)}`;
+    const registerHref = `/register?token=${encodeURIComponent(token)}`;
+    return <main className="page-shell"><header className="page-header"><p className="eyebrow">Course invitation</p><h1>Access your APGI invitation</h1><p>Sign in, or create an account with the email address that received this invitation. Course access is granted only after you accept the invitation.</p></header><div className="button-row"><Link className="primary-button" href={signInHref}>Sign in</Link><Link className="secondary-button" href={registerHref}>Create account</Link></div></main>;
+  }
 
   async function redeem() {
     "use server";

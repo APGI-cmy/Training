@@ -1,4 +1,4 @@
-import { InvitationDraftForm } from "@/components/admin/InvitationDraftForm";
+import { InvitationForm } from "@/components/admin/InvitationForm";
 import { LearnerImportWorkspace } from "@/components/admin/LearnerImportWorkspace";
 import { getCourses } from "@/lib/courses";
 
@@ -12,11 +12,11 @@ export default function InvitationsPage() {
         <div>
           <p className="eyebrow">Administration</p>
           <h1>Invite and import learners</h1>
-          <p>Prepare learner access clearly and safely. This release adds validation and review; it does not create invitations, learner accounts or email.</p>
+          <p>Send individual course invitations or securely stage a bulk invitation run. A learner receives access only after accepting a valid invitation with the matching email address.</p>
         </div>
       </header>
-      <InvitationDraftForm courses={courses} defaultExpiry={defaultExpiry} />
-      <div id="import"><LearnerImportWorkspace /></div>
+      <InvitationForm courses={courses} defaultExpiry={defaultExpiry} />
+      <div id="import"><LearnerImportWorkspace courses={courses} /></div>
     </main>
   );
 }
