@@ -54,14 +54,17 @@ export function UnitViewer({
             {isPracticalAssessment && unit.practicalAssessment ? (
               <section className="unit-resources" aria-labelledby="summative-assessment-heading">
                 <p className="eyebrow">Final assessment</p>
-                <h2 id="summative-assessment-heading">Scannex Viewer Lab</h2>
-                <p>{unit.practicalAssessment.description}</p>
+                <h2 id="summative-assessment-heading">Scannex summative assessment</h2>
+                <p>Complete the secure 68-mark knowledge assessment, then attend the supervised Scannex practical assessment worth 32 marks.</p>
                 <p className="resource-status">
-                  This is a controlled Windows application session. Your practical evidence is reviewed against the approved assessment rubric.
+                  The final result requires 75% overall and an assessor-approved practical outcome. This is a controlled training assessment, not production Viewer access.
                 </p>
                 <div className="button-row">
+                  <Link className="primary-button" href={`/learn/${course.slug}/units/${unit.slug}/knowledge`}>
+                    Start knowledge assessment
+                  </Link>
                   <Link className="primary-button" href={unit.practicalAssessment.labPath}>
-                    Enter the summative assessment area
+                    Open practical assessment
                   </Link>
                 </div>
               </section>
