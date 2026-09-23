@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, type ChangeEvent } from "react";
+import { useState, useTransition, type ChangeEvent } from "react";
+import { createBatchInvitations } from "@/server/actions/invitations/create-batch-invitations";
+import type { InvitationInput } from "@/server/actions/invitations/create-invitation";
 
 type ImportSummary = {
   fileName: string;
@@ -13,6 +15,7 @@ type ImportSummary = {
 };
 
 type ZipEntry = { name: string; compression: number; compressedSize: number; offset: number };
+type ImportRow = InvitationInput & { rowNumber: number };
 
 const template = [
   "email,first_name,last_name,national_identity_number,company,country,operation_subdivision,department_team,course_slug,access_basis,reason,expires_at",
@@ -149,9 +152,47 @@ function summariseRows(rows: string[][], fileName: string, format: ImportSummary
   };
 }
 
-export function LearnerImportWorkspace() {
+function toInvitationRows(rows: string[][], allowedCourses: Set<string>): { invitations: ImportRow[]; error: string | null } {
+  if (rows.length < 2) return { invitations: [], error: "Add a header row and at least one learner row." };
+  const headers = rows[0].map(normaliseHeader);
+  const required = ["email", "course_slug", "access_basis", "reason", "expires_at"];
+  const missing = required.filter((header) => !headers.includes(header));
+  if (missing.length) return { invitations: [], error: `The import needs these columns before it can be sent: ${missing.join(", ")}.` };
+  const indexOf = (header: string) => headers.indexOf(header);
+  const value = (row: string[], header: string) => row[indexOf(header)]?.trim() ?? "";
+  const invitations: ImportRow[] = [];
+
+  for (const [index, row] of rows.slice(1).entries()) {
+    const courseId = value(row, "course_slug");
+    const recipientEmail = value(row, "email").toLowerCase();
+    const basis = value(row, "access_basis");
+    const reason = value(row, "reason");
+    const expiresAt = value(row, "expires_at");
+    if (!recipientEmail || !courseId || !basis || !reason || !expiresAt || !allowedCourses.has(courseId)) {
+      return { invitations: [], error: `Correct row ${index + 2}: every learner needs a valid course_slug, access_basis, reason and expires_at value.` };
+    }
+    invitations.push({
+      rowNumber: index + 2,
+      recipientEmail,
+      courseId,
+      basis,
+      reason,
+      expiresAt,
+      reference: value(row, "reference"),
+      company: value(row, "company")
+    });
+  }
+  return { invitations, error: null };
+}
+
+export function LearnerImportWorkspace({ courses }: { courses: Array<{ id: string; title: string }> }) {
   const [summary, setSummary] = useState<ImportSummary | null>(null);
   const [reviewed, setReviewed] = useState(false);
+  const [invitations, setInvitations] = useState<ImportRow[]>([]);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
+  const [deliveryResult, setDeliveryResult] = useState<{ sent: number; failed: number } | null>(null);
+  const [pending, startTransition] = useTransition();
   function downloadTemplate() {
     const url = URL.createObjectURL(new Blob([template], { type: "text/csv;charset=utf-8" }));
     const anchor = document.createElement("a");
@@ -164,15 +205,30 @@ export function LearnerImportWorkspace() {
     const file = event.target.files?.[0];
     if (!file) return;
     setReviewed(false);
+    setConfirmed(false);
+    setDeliveryResult(null);
+    setImportError(null);
     try {
       const isWorkbook = /\.xlsx$/i.test(file.name);
       if (!isWorkbook && !/\.(csv|tsv|txt)$/i.test(file.name)) throw new Error("Choose a CSV, TSV, text file or an Excel (.xlsx) workbook.");
       const rows = isWorkbook ? await parseWorkbookRows(file) : parseTextRows(await file.text());
       setSummary(summariseRows(rows, file.name, isWorkbook ? "Excel workbook" : "CSV"));
+      const prepared = toInvitationRows(rows, new Set(courses.map((course) => course.id)));
+      setInvitations(prepared.invitations);
+      setImportError(prepared.error);
     } catch (error) {
       setSummary({ fileName: file.name, format: "CSV", rows: 0, valid: 0, invalid: 0, missingRequiredReportingHeaders: requiredReportingHeaders, message: error instanceof Error ? error.message : "The selected file could not be staged." });
+      setInvitations([]);
+      setImportError(error instanceof Error ? error.message : "The selected file could not be staged.");
     }
   }
-  const reviewReady = Boolean(summary && summary.rows > 0 && summary.invalid === 0 && summary.missingRequiredReportingHeaders.length === 0);
-  return <section className="import-workspace" aria-labelledby="import-heading"><div className="admin-card-heading"><div><p className="eyebrow">Bulk intake</p><h2 id="import-heading">Import learners</h2></div><span className="status-badge status-draft">Staged only</span></div><p>Choose a CSV or Excel workbook, validate it locally, and prepare a review draft. Source rows are not uploaded and no learner or invitation is created.</p><div className="import-actions"><button className="secondary-button" type="button" onClick={downloadTemplate}>Download CSV template</button><label className="primary-button file-choice">Choose spreadsheet<input type="file" accept=".csv,.tsv,.txt,.xlsx,text/csv,text/tab-separated-values,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={chooseFile} /></label></div><p className="import-hint">Required: <code>email</code>, <code>company</code> and <code>country</code>. Optional: <code>national_identity_number</code>, <code>operation_subdivision</code> and <code>department_team</code>. Identity numbers remain browser-local and are not shown in the import draft. The template also includes course, basis, reason and expiry fields for the future governed workflow.</p>{summary ? <div className="import-summary" aria-live="polite"><strong>{summary.rows} rows staged from {summary.fileName}</strong><span>{summary.format} · {summary.valid} valid · {summary.invalid} need attention</span><p>{summary.message}</p></div> : null}<div className="import-steps" aria-label="Planned import steps"><span className="active">1 Upload</span><span className={summary ? "active" : undefined}>2 Validate</span><span className={summary && !summary.missingRequiredReportingHeaders.length ? "active" : undefined}>3 Match fields</span><span className={reviewed ? "active" : undefined}>4 Review import draft</span></div><button className="primary-button" type="button" onClick={() => setReviewed(true)} disabled={!reviewReady}>Review import draft</button>{reviewed && summary ? <div className="draft-summary" aria-live="polite"><strong>Import draft prepared</strong><span>{summary.valid} learner rows are ready for a future governed import. No rows were uploaded or matched to accounts.</span></div> : null}<p className="disabled-guidance">Import execution is disabled until the test learner, lifecycle, duplicate-handling and delivery decision are agreed.</p></section>;
+  const reviewReady = Boolean(summary && summary.rows > 0 && summary.invalid === 0 && summary.missingRequiredReportingHeaders.length === 0 && invitations.length === summary.rows && !importError);
+  function sendInvitations() {
+    if (!confirmed || !invitations.length) return;
+    startTransition(async () => {
+      const result = await createBatchInvitations({ invitations });
+      setDeliveryResult({ sent: result.sent, failed: result.failed });
+    });
+  }
+  return <section className="import-workspace" aria-labelledby="import-heading"><div className="admin-card-heading"><div><p className="eyebrow">Bulk intake</p><h2 id="import-heading">Import learners</h2></div><span className="status-badge status-draft">Review before send</span></div><p>Choose a CSV or Excel workbook, validate it locally, then explicitly send one invitation per valid learner. The source file is not retained by the platform.</p><div className="import-actions"><button className="secondary-button" type="button" onClick={downloadTemplate}>Download CSV template</button><label className="primary-button file-choice">Choose spreadsheet<input type="file" accept=".csv,.tsv,.txt,.xlsx,text/csv,text/tab-separated-values,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={chooseFile} /></label></div><p className="import-hint">Required: <code>email</code>, <code>company</code>, <code>country</code>, <code>course_slug</code>, <code>access_basis</code>, <code>reason</code> and <code>expires_at</code>. Identity numbers remain browser-local and are never sent as part of an invitation.</p>{summary ? <div className="import-summary" aria-live="polite"><strong>{summary.rows} rows staged from {summary.fileName}</strong><span>{summary.format} · {summary.valid} valid · {summary.invalid} need attention</span><p>{summary.message}</p></div> : null}{importError ? <p className="form-error" role="alert">{importError}</p> : null}<div className="import-steps" aria-label="Import steps"><span className="active">1 Upload</span><span className={summary ? "active" : undefined}>2 Validate</span><span className={reviewReady ? "active" : undefined}>3 Review</span><span className={deliveryResult ? "active" : undefined}>4 Send</span></div><button className="primary-button" type="button" onClick={() => setReviewed(true)} disabled={!reviewReady}>Review import</button>{reviewed && summary ? <div className="draft-summary" aria-live="polite"><strong>{invitations.length} invitations ready</strong><span>Review the count, then confirm before emails are sent.</span><label><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} /> I confirm that these learners should receive course invitations now.</label><button className="primary-button" type="button" onClick={sendInvitations} disabled={!confirmed || pending}>{pending ? "Sending invitations…" : "Send enrolment invitations"}</button></div> : null}{deliveryResult ? <p className="feedback feedback-correct" aria-live="polite">{deliveryResult.sent} invitation{deliveryResult.sent === 1 ? "" : "s"} sent; {deliveryResult.failed} require follow-up.</p> : null}</section>;
 }

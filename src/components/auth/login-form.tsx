@@ -5,11 +5,12 @@ import { signInAction, type SignInState } from "@/server/actions/auth/sign-in";
 
 const initialState: SignInState = {};
 
-export function LoginForm() {
+export function LoginForm({ returnTo }: { returnTo?: string }) {
   const [state, formAction, pending] = useActionState(signInAction, initialState);
 
   return (
     <form className="alp-form" action={formAction}>
+      {returnTo ? <input name="returnTo" type="hidden" value={returnTo} /> : null}
       <label>
         Email
         <input name="email" type="email" autoComplete="email" required />

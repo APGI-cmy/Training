@@ -17,6 +17,29 @@ async function recordInvalidAttempt(actorId: string, tokenHash: string, failed: 
   });
 }
 
+async function ensureLearnerRecord(userId: string, email: string | undefined) {
+  const learner = await adminRest("/rest/v1/learners?on_conflict=id", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify({ id: userId, status: "active" })
+  });
+  if (!learner.ok) return false;
+
+  const role = await adminRest("/rest/v1/user_roles?on_conflict=user_id,role", {
+    method: "POST",
+    headers: { Prefer: "resolution=ignore-duplicates,return=minimal" },
+    body: JSON.stringify({ user_id: userId, role: "learner" })
+  });
+  if (!role.ok) return false;
+
+  const profile = await adminRest("/rest/v1/profiles?on_conflict=user_id", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify({ user_id: userId, email: email?.trim().toLowerCase() ?? null })
+  });
+  return profile.ok;
+}
+
 export async function acceptInvitation(token: string) {
   const session = await requireSession();
   const tokenHash = createHash("sha256").update(token).digest("hex");
@@ -54,6 +77,11 @@ export async function acceptInvitation(token: string) {
   const invitationId = invitation.id;
   const courseId = invitation.course_id;
   const idempotencyKey = `invitation:${invitationId}:redeemed`;
+
+  if (!(await ensureLearnerRecord(session.user.id, session.user.email))) {
+    return { ok: false, error: "learner_record_failed" };
+  }
+
   const upsert = await adminRest("/rest/v1/course_enrolments?on_conflict=user_id,course_id", {
     method: "POST",
     headers: { Prefer: "resolution=merge-duplicates,return=representation" },
