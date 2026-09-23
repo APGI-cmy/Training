@@ -28,23 +28,32 @@ The current priority is to publish the completed Scannex LUs to the APGI Trainin
 
 No redesign of a working iSpring interaction is required solely because this strategy exists.
 
+## Approved summative scoring model
+
+The approved first-release standard is based on the practical-assessment memorandum:
+
+- **Theory knowledge assessment:** 68 marks.
+- **Supervised Scannex practical:** 32 marks, calculated from the assessor's 100-point practical instrument as `rubric score / 100 × 32`.
+- **Final result:** 100 marks in total, with a **75% overall pass requirement**.
+
+The platform stores the theory score, detailed practical score, converted practical mark, final score, saved Scannex result reference, Viewer Movement Log reference and assessor checklist reference. A final pass remains an assessor decision. It cannot be recorded until the three controlled evidence references and both component scores are present.
+
 ## Summative assessment design
 
 The final assessment will have two connected parts.
 
-### Part A: browser-based Scannex decision simulation
+### Part A: browser-based Scannex knowledge assessment
 
-This is built directly in the APGI Training Platform, not as an iSpring Web Object.
+This is built directly in the APGI Training Platform, not as an iSpring Web Object. The initial release uses the selected 68-mark questions from the approved Scannex summative memorandum. Correct answers and submitted selections remain server-side assessment evidence.
 
-The simulation will use approved training images and a realistic, clearly labelled training interface. It will require the learner to:
+The assessment requires the learner to demonstrate knowledge of:
 
-- identify a potential anomaly;
-- choose appropriate viewing controls in a defensible order;
-- consider normal anatomy and image context;
-- make a hold, release or escalation decision;
-- record the required outcome.
+- Scannex purpose, benefits, layout and integrated systems;
+- x-ray technology, radiation and exclusion criteria;
+- pre-identified contraband and body-search principles;
+- Viewer functions, anomaly characteristics and anatomy.
 
-The platform records the learner's choices, sequence, timestamps and result against their account.
+The platform records the learner's submitted choices, timestamp and score against their learner account. A later decision-simulation extension may use approved training images, but it will remain clearly labelled as training and never as the production Viewer.
 
 This simulation assesses decision-making and application of the learning programme. It does not claim to be the production Scannex system.
 
@@ -65,14 +74,14 @@ The assessor reviews the Viewer Movement Log to evaluate whether the learner use
 
 ## Evidence flow
 
-1. The platform assigns the summative assessment and gives the learner a unique assessment reference.
-2. The learner completes the browser simulation. The platform stores the outcome.
+1. The learner completes the browser-based knowledge assessment. The platform stores the 68-mark outcome.
+2. The assessor creates and approves the practical booking, which generates the unique assessment reference and links the latest knowledge result.
 3. The assessor starts the corresponding Trainer exercise at an authorised Scannex training station.
 4. The Trainer result is saved by the assessor.
-5. The assessor uploads the approved result evidence to the learner's assessment record, or enters the result into the platform where file upload is not appropriate.
-6. The assessor reviews the Movement Log and completes the rubric.
-7. The platform records the assessor's pass, remediation or re-attempt decision.
-8. Only a passed browser simulation, passed live exercise and completed assessor review make the learner eligible for final course completion.
+5. The assessor records the saved Scannex result, Viewer Movement Log and assessor checklist against the assessment reference.
+6. The assessor records the 100-point practical-rubric result. The platform converts it to the 32-mark practical component and calculates the score out of 100.
+7. The platform permits a pass only when all evidence is present and the calculated score is at least 75. The assessor records the final decision, remediation or re-attempt.
+8. Only the assessor-approved final decision makes the learner eligible for final course completion.
 
 The platform must not automatically award competency merely because a learner has opened the Trainer or uploaded an unverified file.
 

@@ -12,6 +12,11 @@ type BookingRow = {
   status: string;
   scheduled_for: string | null;
   station_label: string | null;
+  theory_score: number | null;
+  theory_max_score: number | null;
+  practical_rubric_score: number | null;
+  practical_converted_score: number | null;
+  final_score: number | null;
   created_at: string;
 };
 type ProfileRow = { user_id: string; email: string | null; full_name: string | null; preferred_name: string | null };
@@ -27,12 +32,17 @@ export type AssessmentBooking = {
   status: string;
   scheduledFor: string | null;
   stationLabel: string | null;
+  theoryScore: number | null;
+  theoryMaxScore: number | null;
+  practicalRubricScore: number | null;
+  practicalConvertedScore: number | null;
+  finalScore: number | null;
   evidence: Array<{ type: string; reference: string; recordedAt: string }>;
 };
 
 export async function getAssessmentBookings(): Promise<AssessmentBooking[]> {
   await requireAdmin();
-  const bookingsResponse = await adminRest("/rest/v1/assessment_bookings?select=id,assessment_reference,learner_user_id,course_id,status,scheduled_for,station_label,created_at&order=created_at.desc&limit=100");
+  const bookingsResponse = await adminRest("/rest/v1/assessment_bookings?select=id,assessment_reference,learner_user_id,course_id,status,scheduled_for,station_label,theory_score,theory_max_score,practical_rubric_score,practical_converted_score,final_score,created_at&order=created_at.desc&limit=100");
   if (!bookingsResponse.ok) return [];
   const bookings = (await bookingsResponse.json()) as BookingRow[];
   if (!bookings.length) return [];
@@ -60,6 +70,11 @@ export async function getAssessmentBookings(): Promise<AssessmentBooking[]> {
       status: booking.status,
       scheduledFor: booking.scheduled_for,
       stationLabel: booking.station_label,
+      theoryScore: booking.theory_score === null ? null : Number(booking.theory_score),
+      theoryMaxScore: booking.theory_max_score === null ? null : Number(booking.theory_max_score),
+      practicalRubricScore: booking.practical_rubric_score === null ? null : Number(booking.practical_rubric_score),
+      practicalConvertedScore: booking.practical_converted_score === null ? null : Number(booking.practical_converted_score),
+      finalScore: booking.final_score === null ? null : Number(booking.final_score),
       evidence: (evidenceByBooking.get(booking.id) ?? []).map((entry) => ({ type: entry.evidence_type, reference: entry.evidence_reference, recordedAt: entry.recorded_at }))
     };
   });

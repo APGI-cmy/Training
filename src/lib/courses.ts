@@ -69,13 +69,13 @@ const scannexTrainingProgramme: Course = {
     scannexUnit(
       9,
       "LU 9 Procedures, Records, and profesional conduct",
-      "Summative Assessment: Scannex Practical",
-      "A supervised end-to-end practical assessment at an approved Scannex training station.",
+      "Summative Assessment: Knowledge and Scannex Practical",
+      "A 68-mark knowledge assessment and a supervised 32-mark practical assessment at an approved Scannex training station.",
       undefined,
       undefined,
       {
         labPath: "/learn/scannex-training-programme/units/lu9/viewer-lab",
-        description: "Complete the controlled practical exercise at your approved Scannex training station."
+        description: "Complete the supervised 32-mark practical exercise at your approved Scannex training station."
       }
     )
   ]
