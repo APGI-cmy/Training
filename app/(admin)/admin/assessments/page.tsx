@@ -16,7 +16,7 @@ export default async function AssessmentsPage() {
         <div>
           <p className="eyebrow">Scannex summative assessment</p>
           <h1>Assessment operations</h1>
-          <p>Generate a learner reference, approve the supervised station exercise, and record the 68-mark theory, 32-mark practical and controlled evidence for assessor review.</p>
+          <p>Generate a learner reference, approve the supervised station exercise, record the 68-mark theory and detailed practical rubric, then retain the controlled evidence for assessor review.</p>
         </div>
       </header>
 
@@ -52,8 +52,9 @@ export default async function AssessmentsPage() {
                       <strong>{booking.finalScore === null ? "Awaiting score" : `${booking.finalScore}/100`}</strong>
                       <span>Theory: {booking.theoryScore === null ? "—" : `${booking.theoryScore}/${booking.theoryMaxScore ?? 68}`}</span>
                       <span>Practical: {booking.practicalConvertedScore === null ? "—" : `${booking.practicalConvertedScore}/32`}</span>
+                      {booking.practicalRubric ? <span>Rubric: {booking.practicalRubric.rawScore}/99 → {booking.practicalRubric.normalizedScore}/100</span> : null}
                     </td>
-                    <td><strong>{booking.stationLabel ?? "Station to be confirmed"}</strong><span>{booking.scheduledFor ? new Date(booking.scheduledFor).toLocaleString() : "Not scheduled"}</span></td>
+                    <td><strong>{booking.stationLabel ?? "Station to be confirmed"}</strong><span>{booking.scheduledFor ? new Date(booking.scheduledFor).toLocaleString() : "Not scheduled"}</span>{booking.practicalRubric ? <span>Exercise: {booking.practicalRubric.trainerExerciseReference}</span> : null}{booking.practicalRubric?.materialSafetyConcern ? <span className="assessment-safety-flag">Safety review required</span> : null}</td>
                     <td>{booking.evidence.length ? booking.evidence.map((item) => <span key={`${item.type}:${item.reference}`}>{item.type.replaceAll("_", " ")}: {item.reference}</span>) : <span>Evidence not yet recorded</span>}</td>
                   </tr>
                 ))}

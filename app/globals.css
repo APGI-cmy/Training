@@ -797,6 +797,85 @@ textarea {
   color: var(--ink);
 }
 
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--ink);
+  font-weight: 750;
+}
+
+.checkbox-label input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--primary);
+}
+
+.practical-rubric-fieldset {
+  display: grid;
+  gap: 16px;
+  margin: 6px 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px;
+}
+
+.practical-rubric-fieldset legend {
+  padding: 0 6px;
+  color: var(--ink);
+  font-weight: 850;
+}
+
+.practical-rubric-fieldset > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.practical-rubric-section {
+  display: grid;
+  gap: 8px;
+}
+
+.practical-rubric-section h3 {
+  margin: 0;
+  color: var(--primary-strong);
+  font-size: 1rem;
+}
+
+.practical-rubric-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 76px;
+  align-items: center;
+  gap: 14px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.practical-rubric-row span {
+  display: grid;
+  gap: 2px;
+}
+
+.practical-rubric-row small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.practical-rubric-row input {
+  min-width: 0;
+  text-align: center;
+}
+
+.assessment-safety-flag {
+  color: #a43700 !important;
+  font-weight: 850;
+}
+
 .text-button,
 .table-action {
   color: var(--primary-strong);
