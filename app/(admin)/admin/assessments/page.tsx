@@ -2,6 +2,7 @@ import { ScannexAssessmentWorkspace } from "@/components/admin/ScannexAssessment
 import { getCourses } from "@/lib/courses";
 import { getAdminLearners } from "@/lib/services/admin/get-admin-learners";
 import { getAssessmentBookings } from "@/server/services/assessments/get-assessment-bookings";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,7 @@ export default async function AssessmentsPage() {
           <p className="eyebrow">Scannex summative assessment</p>
           <h1>Assessment operations</h1>
           <p>Generate a learner reference, approve the supervised station exercise, record the 68-mark theory and detailed practical rubric, then retain the controlled evidence for assessor review.</p>
+          <Link className="secondary-button" href="/admin/assessments/automation">Automated assessment development</Link>
         </div>
       </header>
 

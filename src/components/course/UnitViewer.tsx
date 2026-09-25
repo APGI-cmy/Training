@@ -55,9 +55,9 @@ export function UnitViewer({
               <section className="unit-resources" aria-labelledby="summative-assessment-heading">
                 <p className="eyebrow">Final assessment</p>
                 <h2 id="summative-assessment-heading">Scannex summative assessment</h2>
-                <p>Complete the secure 68-mark knowledge assessment, then attend the supervised Scannex practical assessment worth 32 marks.</p>
+                <p>Complete the 68-mark knowledge assessment, then request access to the Scannex practical assessment, which contributes 32 marks.</p>
                 <p className="resource-status">
-                  The final result requires 75% overall and an assessor-approved practical outcome. This is a controlled training assessment, not production Viewer access.
+                  The final result requires 75% overall, complete assessment evidence and the required safety-critical actions. New automated practicals are scored out of 100 before conversion to 32 marks.
                 </p>
                 <div className="button-row">
                   <Link className="primary-button" href={`/learn/${course.slug}/units/${unit.slug}/knowledge`}>

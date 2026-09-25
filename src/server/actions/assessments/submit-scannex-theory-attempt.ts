@@ -11,6 +11,7 @@ import {
 import { requireSession } from "@/server/auth/session";
 import { adminRest } from "@/server/supabase/admin-rest";
 import type { ScannexTheoryAnswerState } from "@/types/scannex-assessment";
+import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 
 export type ScannexTheoryActionState = {
   error?: string;
@@ -55,6 +56,9 @@ export async function submitScannexTheoryAttempt(
     return { error: `Answer all ${getScannexTheoryQuestions().length} questions before submitting.` };
   }
 
+  const access = await getCourseAccess({ accessToken: session.accessToken, userId: session.user.id, courseId: course.id });
+  if (!access.canAccess) return { error: "An active course enrolment is required to submit this assessment." };
+
   const result = scoreScannexTheoryAssessment(answers);
   const response = await adminRest("/rest/v1/assessment_theory_attempts", {
     method: "POST",
@@ -77,7 +81,7 @@ export async function submitScannexTheoryAttempt(
   revalidatePath(`/learn/${course.slug}/units/lu9`);
   revalidatePath(`/learn/${course.slug}/units/lu9/knowledge`);
   return {
-    message: "Your knowledge assessment has been recorded. Your practical assessment remains subject to assessor review.",
+    message: "Your knowledge assessment has been recorded. Complete your approved practical assessment to receive your final summative result.",
     score: result.score,
     maxScore: result.maxScore,
     benchmarkMet: result.passed

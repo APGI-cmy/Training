@@ -927,6 +927,30 @@ textarea {
   font-weight: 700;
 }
 
+.scannex-assessment-preview {
+  display: grid;
+  gap: 24px;
+  width: 100%;
+  min-width: 0;
+}
+
+.scannex-assessment-preview summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.scannex-instruction-list li {
+  margin-bottom: 12px;
+}
+
+.scannex-automation-table {
+  min-width: 880px;
+}
+
+.scannex-automation-table td {
+  white-space: normal;
+}
+
 .admin-workspace-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.7fr);
@@ -1370,3 +1394,10 @@ body:has(.learner-scorm-full) .learner-shell {
 .presentation-resource-link:focus-visible {
   background: #0b5d56;
 }
+.scannex-practical-session { display: grid; gap: 1.5rem; }
+.scannex-stream-container { width: 100%; height: min(75vh, 900px); min-height: 420px; background: #111827; }
+.scannex-stream-container iframe { width: 100%; height: 100%; border: 0; }
+.scannex-instructions { white-space: pre-line; }
+.scannex-score-summary { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+.scannex-score-summary dd { margin: 0; font-size: 1.4rem; font-weight: 700; }
+.scannex-case-definition { min-height: 28rem; font-family: monospace; font-size: .85rem; }
