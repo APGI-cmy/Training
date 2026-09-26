@@ -1,5 +1,9 @@
 # Scannex Summative Assessment Strategy
 
+> **Scope update - 24 September 2026:** The user has requested genuine Scannex delivery inside the browser and automated assessment without an assessor operating each attempt. See [the browser hosting and automation proposal](scannex-browser-hosting-proposal.md) for the new target and its validation gates. The supervised process below describes the currently implemented route; it is not the future delivery constraint. The native Windows application can be streamed into a browser through a suitable host, although it cannot run directly on Vercel. No hosted service or automatic practical scoring has yet been enabled.
+
+> **Scoring discrepancy found during verification:** the workbook's 21 item maxima and the platform rows total 100 (20 + 25 + 55), although the older text below and configured normalisation denominator say 99. Confirmation of the correction is pending. Do not use this historical 99-mark description as evidence that the source rows sum to 99.
+
 ## Decision record
 
 **Decision:** APGI Training Platform will become the learner, evidence, assessment and completion system for Scannex training. iSpring remains the authoring and publishing tool for Learning Units (LUs). The Scannex ADS Trainer remains the controlled, live practical assessment environment.
@@ -33,7 +37,7 @@ No redesign of a working iSpring interaction is required solely because this str
 The approved first-release standard is based on the practical-assessment memorandum:
 
 - **Theory knowledge assessment:** 68 marks.
-- **Supervised Scannex practical:** 32 marks, calculated from the assessor's 100-point practical instrument as `rubric score / 100 × 32`.
+- **Supervised Scannex practical:** 32 marks, calculated by normalising the 99-raw-mark source instrument to 100 before applying the practical weighting. The platform rounds the normalised score and converted practical mark to two decimal places.
 - **Final result:** 100 marks in total, with a **75% overall pass requirement**.
 
 The platform stores the theory score, detailed practical score, converted practical mark, final score, saved Scannex result reference, Viewer Movement Log reference and assessor checklist reference. A final pass remains an assessor decision. It cannot be recorded until the three controlled evidence references and both component scores are present.

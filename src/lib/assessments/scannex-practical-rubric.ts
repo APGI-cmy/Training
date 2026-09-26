@@ -9,9 +9,8 @@ export type ScannexPracticalCriterion = {
   maximumScore: number;
 };
 
-// This is the controlled assessor rubric transcribed from the approved
-// practical-assessment instrument. Its raw marks total 99, so the platform
-// normalises the recorded result to 100 before applying the 32-mark component.
+// Legacy v1 keeps its historical 99-mark normalisation. The 21 item maxima
+// actually total 100; automated v2 uses 100 directly without rewriting v1 records.
 export const SCANNEX_PRACTICAL_RUBRIC: ScannexPracticalCriterion[] = [
   { id: "four_viewing_modes", section: "Use of the Scannex application", label: "Uses the four viewing modes correctly", maximumScore: 4 },
   { id: "invert_mode", section: "Use of the Scannex application", label: "Uses the invert mode correctly", maximumScore: 2 },

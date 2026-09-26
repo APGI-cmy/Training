@@ -1,3 +1,6 @@
 # Course-video binaries are stored in Git LFS.  Keep this rule at repository
 # root so local checkouts, GitHub and Vercel all resolve the real media objects.
 public/courses/**/*.mp4 filter=lfs diff=lfs merge=lfs -text
+
+# Preserve original native export bytes so evidence hashes survive checkout.
+tests/scannex/native-fixtures/*.txt -text whitespace=cr-at-eol

@@ -4,6 +4,8 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import { encodeAssetPath } from "@/lib/courses";
 import { ScormPlayer } from "@/components/course/ScormPlayer";
 import { UnitResources } from "@/components/course/UnitResources";
+import { ScannexAssessmentPreview } from "@/components/assessments/ScannexAssessmentPreview";
+import { getScannexTheoryQuestions } from "@/server/assessments/scannex-theory-bank";
 import { getCourseShell } from "@/lib/services/courses/get-course-shell";
 import { getUnitContent } from "@/lib/services/courses/get-unit-content";
 
@@ -50,7 +52,7 @@ export default async function AdminCourseUnitPreviewPage({ params }: PageProps) 
               <Link className="primary-button" href={`${previewBase}/${unit.slug}/full`}>Open full-page preview</Link>
             </div>
           </div>
-          {course.slug === "scannex-training-programme" && (
+          {course.slug === "scannex-training-programme" && !unit.practicalAssessment && (
             <UnitResources
               eBookHref={eBookHref}
               activityHref={scormLaunchSrc ? `${previewBase}/${unit.slug}/full` : undefined}
@@ -58,7 +60,9 @@ export default async function AdminCourseUnitPreviewPage({ params }: PageProps) 
               activityLabel="Open learning activity in a full-page preview"
             />
           )}
-          {scormLaunchSrc ? (
+          {unit.practicalAssessment && course.slug === "scannex-training-programme" ? (
+            <ScannexAssessmentPreview questions={getScannexTheoryQuestions()} />
+          ) : scormLaunchSrc ? (
             <ScormPlayer courseSlug={course.slug} unitSlug={unit.slug} launchSrc={scormLaunchSrc} title={unit.title} mode="preview" />
           ) : (
             <figure className="media-item">

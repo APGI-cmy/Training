@@ -11,6 +11,10 @@ on:
       - "tests/qa-to-red/alp/w4-2-browser-repair.spec.ts"
       - "tests/qa-to-red/alp/batch3-stabilisation-red.spec.ts"
       - "package.json"
+      - "package-lock.json"
+      - "tests/scannex/**"
+      - "vitest.scannex.config.ts"
+      - "supabase/migrations/*scannex_automated_practical.sql"
       - ".gitattributes"
       - "scripts/verify-course-media.mjs"
       - "public/courses/**/*.mp4"
@@ -89,6 +93,9 @@ jobs:
         run: |
           set -o pipefail
           npm run build 2>&1 | tee w4-2-build-output.txt
+
+      - name: Verify automated Scannex scoring and evidence boundaries
+        run: npm run test:scannex
 
       - name: Upload validation output
         if: always()
