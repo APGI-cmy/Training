@@ -37,7 +37,7 @@ No real answer key is bundled. The five-case pilot register is blank/unapproved.
 
 The body carries `attemptId`, `caseHash`, `nonce`, `adapterVersion`, `imageHashes`, `startedAt`, `endedAt`, `captureComplete`, `facts`, and two original artifacts (`scannex_result`, `movement_log`) as canonical Base64 plus SHA-256. Original bytes are retained privately. The capture must finish inside the approved window; delivery can retry for 15 minutes afterwards. Larger real exports will need a private object-storage upload path before activation.
 
-**An HMAC proves the sender, not that native observations are correct.** There is no implemented or validated native Scannex parser/collector yet. Before setting the verified adapter version, produce actual native results and Movement Logs; map every scored field to observed behavior; test missing/wrong targets, movement gaps and incorrect operations. Protect the collector process and signing secret from the learner account, and prove that learners cannot fabricate or alter its input evidence. Learner-side JavaScript and AppStream connection events are not practical evidence.
+**An HMAC proves the sender, not that native observations are correct.** Two genuine local TrainingTool calibration exports now validate the limited single-image result parser in `src/server/assessments/scannex-training-result.ts`. It checks the native identity, assigned image, reference-target count, totals and original byte hash. It produces detection counts only and is not wired into the evidence endpoint. There is still no implemented or validated full native collector or movement parser. Before setting the verified adapter version, produce original movement evidence; map every scored field to observed behavior; test movement gaps and incorrect operations. Protect the collector process and signing secret from the learner account, and prove that learners cannot fabricate or alter its input evidence. Learner-side JavaScript and AppStream connection events are not practical evidence. See [native validation findings](scannex-native-validation.md).
 
 The remote launcher/collector must also enforce the absolute access expiry, finish/export unattended, recover safely from disconnects, and terminate the AWS session after evidence delivery. The 60-second streaming URL validity only limits initial authentication; it does **not** end an already-running AWS session.
 
@@ -48,7 +48,7 @@ The Windows Server 2022 Ireland development builder `apgi-scannex-dev-builder` p
 Before enabling `SCANNEX_LIVE_ENABLED=true`:
 
 1. Confirm approved cases/answer keys and calibrate every rubric observation against known correct and incorrect actions.
-2. Disable the TrainingTool's automatic display of correct annotations during a summative attempt using a supported, tested assessment configuration. This remains unverified.
+2. Disable the TrainingTool's automatic display of correct annotations during a summative attempt using a supported, tested assessment configuration. The local calibration runs confirmed that the correct marker appears immediately on Release, even behind the result dialog. Hiding or dismissing that dialog is insufficient; no supported suppression setting has been established.
 3. Implement and validate the collector and protected signing secret under a restricted Windows learner account. Validate original exports and every predicate; the synthetic fixture adapter is never valid for learners.
 4. Test learner isolation, file permissions, controlled database access, unattended launch, recovery, absolute expiry and AWS session termination. Configure HTTPS outbound connectivity; the current builder has default internet access disabled.
 5. Publish the image and create a controlled on-demand fleet and stack. Add the exact APGI embedding domain. Configure copying, file transfer and application access appropriately for the assessment. Keep idle capacity/costs within the approved budget.
@@ -58,11 +58,12 @@ Before enabling `SCANNEX_LIVE_ENABLED=true`:
 
 ## Validation performed
 
-- `npm run test:scannex`: 53 passing checks for scoring, capture integrity, signature expiry, API authentication, response privacy (including unexpected answer metadata) and negative cases. These use synthetic fixtures and mocked external API boundaries.
+- `npm run test:scannex`: 79 passing checks. The original 53 scoring, capture-integrity and API-boundary checks use synthetic fixtures/mocked external services. The additional 26 parser checks include the two unmodified native calibration exports and reject identity/image mismatches, inconsistent totals, wrong target counts, malformed rows, unsupported formats and oversized input.
 - `tests/scannex/database.spec.sql`: executed in an isolated PostgreSQL 17 container with no network or published ports. Tests real migration/RPC behavior, permissions, enrolment, duplicate requests/starts, frozen knowledge score, immutable checklist/evidence/result, completion and closed windows. Bootstrap uses minimal predecessor table definitions rather than real learner data.
 - Production Next.js build and TypeScript checks pass. Existing course-media validation checks all 66 MP4 files. The seven established W1/W4.1/W4.2/Batch 3 regression suites pass all 51 checks. An existing invitation UI incorrectly assumed delivery when its provider status was absent; the fallback now says delivery is unconfirmed, and explicit provider acceptance does not claim inbox receipt.
 - The authenticated Vercel preview admin page was checked on 26 September: database reads succeeded; request and result tables, the case editor, 100-mark totals and disabled-streaming notice rendered correctly. No real case, learner request or assessment result was created during this read-only browser check.
-- Real native scoring, AWS embedded learner delivery, actual notification delivery and the complete authenticated learner browser flow are still outstanding and must not be described as passed.
+- Local native detection counts were checked on 26 September: no learner marker produced 0 right / 0 wrong / 1 missed; one correct plus one incorrect marker produced 1 right / 1 wrong / 0 missed. Viewer and TrainingTool agreed in both runs and original exports are retained. These are technical calibration results, not 21-item practical scores or learner records.
+- Complete native action capture, summative scoring, AWS embedded learner delivery, actual notification delivery and the complete authenticated learner browser flow remain outstanding and must not be described as passed.
 
 ## Deployment
 
