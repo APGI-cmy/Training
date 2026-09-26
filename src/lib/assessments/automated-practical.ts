@@ -152,5 +152,6 @@ export function scorePractical(definition: PracticalCase, native: Facts, checkli
 }
 
 export function publicCaseInstructions(definition: PracticalCase) {
-  return { title: definition.title, instructions: definition.instructions, checklist: definition.checklist };
+  return { title: definition.title, instructions: definition.instructions,
+    checklist: definition.checklist.map(({ id, prompt, options }) => ({ id, prompt, options: [...options] })) };
 }

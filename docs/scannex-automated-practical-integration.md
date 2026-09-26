@@ -1,6 +1,6 @@
 # Scannex automated practical integration
 
-25 September 2026. This is the APGI application integration and scoring contract. Genuine AWS learner delivery is **not enabled**. Synthetic tests establish software behavior, not the accuracy of native Scannex observations.
+Updated 26 September 2026. This is the APGI application integration and scoring contract. Genuine AWS learner delivery is **not enabled**. Synthetic tests establish software behavior, not the accuracy of native Scannex observations.
 
 ## User journey
 
@@ -58,10 +58,11 @@ Before enabling `SCANNEX_LIVE_ENABLED=true`:
 
 ## Validation performed
 
-- `npm run test:scannex`: scoring, capture integrity, signature expiry, API authentication, response privacy and negative cases. These use synthetic fixtures and mocked external API boundaries.
+- `npm run test:scannex`: 53 passing checks for scoring, capture integrity, signature expiry, API authentication, response privacy (including unexpected answer metadata) and negative cases. These use synthetic fixtures and mocked external API boundaries.
 - `tests/scannex/database.spec.sql`: executed in an isolated PostgreSQL 17 container with no network or published ports. Tests real migration/RPC behavior, permissions, enrolment, duplicate requests/starts, frozen knowledge score, immutable checklist/evidence/result, completion and closed windows. Bootstrap uses minimal predecessor table definitions rather than real learner data.
-- Production Next.js build and TypeScript checks pass. Existing course-media validation checks all 66 MP4 files.
-- Real native scoring, AWS embedded learner delivery, actual notification delivery and authenticated live browser flow are still outstanding and must not be described as passed.
+- Production Next.js build and TypeScript checks pass. Existing course-media validation checks all 66 MP4 files. The seven established W1/W4.1/W4.2/Batch 3 regression suites pass all 51 checks. An existing invitation UI incorrectly assumed delivery when its provider status was absent; the fallback now says delivery is unconfirmed, and explicit provider acceptance does not claim inbox receipt.
+- The authenticated Vercel preview admin page was checked on 26 September: database reads succeeded; request and result tables, the case editor, 100-mark totals and disabled-streaming notice rendered correctly. No real case, learner request or assessment result was created during this read-only browser check.
+- Real native scoring, AWS embedded learner delivery, actual notification delivery and the complete authenticated learner browser flow are still outstanding and must not be described as passed.
 
 ## Deployment
 

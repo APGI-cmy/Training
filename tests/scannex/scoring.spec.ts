@@ -47,6 +47,11 @@ describe("automated Scannex marking", () => {
   it("exports learner instructions without expected answers or file hashes", () => {
     expect(Object.keys(publicCaseInstructions(fixture().definition)).sort()).toEqual(["checklist", "instructions", "title"]);
   });
+  it("strips unexpected private metadata from checklist questions", () => {
+    const { definition } = fixture();
+    Object.assign(definition.checklist[0], { correctAnswer: "PRIVATE KEY", explanation: "PRIVATE KEY" });
+    expect(JSON.stringify(publicCaseInstructions(definition))).not.toContain("PRIVATE KEY");
+  });
   it.each(["missing-item", "inflated-marks", "duplicate-check", "unsafe", "native-substitution", "unavailable-choice"])("rejects invalid key: %s", problem => {
     const { definition } = fixture();
     if (problem === "missing-item") definition.checks.pop();
