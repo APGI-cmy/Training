@@ -1,7 +1,3 @@
-:root {
-  --app-header-height: 75px;
-}
-
 .learner-shell {
   display: grid;
   min-height: calc(100vh - var(--app-header-height));

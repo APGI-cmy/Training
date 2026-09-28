@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Brand } from "@/components/Brand";
 import type { ReactNode } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
@@ -21,9 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <header className="app-header">
-          <Link className="brand-link" href="/">
-            APGI Training
-          </Link>
+          <Brand href="/" />
           <ThemeToggle />
         </header>
         {children}

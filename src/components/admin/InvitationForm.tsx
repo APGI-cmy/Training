@@ -13,6 +13,7 @@ export function InvitationForm({
   defaultExpiry: string;
 }) {
   const [state, action, pending] = useActionState(createInvitationWithState, initialState);
+  const deliveryStatus = state.deliveryStatus ?? "created_not_sent";
 
   return (
     <>
@@ -59,10 +60,11 @@ export function InvitationForm({
       {state.error ? <p role="alert">Invitation could not be created: {state.error}</p> : null}
       {state.ok ? (
         <section className="notice-card" aria-live="polite">
-          <h3>Invitation sent</h3>
+          <h3>{deliveryStatus === "sent" ? "Invitation email accepted" : "Invitation created"}</h3>
           <p>
-            Delivery status: <strong>{state.deliveryStatus ?? "sent"}</strong>. The learner has received a single-use,
-            expiring link and must accept it using the invited email address.
+            {deliveryStatus === "sent"
+              ? "The email provider accepted the invitation for delivery. The learner must accept the single-use, expiring link using the invited email address."
+              : "Email delivery has not been confirmed. Check the invitation status before asking the learner to look for the email."}
           </p>
         </section>
       ) : null}

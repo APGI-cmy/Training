@@ -21,9 +21,9 @@ export default async function PresentationOnlyAdminPreview({ params }: PageProps
   const eBookHref = encodeAssetPath(unit.publishedPath);
 
   return (
-    <PresentationOnlyMode eBookHref={eBookHref}>
+    <PresentationOnlyMode eBookHref={eBookHref} returnHref={`/admin/courses/${course.slug}/preview/${unit.slug}`}>
       {scormLaunchSrc ? (
-        <ScormPlayer courseSlug={course.slug} unitSlug={unit.slug} launchSrc={scormLaunchSrc} title={unit.title} mode="preview" />
+        <ScormPlayer courseSlug={course.slug} unitSlug={unit.slug} launchSrc={scormLaunchSrc} title={unit.title} mode="preview" immersive />
       ) : (
         <iframe
           className="admin-presentation-only-frame"
