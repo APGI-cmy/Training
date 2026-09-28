@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { APGI_BRAND, type BrandingPreset, type CourseBranding } from "@/lib/branding";
 import { getCourses } from "@/lib/courses";
@@ -29,11 +29,27 @@ export function BrandingForm({ branding, presets }: { branding: CourseBranding |
   const values = editingPreset ?? activeBrand ?? defaultBranding();
   const formKey = `${selectedCourse}-${editingPreset?.id ?? activeBrand?.brandName ?? "new"}`;
 
+  useEffect(() => {
+    window.dispatchEvent(new Event("alp-branding-updated"));
+  }, [selectedCourse]);
+
+  useEffect(() => {
+    if (!state.success) return;
+    window.dispatchEvent(new Event("alp-branding-updated"));
+    router.replace(`/admin/branding?course=${selectedCourse}`, { scroll: false });
+    router.refresh();
+  }, [router, selectedCourse, state.success]);
+
   function applyPreset(presetId: string) {
     startLibraryTransition(async () => {
       const result = await applyBrandingPreset({ courseId: selectedCourse, presetId });
       setLibraryState(result);
-      if (result.success) { setEditingPreset(null); router.refresh(); }
+      if (result.success) {
+        setEditingPreset(null);
+        window.dispatchEvent(new Event("alp-branding-updated"));
+        router.replace(`/admin/branding?course=${selectedCourse}`, { scroll: false });
+        router.refresh();
+      }
     });
   }
 
@@ -41,7 +57,12 @@ export function BrandingForm({ branding, presets }: { branding: CourseBranding |
     startLibraryTransition(async () => {
       const result = await restoreApgIBranding(selectedCourse);
       setLibraryState(result);
-      if (result.success) { setEditingPreset(null); router.refresh(); }
+      if (result.success) {
+        setEditingPreset(null);
+        window.dispatchEvent(new Event("alp-branding-updated"));
+        router.replace(`/admin/branding?course=${selectedCourse}`, { scroll: false });
+        router.refresh();
+      }
     });
   }
 

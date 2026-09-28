@@ -9,6 +9,11 @@ describe("course branding boundaries", () => {
     expect(courseSlugFromPathname("/admin/branding")).toBeNull();
   });
 
+  it("keeps course identities scoped to a course route or the selected branding workspace", () => {
+    expect(courseSlugFromPathname("/admin/branding")).toBeNull();
+    expect(courseSlugFromPathname("/admin/courses/scannex-training-programme/preview")).toBe("scannex-training-programme");
+  });
+
   it("accepts only complete hexadecimal colours for persisted client branding", () => {
     expect(isBrandColor("#006B92")).toBe(true);
     expect(isBrandColor("006B92")).toBe(false);
