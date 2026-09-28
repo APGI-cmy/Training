@@ -19,6 +19,10 @@ export type CourseBranding = {
   isActive: boolean;
 };
 
+export type BrandingPreset = Omit<CourseBranding, "courseId" | "isActive"> & {
+  id: string;
+};
+
 const COURSE_ROUTE_PATTERNS = [
   /^\/learn\/([^/]+)/,
   /^\/courses\/([^/]+)/,

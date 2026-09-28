@@ -1,4 +1,4 @@
-import { CourseBranding } from "@/lib/branding";
+import { BrandingPreset, CourseBranding } from "@/lib/branding";
 import { getSupabaseRestUrl } from "@/server/auth/session";
 import { adminRest } from "@/server/supabase/admin-rest";
 
@@ -14,21 +14,36 @@ type BrandingRow = {
   is_active: boolean;
 };
 
-function toCourseBranding(row: BrandingRow): CourseBranding {
-  const logoUrl = row.logo_path
-    ? getSupabaseRestUrl(`/storage/v1/object/public/alp-branding-assets/${row.logo_path}`)
-    : null;
+type BrandingPresetRow = Omit<BrandingRow, "course_id" | "is_active"> & { id: string; name: string };
 
+function logoUrl(logoPath: string | null) {
+  return logoPath ? getSupabaseRestUrl(`/storage/v1/object/public/alp-branding-assets/${logoPath}`) : null;
+}
+
+function toCourseBranding(row: BrandingRow): CourseBranding {
   return {
     courseId: row.course_id,
     brandName: row.brand_name,
-    logoUrl,
+    logoUrl: logoUrl(row.logo_path),
     primaryColor: row.primary_color,
     secondaryColor: row.secondary_color,
     accentColor: row.accent_color,
     paleColor: row.pale_color,
     footerText: row.footer_text,
     isActive: row.is_active,
+  };
+}
+
+function toBrandingPreset(row: BrandingPresetRow): BrandingPreset {
+  return {
+    id: row.id,
+    brandName: row.name,
+    logoUrl: logoUrl(row.logo_path),
+    primaryColor: row.primary_color,
+    secondaryColor: row.secondary_color,
+    accentColor: row.accent_color,
+    paleColor: row.pale_color,
+    footerText: row.footer_text,
   };
 }
 
@@ -56,5 +71,15 @@ export async function getCourseBrandingForAdmin(courseId: string): Promise<Cours
     return rows[0] ? toCourseBranding(rows[0]) : null;
   } catch {
     return null;
+  }
+}
+
+export async function getBrandingPresets(): Promise<BrandingPreset[]> {
+  try {
+    const response = await adminRest("/rest/v1/branding_presets?select=id,name,logo_path,primary_color,secondary_color,accent_color,pale_color,footer_text&order=name.asc");
+    if (!response.ok) return [];
+    return ((await response.json()) as BrandingPresetRow[]).map(toBrandingPreset);
+  } catch {
+    return [];
   }
 }

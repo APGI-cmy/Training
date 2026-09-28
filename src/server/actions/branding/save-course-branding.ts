@@ -20,6 +20,39 @@ function value(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
 }
 
+async function saveBrandingPreset(input: {
+  presetId?: string;
+  name: string;
+  logoPath: string | null;
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  paleColor: string;
+  footerText: string;
+  userId: string;
+}) {
+  const body = {
+    name: input.name,
+    logo_path: input.logoPath,
+    primary_color: input.primaryColor,
+    secondary_color: input.secondaryColor,
+    accent_color: input.accentColor,
+    pale_color: input.paleColor,
+    footer_text: input.footerText,
+    updated_by: input.userId,
+    updated_at: new Date().toISOString(),
+  };
+  const path = input.presetId
+    ? `/rest/v1/branding_presets?id=eq.${encodeURIComponent(input.presetId)}`
+    : "/rest/v1/branding_presets?on_conflict=name";
+  const response = await adminRest(path, {
+    method: input.presetId ? "PATCH" : "POST",
+    headers: { Prefer: input.presetId ? "return=minimal" : "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify(body),
+  });
+  return response.ok;
+}
+
 export async function saveCourseBranding(
   _previous: CourseBrandingFormState,
   formData: FormData,
@@ -95,8 +128,74 @@ export async function saveCourseBranding(
   });
   if (!response.ok) return { error: "Branding could not be saved. Confirm the branding database migration is live." };
 
+  const presetSaved = await saveBrandingPreset({
+    presetId: value(formData, "preset_id") || undefined,
+    name: brandName,
+    logoPath,
+    primaryColor: colors.primary,
+    secondaryColor: colors.secondary,
+    accentColor: colors.accent,
+    paleColor: colors.pale,
+    footerText,
+    userId: session.user.id,
+  });
+  if (!presetSaved) return { error: "Course branding was saved, but the reusable branding library could not be updated." };
+
   revalidatePath("/admin/branding");
   revalidatePath(`/courses/${courseId}`);
   revalidatePath(`/learn/${courseId}`);
-  return { success: `${course.title} branding saved.` };
+  return { success: `${course.title} branding and library entry saved.` };
+}
+
+export async function applyBrandingPreset(input: { courseId: string; presetId: string }): Promise<CourseBrandingFormState> {
+  const { session } = await requireAdmin();
+  const course = getCourseBySlug(input.courseId);
+  if (!course) return { error: "Choose a valid course." };
+
+  const presetResponse = await adminRest(`/rest/v1/branding_presets?id=eq.${encodeURIComponent(input.presetId)}&select=name,logo_path,primary_color,secondary_color,accent_color,pale_color,footer_text&limit=1`);
+  if (!presetResponse.ok) return { error: "The selected saved branding could not be found." };
+  const preset = (await presetResponse.json()) as Array<{
+    name: string; logo_path: string | null; primary_color: string; secondary_color: string;
+    accent_color: string; pale_color: string; footer_text: string;
+  }>;
+  const selected = preset[0];
+  if (!selected) return { error: "The selected saved branding could not be found." };
+
+  const response = await adminRest("/rest/v1/course_branding?on_conflict=course_id", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify({
+      course_id: course.slug,
+      brand_name: selected.name,
+      logo_path: selected.logo_path,
+      primary_color: selected.primary_color,
+      secondary_color: selected.secondary_color,
+      accent_color: selected.accent_color,
+      pale_color: selected.pale_color,
+      footer_text: selected.footer_text,
+      is_active: true,
+      updated_by: session.user.id,
+      updated_at: new Date().toISOString(),
+    }),
+  });
+  if (!response.ok) return { error: "Saved branding could not be applied to this course." };
+
+  revalidatePath("/admin/branding");
+  revalidatePath(`/courses/${course.slug}`);
+  revalidatePath(`/learn/${course.slug}`);
+  return { success: `${selected.name} branding applied to ${course.title}.` };
+}
+
+export async function restoreApgIBranding(courseId: string): Promise<CourseBrandingFormState> {
+  await requireAdmin();
+  const course = getCourseBySlug(courseId);
+  if (!course) return { error: "Choose a valid course." };
+
+  const response = await adminRest(`/rest/v1/course_branding?course_id=eq.${encodeURIComponent(course.slug)}`, { method: "DELETE" });
+  if (!response.ok) return { error: "APGI branding could not be restored." };
+
+  revalidatePath("/admin/branding");
+  revalidatePath(`/courses/${course.slug}`);
+  revalidatePath(`/learn/${course.slug}`);
+  return { success: `APGI branding restored for ${course.title}.` };
 }
