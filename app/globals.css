@@ -1567,6 +1567,54 @@ body:has(.learner-scorm-full) .learner-shell {
   text-align: center;
 }
 
+.course-price {
+  color: var(--brand-navy);
+  font-size: 1.1rem;
+}
+
+.commerce-page {
+  display: grid;
+  gap: 24px;
+}
+
+.course-selector {
+  display: grid;
+  gap: 7px;
+  width: min(100%, 420px);
+  color: var(--brand-navy);
+  font-weight: 700;
+}
+
+.course-selector select {
+  width: 100%;
+}
+
+.commerce-recipient-list {
+  display: grid;
+  gap: 10px;
+}
+
+.commerce-recipient {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--accent-soft);
+}
+
+.commerce-recipient div {
+  display: grid;
+  gap: 3px;
+}
+
+.commerce-recipient span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 @media (max-width: 680px) {
   .activity-toolbar { gap: 8px; padding: 8px 12px; }
   .activity-toolbar a { padding-inline: 10px; font-size: 0.85rem; }

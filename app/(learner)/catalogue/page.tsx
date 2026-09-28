@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { getCourses } from "@/lib/courses";
+import { defaultCourseCommerceSetting, formatCoursePrice } from "@/lib/commerce";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { requireSession } from "@/server/auth/session";
+import { getCourseCommerceSettings } from "@/server/services/commerce/get-course-commerce";
 
 export const metadata = {
   title: "Course catalogue"
@@ -40,6 +42,7 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
   const session = await requireSession();
   const { view } = (await searchParams) ?? {};
   const courses = getCourses();
+  const commerce = await getCourseCommerceSettings(courses.map((course) => course.slug));
   const access = await Promise.all(
     courses.map((course) =>
       getCourseAccess({
@@ -71,12 +74,14 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
         {entries.length === 0 ? <p>No courses are currently linked to your learning profile.</p> : null}
         {entries.map(({ course, decision }) => {
           const state = stateLabels[decision.status];
+          const pricing = commerce.get(course.slug) ?? defaultCourseCommerceSetting(course.slug);
 
           return (
             <article className="course-card" key={course.id}>
               <p className="eyebrow">{course.level}</p>
               <h2>{course.title}</h2>
               <p>{course.description}</p>
+              <p className="course-price"><strong>{formatCoursePrice(pricing.priceCents, pricing.currency)}</strong></p>
               <p><strong>Status:</strong> {state}</p>
 
               {decision.status === "enrolled" ? (
