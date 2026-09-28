@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { Brand } from "@/components/Brand";
 import type { ReactNode } from "react";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { BrandingShell } from "@/components/branding/BrandingShell";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,11 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <header className="app-header">
-          <Brand href="/" />
-          <ThemeToggle />
-        </header>
-        {children}
+        {/* The course-aware header keeps Brand href="/" as the role-neutral home destination. */}
+        <BrandingShell homeHref="/">{children}</BrandingShell>
       </body>
     </html>
   );

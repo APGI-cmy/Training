@@ -11,6 +11,7 @@ export default function AdminPage() {
         <Link href="/admin/invitations"><strong>Invite and import</strong><span>Prepare invitation and bulk-import drafts safely.</span></Link>
         <Link href="/admin/enrolments"><strong>Manage enrolments</strong><span>Review a learner-context access decision.</span></Link>
         <Link href="/admin/courses"><strong>Course preview</strong><span>Open administrator-only course previews.</span></Link>
+        <Link href="/admin/branding"><strong>Change branding</strong><span>Set a client logo, colours and footer for one course.</span></Link>
       </section>
     </main>
   );
