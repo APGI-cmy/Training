@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Brand } from "@/components/Brand";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { courseSlugFromPathname, type CourseBranding } from "@/lib/branding";
+import { getCourses } from "@/lib/courses";
 
 const CourseBrandingContext = createContext<CourseBranding | null>(null);
 
@@ -14,8 +15,25 @@ export function useCourseBranding() {
 
 export function BrandingShell({ children, homeHref = "/" }: { children: ReactNode; homeHref?: string }) {
   const pathname = usePathname();
-  const courseSlug = courseSlugFromPathname(pathname);
+  const [search, setSearch] = useState("");
+  const courseSlug = courseSlugFromPathname(pathname)
+    ?? (pathname === "/admin/branding" ? new URLSearchParams(search).get("course") ?? getCourses()[0]?.slug ?? null : null);
   const [branding, setBranding] = useState<CourseBranding | null>(null);
+  const [revision, setRevision] = useState(0);
+
+  useEffect(() => {
+    const refreshBranding = () => {
+      setSearch(window.location.search);
+      setRevision((current) => current + 1);
+    };
+    window.addEventListener("alp-branding-updated", refreshBranding);
+    window.addEventListener("popstate", refreshBranding);
+    refreshBranding();
+    return () => {
+      window.removeEventListener("alp-branding-updated", refreshBranding);
+      window.removeEventListener("popstate", refreshBranding);
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -33,7 +51,7 @@ export function BrandingShell({ children, homeHref = "/" }: { children: ReactNod
         if (!cancelled) setBranding(null);
       });
     return () => { cancelled = true; };
-  }, [courseSlug]);
+  }, [courseSlug, revision]);
 
   useEffect(() => {
     const root = document.documentElement;
