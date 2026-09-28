@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 
 type ScormValues = Record<string, string>;
 
@@ -71,7 +71,9 @@ export function ScormPlayer({
   launchSrc,
   title,
   mode = "learner",
-  immersive = false
+  immersive = false,
+  returnHref,
+  resourceHref
 }: {
   courseSlug: string;
   unitSlug: string;
@@ -79,10 +81,24 @@ export function ScormPlayer({
   title: string;
   mode?: "learner" | "preview";
   immersive?: boolean;
+  returnHref?: string;
+  resourceHref?: string;
 }) {
   const valuesRef = useRef<ScormValues | null>(null);
   const [ready, setReady] = useState(false);
   const [status, setStatus] = useState("Preparing your personal learning session…");
+  const saveProgressRef = useRef<(() => Promise<boolean>) | null>(null);
+  const [leaving, setLeaving] = useState(false);
+
+  async function returnToUnit(event: MouseEvent<HTMLAnchorElement>) {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (leaving || !returnHref) return;
+    setLeaving(true);
+    const saved = await saveProgressRef.current?.() ?? true;
+    if (saved) window.location.assign(returnHref);
+    else setLeaving(false);
+  }
 
   useEffect(() => {
     let active = true;
@@ -118,17 +134,31 @@ export function ScormPlayer({
       };
     }
 
-    const save = async () => {
-      if (!valuesRef.current) return;
-      setStatus("Saving your progress…");
-      const response = await fetch(endpoint, {
-        method: "PUT",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ courseSlug, unitSlug, attempt: toAttempt(valuesRef.current) })
-      });
-      if (response.ok && active) setStatus("Your progress is saved to your learner record.");
-      if (!response.ok && active) setStatus("Progress could not be saved. Keep this page open and try again.");
+    // Keep commits in order so an older request cannot overwrite the return save.
+    let saveQueue: Promise<boolean> = Promise.resolve(true);
+    const save = () => {
+      saveQueue = saveQueue.then(persistProgress);
+      return saveQueue;
     };
+    const persistProgress = async () => {
+      if (!valuesRef.current) return true;
+      if (active) setStatus("Saving your progress…");
+      try {
+        const response = await fetch(endpoint, {
+          method: "PUT",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ courseSlug, unitSlug, attempt: toAttempt(valuesRef.current) })
+        });
+        if (active) setStatus(response.ok
+          ? "Your progress is saved to your learner record."
+          : "Progress could not be saved. Keep this page open and try again.");
+        return response.ok;
+      } catch {
+        if (active) setStatus("Progress could not be saved. Check your connection and try again.");
+        return false;
+      }
+    };
+    saveProgressRef.current = save;
 
     const load = async () => {
       const response = await fetch(endpoint, { cache: "no-store" });
@@ -145,6 +175,7 @@ export function ScormPlayer({
     window.addEventListener("pagehide", saveBeforeLeaving);
     return () => {
       active = false;
+      saveProgressRef.current = null;
       window.removeEventListener("pagehide", saveBeforeLeaving);
       void save();
       delete window.API_1484_11;
@@ -153,6 +184,15 @@ export function ScormPlayer({
 
   return (
     <section className={immersive ? "scorm-player-immersive" : undefined} aria-label={`${title} SCORM learning activity`}>
+      {immersive && returnHref ? (
+        <nav className="activity-toolbar" aria-label="Learning activity navigation">
+          <a className="secondary-button" href={returnHref} onClick={returnToUnit} aria-disabled={leaving}>
+            <span aria-hidden="true">←</span> {leaving ? "Saving…" : "Back to unit"}
+          </a>
+          <p className="activity-save-status" role="status">{status}</p>
+          {resourceHref ? <a className="primary-button" href={resourceHref} target="_blank" rel="noreferrer">Open Scannex e-book</a> : null}
+        </nav>
+      ) : null}
       {!immersive && <p className="scorm-status" role="status">{status}</p>}
       {ready ? (
         <figure className="media-item">

@@ -26,15 +26,14 @@ export default async function ScormLaunchPage({ params }: PageProps) {
 
   return (
     <main className="learner-scorm-full">
-      <a className="full-screen-ebook-link" href={encodeAssetPath(unit.publishedPath)} target="_blank" rel="noreferrer">
-        Open Scannex e-book
-      </a>
       <ScormPlayer
         courseSlug={course.slug}
         unitSlug={unit.slug}
         launchSrc={encodeAssetPath(unit.scormPath)}
         title={unit.title}
         immersive
+        returnHref={`/learn/${course.slug}/units/${unit.slug}#unit-resources-heading`}
+        resourceHref={encodeAssetPath(unit.publishedPath)}
       />
     </main>
   );
