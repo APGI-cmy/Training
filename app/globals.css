@@ -178,6 +178,85 @@ a {
   max-width: 900px;
 }
 
+.branding-workspace {
+  display: grid;
+  gap: 20px;
+  max-width: 900px;
+}
+
+.branding-library {
+  display: grid;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: clamp(20px, 3vw, 28px);
+  background: var(--surface);
+}
+
+.branding-library h2,
+.branding-library p {
+  margin: 0;
+}
+
+.branding-preset-list {
+  display: grid;
+  gap: 10px;
+}
+
+.branding-preset {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 12px;
+}
+
+.branding-preset img,
+.branding-preset-mark {
+  width: 54px;
+  height: 42px;
+  border-radius: 5px;
+  object-fit: contain;
+}
+
+.branding-preset-mark {
+  display: block;
+}
+
+.branding-preset strong,
+.branding-preset span {
+  display: block;
+}
+
+.branding-preset span,
+.branding-empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.branding-preset-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.text-button {
+  border: 0;
+  padding: 8px;
+  background: transparent;
+  color: var(--primary-strong);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.text-button:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .branding-form-grid {
   margin-bottom: 18px;
 }
