@@ -121,6 +121,14 @@ a {
   border-bottom: 0;
 }
 
+.powered-by-footer {
+  justify-content: center;
+  min-height: 56px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
 .brand-link {
   display: inline-flex;
   align-items: center;
@@ -144,6 +152,90 @@ a {
   border-left: 1px solid var(--brand-pale-blue);
   padding-left: 16px;
   font-size: 1.1rem;
+}
+
+.branding-course-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 20px;
+}
+
+.branding-course-picker a {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 13px;
+  font-weight: 800;
+}
+
+.branding-course-picker a.is-selected {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.branding-form {
+  max-width: 900px;
+}
+
+.branding-form-grid {
+  margin-bottom: 18px;
+}
+
+.field-hint {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 400;
+}
+
+.color-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.color-input input {
+  width: 54px;
+  min-height: 40px;
+  padding: 3px;
+}
+
+.color-input code {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.branding-logo-preview {
+  display: block;
+  width: min(240px, 100%);
+  max-height: 120px;
+  margin: 0 0 18px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 18px;
+  font-weight: 800;
+}
+
+.form-error,
+.form-success {
+  margin: 0 0 14px;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-weight: 700;
+}
+
+.form-error {
+  background: var(--red-soft);
+}
+
+.form-success {
+  background: var(--green-soft);
 }
 
 .theme-toggle,

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SignOutControl } from "@/components/auth/sign-out-control";
+import { BrandingName } from "@/components/branding/BrandingName";
 import { getCurrentSession, getUserRoles } from "@/server/auth/session";
 
 export async function LearnerSidebar() {
@@ -11,7 +12,7 @@ export async function LearnerSidebar() {
     <aside className="learner-sidebar" aria-label="Learner navigation">
       <div>
         <p className="sidebar-eyebrow">Learner navigation</p>
-        <h2>APGI Training</h2>
+        <h2><BrandingName /></h2>
         <p className="sidebar-guidance">Browse your learning, discover courses, and manage your profile.</p>
       </div>
 
@@ -26,6 +27,7 @@ export async function LearnerSidebar() {
         {isAdmin ? <Link href="/admin/enrolments">Manage enrolments</Link> : null}
         {isAdmin ? <Link href="/admin/assessments">Scannex assessments</Link> : null}
         {isAdmin ? <Link href="/admin/courses">Course preview</Link> : null}
+        {isAdmin ? <Link href="/admin/branding">Change branding</Link> : null}
       </nav>
 
       <div className="sidebar-actions">
