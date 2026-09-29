@@ -27,6 +27,7 @@ export async function LearnerSidebar() {
         {isAdmin ? <Link href="/admin/enrolments">Manage enrolments</Link> : null}
         {isAdmin ? <Link href="/admin/assessments">Scannex assessments</Link> : null}
         {isAdmin ? <Link href="/admin/courses">Course preview</Link> : null}
+        {isAdmin ? <Link href="/admin/payments">Payments</Link> : null}
         {isAdmin ? <Link href="/admin/branding">Change branding</Link> : null}
       </nav>
 
