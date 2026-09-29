@@ -18,6 +18,7 @@ export type InvitationInput = {
   expiresAt: string;
   reference?: string;
   company?: string;
+  organisationId?: string;
 };
 
 export type CreateInvitationState = {
@@ -38,18 +39,26 @@ function normaliseInput(input: InvitationInput): InvitationInput {
     reason: input.reason.trim(),
     expiresAt: input.expiresAt.trim(),
     reference: input.reference?.trim() || undefined,
-    company: input.company?.trim() || undefined
+    company: input.company?.trim() || undefined,
+    organisationId: input.organisationId?.trim() || undefined
   };
 }
 
 function validateInput(input: InvitationInput) {
   const expiry = new Date(input.expiresAt);
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.recipientEmail) || !input.courseId || !input.expiresAt) return "INVITATION_FIELDS_REQUIRED";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.recipientEmail) || !input.courseId || !input.expiresAt || !input.organisationId) return "INVITATION_FIELDS_REQUIRED";
   if (!invitationBases.has(input.basis)) return "INVITATION_BASIS_INVALID";
   if (!getCourseBySlug(input.courseId)) return "INVITATION_COURSE_INVALID";
   if (!input.reason) return "INVITATION_REASON_REQUIRED";
   if (Number.isNaN(expiry.getTime()) || expiry <= new Date()) return "INVITATION_EXPIRY_INVALID";
   return null;
+}
+
+async function getOrganisationShare(organisationId: string | undefined) {
+  if (!organisationId) return null;
+  const response = await adminRest(`/rest/v1/organisations?id=eq.${encodeURIComponent(organisationId)}&is_active=eq.true&select=id,default_referral_share_bps&limit=1`);
+  if (!response.ok) return null;
+  return ((await response.json()) as Array<{ id: string; default_referral_share_bps: number }>)[0] ?? null;
 }
 
 async function recordInvitationEvent(invitationId: string, eventType: "created" | "sent" | "expired" | "revoked" | "failed", actorId: string, metadata: Record<string, unknown>) {
@@ -127,7 +136,9 @@ async function createPendingEnrolmentIfApplicable(invitationId: string, input: I
       source: "admin",
       access_granted_at: null,
       access_revoked_at: null,
-      metadata: { invitation_id: invitationId, actor_id: actorId, reason: input.reason }
+      organisation_id: input.organisationId,
+      referral_share_bps: 0,
+      metadata: { invitation_id: invitationId, actor_id: actorId, reason: input.reason, organisation_id: input.organisationId }
     })
   });
   if (!pendingResponse.ok) return { ok: false as const, error: "PENDING_ENROLMENT_CREATE_FAILED" };
@@ -153,6 +164,8 @@ export async function createAndSendInvitation(input: InvitationInput, actorId?: 
   const clean = normaliseInput(input);
   const validationError = validateInput(clean);
   if (validationError) return { ok: false, error: validationError };
+  const organisation = await getOrganisationShare(clean.organisationId);
+  if (!organisation) return { ok: false, error: "INVITATION_ORGANISATION_INVALID" };
 
   const activeInvitationError = await ensureNoActiveInvitation(clean, actor);
   if (activeInvitationError) return { ok: false, error: activeInvitationError };
@@ -171,7 +184,8 @@ export async function createAndSendInvitation(input: InvitationInput, actorId?: 
       token_hash: tokenHash,
       created_by: actor,
       status: "pending",
-      metadata: { reference: clean.reference ?? null, company: clean.company ?? null }
+      organisation_id: organisation.id,
+      metadata: { reference: clean.reference ?? null, company: clean.company ?? null, organisation_id: organisation.id, referral_share_bps: organisation.default_referral_share_bps }
     })
   });
   if (!invitationResponse.ok) return { ok: false, error: "INVITATION_CREATE_FAILED" };
@@ -233,10 +247,28 @@ export async function createInvitation(formData: FormData): Promise<CreateInvita
     reason: String(formData.get("reason") ?? ""),
     expiresAt: String(formData.get("expiresAt") ?? ""),
     reference: String(formData.get("reference") ?? ""),
-    company: String(formData.get("company") ?? "")
+    company: String(formData.get("company") ?? ""),
+    organisationId: String(formData.get("organisationId") ?? "")
   });
 }
 
 export async function createInvitationWithState(_previousState: CreateInvitationState, formData: FormData): Promise<CreateInvitationState> {
-  return createInvitation(formData);
+  const courseIds = formData.getAll("courseIds").map(String).filter(Boolean);
+  if (!courseIds.length) return { ok: false, error: "INVITATION_COURSE_REQUIRED" };
+  let firstInvitationId: string | undefined;
+  for (const courseId of courseIds) {
+    const result = await createAndSendInvitation({
+      recipientEmail: String(formData.get("recipientEmail") ?? ""),
+      courseId,
+      basis: String(formData.get("basis") ?? "other"),
+      reason: String(formData.get("reason") ?? ""),
+      expiresAt: String(formData.get("expiresAt") ?? ""),
+      reference: String(formData.get("reference") ?? ""),
+      company: String(formData.get("company") ?? ""),
+      organisationId: String(formData.get("organisationId") ?? "")
+    });
+    if (!result.ok) return { ...result, invitationId: firstInvitationId };
+    firstInvitationId ??= result.invitationId;
+  }
+  return { ok: true, invitationId: firstInvitationId, deliveryStatus: "sent" };
 }

@@ -7,9 +7,11 @@ const initialState: CreateInvitationState = { ok: false };
 
 export function InvitationForm({
   courses,
+  organisations,
   defaultExpiry
 }: {
   courses: Array<{ id: string; title: string }>;
+  organisations: Array<{ id: string; name: string }>;
   defaultExpiry: string;
 }) {
   const [state, action, pending] = useActionState(createInvitationWithState, initialState);
@@ -23,9 +25,17 @@ export function InvitationForm({
           <input name="recipientEmail" type="email" required />
         </label>
         <label>
-          Course
-          <select name="courseId" required>
+          Initial course enrolments
+          <select name="courseIds" required multiple size={Math.min(4, Math.max(2, courses.length))}>
             {courses.map((course) => <option key={course.id} value={course.id}>{course.title}</option>)}
+          </select>
+          <span className="field-hint">Select one or more courses to issue with this invitation. The learner’s organisation also determines any client-only courses visible in their catalogue.</span>
+        </label>
+        <label>
+          Organisation profile
+          <select name="organisationId" required defaultValue="">
+            <option value="" disabled>Select the learner's organisation</option>
+            {organisations.map((organisation) => <option key={organisation.id} value={organisation.id}>{organisation.name}</option>)}
           </select>
         </label>
         <label>

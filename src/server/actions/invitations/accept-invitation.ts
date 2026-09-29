@@ -44,7 +44,7 @@ export async function acceptInvitation(token: string) {
   const session = await requireSession();
   const tokenHash = createHash("sha256").update(token).digest("hex");
   const response = await adminRest(
-    `/rest/v1/course_invitations?select=id,recipient_email,course_id,expires_at,revoked_at,redeemed_at,status&token_hash=eq.${encodeURIComponent(tokenHash)}&limit=1`
+    `/rest/v1/course_invitations?select=id,recipient_email,course_id,organisation_id,expires_at,revoked_at,redeemed_at,status&token_hash=eq.${encodeURIComponent(tokenHash)}&limit=1`
   );
   if (!response.ok) return { ok: false, error: "invitation_lookup_failed" };
 
@@ -55,7 +55,7 @@ export async function acceptInvitation(token: string) {
   const sessionEmail = session.user.email?.trim().toLowerCase();
   let failed = "";
 
-  if (!invitation?.id || !invitation.course_id) failed = "invalid";
+  if (!invitation?.id || !invitation.course_id || !invitation.organisation_id) failed = "invalid";
   else if (!invitationEmail || invitationEmail !== sessionEmail) failed = "email_mismatch";
   else if (invitation.expires_at && new Date(invitation.expires_at) <= now) failed = "expired";
   else if (invitation.revoked_at || invitation.status === "revoked") failed = "revoked";
@@ -76,11 +76,24 @@ export async function acceptInvitation(token: string) {
 
   const invitationId = invitation.id;
   const courseId = invitation.course_id;
+  const organisationId = invitation.organisation_id!;
   const idempotencyKey = `invitation:${invitationId}:redeemed`;
 
   if (!(await ensureLearnerRecord(session.user.id, session.user.email))) {
     return { ok: false, error: "learner_record_failed" };
   }
+
+  const organisationResponse = await adminRest(`/rest/v1/organisations?id=eq.${encodeURIComponent(organisationId)}&is_active=eq.true&select=id&limit=1`);
+  if (!organisationResponse.ok || !((await organisationResponse.json()) as Array<{ id?: string }>)[0]?.id) {
+    return { ok: false, error: "organisation_unavailable" };
+  }
+
+  const membership = await adminRest("/rest/v1/learner_organisations?on_conflict=user_id", {
+    method: "POST",
+    headers: { Prefer: "resolution=ignore-duplicates,return=minimal" },
+    body: JSON.stringify({ user_id: session.user.id, organisation_id: organisationId, assigned_by: null, source_invitation_id: invitationId, metadata: { assigned_from: "invitation" } })
+  });
+  if (!membership.ok) return { ok: false, error: "organisation_assignment_failed" };
 
   const upsert = await adminRest("/rest/v1/course_enrolments?on_conflict=user_id,course_id", {
     method: "POST",
@@ -90,9 +103,11 @@ export async function acceptInvitation(token: string) {
       course_id: courseId,
       status: "enrolled",
       source: "admin",
+      organisation_id: organisationId,
+      referral_share_bps: 0,
       access_granted_at: now.toISOString(),
       access_revoked_at: null,
-      metadata: { invitation_id: invitationId, idempotent: true }
+      metadata: { invitation_id: invitationId, organisation_id: organisationId, idempotent: true }
     })
   });
 

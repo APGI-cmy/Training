@@ -4,6 +4,7 @@ import { defaultCourseCommerceSetting, formatCoursePrice } from "@/lib/commerce"
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { requireSession } from "@/server/auth/session";
 import { getCourseCommerceSettings } from "@/server/services/commerce/get-course-commerce";
+import { getAvailableCourseIds } from "@/server/services/organisations/get-organisations";
 
 export const metadata = {
   title: "Course catalogue"
@@ -43,7 +44,7 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
   const { view } = (await searchParams) ?? {};
   const courses = getCourses();
   const commerce = await getCourseCommerceSettings(courses.map((course) => course.slug));
-  const access = await Promise.all(
+  const [availableCourseIds, access] = await Promise.all([getAvailableCourseIds(session.user.id, courses.map((course) => course.id)), Promise.all(
     courses.map((course) =>
       getCourseAccess({
         accessToken: session.accessToken,
@@ -52,8 +53,8 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
         courseId: course.id
       })
     )
-  );
-  const sourceEntries = courses.map((course, index) => ({ course, decision: access[index] }));
+  )]);
+  const sourceEntries = courses.filter((course) => availableCourseIds.has(course.id)).map((course) => ({ course, decision: access[courses.indexOf(course)] }));
   const entries = view === "my-learning"
     ? getMyLearningEntries(sourceEntries)
     : getCatalogueEntries(sourceEntries);
@@ -61,8 +62,8 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
   return (
     <main className="page-shell">
       <header className="page-header">
-        <p className="eyebrow">{view === "my-learning" ? "My learning" : "Course catalogue"}</p>
-        <h1>{view === "my-learning" ? "Your current learning" : "Choose your next learning journey"}</h1>
+        <p className="eyebrow">{view === "my-learning" ? "Enrolled courses" : "Course catalogue"}</p>
+        <h1>{view === "my-learning" ? "Your enrolled courses" : "Choose your next learning journey"}</h1>
         <p>
           {view === "my-learning"
             ? "Courses with an enrolled, pending, or revoked relationship are shown here."
