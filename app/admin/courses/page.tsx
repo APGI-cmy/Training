@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getCourses } from "@/lib/courses";
+import { CourseCardCover } from "@/components/course/CourseCardCover";
 
 export default function AdminCoursesPage() {
   const courses = getCourses();
@@ -14,13 +15,16 @@ export default function AdminCoursesPage() {
 
       <section className="course-grid" aria-label="Administrator course previews">
         {courses.map((course) => (
-          <article className="course-card" key={course.id}>
-            <p className="eyebrow">{course.level}</p>
-            <h2>{course.title}</h2>
-            <p>{course.description}</p>
-            <Link className="button-link" href={`/admin/courses/${course.slug}/preview`}>
-              Preview course
-            </Link>
+          <article className="course-card course-card--visual" key={course.id}>
+            <CourseCardCover courseSlug={course.slug} />
+            <div className="course-card-body">
+              <p className="eyebrow">{course.level}</p>
+              <h2>{course.title}</h2>
+              <p>{course.description}</p>
+              <Link className="button-link" href={`/admin/courses/${course.slug}/preview`}>
+                Preview course
+              </Link>
+            </div>
           </article>
         ))}
       </section>

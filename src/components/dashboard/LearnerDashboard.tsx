@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ProgressIndicator } from "@/components/progress/ProgressIndicator";
+import { CourseCardCover } from "@/components/course/CourseCardCover";
 import type { LearnerDashboard as LearnerDashboardModel } from "@/lib/services/dashboard/get-dashboard";
 
 export function LearnerDashboard({ dashboard }: { dashboard: LearnerDashboardModel }) {
@@ -32,16 +33,21 @@ export function LearnerDashboard({ dashboard }: { dashboard: LearnerDashboardMod
           </div>
           <div className="card-grid">
             {dashboard.courses.map((course) => (
-              <article className="course-card" key={course.id}>
-                <span>{course.level}</span>
-                <h3>{course.title}</h3>
-                <p>{course.description}</p>
-                <small>{course.completedUnits} of {course.unitCount} units complete</small>
-                <progress value={course.completedUnits} max={course.unitCount || 1} />
-                <small>{course.progressPercent}% complete</small>
-                <Link className="primary-button" href={course.href}>
-                  {course.completedUnits > 0 ? "Continue course shell" : "Open course shell"}
-                </Link>
+              <article className="course-card course-card--visual" key={course.id}>
+                <CourseCardCover courseSlug={course.slug} />
+                <div className="course-card-body">
+                  <span>{course.level}</span>
+                  <h3>{course.title}</h3>
+                  <p>{course.description}</p>
+                  <div className="course-card-progress">
+                    <small>{course.completedUnits} of {course.unitCount} units complete</small>
+                    <progress value={course.completedUnits} max={course.unitCount || 1} />
+                    <small>{course.progressPercent}% complete</small>
+                  </div>
+                  <Link className="primary-button" href={course.href}>
+                    {course.completedUnits > 0 ? "Continue course" : "Open course"}
+                  </Link>
+                </div>
               </article>
             ))}
           </div>
