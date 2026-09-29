@@ -5,6 +5,7 @@ import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { requireSession } from "@/server/auth/session";
 import { getCourseCommerceSettings } from "@/server/services/commerce/get-course-commerce";
 import { getAvailableCourseIds } from "@/server/services/organisations/get-organisations";
+import { CourseCardCover } from "@/components/course/CourseCardCover";
 
 export const metadata = {
   title: "Course catalogue"
@@ -78,12 +79,13 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
           const pricing = commerce.get(course.slug) ?? defaultCourseCommerceSetting(course.slug);
 
           return (
-            <article className="course-card" key={course.id}>
+            <article className="course-card course-card--visual" key={course.id}>
+              <CourseCardCover courseSlug={course.slug} />
+              <div className="course-card-body">
               <p className="eyebrow">{course.level}</p>
               <h2>{course.title}</h2>
               <p>{course.description}</p>
-              <p className="course-price"><strong>{formatCoursePrice(pricing.priceCents, pricing.currency)}</strong></p>
-              <p><strong>Status:</strong> {state}</p>
+              <div className="course-card-status"><p className="course-price"><strong>{formatCoursePrice(pricing.priceCents, pricing.currency)}</strong></p><p><strong>Status:</strong> {state}</p></div>
 
               {decision.status === "enrolled" ? (
                 <Link className="button-link" href={`/learn/${course.slug}`}>Continue course</Link>
@@ -96,6 +98,7 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
               ) : null}
 
               {decision.status === "revoked" ? <p>Access revoked. Contact an administrator.</p> : null}
+              </div>
             </article>
           );
         })}
