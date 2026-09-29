@@ -1,4 +1,5 @@
 import { BrandingPreset, CourseBranding } from "@/lib/branding";
+import { getLearnerOrganisation } from "@/server/services/organisations/get-organisations";
 import { getSupabaseRestUrl } from "@/server/auth/session";
 import { adminRest } from "@/server/supabase/admin-rest";
 
@@ -59,6 +60,22 @@ export async function getCourseBranding(courseId: string): Promise<CourseBrandin
   } catch {
     return null;
   }
+}
+
+export async function getLearnerOrganisationBranding(userId: string): Promise<CourseBranding | null> {
+  const organisation = await getLearnerOrganisation(userId);
+  if (!organisation || organisation.slug === "apgi") return null;
+  return {
+    courseId: `organisation:${organisation.slug}`,
+    brandName: organisation.name,
+    logoUrl: organisation.logoUrl,
+    primaryColor: organisation.primaryColor,
+    secondaryColor: organisation.secondaryColor,
+    accentColor: organisation.accentColor,
+    paleColor: organisation.paleColor,
+    footerText: organisation.footerText,
+    isActive: organisation.isActive,
+  };
 }
 
 export async function getCourseBrandingForAdmin(courseId: string): Promise<CourseBranding | null> {

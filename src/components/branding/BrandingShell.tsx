@@ -37,12 +37,8 @@ export function BrandingShell({ children, homeHref = "/" }: { children: ReactNod
 
   useEffect(() => {
     let cancelled = false;
-    if (!courseSlug) {
-      setBranding(null);
-      return;
-    }
-
-    void fetch(`/api/branding?courseSlug=${encodeURIComponent(courseSlug)}`, { cache: "no-store" })
+    const query = courseSlug ? `?courseSlug=${encodeURIComponent(courseSlug)}` : "";
+    void fetch(`/api/branding${query}`, { cache: "no-store" })
       .then(async (response) => response.ok ? response.json() : { branding: null })
       .then((payload: { branding?: CourseBranding | null }) => {
         if (!cancelled) setBranding(payload.branding ?? null);

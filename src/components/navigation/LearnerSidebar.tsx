@@ -19,7 +19,7 @@ export async function LearnerSidebar() {
       <nav className="sidebar-links" aria-label="Learner route navigation">
         <Link href="/dashboard">Dashboard</Link>
         <Link href="/catalogue">Course catalogue</Link>
-        <Link href="/catalogue?view=my-learning">My learning</Link>
+        <Link href="/catalogue?view=my-learning">Enrolled courses</Link>
         <Link href="/profile">Profile</Link>
         {isAdmin ? <Link href="/admin">Administration</Link> : null}
         {isAdmin ? <Link href="/admin/learners">Learners</Link> : null}
@@ -28,7 +28,7 @@ export async function LearnerSidebar() {
         {isAdmin ? <Link href="/admin/assessments">Scannex assessments</Link> : null}
         {isAdmin ? <Link href="/admin/courses">Course preview</Link> : null}
         {isAdmin ? <Link href="/admin/payments">Payments</Link> : null}
-        {isAdmin ? <Link href="/admin/branding">Change branding</Link> : null}
+        {isAdmin ? <Link href="/admin/organisations">Organisations and branding</Link> : null}
       </nav>
 
       <div className="sidebar-actions">

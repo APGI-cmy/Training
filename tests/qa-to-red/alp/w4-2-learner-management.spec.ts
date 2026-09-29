@@ -27,11 +27,10 @@ describe("ALP W4.2 learner management experience", () => {
     expect(source).not.toContain("createInvitation");
     expect(source).not.toContain("useActionState");
   });
-  it("QA-ALP-LMX-004 stages CSV or Excel imports locally, prepares a visible draft, and never executes them", () => {
+  it("QA-ALP-LMX-004 stages CSV or Excel imports locally, prepares a visible draft, and sends only after explicit confirmation", () => {
     expectPath(importWorkspace, "QA-ALP-LMX-004");
     const source = read(importWorkspace);
-    for (const marker of ["Download CSV template", "Choose spreadsheet", "parseWorkbookRows", ".xlsx", "national_identity_number,company,country,operation_subdivision,department_team", "requiredReportingHeaders", "missingRequiredReportingHeaders.length === 0", "Import draft prepared", "Identity numbers remain browser-local", "Import execution is disabled", "setTimeout(() => URL.revokeObjectURL(url)"]) expect(source).toContain(marker);
-    expect(source).not.toContain("createBatchInvitations");
+    for (const marker of ["Download CSV template", "Choose spreadsheet", "parseWorkbookRows", ".xlsx", "national_identity_number,company,country,operation_subdivision,department_team,organisation_slug", "requiredReportingHeaders", "missingRequiredReportingHeaders.length === 0", "Import draft prepared", "Identity numbers remain browser-local", "createBatchInvitations", "Send enrolment invitations", "setTimeout(() => URL.revokeObjectURL(url)"]) expect(source).toContain(marker);
     expect(source).not.toContain("fetch(");
   });
   it("QA-ALP-LMX-005 adds an admin-only full-page preview without progress mutation", () => {
