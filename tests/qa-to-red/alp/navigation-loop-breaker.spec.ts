@@ -8,7 +8,7 @@ describe("ALP W4.1 navigation sidebar and loop-breaker", () => {
     expectContains("src/components/navigation/LearnerSidebar.tsx", 'href="/dashboard"', "QA-ALP-248");
     expectContains("src/components/navigation/LearnerSidebar.tsx", 'href="/profile"', "QA-ALP-248");
     expectContains("src/components/navigation/LearnerSidebar.tsx", 'href="/catalogue"', "QA-ALP-248");
-    expectContains("src/components/navigation/LearnerSidebar.tsx", "My learning", "QA-ALP-248");
+    expectContains("src/components/navigation/LearnerSidebar.tsx", "Enrolled courses", "QA-ALP-248");
     expectContains("src/components/navigation/LearnerSidebar.tsx", "SignOutControl", "QA-ALP-248");
     expect(read("src/components/navigation/LearnerSidebar.tsx").includes("vpshr-level-0"), "QA-ALP-248: persistent sidebar must remain course-generic").toBe(false);
   });

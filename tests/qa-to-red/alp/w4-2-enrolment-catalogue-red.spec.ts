@@ -8,7 +8,7 @@ const changeEnrolmentAction = "src/server/actions/enrolments/change-enrolment-st
 
 describe("ALP W4.2 executable QA-to-Red", () => {
   it("QA-ALP-252 sidebar uses generic learner navigation", () => {
-    expectContains("src/components/navigation/LearnerSidebar.tsx", "My learning", "QA-ALP-252");
+    expectContains("src/components/navigation/LearnerSidebar.tsx", "Enrolled courses", "QA-ALP-252");
     expectContains("src/components/navigation/LearnerSidebar.tsx", "Course catalogue", "QA-ALP-252");
     expectContains("src/components/navigation/LearnerSidebar.tsx", "Administration", "QA-ALP-252");
     expect(read("src/components/navigation/LearnerSidebar.tsx").includes("vpshr-level-0"), "QA-ALP-252: sidebar must not hard-code one course").toBe(false);
