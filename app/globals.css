@@ -1265,6 +1265,46 @@ textarea {
   font-weight: 800;
 }
 
+.invitation-form {
+  margin-bottom: 22px;
+}
+
+.invitation-form-heading {
+  margin-bottom: 6px;
+}
+
+.invitation-form-grid {
+  margin-bottom: 18px;
+}
+
+.invitation-form select[multiple] {
+  min-height: 112px;
+  padding: 8px;
+}
+
+.invitation-form textarea {
+  min-height: 112px;
+  resize: vertical;
+}
+
+.invitation-form-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.invitation-form-meta label {
+  display: grid;
+  gap: 6px;
+}
+
+.invitation-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
 .admin-span-two {
   grid-column: span 2;
 }
@@ -1537,6 +1577,18 @@ textarea {
 
   .admin-span-two {
     grid-column: span 1;
+  }
+
+  .invitation-form-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .invitation-form-actions {
+    justify-content: stretch;
+  }
+
+  .invitation-form-actions .primary-button {
+    width: 100%;
   }
 
   .admin-full-preview-header {
