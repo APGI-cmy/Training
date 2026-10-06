@@ -110,7 +110,7 @@ A material safety or role-boundary concern is recorded separately and blocks a p
 
 The current approved route is a **supervised practical exercise at an APGI-approved Scannex training station**. The Scannex Viewer and Trainer remain on the controlled Windows workstation where they already operate correctly.
 
-The APGI Training Platform provides the assessment entry point, instructions, learner identity, evidence record and final outcome. It does not pretend that an ordinary browser page is the native Viewer, and it does not need an Azure subscription for this route.
+The APGI Training Platform provides the assessment entry point, instructions, learner identity, evidence record and final outcome. It does not pretend that an ordinary browser page is the native Viewer.
 
 ### Operating process
 
@@ -123,27 +123,27 @@ The APGI Training Platform provides the assessment entry point, instructions, le
 
 This is the correct first pilot because it validates the exercises, evidence and rubric before remote access or automation is considered.
 
-## Future option: hosted Windows Viewer Lab
+## Approved practice option: hosted Windows Viewer Lab
 
-Azure Virtual Desktop RemoteApp remains a future option if independent remote access becomes necessary and APGI chooses a paid Windows hosting service. It is not part of the current delivery route.
+APGI has confirmed that the trainer version may be used for the e-learning programme and hosted off site. AWS WorkSpaces Applications is therefore the selected environment for an initial learner practice lab. Compatibility has already been proven on the stopped `apgi-scannex-dev-builder` in `eu-west-1`.
 
-The Viewer would still not be placed in an iSpring Web Object or embedded in an ordinary browser frame. The platform would provide a protected hand-off to a separate remote Windows session.
+The Viewer is launched from the LU 6 Web Object and APGI Training Platform, then opened in a separate secure streaming window. The separate window preserves the genuine Windows application, supports a second-screen workflow and avoids presenting a browser imitation as the Viewer.
 
-### Future hosted-session architecture
+### Hosted practice-session architecture
 
 | Component | Responsibility |
 | --- | --- |
-| APGI Training Platform | Confirms course access, shows the summative-assessment entry point, creates the assessment record and retains the final decision. |
-| Azure Virtual Desktop | Provides the managed remote Windows session and RemoteApp publication. |
-| Windows session host | Contains only the approved Scannex Viewer, supporting Trainer/IVServer components, approved exercise material and required audit controls. |
-| Scannex Viewer/Trainer | Delivers the practical exercise and produces the result and Movement Log evidence. |
-| Assessor | Reviews evidence against the rubric and records pass, remediation or re-attempt. |
+| APGI Training Platform | Confirms learner identity and active Scannex enrolment, then creates the short-lived practice-session hand-off. |
+| AWS WorkSpaces Applications | Provides the managed remote Windows application session and publishes only the approved Viewer application. |
+| Windows session host | Contains only the approved Scannex Viewer, supporting Trainer/IVServer components and approved non-assessment practice material. |
+| Scannex Viewer/Trainer | Provides the genuine controls and image-viewing behaviour used for LU 6 practice. |
+| Formal assessment release | Adds approved exercises, evidence and assessor decisions later, after the outstanding assessment rules are agreed. |
 
-The platform must never transmit a Windows administrator credential, a shared Viewer password or a learner identity in a browser query string. The later connection will use a short-lived, signed launch request and the learner's approved authentication route.
+The platform must never transmit a Windows administrator credential, a shared Viewer password or a learner identity in a browser query string. The platform uses the learner's existing session and active course enrolment, then creates a short-lived AWS streaming address on the server. Vercel assumes a narrowly scoped AWS role through OIDC, without stored access keys.
 
-### Windows host controls, if later approved
+### Windows host controls
 
-- Use a dedicated resource group, virtual network and host pool for the assessment environment.
+- Use the dedicated WorkSpaces Applications image, fleet, stack, VPC and security group for the practice environment.
 - Publish only the required Viewer application as a RemoteApp. Do not offer an unrestricted desktop.
 - Build the host image from a supported Windows image, then install the licensed Scannex Viewer, Training Tool and required IVServer components.
 - Restrict clipboard, drive, printer and file-transfer redirection unless a documented assessment reason requires a specific exception.
@@ -157,21 +157,18 @@ The first deployed version will open the Viewer Lab in a separate secure window.
 
 It will not yet automatically score individual toolbar clicks. The first practical score is based on the approved Trainer result and assessor review of the Movement Log. Automated collection can be considered only after a pilot confirms that the native application exposes sufficient reliable evidence and that its licence permits the integration.
 
-### Provisioning sequence, if the route is later approved
+### Provisioning sequence
 
-1. Confirm in writing that the Scannex licence permits the Viewer and Trainer to be installed and used in a hosted remote-session environment.
-2. Create the Azure subscription resource group, network and Azure Virtual Desktop host pool.
-3. Build and test a hardened Windows image with the approved Scannex components and one non-production exercise set.
-4. Publish the Viewer as a RemoteApp to a small pilot group using the agreed Microsoft Entra identity route.
-5. Verify that result evidence and Movement Logs can be recovered by an assessor without allowing learners to access other cases.
-6. Connect the APGI Viewer Lab launcher to the approved remote-session address. The `SCANNEX_VIEWER_LAB_URL` setting contains only that public launch address, never a secret.
-7. Run a supervised pilot, calibrate the marking rubric and then release to wider learner groups.
+1. Start the existing AWS image builder and create `apgi-scannex-practice-v1` with IVServer and the Viewer configured for training practice.
+2. Publish only `ScannexViewer` and verify that IVServer starts before the application.
+3. Create the `apgi-scannex-practice` one-user fleet and stack, initially using `stream.standard.medium`.
+4. Configure the Vercel OIDC identity provider and the least-privilege `apgi-scannex-viewer-lab-launcher` role with only `appstream:CreateStreamingURL` access to that fleet and stack.
+5. Add the server-only Viewer Lab settings to the Vercel production environment.
+6. Run the one-user practice pilot and confirm controls, second-screen use, session isolation, shutdown and cost.
+7. Release the practice lab to enrolled learners after the pilot passes.
 
-### Required decisions before future provisioning
+### Required decisions before formal assessment hosting
 
-- Azure subscription owner and location of the assessment environment.
-- The identity route for learners: existing Microsoft Entra accounts, controlled guest accounts, or a separately approved secure session broker.
-- Scannex supplier/licence approval for hosted use and the number of concurrent assessment seats.
 - The named assessment lead, approved image set, answer key, pass standard and remediation rules.
 
 ### Future image upload service

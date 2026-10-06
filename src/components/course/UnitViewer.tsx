@@ -69,11 +69,26 @@ export function UnitViewer({
                 </div>
               </section>
             ) : isScannexUnit ? (
-              <UnitResources
-                eBookHref={originalHref}
-                activityHref={scormLaunchSrc ? `/learn/${course.slug}/units/${unit.slug}/scorm` : undefined}
-                activityAvailable={Boolean(scormLaunchSrc)}
-              />
+              <>
+                <UnitResources
+                  eBookHref={originalHref}
+                  activityHref={scormLaunchSrc ? `/learn/${course.slug}/units/${unit.slug}/scorm` : undefined}
+                  activityAvailable={Boolean(scormLaunchSrc)}
+                />
+                {unit.slug === "lu6" ? (
+                  <section className="unit-resources" aria-labelledby="viewer-practice-heading">
+                    <p className="eyebrow">Genuine Viewer practice</p>
+                    <h2 id="viewer-practice-heading">Scannex Viewer Lab</h2>
+                    <p>Open a separate, secure Windows session to practise the controls taught in this learning unit.</p>
+                    <p className="resource-status">Practice sessions do not record a score or complete the unit.</p>
+                    <div className="button-row">
+                      <Link className="primary-button" href={`/learn/${course.slug}/units/${unit.slug}/viewer-lab`}>
+                        Prepare Viewer practice session
+                      </Link>
+                    </div>
+                  </section>
+                ) : null}
+              </>
             ) : null}
             {!isPracticalAssessment && scormLaunchSrc ? (
               <ScormPlayer
