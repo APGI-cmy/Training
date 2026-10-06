@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { buildViewerLabSessionInput } from "../src/lib/services/viewer-lab/create-viewer-lab-session";
+import {
+  buildViewerLabSessionInput,
+  toViewerLabUserId
+} from "../src/lib/services/viewer-lab/create-viewer-lab-session";
 import { getViewerLabConfig, isViewerLabConfigured } from "../src/lib/services/viewer-lab/viewer-lab-config";
 
 describe("Scannex Viewer Lab", () => {
@@ -37,7 +40,7 @@ describe("Scannex Viewer Lab", () => {
       StackName: "apgi-scannex-practice",
       FleetName: "apgi-scannex-practice",
       ApplicationId: "ScannexViewer",
-      UserId: "4f4bd282-d471-4f93-90f5-7b2c24595d12",
+      UserId: "4f4bd282d4714f9390f57b2c24595d12",
       Validity: 60
     });
     expect(input.SessionContext).toBe(JSON.stringify({
@@ -49,12 +52,22 @@ describe("Scannex Viewer Lab", () => {
     expect(JSON.stringify(input)).not.toContain("@");
   });
 
+  it("creates a stable AppStream user identifier within the 32-character limit", () => {
+    expect(toViewerLabUserId("4f4bd282-d471-4f93-90f5-7b2c24595d12")).toBe(
+      "4f4bd282d4714f9390f57b2c24595d12"
+    );
+    expect(toViewerLabUserId("learner-id-that-is-far-too-long-for-appstream")).toMatch(
+      /^[a-f0-9]{32}$/
+    );
+  });
+
   it("rejects an unsafe session URL lifetime and restores the short default", () => {
     const config = getViewerLabConfig({
       SCANNEX_VIEWER_LAB_ENABLED: "true",
       SCANNEX_VIEWER_LAB_REGION: "eu-west-1",
       SCANNEX_VIEWER_LAB_STACK_NAME: "stack",
       SCANNEX_VIEWER_LAB_FLEET_NAME: "fleet",
+      SCANNEX_VIEWER_LAB_APPLICATION_ID: "ScannexViewer",
       AWS_ROLE_ARN: "arn:aws:iam::216511318705:role/apgi-viewer-lab-launcher",
       SCANNEX_VIEWER_LAB_SESSION_TTL_SECONDS: "9999999"
     });

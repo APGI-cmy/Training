@@ -3,6 +3,7 @@ import {
   CreateStreamingURLCommand,
   type CreateStreamingURLCommandInput
 } from "@aws-sdk/client-appstream";
+import { createHash } from "node:crypto";
 import { awsCredentialsProvider } from "@vercel/oidc-aws-credentials-provider";
 import type { ViewerLabConfig } from "@/lib/services/viewer-lab/viewer-lab-config";
 
@@ -10,6 +11,16 @@ type ViewerLabSession = {
   streamingUrl: string;
   expiresAt?: Date;
 };
+
+export function toViewerLabUserId(learnerId: string) {
+  const compactUuid = learnerId.trim().replaceAll("-", "");
+
+  if (/^[A-Za-z0-9_+=,.@-]{1,32}$/.test(compactUuid)) {
+    return compactUuid;
+  }
+
+  return createHash("sha256").update(learnerId).digest("hex").slice(0, 32);
+}
 
 export function buildViewerLabSessionInput({
   config,
@@ -25,7 +36,7 @@ export function buildViewerLabSessionInput({
   return {
     StackName: config.stackName,
     FleetName: config.fleetName,
-    UserId: learnerId,
+    UserId: toViewerLabUserId(learnerId),
     ApplicationId: config.applicationId,
     Validity: config.sessionTtlSeconds,
     SessionContext: JSON.stringify({

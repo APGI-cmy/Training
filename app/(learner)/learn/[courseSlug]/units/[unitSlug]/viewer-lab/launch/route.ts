@@ -3,7 +3,7 @@ import { getCourseBySlug } from "@/lib/courses";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { createViewerLabSession } from "@/lib/services/viewer-lab/create-viewer-lab-session";
 import { getViewerLabConfig } from "@/lib/services/viewer-lab/viewer-lab-config";
-import { requireSession } from "@/server/auth/session";
+import { getCurrentSession } from "@/server/auth/session";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -23,7 +23,12 @@ function viewerLabPageUrl(request: NextRequest, courseSlug: string, unitSlug: st
 }
 
 export async function POST(request: NextRequest, { params }: RouteContext) {
-  const session = await requireSession();
+  const session = await getCurrentSession();
+
+  if (!session) {
+    return NextResponse.redirect(new URL("/alp-sign-in", request.url), 303);
+  }
+
   const { courseSlug, unitSlug } = await params;
   const course = getCourseBySlug(courseSlug);
   const unit = course?.units.find((candidate) => candidate.slug === unitSlug);

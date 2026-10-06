@@ -6,7 +6,7 @@ export type ViewerLabConfig = {
   stackName: string;
   fleetName: string;
   roleArn: string;
-  applicationId?: string;
+  applicationId: string;
   sessionTtlSeconds: number;
 };
 
@@ -38,12 +38,11 @@ export function getViewerLabConfig(
   const stackName = source.SCANNEX_VIEWER_LAB_STACK_NAME?.trim();
   const fleetName = source.SCANNEX_VIEWER_LAB_FLEET_NAME?.trim();
   const roleArn = source.AWS_ROLE_ARN?.trim();
+  const applicationId = source.SCANNEX_VIEWER_LAB_APPLICATION_ID?.trim();
 
-  if (!enabled || !region || !stackName || !fleetName || !roleArn) {
+  if (!enabled || !region || !stackName || !fleetName || !roleArn || !applicationId) {
     return null;
   }
-
-  const applicationId = source.SCANNEX_VIEWER_LAB_APPLICATION_ID?.trim();
 
   return {
     enabled,
@@ -51,7 +50,7 @@ export function getViewerLabConfig(
     stackName,
     fleetName,
     roleArn,
-    applicationId: applicationId || undefined,
+    applicationId,
     sessionTtlSeconds: parseSessionTtl(source.SCANNEX_VIEWER_LAB_SESSION_TTL_SECONDS)
   };
 }
