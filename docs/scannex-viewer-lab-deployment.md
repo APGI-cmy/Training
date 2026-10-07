@@ -22,7 +22,7 @@ The first release is a practice sandbox. Opening it does not award a score, comp
 | WorkSpaces Applications image | `apgi-scannex-practice-v1` |
 | Fleet | `apgi-scannex-practice` |
 | Stack | `apgi-scannex-practice` |
-| Published application | `ScannexViewer` |
+| Published application | `Viewer` |
 | Instance family | Start with `stream.standard.medium`, then confirm performance in a one-user pilot. |
 | Capacity | One concurrent user for the pilot. |
 | Session mode | Training practice only. |
@@ -73,7 +73,7 @@ SCANNEX_VIEWER_LAB_ENABLED=true
 SCANNEX_VIEWER_LAB_REGION=eu-west-1
 SCANNEX_VIEWER_LAB_STACK_NAME=apgi-scannex-practice
 SCANNEX_VIEWER_LAB_FLEET_NAME=apgi-scannex-practice
-SCANNEX_VIEWER_LAB_APPLICATION_ID=ScannexViewer
+SCANNEX_VIEWER_LAB_APPLICATION_ID=Viewer
 SCANNEX_VIEWER_LAB_SESSION_TTL_SECONDS=60
 AWS_ROLE_ARN=arn:aws:iam::216511318705:role/apgi-scannex-viewer-lab-launcher
 ```
