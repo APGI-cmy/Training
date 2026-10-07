@@ -33,6 +33,13 @@ export default async function AdminCoursePreviewPage({ params }: PageProps) {
         </p>
       </header>
 
+      {course.slug === "scannex-training-programme" ? (
+        <section className="admin-alert" aria-label="Scannex Viewer administration">
+          <div><strong>Scannex Viewer capacity and cost control</strong><span>Configure Viewer learning units, access dates, enrolled-learner capacity and the cost tolerance.</span></div>
+          <Link className="primary-button" href={`/admin/courses/${course.slug}/viewer-lab`}>Manage Viewer</Link>
+        </section>
+      ) : null}
+
       <section className="course-grid" aria-label={`${course.title} preview units`}>
         {units.map((unit) => (
           <article className="course-card" key={unit.id}>

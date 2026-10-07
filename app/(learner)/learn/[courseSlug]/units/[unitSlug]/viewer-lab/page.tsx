@@ -4,6 +4,7 @@ import { CourseAccessDenied } from "@/components/course/CourseAccessDenied";
 import { getCourseBySlug } from "@/lib/courses";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { isViewerLabConfigured } from "@/lib/services/viewer-lab/viewer-lab-config";
+import { evaluateViewerLabAvailability, getViewerLabSettings, SCANNEX_COURSE_ID } from "@/lib/services/viewer-lab/viewer-lab-settings";
 import { requireSession } from "@/server/auth/session";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +22,10 @@ type PageProps = {
 const statusMessages: Record<string, string> = {
   "access-denied": "Your active Scannex enrolment could not be confirmed. Return to My Learning or contact the training administrator.",
   "not-configured": "The hosted Viewer is still being prepared. Your course progress has not been changed.",
-  unavailable: "The Viewer could not be started. Please wait a moment and try again, or contact the training administrator."
+  unavailable: "The Viewer could not be started. Please wait a moment and try again, or contact the training administrator.",
+  disabled: "The Scannex Viewer has been temporarily disabled by the training administrator.",
+  "not-open": "The Scannex Viewer access window has not opened yet.",
+  closed: "The Scannex Viewer access window has closed. Contact the training administrator if you require an extension."
 };
 
 export default async function ViewerLabPage({ params, searchParams }: PageProps) {
@@ -30,7 +34,9 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
   const { status } = await searchParams;
   const course = getCourseBySlug(courseSlug);
   const unit = course?.units.find((candidate) => candidate.slug === unitSlug);
-  const isPracticeLab = course?.slug === "scannex-training-programme" && unit?.slug === "lu6";
+  const settings = await getViewerLabSettings();
+  const availability = unit ? evaluateViewerLabAvailability(settings, unit.slug) : undefined;
+  const isPracticeLab = course?.slug === SCANNEX_COURSE_ID && Boolean(availability?.appliesToUnit);
   const isSummativeLab = Boolean(unit?.practicalAssessment);
 
   if (!course || !unit || (!isPracticeLab && !isSummativeLab)) {
@@ -49,8 +55,8 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
   }
 
   if (isPracticeLab) {
-    const configured = isViewerLabConfigured();
-    const message = status ? statusMessages[status] : undefined;
+    const configured = isViewerLabConfigured() && Boolean(availability?.canLaunch);
+    const message = status ? statusMessages[status] : availability?.canLaunch ? undefined : availability?.message;
 
     return (
       <main>
@@ -82,7 +88,7 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
               <p className="resource-status" role="status">
                 This practice session does not record a score, pass you, or complete the learning unit.
               </p>
-              {message ? <p className="form-error" role="alert">{message}</p> : null}
+              {message ? <aside className="app-toast app-toast--warning app-toast--inline" role="alert"><div><strong>Viewer unavailable</strong><p>{message}</p></div></aside> : null}
               {configured ? (
                 <form
                   action={`/learn/${course.slug}/units/${unit.slug}/viewer-lab/launch`}
