@@ -145,9 +145,9 @@ export function UnitViewer({
               </Link>
             ) : <span />}
             {next ? (
-              <Link className="primary-button" href={`/learn/${course.slug}/units/${next.slug}`}>
+              <a className="primary-button" href={`/learn/${course.slug}/units/${next.slug}`}>
                 Next: {next.title}
-              </Link>
+              </a>
             ) : null}
           </div>
         </div>

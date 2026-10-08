@@ -1,0 +1,14 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadScannexPracticeSessionStatus",
+      "Effect": "Allow",
+      "Action": "appstream:DescribeSessions",
+      "Resource": [
+        "arn:aws:appstream:eu-west-1:216511318705:fleet/apgi-scannex-practice",
+        "arn:aws:appstream:eu-west-1:216511318705:stack/apgi-scannex-practice"
+      ]
+    }
+  ]
+}

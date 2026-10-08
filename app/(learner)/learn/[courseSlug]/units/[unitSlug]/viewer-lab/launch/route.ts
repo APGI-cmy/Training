@@ -76,16 +76,12 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
       expiresAt: viewerSession.expiresAt?.toISOString()
     });
 
-    try {
-      await recordViewerLabLaunch({ userId: session.user.id, unitSlug, settings });
-    } catch (recordingError) {
-      console.error("viewer_lab_cost_record_failed", {
-        learnerId: session.user.id,
-        courseSlug,
-        unitSlug,
-        error: recordingError instanceof Error ? recordingError.name : "UnknownError"
-      });
-    }
+    // Persist the launch before revealing its URL so progression can also be
+    // enforced from another tab/device and while AWS is still starting.
+    await recordViewerLabLaunch({
+      userId: session.user.id, unitSlug, settings,
+      launchExpiresAt: viewerSession.expiresAt ?? new Date(Date.now() + config.sessionTtlSeconds * 1000)
+    });
 
     return NextResponse.redirect(viewerSession.streamingUrl, 303);
   } catch (error) {
