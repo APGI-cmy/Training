@@ -8,6 +8,7 @@ import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { getLearnerProgress } from "@/lib/services/progress/get-learner-progress";
 import { requireSession } from "@/server/auth/session";
 import { getCookieCompletedUnitIds } from "@/server/progress/progress-cookie";
+import { evaluateViewerLabAvailability, getViewerLabSettings } from "@/lib/services/viewer-lab/viewer-lab-settings";
 
 export const dynamic = "force-dynamic";
 
@@ -62,5 +63,9 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
-  return <UnitViewer content={content} units={shell.units} />;
+  const viewerAvailability = course.slug === "scannex-training-programme"
+    ? evaluateViewerLabAvailability(await getViewerLabSettings(), content.unit.slug)
+    : undefined;
+
+  return <UnitViewer content={content} units={shell.units} viewerAvailability={viewerAvailability} />;
 }

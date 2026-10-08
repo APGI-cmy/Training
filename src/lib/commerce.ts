@@ -8,6 +8,8 @@ export type CourseCommerceSetting = {
   currency: string;
   taxTreatment: TaxTreatment;
   taxNotice: string;
+  viewerCostPerLearnerCents?: number;
+  viewerCostToleranceBps?: number;
 };
 
 export type CoursePaymentRecipient = {
@@ -33,7 +35,25 @@ const defaults: Record<string, Pick<CourseCommerceSetting, "priceCents" | "curre
 
 export function defaultCourseCommerceSetting(courseId: string): CourseCommerceSetting {
   const configured = defaults[courseId] ?? { priceCents: 0, currency: "USD" };
-  return { courseId, ...configured, taxTreatment: "not_collected", taxNotice: DEFAULT_TAX_NOTICE };
+  return {
+    courseId,
+    ...configured,
+    taxTreatment: "not_collected",
+    taxNotice: DEFAULT_TAX_NOTICE,
+    ...(courseId === "scannex-training-programme"
+      ? { viewerCostPerLearnerCents: 521, viewerCostToleranceBps: 1000 }
+      : {})
+  };
+}
+
+export function viewerCostAllowanceCents(setting: CourseCommerceSetting) {
+  const cost = setting.viewerCostPerLearnerCents ?? 0;
+  const tolerance = setting.viewerCostToleranceBps ?? 0;
+  return Math.round(cost * (1 + tolerance / 10_000));
+}
+
+export function payableCoursePriceCents(setting: CourseCommerceSetting) {
+  return setting.priceCents + viewerCostAllowanceCents(setting);
 }
 
 export function formatCoursePrice(priceCents: number, currency: string) {

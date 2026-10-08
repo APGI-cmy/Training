@@ -28,7 +28,23 @@ export async function getCourseCommerceSettings(courseIds: string[]) {
   try {
     const response = await adminRest(`/rest/v1/course_commerce_settings?select=course_id,price_cents,currency,tax_treatment,tax_notice&course_id=in.(${courseIds.map(encodeURIComponent).join(",")})`);
     if (!response.ok) return fallback;
-    for (const row of (await response.json()) as CommerceRow[]) fallback.set(row.course_id, setting(row));
+    for (const row of (await response.json()) as CommerceRow[]) {
+      fallback.set(row.course_id, { ...fallback.get(row.course_id), ...setting(row) });
+    }
+    if (courseIds.includes("scannex-training-programme")) {
+      const viewerResponse = await adminRest("/rest/v1/course_viewer_lab_settings?select=estimated_cost_per_learner_cents,tolerance_bps&course_id=eq.scannex-training-programme&limit=1");
+      if (viewerResponse.ok) {
+        const viewerRows = (await viewerResponse.json()) as Array<{ estimated_cost_per_learner_cents: number; tolerance_bps: number }>;
+        const current = fallback.get("scannex-training-programme");
+        if (current && viewerRows[0]) {
+          fallback.set("scannex-training-programme", {
+            ...current,
+            viewerCostPerLearnerCents: viewerRows[0].estimated_cost_per_learner_cents,
+            viewerCostToleranceBps: viewerRows[0].tolerance_bps
+          });
+        }
+      }
+    }
   } catch { /* The site continues to show the configured defaults until the migration is applied. */ }
   return fallback;
 }

@@ -5,13 +5,17 @@ import { UnitResources } from "@/components/course/UnitResources";
 import type { CourseShellUnit } from "@/lib/services/courses/get-course-shell";
 import type { UnitContent } from "@/lib/services/courses/get-unit-content";
 import { recordProgressEvent } from "@/server/actions/progress/record-progress-event";
+import { ViewerLabNotice } from "@/components/course/ViewerLabNotice";
+import type { ViewerLabAvailability } from "@/lib/services/viewer-lab/viewer-lab-settings";
 
 export function UnitViewer({
   content,
-  units
+  units,
+  viewerAvailability
 }: {
   content: UnitContent;
   units: CourseShellUnit[];
+  viewerAvailability?: ViewerLabAvailability;
 }) {
   const { course, unit, previous, next, embeddedContentHref, originalContentHref } = content;
   const activeUnit = units.find((candidate) => candidate.id === unit.id);
@@ -30,6 +34,7 @@ export function UnitViewer({
 
   return (
     <main>
+      {viewerAvailability?.appliesToUnit ? <ViewerLabNotice courseSlug={course.slug} unitSlug={unit.slug} availability={viewerAvailability} /> : null}
       <section className="unit-masthead">
         <div className="content-inner">
           <Link className="back-link" href={`/learn/${course.slug}`}>
@@ -75,16 +80,14 @@ export function UnitViewer({
                   activityHref={scormLaunchSrc ? `/learn/${course.slug}/units/${unit.slug}/scorm` : undefined}
                   activityAvailable={Boolean(scormLaunchSrc)}
                 />
-                {unit.slug === "lu6" ? (
+                {viewerAvailability?.appliesToUnit ? (
                   <section className="unit-resources" aria-labelledby="viewer-practice-heading">
                     <p className="eyebrow">Genuine Viewer practice</p>
                     <h2 id="viewer-practice-heading">Scannex Viewer Lab</h2>
                     <p>Open a separate, secure Windows session to practise the controls taught in this learning unit.</p>
-                    <p className="resource-status">Practice sessions do not record a score or complete the unit.</p>
+                    <p className={viewerAvailability.canLaunch ? "resource-status" : "form-error"}>{viewerAvailability.message}</p>
                     <div className="button-row">
-                      <Link className="primary-button" href={`/learn/${course.slug}/units/${unit.slug}/viewer-lab`}>
-                        Prepare Viewer practice session
-                      </Link>
+                      {viewerAvailability.canLaunch ? <Link className="primary-button" href={`/learn/${course.slug}/units/${unit.slug}/viewer-lab`}>Prepare Viewer practice session</Link> : <button className="primary-button" type="button" disabled>Viewer unavailable</button>}
                     </div>
                   </section>
                 ) : null}

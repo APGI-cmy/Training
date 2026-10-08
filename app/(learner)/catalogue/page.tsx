@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getCourses } from "@/lib/courses";
-import { defaultCourseCommerceSetting, formatCoursePrice } from "@/lib/commerce";
+import { defaultCourseCommerceSetting, formatCoursePrice, payableCoursePriceCents } from "@/lib/commerce";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { requireSession } from "@/server/auth/session";
 import { getCourseCommerceSettings } from "@/server/services/commerce/get-course-commerce";
@@ -85,7 +85,7 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
               <p className="eyebrow">{course.level}</p>
               <h2>{course.title}</h2>
               <p>{course.description}</p>
-              <div className="course-card-status"><p className="course-price"><strong>{formatCoursePrice(pricing.priceCents, pricing.currency)}</strong></p><p><strong>Status:</strong> {state}</p></div>
+              <div className="course-card-status"><p className="course-price"><strong>{formatCoursePrice(payableCoursePriceCents(pricing), pricing.currency)}</strong></p><p><strong>Status:</strong> {state}</p></div>
 
               {decision.status === "enrolled" ? (
                 <Link className="button-link" href={`/learn/${course.slug}`}>Continue course</Link>

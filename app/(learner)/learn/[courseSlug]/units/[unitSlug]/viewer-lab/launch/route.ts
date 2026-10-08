@@ -3,6 +3,7 @@ import { getCourseBySlug } from "@/lib/courses";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { createViewerLabSession } from "@/lib/services/viewer-lab/create-viewer-lab-session";
 import { getViewerLabConfig } from "@/lib/services/viewer-lab/viewer-lab-config";
+import { evaluateViewerLabAvailability, getViewerLabSettings, recordViewerLabLaunch, SCANNEX_COURSE_ID } from "@/lib/services/viewer-lab/viewer-lab-settings";
 import { getCurrentSession } from "@/server/auth/session";
 
 export const dynamic = "force-dynamic";
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
   const course = getCourseBySlug(courseSlug);
   const unit = course?.units.find((candidate) => candidate.slug === unitSlug);
 
-  if (!course || !unit || course.slug !== "scannex-training-programme" || unit.slug !== "lu6") {
+  if (!course || !unit || course.slug !== SCANNEX_COURSE_ID) {
     return NextResponse.json({ error: "Viewer Lab is not available for this learning unit." }, { status: 404 });
   }
 
@@ -46,6 +47,12 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
 
   if (!access.canAccess) {
     return NextResponse.redirect(viewerLabPageUrl(request, courseSlug, unitSlug, "access-denied"), 303);
+  }
+
+  const settings = await getViewerLabSettings();
+  const availability = evaluateViewerLabAvailability(settings, unitSlug);
+  if (!availability.canLaunch) {
+    return NextResponse.redirect(viewerLabPageUrl(request, courseSlug, unitSlug, availability.code), 303);
   }
 
   const config = getViewerLabConfig();
@@ -68,6 +75,17 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
       unitSlug,
       expiresAt: viewerSession.expiresAt?.toISOString()
     });
+
+    try {
+      await recordViewerLabLaunch({ userId: session.user.id, unitSlug, settings });
+    } catch (recordingError) {
+      console.error("viewer_lab_cost_record_failed", {
+        learnerId: session.user.id,
+        courseSlug,
+        unitSlug,
+        error: recordingError instanceof Error ? recordingError.name : "UnknownError"
+      });
+    }
 
     return NextResponse.redirect(viewerSession.streamingUrl, 303);
   } catch (error) {

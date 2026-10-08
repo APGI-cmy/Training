@@ -12,6 +12,17 @@ type ViewerLabSession = {
   expiresAt?: Date;
 };
 
+export function createViewerLabClient(config: ViewerLabConfig) {
+  return new AppStreamClient({
+    region: config.region,
+    credentials: awsCredentialsProvider({
+      roleArn: config.roleArn,
+      clientConfig: { region: config.region },
+      roleSessionName: "apgi-scannex-viewer-lab"
+    })
+  });
+}
+
 export function toViewerLabUserId(learnerId: string) {
   const compactUuid = learnerId.trim().replaceAll("-", "");
 
@@ -58,14 +69,7 @@ export async function createViewerLabSession({
   courseSlug: string;
   unitSlug: string;
 }): Promise<ViewerLabSession> {
-  const client = new AppStreamClient({
-    region: config.region,
-    credentials: awsCredentialsProvider({
-      roleArn: config.roleArn,
-      clientConfig: { region: config.region },
-      roleSessionName: "apgi-scannex-viewer-lab"
-    })
-  });
+  const client = createViewerLabClient(config);
 
   try {
     const response = await client.send(
