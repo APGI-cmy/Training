@@ -1,0 +1,32 @@
+name: Data API grants
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/tests/**'
+      - 'scripts/test-data-api-grants.py'
+      - '.github/workflows/data-api-grants.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/tests/**'
+      - 'scripts/test-data-api-grants.py'
+      - '.github/workflows/data-api-grants.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  grants:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Replay migrations without automatic grants and check role access
+        run: python scripts/test-data-api-grants.py
