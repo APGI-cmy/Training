@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ScormPlayer } from "@/components/course/ScormPlayer";
+import { ViewerUnitAccess } from "@/components/course/ViewerUnitAccess";
 import { getCourseBySlug } from "@/lib/courses";
 import { encodeAssetPath } from "@/lib/asset-path";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
@@ -25,6 +26,7 @@ export default async function ScormLaunchPage({ params }: PageProps) {
   if (!access.canAccess) notFound();
 
   return (
+    <ViewerUnitAccess userId={session.user.id} courseSlug={course.slug} unitSlug={unit.slug}>
     <main className="learner-scorm-full">
       <ScormPlayer
         courseSlug={course.slug}
@@ -36,5 +38,6 @@ export default async function ScormLaunchPage({ params }: PageProps) {
         resourceHref={encodeAssetPath(unit.publishedPath)}
       />
     </main>
+    </ViewerUnitAccess>
   );
 }

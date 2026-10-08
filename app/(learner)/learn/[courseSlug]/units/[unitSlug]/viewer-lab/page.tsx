@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CourseAccessDenied } from "@/components/course/CourseAccessDenied";
+import { ViewerPracticeGuide, ViewerStreamingNotice } from "@/components/course/ViewerPracticeGuide";
+import { ViewerUnitAccess } from "@/components/course/ViewerUnitAccess";
 import { getCourseBySlug } from "@/lib/courses";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { isViewerLabConfigured } from "@/lib/services/viewer-lab/viewer-lab-config";
@@ -57,17 +59,19 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
   if (isPracticeLab) {
     const configured = isViewerLabConfigured() && Boolean(availability?.canLaunch);
     const message = status ? statusMessages[status] : availability?.canLaunch ? undefined : availability?.message;
+    const nextUnit = course.units[course.units.findIndex((candidate) => candidate.slug === unit.slug) + 1];
+    const keepSession = Boolean(nextUnit && evaluateViewerLabAvailability(settings, nextUnit.slug).canLaunch);
 
     return (
       <main>
         <section className="unit-masthead">
           <div className="content-inner">
             <Link className="back-link" href={`/learn/${course.slug}/units/${unit.slug}`}>
-              Back to Learning Unit 6
+              Back to Learning Unit {unit.order}
             </Link>
             <p className="eyebrow">Hosted practice environment</p>
             <h1>Scannex Viewer Lab</h1>
-            <p>Practise the LU 6 viewing controls in the genuine Scannex Viewer using an isolated training session.</p>
+            <p>Practise the controls covered in Learning Unit {unit.order} in the genuine Scannex Viewer using an isolated training session.</p>
           </div>
         </section>
 
@@ -81,10 +85,10 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
               </p>
               <ol>
                 <li>Allow pop-ups for the APGI Training Platform if your browser asks.</li>
-                <li>Wait for the Windows session and Scannex Viewer to finish loading.</li>
-                <li>Use the supplied practice image to explore the controls covered in LU 6.</li>
-                <li>Close or sign out of the hosted session when you finish.</li>
+                <li>Open the Viewer with the button below. You can move its window to a second screen.</li>
+                <li>Follow the connection, practice and session-ending instructions on this page.</li>
               </ol>
+              <ViewerStreamingNotice />
               <p className="resource-status" role="status">
                 This practice session does not record a score, pass you, or complete the learning unit.
               </p>
@@ -104,6 +108,8 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
               )}
             </section>
 
+            <ViewerPracticeGuide courseSlug={course.slug} nextUnit={nextUnit} keepSession={keepSession} />
+
             <section className="unit-resources" aria-labelledby="viewer-lab-boundaries-heading">
               <p className="eyebrow">Practice boundaries</p>
               <h2 id="viewer-lab-boundaries-heading">What this session is for</h2>
@@ -118,6 +124,7 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
   }
 
   return (
+    <ViewerUnitAccess userId={session.user.id} courseSlug={course.slug} unitSlug={unit.slug}>
     <main>
       <section className="unit-masthead">
         <div className="content-inner">
@@ -161,5 +168,6 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
         </div>
       </section>
     </main>
+    </ViewerUnitAccess>
   );
 }

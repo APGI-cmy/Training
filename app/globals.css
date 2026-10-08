@@ -1831,6 +1831,20 @@ body:has(.learner-scorm-full) .learner-shell {
 .app-toast--warning { border-left-color: #a43700; }
 .app-toast--inline { position: static; width: 100%; margin: 18px 0; box-shadow: none; }
 
+.viewer-stream-notice {
+  margin: 24px 0;
+  padding: 20px 24px;
+  border: 1px solid #dba943;
+  border-left: 5px solid #dba943;
+  border-radius: 12px;
+  background: #fff5db;
+  color: #173654;
+}
+.viewer-stream-notice p { margin: 8px 0 0; }
+.viewer-practice-steps { padding-inline-start: 24px; }
+.viewer-practice-steps li { padding-inline-start: 6px; margin-block: 12px; }
+.viewer-session-heading { font-size: clamp(1.75rem, 3vw, 2.5rem); line-height: 1.2; max-width: none; }
+
 @media (max-width: 680px) {
   .activity-toolbar { gap: 8px; padding: 8px 12px; }
   .activity-toolbar a { padding-inline: 10px; font-size: 0.85rem; }

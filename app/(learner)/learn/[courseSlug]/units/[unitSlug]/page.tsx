@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { CourseAccessDenied } from "@/components/course/CourseAccessDenied";
 import { UnitViewer } from "@/components/course/UnitViewer";
+import { ViewerUnitAccess } from "@/components/course/ViewerUnitAccess";
 import { getCourseBySlug } from "@/lib/courses";
 import { getCourseShell } from "@/lib/services/courses/get-course-shell";
 import { getUnitContent } from "@/lib/services/courses/get-unit-content";
@@ -67,5 +68,7 @@ export default async function Page({ params }: PageProps) {
     ? evaluateViewerLabAvailability(await getViewerLabSettings(), content.unit.slug)
     : undefined;
 
-  return <UnitViewer content={content} units={shell.units} viewerAvailability={viewerAvailability} />;
+  return <ViewerUnitAccess userId={session.user.id} courseSlug={course.slug} unitSlug={content.unit.slug}>
+    <UnitViewer content={content} units={shell.units} viewerAvailability={viewerAvailability} />
+  </ViewerUnitAccess>;
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ScannexTheoryAssessment } from "@/components/assessments/ScannexTheoryAssessment";
 import { CourseAccessDenied } from "@/components/course/CourseAccessDenied";
+import { ViewerUnitAccess } from "@/components/course/ViewerUnitAccess";
 import { getCourseBySlug } from "@/lib/courses";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { getScannexTheoryQuestions } from "@/server/assessments/scannex-theory-bank";
@@ -33,6 +34,7 @@ export default async function ScannexKnowledgeAssessmentPage({ params }: PagePro
   if (!access.canAccess) return <CourseAccessDenied course={course} access={access} />;
 
   return (
+    <ViewerUnitAccess userId={session.user.id} courseSlug={course.slug} unitSlug={unit.slug}>
     <main>
       <section className="unit-masthead">
         <div className="content-inner">
@@ -55,5 +57,6 @@ export default async function ScannexKnowledgeAssessmentPage({ params }: PagePro
         latestResult={latestAttempt ? { score: latestAttempt.score, maxScore: latestAttempt.maxScore, submittedAt: latestAttempt.submittedAt } : null}
       />
     </main>
+    </ViewerUnitAccess>
   );
 }

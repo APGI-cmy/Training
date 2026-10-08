@@ -87,9 +87,25 @@ The feature stays visibly unavailable when any required setting is absent or whe
 3. The Viewer starts with IVServer ready and shows only the approved practice material.
 4. The learner can use zoom, palettes, brightness, contrast, pan and reference-image controls.
 5. The learner cannot open an unrestricted desktop, browse another learner's files or extract controlled material.
-6. Closing or signing out ends the session and a later learner receives a clean environment.
+6. AWS toolbar **Profile → End session → End session** ends the streaming session and a later learner receives a clean environment. Closing a browser window or using TrainingTool LogOff is not proof that the stream has ended.
 7. Opening or closing a practice session does not alter course completion or assessment results.
 8. A one-user cost and performance check is recorded before capacity is increased.
+
+## Practice instructions and progression checks
+
+The learner page now includes the tested TrainingTool workflow: Catalog → TrainingTool → Connect (`127.0.0.1`) → Viewer 1 → LogOn → Scannex Viewer Practice → Start Exercise → Yes. The learner can use Zoom 1/4 if the first image is too large. Finish an image with the check-mark control, dismiss Results with OK, then select Release to receive the next image. Learners may explore any number of available images; the exercise has no scored answer annotations.
+
+An amber streaming notice explains that weak or unstable connections can delay controls and asks learners to click once and wait for the response.
+
+Before a learner opens a different unit that is not currently available for Viewer practice, the platform reads that learner's latest launch record and asks AWS `DescribeSessions` for only that learner in the configured stack and fleet. ACTIVE and PENDING sessions block progression even when NOT_CONNECTED. The current practice unit remains accessible. Another Viewer-enabled unit retains the same session. Ordinary unit pages, direct SCORM launches and assessment entry pages share this check; cached navigation is checked again before an activity mounts.
+
+Launch expiry is stored in the existing private `viewer_lab_sessions.metadata` JSON field before the streaming URL is returned. A still-valid launch link plus a 60-second AWS propagation allowance blocks progression while the session is starting. An AWS/configuration/history failure keeps the gate closed with retry instructions; it never claims logout succeeded. No new database migration is required beyond PR #122's existing tables.
+
+Attach the additional read-only policy in `docs/scannex-viewer-session-check-policy.json` to `apgi-scannex-viewer-lab-launcher` before production activation. It grants only `appstream:DescribeSessions` for the named Scannex fleet and stack; no session termination, broader launch access or persistent credentials are added. See [AWS IAM action/resource support](https://docs.aws.amazon.com/service-authorization/latest/reference/list_appstream.html) and [DescribeSessions](https://docs.aws.amazon.com/appstream2/latest/APIReference/API_DescribeSessions.html).
+
+Release depends on PR #122, which supplies the per-unit Viewer configuration and private launch table. Merge that dependency first, then this enhancement. Keep the production-only Vercel OIDC trust boundary; previews do not get AWS access. A final production pilot must confirm that LU 6 → LU 7 is blocked with an open/disconnected stream, then succeeds after Profile → End session, and that an admin-enabled consecutive Viewer unit permits retaining the session.
+
+Validation: `npx vitest run --config vitest.viewer.config.mts`, `npm run typecheck`, `npm run build`.
 
 ## Later assessment work
 

@@ -115,11 +115,13 @@ export async function getViewerLabCostSummary(settings: ViewerLabSettings): Prom
 export async function recordViewerLabLaunch({
   userId,
   unitSlug,
-  settings
+  settings,
+  launchExpiresAt
 }: {
   userId: string;
   unitSlug: string;
   settings: ViewerLabSettings;
+  launchExpiresAt: Date;
 }) {
   const monthStart = new Date();
   monthStart.setUTCDate(1);
@@ -139,7 +141,8 @@ export async function recordViewerLabLaunch({
       course_id: SCANNEX_COURSE_ID,
       unit_slug: unitSlug,
       status: "launched",
-      estimated_cost_cents: estimatedCostCents
+      estimated_cost_cents: estimatedCostCents,
+      metadata: { launch_expires_at: launchExpiresAt.toISOString() }
     })
   });
   if (!response.ok) throw new Error("VIEWER_LAB_SESSION_NOT_RECORDED");
