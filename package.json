@@ -9,6 +9,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "test:learner-release": "vitest run --config vitest.release.config.mts",
     "test:alp:red": "vitest run tests/qa-to-red/alp",
     "test:alp:w4-2": "vitest run tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts tests/qa-to-red/alp/w4-2-migration-security.spec.ts tests/qa-to-red/alp/w4-2-browser-repair.spec.ts tests/qa-to-red/alp/batch3-stabilisation-red.spec.ts",
     "test:alp:lm": "vitest run tests/qa-to-red/alp/w4-2-learner-management.spec.ts",

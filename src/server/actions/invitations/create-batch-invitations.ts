@@ -10,7 +10,7 @@ export type BatchInvitationResult = {
 };
 
 export async function createBatchInvitations(input: { invitations: InvitationInput[] }) {
-  const { session } = await requireAdmin();
+  await requireAdmin();
   const unique = new Set<string>();
   const recipientResults: BatchInvitationResult[] = [];
 
@@ -22,7 +22,7 @@ export async function createBatchInvitations(input: { invitations: InvitationInp
       continue;
     }
     unique.add(duplicateKey);
-    const result = await createAndSendInvitation(invitation, session.user.id);
+    const result = await createAndSendInvitation(invitation);
     recipientResults.push({ recipientEmail, ok: result.ok, error: result.error });
   }
 
