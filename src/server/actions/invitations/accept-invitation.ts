@@ -1,23 +1,12 @@
 "use server";
 
-import { createHash, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { requireSession, type AlpSession } from "@/server/auth/session";
 import { adminRest } from "@/server/supabase/admin-rest";
 import { getPendingCourseInvitations } from "@/server/services/invitations/pending-for-learner";
 import { getCourseBySlug } from "@/lib/courses";
-
-async function recordInvalidAttempt(actorId: string, tokenHash: string, failed: string) {
-  await adminRest("/rest/v1/audit_events", {
-    method: "POST",
-    body: JSON.stringify({
-      actor_user_id: actorId,
-      target_user_id: actorId,
-      event_type: "course_invitation_redemption_failed",
-      entity_type: "course_invitation",
-      metadata: { failed, token_hash_prefix: tokenHash.slice(0, 12) }
-    })
-  });
-}
+import { getProfile } from "@/server/services/profiles";
+import { isLearnerProfileComplete } from "@/lib/auth/learner-profile-completion";
 
 async function ensureLearnerRecord(userId: string, email: string | undefined) {
   const learner = await adminRest("/rest/v1/learners?on_conflict=id", {
@@ -42,21 +31,8 @@ async function ensureLearnerRecord(userId: string, email: string | undefined) {
   return profile.ok;
 }
 
-export async function acceptInvitation(token: string) {
-  const session = await requireSession();
-  const tokenHash = createHash("sha256").update(token).digest("hex");
-  const response = await adminRest(
-    `/rest/v1/course_invitations?select=id,recipient_email,course_id,organisation_id,expires_at,revoked_at,redeemed_at,status&token_hash=eq.${encodeURIComponent(tokenHash)}&limit=1`
-  );
-  if (!response.ok) return { ok: false, error: "invitation_lookup_failed" };
-
-  const rows = (await response.json()) as Array<Record<string, string | null>>;
-  const invitation = rows[0];
-  return redeemInvitation(session, invitation, tokenHash);
-}
-
-// Internal only: each public action authenticates before calling this helper.
-async function redeemInvitation(session: AlpSession, invitation: Record<string, string | null> | undefined, tokenHash: string) {
+// Internal only: the profile enrolment action authenticates before this helper.
+async function redeemInvitation(session: AlpSession, invitation: Record<string, string | null> | undefined) {
   const now = new Date();
   const invitationEmail = invitation?.recipient_email?.trim().toLowerCase();
   const sessionEmail = session.user.email?.trim().toLowerCase();
@@ -75,8 +51,6 @@ async function redeemInvitation(session: AlpSession, invitation: Record<string, 
         body: JSON.stringify({ invitation_id: invitation.id, event_type: "failed", actor_id: session.user.id, metadata: { failed } })
       });
       if (!failedEvent.ok) return { ok: false, error: "failed_event_write_failed" };
-    } else {
-      await recordInvalidAttempt(session.user.id, tokenHash, failed || "invalid");
     }
     return { ok: false, error: failed || "invalid" };
   }
@@ -158,11 +132,12 @@ export async function acceptPendingInvitations() {
   const session = await requireSession();
   if (!session.user.email_confirmed_at) return { ok: false, error: "email_unconfirmed" };
   try {
+    if (!isLearnerProfileComplete(await getProfile(session))) return { ok: false, error: "profile_required" };
     const invitations = await getPendingCourseInvitations(session);
     const courseIds: string[] = [];
     for (const invitation of invitations) {
       if (!getCourseBySlug(invitation.course_id)) return { ok: false, error: "course_unavailable" };
-      const result = await redeemInvitation(session, invitation, "");
+      const result = await redeemInvitation(session, invitation);
       if (!result.ok || !result.courseId) return { ok: false, error: result.error ?? "redemption_failed" };
       courseIds.push(result.courseId);
     }

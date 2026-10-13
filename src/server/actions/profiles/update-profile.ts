@@ -1,10 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireSession } from "@/server/auth/session";
+import { requireSession, getUserRoles } from "@/server/auth/session";
 import { upsertProfile } from "@/server/services/profiles";
 import { redirect } from "next/navigation";
 import { acceptPendingInvitations } from "@/server/actions/invitations/accept-invitation";
+import { isStaffAccount } from "@/lib/auth/learner-profile-completion";
 
 export type ProfileActionState = {
   error?: string;
@@ -41,14 +42,18 @@ export async function updateProfileAction(
   }
 
   revalidatePath("/profile");
-  if (formData.get("complete_onboarding") === "true") {
+  // Enrolment is a server decision, not a hidden field supplied by one form.
+  // A regular Profile save must finish onboarding too.
+  if (!isStaffAccount(await getUserRoles(session.accessToken))) {
     const accepted = await acceptPendingInvitations();
     if (!accepted.ok) return { error: accepted.error === "email_unconfirmed"
-      ? "Your profile is saved. Confirm your email address before accepting your course invitation."
-      : "Your profile is saved, but your course invitation could not be accepted. Please try saving again or contact your training administrator." };
+      ? "Your profile is saved. Confirm your email address to open your invited course."
+      : "Your profile is saved, but your invited course could not be opened yet. Please try saving again or contact your training administrator." };
     revalidatePath("/dashboard");
     revalidatePath("/catalogue");
-    redirect("/dashboard?welcome=1");
+    if (accepted.courseIds?.length || formData.get("complete_onboarding") === "true") {
+      redirect("/dashboard?welcome=1");
+    }
   }
   return { success: "Profile saved." };
 }

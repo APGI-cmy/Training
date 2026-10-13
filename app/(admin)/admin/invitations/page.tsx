@@ -14,7 +14,7 @@ export default async function InvitationsPage() {
         <div>
           <p className="eyebrow">Administration</p>
           <h1>Invite and import learners</h1>
-          <p>Send individual course invitations or securely stage a bulk invitation run. A learner receives access only after accepting a valid invitation with the matching email address.</p>
+          <p>Send individual course invitations or securely stage a bulk invitation run. The invited course becomes available when the learner signs in with the matching verified email address and saves their profile.</p>
         </div>
       </header>
       <InvitationForm courses={courses} organisations={organisations} defaultExpiry={defaultExpiry} />

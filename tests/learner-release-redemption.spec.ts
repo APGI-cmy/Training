@@ -4,7 +4,7 @@ import { invitationErrorMessage } from "@/lib/invitations/redemption-feedback";
 const mocks = vi.hoisted(() => ({ session: vi.fn(), rest: vi.fn() }));
 vi.mock("@/server/auth/session", () => ({ requireSession: mocks.session }));
 vi.mock("@/server/supabase/admin-rest", () => ({ adminRest: mocks.rest }));
-import { acceptInvitation } from "@/server/actions/invitations/accept-invitation";
+import { getInvitationEntryDestination } from "@/server/services/invitations/entry-destination";
 
 describe("Invitation recovery and matching account", () => {
   beforeEach(() => vi.resetAllMocks());
@@ -19,9 +19,8 @@ describe("Invitation recovery and matching account", () => {
       if (path === "/rest/v1/course_invitation_events") return new Response(null, { status: 201 });
       throw new Error("A mismatched account must not write learner or enrolment records");
     });
-    expect(await acceptInvitation("test-token-only")).toEqual({ ok: false, error: "email_mismatch" });
-    expect(mocks.rest).toHaveBeenCalledTimes(2);
-    expect(JSON.parse(mocks.rest.mock.calls[1][1].body)).toMatchObject({ event_type: "failed", metadata: { failed: "email_mismatch" } });
+    expect(await getInvitationEntryDestination({ accessToken: "fixture", user: { id: "admin-user", email: "admin@example.invalid" } }, "test-token-only")).toEqual({ error: "email_mismatch" });
+    expect(mocks.rest).toHaveBeenCalledOnce();
     expect(invitationErrorMessage("email_mismatch")).toContain("Sign out");
   });
 

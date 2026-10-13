@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({ roles: vi.fn(), profile: vi.fn(), upsert: vi.fn(), session: vi.fn(), login: vi.fn(), accept: vi.fn(), revalidate: vi.fn() }));
+const mocks = vi.hoisted(() => ({ roles: vi.fn(), profile: vi.fn(), upsert: vi.fn(), session: vi.fn(), login: vi.fn(), accept: vi.fn(), pending: vi.fn(), revalidate: vi.fn() }));
 vi.mock("next/navigation", () => ({ redirect: (url: string) => { throw new Error(`REDIRECT:${url}`); } }));
 vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidate }));
 vi.mock("@/server/auth/session", () => ({ getUserRoles: mocks.roles, requireSession: mocks.session, getCurrentSession: mocks.session, signInWithPassword: mocks.login, signOut: vi.fn() }));
 vi.mock("@/server/services/profiles", () => ({ getProfile: mocks.profile, upsertProfile: mocks.upsert }));
 vi.mock("@/server/actions/invitations/accept-invitation", () => ({ acceptPendingInvitations: mocks.accept }));
+vi.mock("@/server/services/invitations/pending-for-learner", () => ({ getPendingCourseInvitations: mocks.pending }));
 import { requireLearnerProfile } from "@/server/auth/learner-onboarding";
 import { signInAction } from "@/server/actions/auth/sign-in";
 import { updateProfileAction } from "@/server/actions/profiles/update-profile";
@@ -18,6 +19,7 @@ describe("Profile-first learner onboarding", () => {
     vi.resetAllMocks(); mocks.session.mockResolvedValue(session); mocks.roles.mockResolvedValue([]);
     mocks.profile.mockResolvedValue(null); mocks.upsert.mockResolvedValue({ ok: true });
     mocks.login.mockResolvedValue({ ok: true }); mocks.accept.mockResolvedValue({ ok: true, courseIds: ["scannex-training-programme"] });
+    mocks.pending.mockResolvedValue([]);
   });
   it("routes a new account with no learner role or profile to profile completion", async () => {
     await expect(requireLearnerProfile(session)).rejects.toThrow("REDIRECT:/profile?onboarding=required");
@@ -53,8 +55,23 @@ describe("Profile-first learner onboarding", () => {
     mocks.accept.mockResolvedValue({ ok: false, error: "invitation_lookup_failed" });
     expect((await updateProfileAction({}, form({ certificate_name: "Learner Test", complete_onboarding: "true" }))).error).toContain("Your profile is saved");
   });
-  it("does not silently accept invitations when editing a completed profile", async () => {
+  it("grants the invited course after a regular profile save without the onboarding hidden field", async () => {
+    await expect(updateProfileAction({}, form({ certificate_name: "Learner Test" }))).rejects.toThrow("REDIRECT:/dashboard?welcome=1");
+    expect(mocks.accept).toHaveBeenCalledOnce();
+  });
+  it("keeps a failed enrolment reachable even after profile details were saved", async () => {
+    mocks.profile.mockResolvedValue({ certificate_name: "Learner Test" });
+    mocks.pending.mockResolvedValue([{ id: "valid-own-invitation" }]);
+    await expect(requireLearnerProfile(session)).rejects.toThrow("REDIRECT:/profile?onboarding=required");
+  });
+  it("keeps ordinary profile edits on profile when there are no pending invitations", async () => {
+    mocks.accept.mockResolvedValue({ ok: true, courseIds: [] });
     expect(await updateProfileAction({}, form({ certificate_name: "Learner Test" }))).toEqual({ success: "Profile saved." });
+    expect(mocks.accept).toHaveBeenCalledOnce();
+  });
+  it("does not automatically enrol staff when they edit their profile", async () => {
+    mocks.roles.mockResolvedValue(["admin"]);
+    expect(await updateProfileAction({}, form({ certificate_name: "Admin Test" }))).toEqual({ success: "Profile saved." });
     expect(mocks.accept).not.toHaveBeenCalled();
   });
 });

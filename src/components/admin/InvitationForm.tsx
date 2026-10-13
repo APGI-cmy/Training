@@ -89,7 +89,7 @@ export function InvitationForm({
           <h3>{deliveryStatus === "sent" ? "Invitation email accepted" : "Invitation created"}</h3>
           <p>
             {deliveryStatus === "sent"
-              ? "The email provider accepted the invitation for delivery. The learner must accept the single-use, expiring link using the invited email address."
+              ? "The email provider accepted the invitation for delivery. The learner signs in with the invited email address and saves their profile to open the course automatically."
               : "Email delivery has not been confirmed. Check the invitation status before asking the learner to look for the email."}
           </p>
         </section>
