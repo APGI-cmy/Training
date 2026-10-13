@@ -159,8 +159,9 @@ async function createPendingEnrolmentIfApplicable(invitationId: string, input: I
   return { ok: true as const, pendingEnrolmentCreated: true, recipientUserId };
 }
 
-export async function createAndSendInvitation(input: InvitationInput, actorId?: string): Promise<CreateInvitationState> {
-  const actor = actorId ?? (await requireAdmin()).session.user.id;
+export async function createAndSendInvitation(input: InvitationInput): Promise<CreateInvitationState> {
+  // This exported Server Action can be called directly, without the admin page.
+  const actor = (await requireAdmin()).session.user.id;
   const clean = normaliseInput(input);
   const validationError = validateInput(clean);
   if (validationError) return { ok: false, error: validationError };

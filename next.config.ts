@@ -4,6 +4,12 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: process.cwd()
   },
+  async headers() {
+    return [{ source: "/reset-password", headers: [
+      { key: "Referrer-Policy", value: "no-referrer" },
+      { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" }
+    ] }];
+  },
   async redirects() {
     return [
       {

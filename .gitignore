@@ -1,4 +1,5 @@
 .vercel
+supabase/.temp/
 .env*.local
 node_modules
 .next
