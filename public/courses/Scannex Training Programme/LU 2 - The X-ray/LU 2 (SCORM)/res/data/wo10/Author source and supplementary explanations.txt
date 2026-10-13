@@ -1,0 +1,27 @@
+Approved voice: en-ZA-LukeNeural, rate -25%.
+Source: current Full online LU2 and preserved APGI LU2 interactions.
+The Key takeaway statements, captions and glossary are supplementary teaching. Modified source passages are recorded in LU2 review notes. Manufacturer-specific dose comparisons and fault behaviour require the approved documentation.
+
+[
+  {
+    "title": "Unit recap",
+    "body": "How Materials Appear in an X-ray Image: A Viewer reads a pattern of density, shape and location. One bright area alone is not a conclusion; it must be considered in context.\n\nFrom Discovery to Modern Screening: Modern Scannex screening uses a long-established scientific principle together with controlled equipment, dose limits and trained operators.\n\nFive Layers of Scannex Safety: Safety depends on connected controls. Equipment features, dose management and disciplined operation work together; no single control should carry the whole burden.\n\nImage Quality Controls: Image quality comes from the whole system: sensitive detection, controlled beam design and careful viewing tools help the Viewer see meaningful differences.\n\nWhere X-rays Fit: X-rays are produced only when needed and are controlled because their high energy can affect atoms. That same property makes careful image-based screening possible.\n\nHow Scannex Produces an Image: The X-ray tube, focused beam and detector work as one controlled system. The Viewer receives a digital image only after energy has passed through the person and reached the detector.\n\nExplain the Science with Confidence: Explaining the science accurately supports dignity, confidence and safe cooperation. The operator must be able to state what the scan does, why controls exist and how images are interpreted.\n\nRadiation Dose in Context: Use the correct dose quantity and units. Apply approved exposure controls and maintain records. Explain the role of scientific recommendations and national requirements. Use only verified scan values when making comparisons and refer specific dose questions through the approved safety route.\n\nKey takeaway: A sound explanation connects transmitted X-ray information with careful interpretation and approved controls.",
+    "image": "images/state-01.png",
+    "caption": "The full-body scan path links the source, person, vertical detector and display. The conceptual horizontal beam does not represent horizontal detector travel.",
+    "alt": "The full-body scan path links the source, person, vertical detector and display. The conceptual horizontal beam does not represent horizontal detector travel."
+  },
+  {
+    "title": "Image formation glossary",
+    "body": "Attenuation: Reduction of the X-ray beam as it passes through material.\n\nElectromagnetic radiation: The energy family that includes radio waves, visible light, X-rays and gamma rays.\n\nIonisation: Removal of an electron from an atom.\n\nFilament: The heated element that releases electrons inside the X-ray tube.\n\nTarget: The material struck by accelerated electrons to produce X-rays.\n\nDetector: The component that receives transmitted X-ray information and converts it into image data.\n\nKey takeaway: The image records differences in transmission; interpretation considers those differences in context.",
+    "image": "images/state-02.svg",
+    "caption": "The incoming photon ejects an electron and leaves an ionised atom. Exposure controls address this effect.",
+    "alt": "The incoming photon ejects an electron and leaves an ionised atom. Exposure controls address this effect."
+  },
+  {
+    "title": "Controls and dose glossary",
+    "body": "Collimation: Control of the X-ray beam’s shape and extent.\n\nFiltering: Removal of low-energy X-rays before they reach the person.\n\nInterlock: A safety control that prevents operation outside the intended authorised conditions.\n\nSievert, Sv: Unit for equivalent and effective radiation dose.\n\nMillisievert, mSv: One thousandth of a sievert.\n\nMicrosievert, µSv: One thousandth of a millisievert.\n\nICRP: International Commission on Radiological Protection, which provides scientific recommendations.\n\nKey takeaway: Use approved controls, dose quantities and records. Refer system-specific limits through the safety route.",
+    "image": "images/state-03.png",
+    "caption": "The records, authorisation document and operator illustrate accountable control. The image does not show a measured dose.",
+    "alt": "The records, authorisation document and operator illustrate accountable control. The image does not show a measured dose."
+  }
+]

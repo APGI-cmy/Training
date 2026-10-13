@@ -1,0 +1,87 @@
+INTRO
+A Disciplined Image Review. Learning outcome: Apply a systematic image-review cycle and resolve doubt through the authorised response chain. Select each coloured segment in the review cycle. Work from optimising the display through systematic review, anatomy, anomaly testing and comparison, then follow the correct response when doubt remains.
+
+SUMMARY
+Key takeaway: Optimise the display and scan systematically. Account for normal anatomy and isolate anything unexplained. Test an anomaly with several viewing modes and combine the discriminators. Compare the same region with an earlier image when one is available. Resolve remaining doubt through senior staff and the authorised response chain; any repeat exposure or search must follow approved procedures and preserve dignity.
+
+STATE-01
+Optimise. Adjust brightness and contrast for the area being examined before forming a judgement.
+
+Key takeaway: A poorly adjusted image can hide a low-contrast object. Optimise the display to examine low-contrast differences.
+
+STATE-02
+Scan Systematically. Review the image in a consistent pattern, such as from head to toe or region by region.
+
+Pay deliberate attention to orifices, the digestive tract and external concealment sites.
+
+Key takeaway: A consistent search pattern prevents areas from being skipped. Follow a consistent review pattern across plausible concealment locations.
+
+STATE-03
+Account for Anatomy. Identify normal structures and confirm that they appear in their expected locations and patterns.
+
+Pay particular attention to the spine, joints, upper cervical region, knees and gallbladder region.
+
+Key takeaway: Explain what is normal before judging what is suspicious. Identify the paired and central structures of normal vertebral anatomy.
+
+STATE-04
+Isolate the Unexplained. Anything that does not fit a known anatomical structure or expected pattern must be treated as an anomaly and examined carefully.
+
+Key takeaway: An unexplained feature earns the operator’s full attention. An isolated feature must be explained in its wider anatomical context.
+
+STATE-05
+Test the Anomaly. Examine the area using several viewing modes:
+
+Un-sharp Mask
+
+Emboss
+
+High Contrast
+
+Invert Colours
+
+Zoom
+
+A genuine object normally remains visible and may become clearer across different modes.
+
+Key takeaway: Do not rely on the first appearance of a doubtful area. Compare the feature in more than one viewing mode, then return to Normal.
+
+STATE-06
+Apply the Discriminators. Ask:
+
+Is it isolated or patterned?
+
+Is it uniform or textured?
+
+Is it in an expected anatomical location?
+
+Is it fixed or moving?
+
+Could it be hidden by a masking object?
+
+Key takeaway: Use several clues together before reaching an interpretation. Use location, pattern and texture together; compare mottled bone with a uniform feature.
+
+STATE-07
+Compare. Where an earlier image is available, compare the same body region in both scans.
+
+Ask the important question:
+
+“Is this object new?”
+
+Key takeaway: A new feature deserves careful investigation. Compare the same body region in available earlier images; this example illustrates the feature to examine.
+
+STATE-08
+Resolve Doubt Correctly. If genuine suspicion remains:
+
+Notify senior staff
+
+Request altered-angle re-scans only through the authorised radiation-safety process
+
+Summon the authorised searcher
+
+Follow the same-gender rule
+
+Maintain dignity and lawful procedure
+
+The operator interprets the image. The operator does not personally conduct the search.
+
+Key takeaway: Resolve doubt through the authorised response chain—never alone. The Viewer interprets and escalates; authorised staff carry out the approved response.

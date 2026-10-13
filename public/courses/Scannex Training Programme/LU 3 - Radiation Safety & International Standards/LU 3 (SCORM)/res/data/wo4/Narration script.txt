@@ -1,0 +1,37 @@
+INTRO
+Safe Operating Discipline. Learning outcome: Follow the operating actions that keep Scannex authorised, controlled and auditable. Safe Scannex work is a sequence of checks and professional decisions. Select each step to see how authorisation, equipment status, exclusions, reporting and records connect. Narration is optional. Enlarge an image to examine its detail. Review the summary before the knowledge check.
+
+SUMMARY
+Safe Operating Discipline. Summary. Professional operation means using only authorised equipment and settings, applying exclusions, stopping on faults and keeping accurate records.
+
+STATE-01
+Confirm authorisation and QA. Operate only when you are trained, authorised and current, and the equipment is within its QA date.
+
+Key takeaway: Confirm training, authorisation and current QA before use. Why this matters: Confirm training, authorisation and current QA before use. Authorised, QA current and Ready are linked. These checks precede operation. 
+
+STATE-02
+Apply ALARA. Use the approved settings and controls. Never bypass filtering, collimation, interlocks or exposure controls to save time.
+
+Key takeaway: Use approved settings and respect every safety control. Why this matters: Use approved settings and respect every safety control. Protected settings lead to the low-dose indicator. The image represents approved controls, not permission to adjust the equipment. ALARA means keeping exposure as low as reasonably achievable while still completing the authorised task.
+
+STATE-03
+Apply exclusions discreetly. Check exclusions every time. Arrange the approved alternative procedure privately and respectfully when needed.
+
+Key takeaway: Apply exclusions discreetly on every occasion. Why this matters: Apply exclusions discreetly on every occasion. Follow the pictured route from eligibility checking to private discussion and an alternative when required. Consistency prevents both unnecessary exposure and unfair treatment.
+
+STATE-04
+Stop and report faults. Do not operate faulty equipment or equipment with overdue checks. Stop use and report the condition to the RPO.
+
+For a safety concern: stop the scan or do not start; keep the person safe and calm; record the concern or abnormal condition; report to the supervisor or RPO; do not use the equipment again until cleared. Follow the approved emergency procedure immediately where urgent action is needed.
+
+Key takeaway: Stop use, protect the person and report a safety concern. Why this matters: Stop use, protect the person and report a safety concern. Follow the fault symbol to Stop use and Report to RPO. The diagram represents the approved reporting route. 
+
+STATE-05
+Keep records accurate. Log each exposure correctly and support the required dose-record checks.
+
+Key takeaway: Accurate records make exposure and safety accountable. Why this matters: Accurate records make exposure and safety accountable. Accurate recording supports accountable safety. Complete the actual approved records; this is a conceptual illustration. Accurate records make it possible to review trends, confirm compliance and respond to any unexpected issue.
+
+STATE-06
+Explain safety calmly. Explain that the scan is measured, low and controlled through approved safeguards. Explain the procedure calmly and factually. Use verified dose information and the approved protection programme; refer detailed dose questions to the RPO. Do not make an unsupported comparison with a chest X-ray or a flight.
+
+Key takeaway: Explain the controls calmly without an unsupported dose comparison. Why this matters: Explain the controls calmly without an unsupported dose comparison. An operator speaks calmly beside the full-body chamber. The scene illustrates respectful communication rather than a numerical dose claim. 

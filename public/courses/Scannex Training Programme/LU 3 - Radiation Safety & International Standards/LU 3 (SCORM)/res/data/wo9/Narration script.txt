@@ -1,0 +1,27 @@
+INTRO
+The Radiation Protection Framework. Learning outcome: Recognise the principles that guide lawful, justified and optimised radiation use. Scannex operates within an international radiation-protection framework. Select each point to connect scientific guidance with the operational decisions made at site level. Narration is optional. Enlarge an image to examine its detail. Review the summary before the knowledge check.
+
+SUMMARY
+The Radiation Protection Framework. Summary. Justification, optimisation and dose limitation provide the foundation for controlled Scannex use under national and site-specific requirements.
+
+STATE-01
+One shared framework. The ICRP provides international scientific recommendations. The IAEA develops international safety standards. National authorities establish and enforce the applicable legal requirements and authorise practices. Operators follow the current licence and approved site programme.
+
+Key takeaway: Scientific recommendations, international standards and national authorisation have distinct roles. Why this matters: Scientific recommendations, international standards and national authorisation have distinct roles. The outline identifies the upper-left ICRP, IAEA and National authority panel. The national authority authorises and enforces local requirements. 
+
+STATE-02
+Justification. Before radiation is used, the benefit must outweigh the risk. Scannex is justified where it protects security and avoids intrusive physical searches.
+
+Justification is part of the authorised framework, not an individual operator’s decision to scan simply because a queue exists. The competent authorities consider the purpose, benefits, risks and alternatives before the practice is authorised.
+
+Key takeaway: The authorised practice must provide a net benefit; the operator does not invent justification. Why this matters: The authorised practice must provide a net benefit; the operator does not invent justification. The outline identifies the upper-right Net benefit balance. This illustrates justification, not an automatic approval for every scan. This decision belongs to the authorised programme, not an individual operator improvising a new use.
+
+STATE-03
+Optimisation: ALARA. ALARA means As Low As Reasonably Achievable. The aim is not only to stay below a limit, but to use the lowest dose that still does the job.
+
+Key takeaway: Optimise protection as well as meeting the applicable limit. Why this matters: Optimise protection as well as meeting the applicable limit. The outline identifies the lower-left Lowest practical dose panel. It illustrates optimisation through the approved programme. Approved design, operating controls and trained work practices make optimisation real.
+
+STATE-04
+Dose limitation. Individual exposure must remain below the prescribed limit. These limits are firm ceilings, not targets to use up.
+
+Key takeaway: Dose limits are ceilings, not targets. Why this matters: Dose limits are ceilings, not targets. The outline identifies the lower-right Ceiling and Scannex range panel. The drawn range is conceptual and does not specify a numerical scan dose. Accurate records and review help the programme ensure that each person remains protected over time.

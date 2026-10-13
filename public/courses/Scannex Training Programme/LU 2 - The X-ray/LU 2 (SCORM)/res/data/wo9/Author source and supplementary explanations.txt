@@ -1,0 +1,38 @@
+Approved voice: en-ZA-LukeNeural, rate -25%.
+Source: current Full online LU2 and preserved APGI LU2 interactions.
+The Key takeaway statements, captions and glossary are supplementary teaching. Modified source passages are recorded in LU2 review notes. Manufacturer-specific dose comparisons and fault behaviour require the approved documentation.
+
+[
+  {
+    "title": "The language of dose",
+    "body": "Equivalent and effective radiation dose are expressed in sieverts. In practical radiation protection, smaller units are commonly used: millisieverts and microsieverts. One sievert equals one thousand millisieverts, and one millisievert equals one thousand microsieverts. Use the dose quantity specified in the approved records.\n\nKey takeaway: Equivalent and effective dose use the sievert and its smaller units.",
+    "takeaway": "Equivalent and effective dose use the sievert and its smaller units.",
+    "image": "images/state-01.png",
+    "caption": "The three unit symbols are used as a reminder of sievert, millisievert and microsievert. Their sizes are illustrative, not a dose comparison.",
+    "alt": "The three unit symbols are used as a reminder of sievert, millisievert and microsievert. Their sizes are illustrative, not a dose comparison."
+  },
+  {
+    "title": "International framework",
+    "body": "The ICRP provides the international scientific framework for radiation protection. National authorities apply and enforce relevant requirements locally.\n\nKey takeaway: Scientific recommendations and local regulatory requirements have different roles.",
+    "takeaway": "Scientific recommendations and local regulatory requirements have different roles.",
+    "image": "images/state-02.png",
+    "caption": "The connected elements represent a protection framework. The narrative explains the distinct roles of scientific recommendations and national regulation.",
+    "alt": "The connected elements represent a protection framework. The narrative explains the distinct roles of scientific recommendations and national regulation."
+  },
+  {
+    "title": "Public protection",
+    "body": "The approved radiation-protection programme controls exposure for people being scanned. Follow the applicable authorisation, dose-management requirements and recording procedure. Use the approved scan-dose information and refer specific limit questions through the safety route.\n\nKey takeaway: Use approved controls and records rather than making a blanket safety promise.",
+    "takeaway": "Use approved controls and records rather than making a blanket safety promise.",
+    "image": "images/state-03.png",
+    "caption": "The protected-person illustration represents the purpose of radiation protection. It is not evidence of a particular scan dose or regulatory limit.",
+    "alt": "The protected-person illustration represents the purpose of radiation protection. It is not evidence of a particular scan dose or regulatory limit."
+  },
+  {
+    "title": "Dose in familiar context",
+    "body": "A dose comparison must use a verified Scannex scan value, the same dose quantity and a stated reference. Medical X-ray doses depend on the examination and technique. Flight exposure depends on factors such as route and duration. Use approved information and do not describe a scan as equivalent to a particular flight without that basis.\n\nKey takeaway: A dose comparison needs an approved scan value and a stated reference.",
+    "takeaway": "A dose comparison needs an approved scan value and a stated reference.",
+    "image": "images/state-04.png",
+    "caption": "The scanner, chest image and aircraft represent different exposure contexts. No numerical equivalence is asserted by this illustration.",
+    "alt": "The scanner, chest image and aircraft represent different exposure contexts. No numerical equivalence is asserted by this illustration."
+  }
+]

@@ -1,0 +1,85 @@
+INTRO
+Normal Anatomy That Can Mislead the Eye. Learning outcome: Recognise normal skeletal patterns, gallbladder-region features and the ear canal before assessing an anomaly. Several normal anatomical structures can resemble concealed diamonds on a Scannex image. Open each section to learn what may cause confusion and how the structure can be recognised. Compare position, grouping, symmetry, projection and internal texture. Enlarge the illustrations to read the labels.
+
+SUMMARY
+Key takeaway: Pedicles occur in pairs and spinal structures form a repeating pattern. C1 is the atlas, the first cervical vertebra. Recognise bone texture, overlap caused by body position, carpal bones at the wrist, tarsal bones at the ankle and foot, and the patella at the knee. Consider gallbladder-region densities and the normally dark ear canal. Explain these structures in context and escalate unresolved doubt through the approved process.
+
+STATE-01
+Spine 1: Vertebral Body, Pedicles and Spinous Process. What the operator may see: The vertebral body, paired pedicles and central spinous process may appear as dense oval or teardrop-shaped features on a frontal scan.
+
+How to recognise them: Check their expected position within a vertebra: pedicles occur as a symmetrical pair, while the spinous process lies centrally.
+
+Key takeaway: Symmetry and anatomical position identify normal vertebral structures. Compare the paired pedicles and central spinous process with the surrounding vertebral body.
+
+STATE-02
+Spine 2: Normal Vertebral Anatomy in Projection. What the operator may see: A top-view vertebra may look different when projected onto a scan image. The vertebral body, pedicles and spinous process can create small, dense shapes.
+
+How to recognise it: Compare the feature with the surrounding vertebral outline and confirm that it is connected to the normal spinal structure.
+
+Key takeaway: Use the whole vertebra—not one dense shape alone—to interpret the image. Projection brings structures at different depths into one image. Interpret each dense feature in the context of the whole vertebra.
+
+STATE-03
+Spine 3: Repeating Spinal Pattern. What the operator may see: Pedicles and spinous processes form repeating, aligned features down the spinal column.
+
+How to recognise them: Follow the pattern across adjacent vertebrae. Normal anatomy repeats consistently and symmetrically from the cervical to the lumbar spine.
+
+Key takeaway: A repeated spinal pattern is normal anatomy—not an isolated object. The highlighted pedicles repeat as pairs; spinous processes follow the central spinal line.
+
+STATE-04
+Spine 4: First Cervical Vertebra. What the operator may see: The posterior arch of the first cervical vertebra, also called C1 or the atlas can appear similar to a diamond because of the angle of the head and neck during scanning.
+
+How to recognise it: Confirm that the feature is located in the expected upper-neck position and is connected to the normal cervical anatomy.
+
+Key takeaway: Location and anatomical connection help identify the first cervical arch. C1, the atlas: compare the labelled posterior arch and lateral masses with the upper-neck projection.
+
+STATE-05
+Spine 5: Bone Texture and Density. What the operator may see: Bone has a mottled, spongy inner texture with a denser compact outer layer. Its density is not normally uniform throughout.
+
+How to recognise it: Look for the trabecular pattern inside the bone and the continuous compact outer edge. Compare it with nearby vertebrae.
+
+Key takeaway: Normal bone shows a patterned internal texture, rather than a uniformly dense isolated feature. Left: mottled bone with a compact outer edge. Right: an illustrative uniformly dense object. Texture is a clue, not a conclusion.
+
+STATE-06
+Density as Influenced by Position. What the operator may see: The same body part can appear different when viewed from a different angle. Structures may overlap, making an area appear denser on one image than on another.
+
+How to recognise it: Compare the position of the hands, feet and joints. Open hands with palms facing the detector reduce overlap; turning the feet to the side improves separation of the ankle and foot structures.
+
+Key takeaway: Apparent density can result from superimposed anatomy. Check body position and projection before interpreting a dense feature. Compare the separated and overlapping projections of the foot and hand. Body position changes apparent density.
+
+STATE-07
+Wrist: Carpal Bones and Ankle: Tarsal Bones. Wrist: Carpal Bones
+
+What the operator may see: The carpal bones form a close cluster of small, rounded bones at the wrist. On a scan, individual bones or overlapping projections may resemble small dense oval features.
+
+How to recognise them: Confirm that the features lie in the expected wrist position, occur as a grouped pattern, and connect with the hand and forearm anatomy.
+
+Key takeaway: A clustered, repeating pattern at the wrist indicates carpal anatomy—not an isolated feature.
+
+Ankle: Tarsal Bones
+
+What the operator may see: The tarsal bones form a compact group of bones between the lower leg and foot. Their position and overlapping outlines can produce several dense, rounded appearances.
+
+How to recognise them: Check that the features are located at the ankle and mid-foot, follow the expected joint pattern, and remain continuous with the foot structures.
+
+Key takeaway: Expected position, grouping and anatomical continuity identify the tarsal bones. The outlined clusters are carpal bones at the wrist and tarsal bones at the ankle and foot.
+
+STATE-08
+The Patella. What the operator may see: The patella or kneecap is a pear-shaped bone. At certain angles, it may resemble a comparatively large diamond.
+
+How to recognise it: Check its position at the front of the knee and its relationship to the normal knee joint.
+
+Key takeaway: The patella is identified by its shape, position and relationship to the knee. The red arrows identify the patella, or kneecap, in frontal and side views.
+
+STATE-09
+Gallstones. What the operator may see: Gallstones may appear as isolated, stone-like objects and can be mistaken for concealed diamonds.
+
+How to recognise them: Consider the normal position of the gallbladder and compare the feature with the surrounding anatomy and any available previous image.
+
+Key takeaway: The gallbladder region is a recognised anatomical trap. The highlighted gallbladder region is an anatomical location to consider, not a diagnosis.
+
+STATE-10
+External Auditory Meatus. What the operator may see: The external auditory meatus, or ear canal, is an air-filled passage in the skull. On a non-inverted scan image, it normally appears as a small dark oval area near the outer ear.
+
+How to recognise it: Confirm its expected position on each side of the head and its relationship to the surrounding skull anatomy. Its dark appearance is consistent with an air-filled passage.
+
+Key takeaway: A dark, symmetrical oval in the expected ear-canal position is normal anatomy. Any unexpected dense appearance should be assessed using the approved viewing and escalation procedure. The label identifies the ear-canal region, an air-filled passage normally dark in a non-inverted image.

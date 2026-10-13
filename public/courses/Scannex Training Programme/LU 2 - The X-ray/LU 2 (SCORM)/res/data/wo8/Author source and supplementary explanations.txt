@@ -1,0 +1,46 @@
+Approved voice: en-ZA-LukeNeural, rate -25%.
+Source: current Full online LU2 and preserved APGI LU2 interactions.
+The Key takeaway statements, captions and glossary are supplementary teaching. Modified source passages are recorded in LU2 review notes. Manufacturer-specific dose comparisons and fault behaviour require the approved documentation.
+
+[
+  {
+    "title": "Explain with confidence",
+    "body": "Understanding the science helps you explain the scan calmly and accurately to a person who may feel uncertain. Clear explanations build confidence and trust.\n\nKey takeaway: A calm explanation should be accurate and understandable.",
+    "takeaway": "A calm explanation should be accurate and understandable.",
+    "image": "images/state-01.png",
+    "caption": "An operator explains the scan to a person beside the full-body chamber. The scene illustrates respectful communication.",
+    "alt": "An operator explains the scan to a person beside the full-body chamber. The scene illustrates respectful communication."
+  },
+  {
+    "title": "Follow safety for a reason",
+    "body": "Safety procedures are not arbitrary boxes to tick. They control a powerful technology and protect the person being scanned, colleagues and the public.\n\nKey takeaway: Safety procedures protect people and control the use of the technology.",
+    "takeaway": "Safety procedures protect people and control the use of the technology.",
+    "image": "images/state-02.png",
+    "caption": "The chamber provides the context for controlled screening and safety boundaries.",
+    "alt": "The chamber provides the context for controlled screening and safety boundaries."
+  },
+  {
+    "title": "Read images more accurately",
+    "body": "Bright and dark areas are not random. They show how different materials allow X-rays through or block them. Understanding this is the foundation of good interpretation.\n\nKey takeaway: Understanding attenuation helps explain light and dark image areas.",
+    "takeaway": "Understanding attenuation helps explain light and dark image areas.",
+    "image": "images/state-03.png",
+    "caption": "The conceptual body image illustrates normal anatomy that must be considered when examining light and dark areas.",
+    "alt": "The conceptual body image illustrates normal anatomy that must be considered when examining light and dark areas."
+  },
+  {
+    "title": "Use the approved process",
+    "body": "Reliable screening depends on the same controlled steps being followed every time, including authorised operation, image review and appropriate escalation.\n\nKey takeaway: Use the approved process consistently and escalate concerns appropriately.",
+    "takeaway": "Use the approved process consistently and escalate concerns appropriately.",
+    "image": "images/state-04.png",
+    "caption": "The operator and monitor illustrate authorised use of the system. The illustration does not identify a specific software control.",
+    "alt": "The operator and monitor illustrate authorised use of the system. The illustration does not identify a specific software control."
+  },
+  {
+    "title": "Protect the decision",
+    "body": "A fair decision comes from evidence, careful interpretation and proper record keeping, not from assumption or appearance.\n\nKey takeaway: Base decisions on evidence, interpretation and proper records.",
+    "takeaway": "Base decisions on evidence, interpretation and proper records.",
+    "image": "images/state-05.png",
+    "caption": "Two colleagues review a body image. The scene illustrates discussion based on evidence.",
+    "alt": "Two colleagues review a body image. The scene illustrates discussion based on evidence."
+  }
+]

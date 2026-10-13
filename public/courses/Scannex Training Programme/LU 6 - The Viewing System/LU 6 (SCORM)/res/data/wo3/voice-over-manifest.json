@@ -1,0 +1,56 @@
+[
+  {
+    "state": "introduction",
+    "file": "intro.mp3",
+    "text": "This activity explains viewing workflow. Use the viewing system methodically and make a documented, accountable decision. Select each panel to work through the approved practice.",
+    "wordCount": 25
+  },
+  {
+    "state": "Step 1: Confirm Readiness",
+    "file": "state-01.mp3",
+    "text": "Before viewing begins, confirm that the station is correctly connected and ready: Correct server connection; Correct Viewer ID; Minimum viewing time configured; Appropriate saved palette and default settings. Only a Supervisor may configure the station. Key takeawayThe Viewer confirms readiness; the Supervisor controls configuration.",
+    "wordCount": 44
+  },
+  {
+    "state": "Step 2: Begin with Normal View",
+    "file": "state-02.mp3",
+    "text": "Press F1 to begin with the Normal image. Examine the full image systematically before concentrating on a particular area. Establishing a baseline helps the Viewer understand where an object sits in relation to the rest of the body. Key takeawayStart with the whole image before examining the detail.",
+    "wordCount": 48
+  },
+  {
+    "state": "Step 3: Navigate Systematically",
+    "file": "state-03.mp3",
+    "text": "Use zoom, pan or Auto-Pan to move methodically across the image. Do not jump randomly between isolated areas. Systematic examination reduces the chance of overlooking a small, low-contrast object. Key takeawayMethodical viewing is more reliable than random searching.",
+    "wordCount": 38
+  },
+  {
+    "state": "Step 4: Enhance Doubtful Areas",
+    "file": "state-04.mp3",
+    "text": "If an area appears unusual: Adjust brightness and contrast; Examine it at more than one zoom level; Compare Normal, Un-sharp Mask, Emboss, High Contrast and Invert Colours. No single mode is best for every object. Key takeawayNever judge a doubtful area from only one mode or one zoom level.",
+    "wordCount": 49
+  },
+  {
+    "state": "Step 5: Compare the Reference Image",
+    "file": "state-05.mp3",
+    "text": "Use F5 to retrieve a previous image of the same person, where available. Ask: Is the object new?Was it visible before?Has its position or appearance changed?Could it be part of the person rather than a concealed object?Key takeawayComparison adds context to what the Viewer sees today.",
+    "wordCount": 46
+  },
+  {
+    "state": "Step 6: Record the Finding",
+    "file": "state-06.mp3",
+    "text": "Annotate the area and add a concise, factual comment where necessary. Record what was observed without speculation or accusatory language. The annotation should help an authorised Reviewer understand the concern. Key takeawayRecord the observation—not an unsupported conclusion.",
+    "wordCount": 37
+  },
+  {
+    "state": "Step 7: Make and Preserve the Decision",
+    "file": "state-07.mp3",
+    "text": "After completing the examination, make the authorised decision: Release: No suspicious object requires further action. Hold: Further action or a search is required. The Movement Log preserves the sequence of modes, zooms, pans and adjustments used during the examination. Key takeawayA defensible decision is based on disciplined viewing and a traceable record.",
+    "wordCount": 52
+  },
+  {
+    "state": "summary",
+    "file": "summary.mp3",
+    "text": "You have reviewed Step 1: Confirm Readiness, Step 2: Begin with Normal View, Step 3: Navigate Systematically, Step 4: Enhance Doubtful Areas. Apply the approved procedure consistently, record what matters and escalate uncertainty rather than improvising.",
+    "wordCount": 36
+  }
+]

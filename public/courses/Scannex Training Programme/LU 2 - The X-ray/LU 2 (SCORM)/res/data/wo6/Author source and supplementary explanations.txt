@@ -1,0 +1,38 @@
+Approved voice: en-ZA-LukeNeural, rate -25%.
+Source: current Full online LU2 and preserved APGI LU2 interactions.
+The Key takeaway statements, captions and glossary are supplementary teaching. Modified source passages are recorded in LU2 review notes. Manufacturer-specific dose comparisons and fault behaviour require the approved documentation.
+
+[
+  {
+    "title": "One electromagnetic family",
+    "body": "Radio waves, microwaves, infrared, visible light, ultraviolet, X-rays and gamma rays are all forms of electromagnetic energy.\n\nKey takeaway: X-rays belong to the electromagnetic family.",
+    "takeaway": "X-rays belong to the electromagnetic family.",
+    "image": "images/state-01.svg",
+    "caption": "Follow the labelled electromagnetic families from radio waves to gamma rays. The highlighted region identifies X-rays.",
+    "alt": "Follow the labelled electromagnetic families from radio waves to gamma rays. The highlighted region identifies X-rays."
+  },
+  {
+    "title": "Short wavelength, high energy",
+    "body": "X-rays have a much shorter wavelength and higher energy than visible light. This allows them to pass through materials that visible light cannot.\n\nKey takeaway: Compared with visible light, X-rays have a shorter wavelength and higher energy.",
+    "takeaway": "Compared with visible light, X-rays have a shorter wavelength and higher energy.",
+    "image": "images/state-02.svg",
+    "caption": "The waves compare wavelength and energy. Shorter wavelength corresponds to higher photon energy.",
+    "alt": "The waves compare wavelength and energy. Shorter wavelength corresponds to higher photon energy."
+  },
+  {
+    "title": "Why X-rays are ionising",
+    "body": "X-rays can remove an electron from an atom. This process is called ionisation and is why exposure must be controlled. Image contrast results from differences in how materials attenuate X-rays.\n\nKey takeaway: Ionisation means removing an electron from an atom.",
+    "takeaway": "Ionisation means removing an electron from an atom.",
+    "image": "images/state-03.svg",
+    "caption": "The incoming photon ejects an electron and leaves an ionised atom. Exposure controls address this effect.",
+    "alt": "The incoming photon ejects an electron and leaves an ionised atom. Exposure controls address this effect."
+  },
+  {
+    "title": "Produced only when needed",
+    "body": "Scannex generates X-rays on demand inside a sealed tube. They do not exist before the scan and do not remain after the system stops.\n\nThis statement refers to X-rays produced by the tube. It does not mean that background radiation elsewhere disappears.\n\nKey takeaway: The tube produces X-rays during operation; they are not stored in the person.",
+    "takeaway": "The tube produces X-rays during operation; they are not stored in the person.",
+    "image": "images/state-04.svg",
+    "caption": "Compare the tube switched off, operating and switched off again. X-ray generation ends when production stops.",
+    "alt": "Compare the tube switched off, operating and switched off again. X-ray generation ends when production stops."
+  }
+]

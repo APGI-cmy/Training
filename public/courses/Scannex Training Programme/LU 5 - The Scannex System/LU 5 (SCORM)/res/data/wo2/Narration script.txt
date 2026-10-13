@@ -1,0 +1,30 @@
+INTRO
+System Operation and Safety Glossary. Learning outcome: Explain Scannex system safeguards and segregated roles, apply the supplied scan workflow, respond through authorised support, and maintain quality checks and records. This activity explains system operation and safety glossary. Select each labelled control, read the complete narrative, enlarge the illustration and review the summary before its knowledge check. Follow the current approved site procedure; these illustrations are conceptual teaching examples. Narration is optional.
+
+SUMMARY
+System Operation and Safety Glossary. Summary. Operate only commissioned and formally released equipment. Respect the specified safety response, then stop and report the fault. Calibration and quality assurance are complementary checks. Keep scanning and image interpretation independent. Use the supplied ten-year period and confirm the current approved retention schedule.
+
+STATE-01
+Commissioned. Commissioned means the system has been installed, tested and formally authorised for use. Do not operate a scanner that has not been commissioned or released after maintenance by an authorised specialist.
+
+Key takeaway: Operate only commissioned and formally released equipment. Why this matters: Operate only commissioned and formally released equipment. The check mark beside the full-body chamber represents formal release. A training illustration does not itself certify that a real machine is commissioned.
+
+STATE-02
+Fail-safe. Fail-safe means the system is designed to reach a safe condition automatically when a specified fault or interlock condition occurs, rather than continuing the scan. Stop and report a fault indication; X-rays must remain off until the authorised process clears it. Do not assume that every possible fault is automatically detected.
+
+Key takeaway: Respect the specified safety response, then stop and report the fault. Why this matters: Respect the specified safety response, then stop and report the fault. The red warning and stop symbol illustrate a fault response. This is a fault warning, distinct from the completion signal described later.
+
+STATE-03
+Dose calibration. Dose calibration checks the dose delivered by the scanner against an independently calibrated measurement. The authorised specialist records the result and checks it against the applicable licensed requirements. Calibration complements equipment inspection, image-quality testing and output monitoring; it does not replace them.
+
+Key takeaway: Calibration and quality assurance are complementary checks. Why this matters: Calibration and quality assurance are complementary checks. The measuring instrument illustrates independent dose calibration. It is conceptual equipment, not the specified instrument for a particular installation.
+
+STATE-04
+Viewer. The Viewer independently examines scan images but does not meet the person being scanned. This separation protects impartial decision-making and prevents one person from controlling both scanning and image interpretation.
+
+Key takeaway: Keep scanning and image interpretation independent. Why this matters: Keep scanning and image interpretation independent. The full-body image at the independent Viewer station represents image interpretation. The Viewer does not conduct the person’s scan.
+
+STATE-05
+Dose record retention. Under the supplied course protocol, dose records are retained for ten years. Protect them, maintain the approved backups and ensure they are recoverable. Confirm the applicable licence conditions and current retention schedule with the Radiation Protection Officer.
+
+Key takeaway: Use the supplied ten-year period and confirm the current approved retention schedule. Why this matters: Use the supplied ten-year period and confirm the current approved retention schedule. The lock, database, backup and recovery symbols illustrate protected records throughout the approved retention period.

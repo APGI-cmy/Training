@@ -1,0 +1,44 @@
+INTRO
+Learning Unit 5: Recap. Learning outcome: Explain Scannex system safeguards and segregated roles, apply the supplied scan workflow, respond through authorised support, and maintain quality checks and records. Review all three panels and revisit the glossary or matching activity as needed. The final checklist knowledge check follows this recap; all compulsory teaching appears before it.
+
+SUMMARY
+Learning Unit 5: Recap. Summary. Use only authorised, commissioned equipment within the approved process. Respect safety controls and separated roles, communicate calmly, follow the scan sequence, escalate possible indications and keep complete QA and dose records.
+
+STATE-01
+Unit recap. System Operation and Safety Glossary: Operate only commissioned and formally released equipment. Respect the specified safety response, then stop and report the fault. Calibration and quality assurance are complementary checks. Keep scanning and image interpretation independent. Use the supplied ten-year period and confirm the current approved retention schedule.
+
+Engineered Safety: Use authorised controls without changing the exposure settings. A fault indication means stop and report; never work around an interlock. The operator does not choose a different radiation dose. Keep calibration, online monitoring and scheduled inspections current.
+
+Roles and Cubicle Safeguards: The Scan Operator manages the person and procedure, not the image decision. The independent Viewer examines the image through the separated role. A clear cubicle and correct positioning support a consistent scan. Surveillance adds oversight without taking over the other roles.
+
+Scan workflow: Confirm consent respectfully before scanning. Use the approved marked positions and personal-item procedure. Keep the person still and use the approved fixed settings. Wait for the approved completion signal before directing the person to leave. A routine holding period is not an accusation.
+
+Positive Indication and Re-scan: An indication requires authorised review; it does not establish guilt. Use the designated support person and senior person on shift. Use a changed body position only for a justified, authorised repeat. Follow the specific facility procedure and record facts.
+
+Quality Assurance and Records: Check inspection and release status before use. Record the scheduled phantom test and escalate a missing or failed result. Keep the machine logbook complete and accurate. Retain, protect, back up and recover the required records.
+
+Shift Checklist: Resolve a failed readiness check before the first scan. Explain each step and use the approved positioning procedure. Protect role separation throughout the encounter. Record the authorised decision and any repeat accurately.
+
+Key takeaway: Use the safeguards as one connected process. Why this matters: Use the safeguards as one connected process. The full-body chamber, interlocks and monitoring illustrate complementary safeguards.
+
+STATE-02
+Before, during and after the scan. Before use: Confirm authorisation, current inspection and release, a fault-free display, a clear cubicle and visible position markers.
+
+For each person: Explain the scan, confirm consent under the supplied protocol, use the marked positions and follow the approved personal-item instructions.
+
+During the scan: Use only authorised controls and approved fixed settings. Keep the person still and await the approved completion signal.
+
+After the scan: Explain the routine holding period, protect independent image review and follow the authorised response to an indication. A finding is not proof of guilt.
+
+Key takeaway: Readiness, respectful communication and independent review belong together. Why this matters: Readiness, respectful communication and independent review belong together. Panels 1 to 6 illustrate explanation, positioning, start, stillness, completion and exit. Follow the current installed system instructions.
+
+STATE-03
+Quality checks, records and escalation. Scheduled inspection and image-quality testing: The supplied course specifies equipment inspection before use and at least every three months thereafter, and a phantom image check every three months. Confirm the current licence and site schedule.
+
+Machine logbook: Record the RPO, test results, maintenance, repairs, staff training and lockout.
+
+Dose records: The supplied course specifies ten-year retention, protected backups and recoverable records. Confirm the current approved retention requirement.
+
+When uncertain: Stop or do not start, keep the person safe and calm, record the concern and report through the approved support route. Do not improvise exposure settings, restart after a fault or repeat scans without authorisation.
+
+Key takeaway: A missing check, unsafe condition or uncertain decision requires the authorised response. Why this matters: A missing check, unsafe condition or uncertain decision requires the authorised response. The open logbook represents promptly recording checks, faults, maintenance and authorised action.

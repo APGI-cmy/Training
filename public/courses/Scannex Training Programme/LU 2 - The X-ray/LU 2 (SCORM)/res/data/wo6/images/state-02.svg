@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-label="2. Short wavelength, high energy">
+  <rect width="1200" height="650" fill="#071a31"/>
+  <rect x="32" y="30" width="1136" height="590" rx="18" fill="#0c2545" stroke="#31577f" stroke-width="2"/>
+  <text x="70" y="88" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="700">2. Short wavelength, high energy</text>
+  <text x="70" y="124" fill="#c9d9eb" font-family="Arial, Helvetica, sans-serif" font-size="21">The compressed X-ray wave carries more energy than the long visible-light wave.</text><defs><marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#f4c64d"/></marker><filter id="glow"><feGaussianBlur stdDeviation="7" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <rect x="82" y="175" width="500" height="315" rx="14" fill="#102e51" stroke="#426d96" stroke-width="2"/>
+  <text x="112" y="222" fill="#d8e9f7" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="600">Visible light: longer wavelength</text>
+  <path d="M115 345 Q 165 255 215 345 T315 345 T415 345 T515 345" fill="none" stroke="#73c7d5" stroke-width="9"/>
+  <path d="M 132 425 L 510 425" stroke="#73c7d5" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/><text x="174" y="460" fill="#d8e9f7" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="600">wide spacing between peaks</text>
+  <rect x="618" y="175" width="500" height="315" rx="14" fill="#102e51" stroke="#edaa36" stroke-width="4"/>
+  <text x="648" y="222" fill="#fff0bb" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="600">X-rays: shorter wavelength</text>
+  <path d="M650 345 Q 664 287 678 345 T706 345 T734 345 T762 345 T790 345 T818 345 T846 345 T874 345 T902 345 T930 345 T958 345 T986 345 T1014 345 T1042 345" fill="none" stroke="#f4c64d" stroke-width="9"/>
+  <path d="M 658 425 L 790 425" stroke="#f4c64d" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow)"/><text x="680" y="460" fill="#fff0bb" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="600">tight spacing between peaks</text>
+  <path d="M870 277 L870 250" stroke="#f4c64d" stroke-width="4" marker-end="url(#arrow)"/><rect x="814" y="130" width="240" height="47" rx="23" fill="#163959" stroke="#f4c64d" stroke-width="2"/><text x="840" y="160" fill="#fff3c2" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="600">higher energy</text>
+  <rect x="147" y="538" width="906" height="56" rx="10" fill="#163959"/><text x="600" y="574" text-anchor="middle" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="600">Short wavelength and high energy help X-rays pass through some materials that visible light cannot.</text></svg>

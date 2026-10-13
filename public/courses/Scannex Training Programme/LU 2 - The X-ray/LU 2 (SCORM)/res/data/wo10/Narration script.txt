@@ -1,0 +1,56 @@
+INTRO
+Learning Unit 2: Recap and Glossary. Learning outcome: Explain how Scannex forms an image, how materials affect its appearance and how approved controls support radiation protection and reliable interpretation. Review the recap and both glossary panels. Revisit any activity where you remain uncertain, then complete the final knowledge check. All compulsory teaching appears before that check.
+
+SUMMARY
+Learning Unit 2: Recap and Glossary. Summary. Material appearance reflects differences in attenuation. Controlled X-ray production, beam control, sensitive detection and display tools support image examination. Layered safety relies on approved equipment and professional operation. Explain dose using the correct quantities, verified values and applicable requirements.
+
+STATE-01
+Unit recap. How Materials Appear in an X-ray Image: A Viewer reads a pattern of density, shape and location. One bright area alone is not a conclusion; it must be considered in context.
+
+From Discovery to Modern Screening: Modern Scannex screening uses a long-established scientific principle together with controlled equipment, dose limits and trained operators.
+
+Five Layers of Scannex Safety: Safety depends on connected controls. Equipment features, dose management and disciplined operation work together; no single control should carry the whole burden.
+
+Image Quality Controls: Image quality comes from the whole system: sensitive detection, controlled beam design and careful viewing tools help the Viewer see meaningful differences.
+
+Where X-rays Fit: X-rays are produced only when needed and are controlled because their high energy can affect atoms. That same property makes careful image-based screening possible.
+
+How Scannex Produces an Image: The X-ray tube, focused beam and detector work as one controlled system. The Viewer receives a digital image only after energy has passed through the person and reached the detector.
+
+Explain the Science with Confidence: Explaining the science accurately supports dignity, confidence and safe cooperation. The operator must be able to state what the scan does, why controls exist and how images are interpreted.
+
+Radiation Dose in Context: Use the correct dose quantity and units. Apply approved exposure controls and maintain records. Explain the role of scientific recommendations and national requirements. Use only verified scan values when making comparisons and refer specific dose questions through the approved safety route.
+
+Key takeaway: A sound explanation connects transmitted X-ray information with careful interpretation and approved controls. Why this matters: Explain how Scannex forms an image, how materials affect its appearance and how approved controls support radiation protection and reliable interpretation. The full-body scan path links the source, person, vertical detector and display. The conceptual horizontal beam does not represent horizontal detector travel.
+
+STATE-02
+Image formation glossary. Attenuation: Reduction of the X-ray beam as it passes through material.
+
+Electromagnetic radiation: The energy family that includes radio waves, visible light, X-rays and gamma rays.
+
+Ionisation: Removal of an electron from an atom.
+
+Filament: The heated element that releases electrons inside the X-ray tube.
+
+Target: The material struck by accelerated electrons to produce X-rays.
+
+Detector: The component that receives transmitted X-ray information and converts it into image data.
+
+Key takeaway: The image records differences in transmission; interpretation considers those differences in context. Why this matters: Explain how Scannex forms an image, how materials affect its appearance and how approved controls support radiation protection and reliable interpretation. The incoming photon ejects an electron and leaves an ionised atom. Exposure controls address this effect.
+
+STATE-03
+Controls and dose glossary. Collimation: Control of the X-ray beam’s shape and extent.
+
+Filtering: Removal of low-energy X-rays before they reach the person.
+
+Interlock: A safety control that prevents operation outside the intended authorised conditions.
+
+Sievert, Sv: Unit for equivalent and effective radiation dose.
+
+Millisievert, mSv: One thousandth of a sievert.
+
+Microsievert, µSv: One thousandth of a millisievert.
+
+ICRP: International Commission on Radiological Protection, which provides scientific recommendations.
+
+Key takeaway: Use approved controls, dose quantities and records. Refer system-specific limits through the safety route. Why this matters: Explain how Scannex forms an image, how materials affect its appearance and how approved controls support radiation protection and reliable interpretation. The records, authorisation document and operator illustrate accountable control. The image does not show a measured dose.

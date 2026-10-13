@@ -1,0 +1,30 @@
+INTRO
+How Scannex Produces an Image. Learning outcome: Follow the controlled process that creates a Scannex X-ray image. A Scannex image begins inside a sealed X-ray tube and ends at a sensitive detector. Select each stage to follow the controlled sequence. Narration is optional. Enlarge the images to examine their detail, review the summary, then complete this activity’s knowledge check.
+
+SUMMARY
+How Scannex Produces an Image. Summary. The X-ray tube, focused beam and detector work as one controlled system. The Viewer receives a digital image only after energy has passed through the person and reached the detector.
+
+STATE-01
+Heat releases electrons. A small filament inside the sealed tube is heated, releasing free electrons.
+
+Key takeaway: Heating the filament releases electrons inside the tube. Why this matters: Heating the filament releases electrons inside the tube. The heated filament is at the source end of the conceptual tube. It releases electrons inside the tube.
+
+STATE-02
+High voltage accelerates them. High voltage drives the electrons at high speed toward a target inside the tube.
+
+Key takeaway: High voltage accelerates electrons towards the target. Why this matters: High voltage accelerates electrons towards the target. The source end is on the left and the target is on the right. The dotted path represents electrons accelerating towards the target. This is a conceptual physics illustration, not an instruction to adjust equipment.
+
+STATE-03
+Collision releases X-rays. When electrons strike the target, part of their energy is released as X-rays.
+
+Key takeaway: Electron impact releases part of the energy as X-rays. Why this matters: Electron impact releases part of the energy as X-rays. The target is the sloping surface on the right. Electron impact produces X-rays.
+
+STATE-04
+A narrow fan beam is formed. A precision collimator shapes the X-rays into a narrow fan beam. This keeps the beam focused and sharp.
+
+Key takeaway: A collimator shapes the emitted radiation into a controlled fan beam. Why this matters: A collimator shapes the emitted radiation into a controlled fan beam. The X-rays leaving the tube are subsequently shaped by a collimator. This image illustrates the tube and emitted beam, not the exact collimator assembly.
+
+STATE-05
+The detector builds the image. X-rays that pass through the person reach the detector, which converts the information into a digital image for the Viewer.
+
+Key takeaway: The detector converts transmitted X-ray information into image data. Why this matters: The detector converts transmitted X-ray information into image data. The full-body scan path links the source, person, vertical detector and display. The conceptual horizontal beam does not represent horizontal detector travel.

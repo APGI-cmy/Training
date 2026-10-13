@@ -1,0 +1,27 @@
+INTRO
+The Safety Management System. Learning outcome: Recognise the organisational controls that support safe, authorised Scannex operation. Scannex safety extends beyond the cubicle. Select each segment to see how controlled access, authorised people, reporting and radiation-protection oversight work together. Narration is optional. Enlarge an image to examine its detail. Review the summary before the knowledge check.
+
+SUMMARY
+The Safety Management System. Summary. Safe operation relies on defined safety roles, controlled entry, authorised operators and immediate reporting of unsafe conditions.
+
+STATE-01
+Controlled radiological area. Entry controls help ensure that no one enters unknowingly. Controls may include signs, alarms, locked entryways and administrative access control.
+
+Key takeaway: Control entry to the radiological area. Why this matters: Control entry to the radiological area. The labelled signs, access badge, alarm and controlled door illustrate entry controls. The aim is predictable, informed access to a controlled area.
+
+STATE-02
+Report faults immediately. Unsafe conditions, failed interlocks or abnormal machine behaviour must be reported. Reporting is a safety duty, not a nuisance.
+
+Stop the scan or do not start, keep the person safe and calm, record the concern, report to the supervisor or RPO, and do not use the equipment again until cleared. Immediate safety actions take priority; follow the approved emergency procedure.
+
+Key takeaway: Report unsafe conditions and do not resume until cleared. Why this matters: Report unsafe conditions and do not resume until cleared. Follow the fault symbol through Stop use to Report to RPO. Early reporting allows the system to be removed from use and assessed before a small problem becomes a serious one.
+
+STATE-03
+The RPO. The Radiation Protection Officer is the operator’s first point of contact for radiation-safety concerns and licence compliance.
+
+Key takeaway: The RPO is the radiation-safety and compliance contact. Why this matters: The RPO is the radiation-safety and compliance contact. The operator connects with the RPO, licence and safety framework. The RPO has a defined role in the approved programme. The RPO supports the operating team but does not replace the operator’s duty to stop and report unsafe conditions.
+
+STATE-04
+Authorised operators only. Only trained, named and currently authorised users may operate or supervise the system. The equipment must also be within its QA inspection date.
+
+Key takeaway: Only trained, named and currently authorised users may operate or supervise. Why this matters: Only trained, named and currently authorised users may operate or supervise. The Authorised, Trained and QA current indicators lead to the full-body scanner. 

@@ -1,0 +1,46 @@
+Approved voice: en-ZA-LukeNeural, rate -25%.
+Source: current Full online LU2 and preserved APGI LU2 interactions.
+The Key takeaway statements, captions and glossary are supplementary teaching. Modified source passages are recorded in LU2 review notes. Manufacturer-specific dose comparisons and fault behaviour require the approved documentation.
+
+[
+  {
+    "title": "Air appears dark",
+    "body": "Air allows most X-rays through. The detector receives more radiation, so air-filled areas appear dark.\n\nKey takeaway: In the normal greyscale display, air-filled areas appear dark.",
+    "takeaway": "In the normal greyscale display, air-filled areas appear dark.",
+    "image": "images/state-01.svg",
+    "caption": "The highlighted dark lung areas are in the middle image on the right. This is a conceptual teaching composite, not an operational scan.",
+    "alt": "The highlighted dark lung areas are in the middle image on the right. This is a conceptual teaching composite, not an operational scan."
+  },
+  {
+    "title": "Soft tissue appears grey",
+    "body": "Muscle, fat and organs allow some X-rays through and block some. They usually appear in shades of grey.\n\nKey takeaway: Soft tissue normally appears in intermediate shades of grey.",
+    "takeaway": "Soft tissue normally appears in intermediate shades of grey.",
+    "image": "images/state-02.svg",
+    "caption": "The shoulder and under-arm soft-tissue areas are highlighted in the top image on the right.",
+    "alt": "The shoulder and under-arm soft-tissue areas are highlighted in the top image on the right."
+  },
+  {
+    "title": "Bone appears light",
+    "body": "Bone is denser and blocks more X-rays. Less radiation reaches the detector, so bone appears light or bright.\n\nKey takeaway: Bone blocks more X-rays and normally appears light.",
+    "takeaway": "Bone blocks more X-rays and normally appears light.",
+    "image": "images/state-03.svg",
+    "caption": "The highlighted spine and other skeletal structures show the light appearance of bone.",
+    "alt": "The highlighted spine and other skeletal structures show the light appearance of bone."
+  },
+  {
+    "title": "Dense objects stand out",
+    "body": "Dense objects block more X-rays than the surrounding material and can stand out as bright areas. The Viewer must still consider their shape, location and relationship to normal anatomy.\n\nKey takeaway: Brightness is a clue to examine in context, not proof of concealment.",
+    "takeaway": "Brightness is a clue to examine in context, not proof of concealment.",
+    "image": "images/state-04.svg",
+    "caption": "Compare the watch in place with the watch removed. A dense ordinary item can obscure surrounding detail; visibility alone does not identify an item conclusively.",
+    "alt": "Compare the watch in place with the watch removed. A dense ordinary item can obscure surrounding detail; visibility alone does not identify an item conclusively."
+  },
+  {
+    "title": "The Viewer reads the pattern",
+    "body": "Interpretation is not about one bright spot alone. The Viewer considers an object’s density, shape, location and relationship to normal anatomy or ordinary items.\n\nAttenuation is the reduction of the X-ray beam as it passes through material. The image is a map of differences in attenuation. Material composition, thickness and beam energy also affect the result. Inverting the display reverses the normal light and dark appearance.\n\nKey takeaway: Compare density, shape and location before reaching a conclusion.",
+    "takeaway": "Compare density, shape and location before reaching a conclusion.",
+    "image": "images/state-05.svg",
+    "caption": "Compare air, soft tissue, bone and a possible dense object. The composite illustrates a pattern, not a final decision.",
+    "alt": "Compare air, soft tissue, bone and a possible dense object. The composite illustrates a pattern, not a final decision."
+  }
+]

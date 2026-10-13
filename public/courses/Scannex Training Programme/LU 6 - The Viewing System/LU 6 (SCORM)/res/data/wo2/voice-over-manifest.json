@@ -1,0 +1,56 @@
+[
+  {
+    "state": "introduction",
+    "file": "intro.mp3",
+    "text": "This activity explains viewing controls and image enhancement. Use the viewing system methodically and make a documented, accountable decision. Select each panel to work through the approved practice.",
+    "wordCount": 28
+  },
+  {
+    "state": "More Than a Simple Picture",
+    "file": "state-01.mp3",
+    "text": "The Viewing System gives the Viewer several ways to examine the same X-ray data. A faint diamond may be difficult to distinguish from bone, clothing fasteners or the natural texture of the body. Changing the viewing mode, palette, brightness, contrast or zoom can make a doubtful object easier to recognise. A thorough Viewer does not rely on a single view. Key takeawayThe image data remains the same—the tools change how clearly the Viewer can examine it.",
+    "wordCount": 76
+  },
+  {
+    "state": "Continuous Control Without Looking Away",
+    "file": "state-02.mp3",
+    "text": "The mouse allows the Viewer to adjust the image while keeping their eyes on the area being examined: Left button: Adjust brightness. Right button: Adjust contrast. Middle button: Toggle between Toolbar and Pan modes. Left and right buttons together: Toggle between the saved palette and Auto Palette. Auto Palette maximises the palette for the area currently visible. If the saved palette has not been configured correctly, the Viewer must report it to the Supervisor. Key takeawayLeft controls brightness. Right controls contrast. Middle switches Toolbar and Pan.",
+    "wordCount": 86
+  },
+  {
+    "state": "Viewing Modes at Your Fingertips",
+    "file": "state-03.mp3",
+    "text": "The function keys give the Viewer rapid access to the main viewing modes and system functions: F1: NormalF2: Un-sharp MaskF3: EmbossF4: High ContrastF5: Reference Image on/offF6: Invert ColoursF7: Zoom OutF8: Zoom InF10: Review loginF11: Overview loginKey takeawayF1 always returns the image to Normal viewing mode.",
+    "wordCount": 45
+  },
+  {
+    "state": "Navigate and Adjust from the Keyboard",
+    "file": "state-04.mp3",
+    "text": "The keyboard can control the image without using the mouse: Escape: Toggle between Toolbar and Pan modes. Arrow keys: Pan the image while in Toolbar mode. Space: Start Auto-Pan. Shift+Space: Reverse or control Auto-Pan./ and *: Decrease or increase contrast.+ and −: Increase or decrease brightness. Brightness and contrast shortcuts work in both Toolbar and Pan modes. Key takeawayThe keyboard allows experienced Viewers to work quickly without taking their attention away from the image.",
+    "wordCount": 74
+  },
+  {
+    "state": "Move from the Whole Image to Fine Detail",
+    "file": "state-05.mp3",
+    "text": "Zoom changes the size of the image: Zoom ¼: Wide overviewZoom ½: Wider viewZoom 1: Normal or actual sizeZoom 2: Twice normal sizeZoom 4: Close detailPanning moves the visible window around a zoomed image. In Pan mode, the mouse moves the image directly. In Toolbar mode, the arrow keys move it. Auto-Pan systematically moves the view across the image. Key takeawayExamine doubtful areas at more than one zoom level—without losing awareness of the whole image.",
+    "wordCount": 75
+  },
+  {
+    "state": "Is the Object New or Was It There Before?",
+    "file": "state-06.mp3",
+    "text": "Pressing F5 calls up a previous image of the same person, if one exists. Comparing the current scan with a reference image can help the Viewer determine whether a suspicious shape: Has appeared since the earlier scan; Was already present; May be part of the person, such as a medical implant or healed injury. The Reference Image supports judgement; it does not make the decision for the Viewer. Key takeawayA new object may be significant. A familiar object may have an innocent explanation.",
+    "wordCount": 83
+  },
+  {
+    "state": "Record What You Saw",
+    "file": "state-07.mp3",
+    "text": "The Viewing System allows the Viewer to preserve evidence of their examination: Annotate: Place a marker on an area of interest. Comment: Attach written notes to the image. Export: Save the current image as a JPG, BMP or TIFF file. Load Image: Load a stored TIFF image. Print Screen: Print the current view. Annotations and comments help another authorised person understand what drew the Viewer’s attention. Key takeawayA recorded decision can be reconstructed, reviewed and defended.",
+    "wordCount": 76
+  },
+  {
+    "state": "summary",
+    "file": "summary.mp3",
+    "text": "You have reviewed More Than a Simple Picture, Continuous Control Without Looking Away, Viewing Modes at Your Fingertips, Navigate and Adjust from the Keyboard. Apply the approved procedure consistently, record what matters and escalate uncertainty rather than improvising.",
+    "wordCount": 38
+  }
+]

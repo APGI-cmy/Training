@@ -1,0 +1,66 @@
+INTRO
+Learning Unit 3: Recap and Glossary. Learning outcome: Explain the Scannex protection framework, apply the supplied exclusion and operating protocols, recognise the safety controls, and maintain accountable QA and records. Review all three panels and revisit any activity where you remain uncertain. The final knowledge check follows this recap; all required teaching appears before it.
+
+SUMMARY
+Learning Unit 3: Recap and Glossary. Summary. Apply the current approved programme. Check eligibility and authorisation before exposure, respect safety controls, stop and report concerns, and keep the required records. Use the correct dose quantities and verified comparisons. These principles support controlled, respectful and accountable screening.
+
+STATE-01
+Unit recap. Radiation Dose in Context: Use the specified dose quantity and correct units. Public protection applies to justified Category 2 security screening, and the approved programme may set lower constraints. Follow authorised screening and records. Use verified scan-dose values when making comparisons.
+
+Protection Exclusions and Alternatives: Protection exclusions are applied consistently, privately and without improvisation. Where a person cannot be scanned, the approved alternative procedure is used.
+
+Safe Operating Discipline: Professional operation means using only authorised equipment and settings, applying exclusions, stopping on faults and keeping accurate records.
+
+The Safety Management System: Safe operation relies on defined safety roles, controlled entry, authorised operators and immediate reporting of unsafe conditions.
+
+How Dose Is Kept Low: The lowest useful dose comes from efficient operation, beam control, brief exposure, safety interlocks and continuous output monitoring.
+
+Quality Assurance and Records: Quality assurance combines routine testing, accurate records, active review and independent audit so faults and trends are found early.
+
+Low Dose, Professional Discipline: Safety is a connected system. Engineering controls, procedures, records, quality checks and professional judgement all protect the person being scanned.
+
+The Radiation Protection Framework: Justification, optimisation and dose limitation provide the foundation for controlled Scannex use under national and site-specific requirements.
+
+Key takeaway: Safety relies on the approved programme, several supporting controls and disciplined operators. Why this matters: Explain the Scannex protection framework, apply the supplied exclusion and operating protocols, recognise the safety controls, and maintain accountable QA and records. The labelled layers connect engineering, procedures, records, QA and the operator. Each layer supports the others. 
+
+STATE-02
+Dose and protection glossary. Sievert, Sv: Unit for equivalent and effective dose.
+
+Millisievert, mSv: One thousandth of a sievert.
+
+Microsievert, µSv: One thousandth of a millisievert.
+
+Rem: An older radiation-dose unit that may appear in older documents. Use the units specified by the current approved programme.
+
+Dose limit: A ceiling under the applicable protection framework, not a target.
+
+Dose constraint: A prospective restriction used to optimise protection for a source or practice within that framework.
+
+Justification: The authorised evaluation that a practice provides an overall benefit after considering risks and alternatives.
+
+Optimisation, ALARA: Keeping exposure as low as reasonably achievable while meeting the justified purpose.
+
+Key takeaway: Use the correct quantity, units and authorised protection requirements. Why this matters: Explain the Scannex protection framework, apply the supplied exclusion and operating protocols, recognise the safety controls, and maintain accountable QA and records. The unit reminder distinguishes sievert, millisievert and microsievert. One sievert equals 1,000 millisieverts; one millisievert equals 1,000 microsieverts. 
+
+STATE-03
+Controls and responsibilities glossary. RPO: Radiation Protection Officer, the designated radiation-safety and compliance contact.
+
+Controlled area: An area with the protection and safety measures specified in the approved programme.
+
+Interlock: A safety control addressing specified operating conditions; it does not replace fault reporting.
+
+Filtering: Removal of low-energy X-rays that would add dose without useful image information.
+
+Collimation: Control of the beam’s shape and extent.
+
+DAP: Dose-area product, also called air kerma-area product; an output-monitoring quantity rather than a direct effective-dose value in sieverts.
+
+QA: Quality assurance, including the scheduled equipment and image-quality checks in the approved programme.
+
+Test phantom: A test object used to check image quality without exposing a person.
+
+ICRP: International Commission on Radiological Protection, which provides scientific recommendations.
+
+IAEA: International Atomic Energy Agency, which develops international safety standards.
+
+Key takeaway: Keep the roles of equipment, people, records and authorities clear. Why this matters: Explain the Scannex protection framework, apply the supplied exclusion and operating protocols, recognise the safety controls, and maintain accountable QA and records. The operator connects with the RPO, licence and safety framework. The RPO has a defined role in the approved programme. 
