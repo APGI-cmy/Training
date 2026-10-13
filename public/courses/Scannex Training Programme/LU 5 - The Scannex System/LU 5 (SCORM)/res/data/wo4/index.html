@@ -148,7 +148,7 @@ render();
 
 
 function markFocus(image,focus){if(!image||!focus)return;const wrap=document.createElement('span');wrap.className='image-focus-wrap';image.before(wrap);wrap.appendChild(image);const outline=document.createElement('span');outline.className='image-focus-outline';outline.style.cssText='left:'+focus[0]+'%;top:'+focus[1]+'%;width:'+focus[2]+'%;height:'+focus[3]+'%;';wrap.appendChild(outline);}
-const beforeFocusRender=render;render=function(){beforeFocusRender();markFocus(document.querySelector('#state-image'),activity.sections[current].imageFocus);status.textContent='New Luke narration pending — review draft';};render();
+const beforeFocusRender=render;render=function(){beforeFocusRender();markFocus(document.querySelector('#state-image'),activity.sections[current].imageFocus);status.textContent='Select Play narration to play audio';};render();
 const beforeFocusEnlarge=enlarge;enlarge=function(src,alt){const img=document.querySelector('#lightbox-image');const previous=img.parentElement;if(previous.classList.contains('image-focus-wrap')){previous.before(img);previous.remove();}beforeFocusEnlarge(src,alt);if(context==='state'){const s=activity.sections[current];markFocus(img,s.imageFocus);}};
-const pendingStop=stop;stop=function(){pendingStop();status.textContent='New Luke narration pending — review draft';};
+const pendingStop=stop;stop=function(){pendingStop();status.textContent='Select Play narration to play audio';};
 </script></body></html>
