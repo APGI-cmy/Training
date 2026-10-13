@@ -19,6 +19,8 @@ Version 1.0.0 is accepted for the first learner intake using administrator invit
 
 The release tag identifies the complete source snapshot, including version metadata and these records. The private final deployment certificate records the tag's exact commit and production deployment after publication. No credentials, invitation links or learner personal details belong in release records.
 
+The course manifest hashes the bytes stored in Git and the verified media objects represented by Git LFS. Windows may convert text-file line endings during checkout; compare the stored Git content when verifying those text files. The course media hashes refer to the actual media, not pointer files.
+
 ## Supported first-intake workflow
 
 1. The administrator opens Administration → Invitations, chooses Scannex and the learner's organisation, records the access basis and sends the invitation.
