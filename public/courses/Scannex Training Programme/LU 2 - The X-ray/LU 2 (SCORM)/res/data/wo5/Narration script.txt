@@ -1,0 +1,25 @@
+INTRO
+Image Quality Controls. Learning outcome: Identify the system features that help a Viewer interpret a clear, useful image. A useful Scannex image depends on the equipment and the Viewer’s tools. Select each control to distinguish image acquisition from adjustments to the display of existing data. Narration is optional. Review the summary, then complete the knowledge check.
+
+SUMMARY
+Image Quality Controls. Summary. Image quality comes from the whole system: sensitive detection, controlled beam design and careful viewing tools help the Viewer see meaningful differences.
+
+STATE-01
+High-resolution detectors. Sensitive digital detectors capture fine differences between lighter and denser materials, helping small dense objects stand out.
+
+Key takeaway: Sensitive detectors help reveal differences in transmitted X-rays. Why this matters: Sensitive detectors help reveal differences in transmitted X-rays. The vertical detector array is on the right of the assembly and receives transmitted X-rays.
+
+STATE-02
+Collimation. The collimator keeps the X-ray beam narrow and controlled. This improves sharpness and reduces unwanted scatter.
+
+Key takeaway: Collimation controls the beam and reduces unwanted scatter. Why this matters: Collimation controls the beam and reduces unwanted scatter. Compare the wider beam at left with the controlled narrow beam at right. The illustration represents beam control.
+
+STATE-03
+Filtering. Low-energy X-rays add dose without adding useful image information. Scannex filters them out before they reach the person.
+
+Key takeaway: Filtering removes low-energy X-rays before they reach the person. Why this matters: Filtering removes low-energy X-rays before they reach the person. The filtering element lies between the source at left and the vertical detector at right in this conceptual illustration.
+
+STATE-04
+Viewer tools. Brightness, contrast, sharpening, zoom and other viewing tools help the Viewer bring out features of interest without increasing the scan dose.
+
+Key takeaway: Viewer tools change the display of existing data without a new exposure. Why this matters: Viewer tools change the display of existing data without a new exposure. The monitor at left represents display tools applied to an existing body image. The full-body chamber remains a separate part of the system.

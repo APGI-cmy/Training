@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest identifier="ahFYV2DkItYdx" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:imsss="http://www.imsglobal.org/xsd/imsss" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3" xmlns:adlseq="http://www.adlnet.org/xsd/adlseq_v1p3" xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3" xmlns:lom="http://ltsc.ieee.org/xsd/LOM" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://www.imsglobal.org/xsd/imsss imsss_v1p0.xsd http://www.adlnet.org/xsd/adlcp_v1p3 adlcp_v1p3.xsd http://www.adlnet.org/xsd/adlseq_v1p3 adlseq_v1p3.xsd http://www.adlnet.org/xsd/adlnav_v1p3 adlnav_v1p3.xsd http://ltsc.ieee.org/xsd/LOM lom.xsd">
+<manifest identifier="AW3lvCVwwNT94" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:imsss="http://www.imsglobal.org/xsd/imsss" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3" xmlns:adlseq="http://www.adlnet.org/xsd/adlseq_v1p3" xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3" xmlns:lom="http://ltsc.ieee.org/xsd/LOM" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://www.imsglobal.org/xsd/imsss imsss_v1p0.xsd http://www.adlnet.org/xsd/adlcp_v1p3 adlcp_v1p3.xsd http://www.adlnet.org/xsd/adlseq_v1p3 adlseq_v1p3.xsd http://www.adlnet.org/xsd/adlnav_v1p3 adlnav_v1p3.xsd http://ltsc.ieee.org/xsd/LOM lom.xsd">
 <metadata>
 <schema>ADL SCORM</schema>
 <schemaversion>2004 4th Edition</schemaversion>
 <lom:lom>
 <lom:general>
 <lom:title>
-<lom:string>LU 8</lom:string>
+<lom:string>LU 8 (SCORM)</lom:string>
 </lom:title>
 </lom:general>
 <lom:educational>
@@ -16,11 +16,11 @@
 </lom:educational>
 </lom:lom>
 </metadata>
-<organizations default="lu_8_organization">
-<organization identifier="lu_8_organization">
-<title>LU 8</title>
+<organizations default="lu_8_(scorm)_organization">
+<organization identifier="lu_8_(scorm)_organization">
+<title>LU 8 (SCORM)</title>
 <item identifier="AD42BFA7-E78D-4B5C-88FD-F4196E975F6B" identifierref="resource">
-<title>LU 1</title>
+<title>LU 8 (SCORM)</title>
 <imsss:sequencing>
 <imsss:deliveryControls completionSetByContent="true" objectiveSetByContent="true"/>
 </imsss:sequencing>
@@ -34,16 +34,36 @@
 <resource identifier="resource" type="webcontent" adlcp:scormType="sco" href="res/index.html">
 <file href="res/index.html"/>
 <file href="res/lms.js"/>
-<file href="res/data/intr1.js"/>
-<file href="res/data/intr1/fonts/fnt0.woff"/>
-<file href="res/data/intr1/fonts/fnt1.woff"/>
-<file href="res/data/intr1/fonts/fnt2.woff"/>
-<file href="res/data/intr1/fonts/fnt3.woff"/>
-<file href="res/data/intr1/fonts/fnt4.woff"/>
-<file href="res/data/intr1/fonts/fnt5.woff"/>
-<file href="res/data/intr1/fonts/fnt6.woff"/>
-<file href="res/data/intr1/images/interaction_bg_0.png"/>
 <file href="res/data/thmb1.jpg"/>
+<file href="res/data/slide1.js"/>
+<file href="res/data/slide1.css"/>
+<file href="res/data/wo1/audio/intro.mp3"/>
+<file href="res/data/wo1/audio/state-01.mp3"/>
+<file href="res/data/wo1/audio/summary.mp3"/>
+<file href="res/data/wo1/images/state-01.svg"/>
+<file href="res/data/wo1/index.html"/>
+<file href="res/data/wo1/Narration script.txt"/>
+<file href="res/data/wo1/video/Introduction narration.txt"/>
+<file href="res/data/wo1/video/LU8-introduction.mp3"/>
+<file href="res/data/wo1/video/LU8-introduction.mp4"/>
+<file href="res/data/thmb2.jpg"/>
+<file href="res/data/slide2.js"/>
+<file href="res/data/slide2.css"/>
+<file href="res/data/wo2/audio/intro.mp3"/>
+<file href="res/data/wo2/audio/state-01.mp3"/>
+<file href="res/data/wo2/audio/state-02.mp3"/>
+<file href="res/data/wo2/audio/state-03.mp3"/>
+<file href="res/data/wo2/audio/state-04.mp3"/>
+<file href="res/data/wo2/audio/summary.mp3"/>
+<file href="res/data/wo2/images/state-01.svg"/>
+<file href="res/data/wo2/images/state-02.svg"/>
+<file href="res/data/wo2/images/state-03.svg"/>
+<file href="res/data/wo2/images/state-04.svg"/>
+<file href="res/data/wo2/index.html"/>
+<file href="res/data/wo2/Narration script.txt"/>
+<file href="res/data/thmb3.jpg"/>
+<file href="res/data/slide3.js"/>
+<file href="res/data/slide3.css"/>
 <file href="res/data/quiz1.js"/>
 <file href="res/data/quiz1/fonts/fnt0.woff"/>
 <file href="res/data/quiz1/fonts/fnt1.woff"/>
@@ -55,24 +75,30 @@
 <file href="res/data/quiz1/fonts/fnt7.woff"/>
 <file href="res/data/quiz1/images/img-55ef0115ed8ff21fda0ff9f9e87d8688c0c187cb.png"/>
 <file href="res/data/quiz1/images/quiz_bg_0.png"/>
-<file href="res/data/thmb2.jpg"/>
-<file href="res/data/intr2.js"/>
-<file href="res/data/intr2/fonts/fnt0.woff"/>
-<file href="res/data/intr2/fonts/fnt1.woff"/>
-<file href="res/data/intr2/fonts/fnt2.woff"/>
-<file href="res/data/intr2/fonts/fnt3.woff"/>
-<file href="res/data/intr2/fonts/fnt4.woff"/>
-<file href="res/data/intr2/fonts/fnt5.woff"/>
-<file href="res/data/intr2/fonts/fnt6.woff"/>
-<file href="res/data/intr2/fonts/fnt7.woff"/>
-<file href="res/data/intr2/images/img-15b01f051c88aafb7f9d5a16bf434e4ec36d8b36.jpg"/>
-<file href="res/data/intr2/images/img-25055aeec3082f1731add00583df9d785fc04de5.jpg"/>
-<file href="res/data/intr2/images/img-90234a1e694a119bbf6f40faf5c9f5d6b653eff4.jpg"/>
-<file href="res/data/intr2/images/img-b6f6fad5380e8ba7a3063e3ad7e087ac7eb3007d.jpg"/>
-<file href="res/data/intr2/images/img-be0d4ea29a24597ebc1be3c05280f5844726540f.jpg"/>
-<file href="res/data/intr2/images/img-dba5d825d076e4dd202ca030076cc9c3e5d4e01f.jpg"/>
-<file href="res/data/intr2/images/interaction_bg_0.png"/>
-<file href="res/data/thmb3.jpg"/>
+<file href="res/data/thmb4.jpg"/>
+<file href="res/data/wo3/audio/intro.mp3"/>
+<file href="res/data/wo3/audio/state-01.mp3"/>
+<file href="res/data/wo3/audio/state-02.mp3"/>
+<file href="res/data/wo3/audio/state-03.mp3"/>
+<file href="res/data/wo3/audio/state-04.mp3"/>
+<file href="res/data/wo3/audio/state-05.mp3"/>
+<file href="res/data/wo3/audio/state-06.mp3"/>
+<file href="res/data/wo3/audio/state-07.mp3"/>
+<file href="res/data/wo3/audio/state-08.mp3"/>
+<file href="res/data/wo3/audio/summary.mp3"/>
+<file href="res/data/wo3/images/state-01.png"/>
+<file href="res/data/wo3/images/state-02.png"/>
+<file href="res/data/wo3/images/state-03.png"/>
+<file href="res/data/wo3/images/state-04.png"/>
+<file href="res/data/wo3/images/state-05.png"/>
+<file href="res/data/wo3/images/state-06.png"/>
+<file href="res/data/wo3/images/state-07.svg"/>
+<file href="res/data/wo3/images/state-08.png"/>
+<file href="res/data/wo3/index.html"/>
+<file href="res/data/wo3/Narration script.txt"/>
+<file href="res/data/thmb5.jpg"/>
+<file href="res/data/slide5.js"/>
+<file href="res/data/slide5.css"/>
 <file href="res/data/quiz2.js"/>
 <file href="res/data/quiz2/fonts/fnt0.woff"/>
 <file href="res/data/quiz2/fonts/fnt1.woff"/>
@@ -84,29 +110,34 @@
 <file href="res/data/quiz2/fonts/fnt7.woff"/>
 <file href="res/data/quiz2/images/img-55ef0115ed8ff21fda0ff9f9e87d8688c0c187cb.png"/>
 <file href="res/data/quiz2/images/quiz_bg_0.png"/>
-<file href="res/data/thmb4.jpg"/>
-<file href="res/data/intr3.js"/>
-<file href="res/data/intr3/fonts/fnt0.woff"/>
-<file href="res/data/intr3/fonts/fnt1.woff"/>
-<file href="res/data/intr3/fonts/fnt2.woff"/>
-<file href="res/data/intr3/fonts/fnt3.woff"/>
-<file href="res/data/intr3/fonts/fnt4.woff"/>
-<file href="res/data/intr3/fonts/fnt5.woff"/>
-<file href="res/data/intr3/fonts/fnt6.woff"/>
-<file href="res/data/intr3/fonts/fnt7.woff"/>
-<file href="res/data/intr3/fonts/fnt8.woff"/>
-<file href="res/data/intr3/images/img-0a2731f0afc68bd545434ad5e1e0563c76fd7678.jpg"/>
-<file href="res/data/intr3/images/img-34ddceabeb2bb64028ac837e71d30d00a1a45739.jpg"/>
-<file href="res/data/intr3/images/img-3949fb3a8d8c62d6b6bc8b5059fede22feece8a2.jpg"/>
-<file href="res/data/intr3/images/img-3a00235fa0d3e71e9519e4398a52179dbeac1f8c.jpg"/>
-<file href="res/data/intr3/images/img-3b57e3a39c0cc08be93cdd837f19be6375bf5360.jpg"/>
-<file href="res/data/intr3/images/img-4528eb069fd9233c8f1edb0be51767ba8604edf6.jpg"/>
-<file href="res/data/intr3/images/img-7ea24dc02701ec436a96a4ae8cf372e4a4c604d7.jpg"/>
-<file href="res/data/intr3/images/img-94220ba04d056a8fae02f64d75158ec59c61f540.jpg"/>
-<file href="res/data/intr3/images/img-b7eadd66746c204f37ab86aa4cbf8cc933946f4c.jpg"/>
-<file href="res/data/intr3/images/img-d8e42c8ab83ef3666489b6cf0d82c5a3d87dbe77.jpg"/>
-<file href="res/data/intr3/images/interaction_bg_0.png"/>
-<file href="res/data/thmb5.jpg"/>
+<file href="res/data/thmb6.jpg"/>
+<file href="res/data/wo4/audio/intro.mp3"/>
+<file href="res/data/wo4/audio/state-01.mp3"/>
+<file href="res/data/wo4/audio/state-02.mp3"/>
+<file href="res/data/wo4/audio/state-03.mp3"/>
+<file href="res/data/wo4/audio/state-04.mp3"/>
+<file href="res/data/wo4/audio/state-05.mp3"/>
+<file href="res/data/wo4/audio/state-06.mp3"/>
+<file href="res/data/wo4/audio/state-07.mp3"/>
+<file href="res/data/wo4/audio/state-08.mp3"/>
+<file href="res/data/wo4/audio/state-09.mp3"/>
+<file href="res/data/wo4/audio/state-10.mp3"/>
+<file href="res/data/wo4/audio/summary.mp3"/>
+<file href="res/data/wo4/images/state-01.png"/>
+<file href="res/data/wo4/images/state-02.svg"/>
+<file href="res/data/wo4/images/state-03.png"/>
+<file href="res/data/wo4/images/state-04.png"/>
+<file href="res/data/wo4/images/state-05.png"/>
+<file href="res/data/wo4/images/state-06.png"/>
+<file href="res/data/wo4/images/state-07.png"/>
+<file href="res/data/wo4/images/state-08.png"/>
+<file href="res/data/wo4/images/state-09.png"/>
+<file href="res/data/wo4/images/state-10.png"/>
+<file href="res/data/wo4/index.html"/>
+<file href="res/data/wo4/Narration script.txt"/>
+<file href="res/data/thmb7.jpg"/>
+<file href="res/data/slide7.js"/>
+<file href="res/data/slide7.css"/>
 <file href="res/data/quiz3.js"/>
 <file href="res/data/quiz3/fonts/fnt0.woff"/>
 <file href="res/data/quiz3/fonts/fnt1.woff"/>
@@ -118,17 +149,37 @@
 <file href="res/data/quiz3/fonts/fnt7.woff"/>
 <file href="res/data/quiz3/images/img-55ef0115ed8ff21fda0ff9f9e87d8688c0c187cb.png"/>
 <file href="res/data/quiz3/images/quiz_bg_0.png"/>
-<file href="res/data/thmb6.jpg"/>
-<file href="res/data/intr4.js"/>
-<file href="res/data/intr4/fonts/fnt0.woff"/>
-<file href="res/data/intr4/fonts/fnt1.woff"/>
-<file href="res/data/intr4/fonts/fnt2.woff"/>
-<file href="res/data/intr4/fonts/fnt3.woff"/>
-<file href="res/data/intr4/fonts/fnt4.woff"/>
-<file href="res/data/intr4/fonts/fnt5.woff"/>
-<file href="res/data/intr4/fonts/fnt6.woff"/>
-<file href="res/data/intr4/images/interaction_bg_0.png"/>
-<file href="res/data/thmb7.jpg"/>
+<file href="res/data/thmb8.jpg"/>
+<file href="res/data/wo5/audio/intro.mp3"/>
+<file href="res/data/wo5/audio/state-01.mp3"/>
+<file href="res/data/wo5/audio/state-02.mp3"/>
+<file href="res/data/wo5/audio/state-03.mp3"/>
+<file href="res/data/wo5/audio/state-04.mp3"/>
+<file href="res/data/wo5/audio/state-05.mp3"/>
+<file href="res/data/wo5/audio/state-06.mp3"/>
+<file href="res/data/wo5/audio/state-07.mp3"/>
+<file href="res/data/wo5/audio/summary.mp3"/>
+<file href="res/data/wo5/images/state-01.svg"/>
+<file href="res/data/wo5/images/state-02.svg"/>
+<file href="res/data/wo5/images/state-03.svg"/>
+<file href="res/data/wo5/images/state-04.svg"/>
+<file href="res/data/wo5/images/state-05.svg"/>
+<file href="res/data/wo5/images/state-06.svg"/>
+<file href="res/data/wo5/images/state-07.svg"/>
+<file href="res/data/wo5/index.html"/>
+<file href="res/data/wo5/Narration script.txt"/>
+<file href="res/data/thmb9.jpg"/>
+<file href="res/data/slide9.js"/>
+<file href="res/data/slide9.css"/>
+<file href="res/data/wo6/audio/intro.mp3"/>
+<file href="res/data/wo6/audio/state-01.mp3"/>
+<file href="res/data/wo6/audio/summary.mp3"/>
+<file href="res/data/wo6/images/state-01.svg"/>
+<file href="res/data/wo6/index.html"/>
+<file href="res/data/wo6/Narration script.txt"/>
+<file href="res/data/thmb10.jpg"/>
+<file href="res/data/slide10.js"/>
+<file href="res/data/slide10.css"/>
 <file href="res/data/quiz4.js"/>
 <file href="res/data/quiz4/fonts/fnt0.woff"/>
 <file href="res/data/quiz4/fonts/fnt1.woff"/>
@@ -140,12 +191,8 @@
 <file href="res/data/quiz4/fonts/fnt7.woff"/>
 <file href="res/data/quiz4/images/img-55ef0115ed8ff21fda0ff9f9e87d8688c0c187cb.png"/>
 <file href="res/data/quiz4/images/quiz_bg_0.png"/>
-<file href="res/data/thmb8.jpg"/>
+<file href="res/data/thmb11.jpg"/>
 <file href="res/data/quizplayer.js"/>
-<file href="res/data/intplayer1.js"/>
-<file href="res/data/intplayer2.js"/>
-<file href="res/data/intplayer3.js"/>
-<file href="res/data/intplayer4.js"/>
 <file href="res/index.html"/>
 <file href="res/data/player.js"/>
 <file href="res/data/eraser.cur"/>
@@ -159,6 +206,8 @@
 <file href="res/data/fnt4.woff"/>
 <file href="res/data/fnt6.woff"/>
 <file href="res/data/fnt7.woff"/>
+<file href="res/data/fnt8.woff"/>
+<file href="res/data/fnt9.woff"/>
 <file href="res/data/html5-unsupported.html"/>
 <file href="res/data/img0.png"/>
 <file href="res/data/img1.png"/>
@@ -175,7 +224,6 @@
 <file href="res/data/img2.png"/>
 <file href="res/data/img20.png"/>
 <file href="res/data/img21.png"/>
-<file href="res/data/img22.png"/>
 <file href="res/data/img3.png"/>
 <file href="res/data/img4.png"/>
 <file href="res/data/img5.png"/>

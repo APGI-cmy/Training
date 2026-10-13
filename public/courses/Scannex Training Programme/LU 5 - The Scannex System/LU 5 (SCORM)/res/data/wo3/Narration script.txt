@@ -1,0 +1,27 @@
+INTRO
+Engineered Safety. Learning outcome: Explain Scannex system safeguards and segregated roles, apply the supplied scan workflow, respond through authorised support, and maintain quality checks and records. This activity explains engineered safety. Select each labelled control, read the complete narrative, enlarge the illustration and review the summary before its knowledge check. Follow the current approved site procedure; these illustrations are conceptual teaching examples. Narration is optional.
+
+SUMMARY
+Engineered Safety. Summary. Use authorised controls without changing the exposure settings. A fault indication means stop and report; never work around an interlock. The operator does not choose a different radiation dose. Keep calibration, online monitoring and scheduled inspections current.
+
+STATE-01
+Automated control. The operator runs the approved workflow but cannot change the X-ray physics, exposure settings or scan rate. Use only authorised controls and report anything that does not behave as expected.
+
+Key takeaway: Use authorised controls without changing the exposure settings. Why this matters: Use authorised controls without changing the exposure settings. The outline identifies the central full-body scanner. Its scan is coordinated by approved system controls; the illustration does not authorise adjusting the pictured dial.
+
+STATE-02
+Fail-safe response. The supplied protocol describes automatic X-ray shut-off for the system’s specified mechanical, electrical and software fault conditions. Treat any fault indication as a stop signal; do not work around it or restart until the authorised process permits it. Verify the exact fault and interlock behaviour in the manufacturer instructions, and report abnormal behaviour even if no alarm appears.
+
+Key takeaway: A fault indication means stop and report; never work around an interlock. Why this matters: A fault indication means stop and report; never work around an interlock. The outline identifies Conditions correct and Automatic stop at middle right. These represent specified interlocks; they do not guarantee detection of every possible fault.
+
+STATE-03
+Fixed licensed dose. The X-ray dose is preset, regulator-licensed and not adjustable by the operator. This ensures every scan uses the approved exposure rather than an improvised setting.
+
+Key takeaway: The operator does not choose a different radiation dose. Why this matters: The operator does not choose a different radiation dose. The outline identifies Lowest useful energy at upper left. The dial is a conceptual design symbol, not an operator-adjustable dose control.
+
+STATE-04
+Continuous verification. Qualified calibration checks and the built-in online dose meter confirm that the scanner continues to perform as commissioned. Escalate any warning, discrepancy or overdue test.
+
+Under the supplied course protocol, qualified specialists inspect the equipment before use and at least every three months thereafter. Confirm current inspection and release status before operation. Monitoring complements these checks; it does not prove compliance by itself. Follow current licence conditions and the approved site schedule.
+
+Key takeaway: Keep calibration, online monitoring and scheduled inspections current. Why this matters: Keep calibration, online monitoring and scheduled inspections current. The outline identifies Continuous measurement and Auditable record at lower right. The displayed DAP figure is illustrative; it is not a scan-dose specification or a direct effective-dose reading.

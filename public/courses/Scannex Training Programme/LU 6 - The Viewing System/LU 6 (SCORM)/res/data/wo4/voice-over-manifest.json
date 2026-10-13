@@ -1,0 +1,44 @@
+[
+  {
+    "state": "introduction",
+    "file": "intro.mp3",
+    "text": "This activity explains roles, permissions and accountability. Use the viewing system methodically and make a documented, accountable decision. Select each panel to work through the approved practice.",
+    "wordCount": 27
+  },
+  {
+    "state": "Panel 1: The Viewer",
+    "file": "state-01.mp3",
+    "text": "The Viewer: Examines each live image; Uses the image-enhancement tools; Compares reference images; Annotates and comments where appropriate; Makes the release-or-hold decision. The Viewer does not configure the viewing station. Key takeawayThe Viewer examines and decides—but does not control configuration.",
+    "wordCount": 40
+  },
+  {
+    "state": "Panel 2: The Supervisor",
+    "file": "state-02.mp3",
+    "text": "Only the Supervisor may configure a viewing station. Configuration includes: IVServer IP address; Viewer ID; Minimum View Time; Auto Release Time; Saved default palette, invert, zoom and function settings. Viewer IDs are: 1–4: Normal Scannex Viewers; 9–16: Review and Overview stations. Minimum View Time must be between 10 and 120 seconds. Auto Release Time is normally set to 0—off. It is used only for testing. Key takeawayConfiguration is a controlled supervisory privilege, not a Viewer function.",
+    "wordCount": 76
+  },
+  {
+    "state": "Panel 3: Review — F10",
+    "file": "state-03.mp3",
+    "text": "A Reviewer logs in with a name and password to re-examine images after the original decision. Review supports: Quality assurance; Investigation of questionable decisions; Confirmation of correct viewing; Authorised image-database management. The Database Editor is available only in Review mode. Key takeawayReview examines what happened after the original viewing session.",
+    "wordCount": 50
+  },
+  {
+    "state": "Panel 4: Overview — F11",
+    "file": "state-04.mp3",
+    "text": "An Overviewer logs in and uses the Movement Log to select a connected Viewer. Overview allows authorised quality-control personnel to observe a Viewer’s live work and confirm that images are being examined properly. Key takeawayOverview provides real-time quality assurance of connected Viewers.",
+    "wordCount": 42
+  },
+  {
+    "state": "Panel 5: The Movement Log",
+    "file": "state-05.mp3",
+    "text": "The Movement Log records and replays the exact sequence of actions taken during the original examination, including: Mode changes; Zoom changes; Panning; Brightness adjustments; Contrast adjustments. This makes the decision process transparent, discourages careless viewing and protects a Viewer who follows the correct procedure. Key takeawayThe Movement Log shows not only the decision, but how the Viewer reached it.",
+    "wordCount": 59
+  },
+  {
+    "state": "summary",
+    "file": "summary.mp3",
+    "text": "You have reviewed Panel 1: The Viewer, Panel 2: The Supervisor, Panel 3: Review — F10, Panel 4: Overview — F11. Apply the approved procedure consistently, record what matters and escalate uncertainty rather than improvising.",
+    "wordCount": 35
+  }
+]

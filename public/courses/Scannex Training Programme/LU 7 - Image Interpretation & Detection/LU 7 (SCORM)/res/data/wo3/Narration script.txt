@@ -1,0 +1,75 @@
+INTRO
+Foundations of Image Interpretation. Learning outcome: Explain why disciplined judgement, anatomy and several interpretation clues are needed to examine a Scannex image. The scanner creates an image; the trained Viewer must interpret it. Explore the six foundations, from low contrast and masking to plausible concealment locations and the clues that help explain an anomaly.
+
+SUMMARY
+Key takeaway: The operator interprets the image rather than relying on automatic detection. Diamonds may have low contrast near bone, and masking objects can hide evidence. Search for anomalies, account for normal anatomy and consider plausible concealment locations and containers. Combine location, pattern, texture, isolation and available reference comparisons. Resolve uncertainty through the approved response chain.
+
+STATE-01
+Technology Hands Over to Judgement. The Scannex system provides a detailed image of the human body. The system does not automatically decide whether an object is concealed or whether an anomaly is suspicious.
+
+That responsibility belongs to the trained operator.
+
+Effective interpretation depends on pattern recognition—the ability to distinguish normal structures from features that do not belong. This skill develops through study, repetition and disciplined practice.
+
+Key takeaway: The equipment creates the image. The trained operator is the detection system. The trained Viewer interprets the scan using the available controls.
+
+STATE-02
+Why Diamonds Are Difficult to See. An X-ray image represents differences in density. Metal is much denser than human tissue and normally appears with strong contrast.
+
+A diamond is different. Its density is close to that of human bone. The contrast between a diamond and the surrounding skeletal structure may therefore be very low.
+
+A concealed diamond may appear as a faint, vague or indistinct mass—especially when it lies close to or behind bone.
+
+Key takeaway: A diamond does not necessarily stand out. The operator must actively hunt for it. Compare metal, bone and a low-contrast dense feature close to bone.
+
+STATE-03
+Masking Can Hide the Evidence. A high-density object can overwhelm the image in the area behind it. This masking effect may hide a low-contrast diamond almost completely.
+
+Objects such as keys, lighters, watches, belt buckles, metal shoe inserts and metal clothing buttons must be removed and examined separately before scanning.
+
+Increasing brightness or contrast cannot guarantee that the hidden area has been properly examined.
+
+Key takeaway: A scan completed while a masking object remains in place is a compromised scan. The paired images illustrate how a watch masks the underlying area.
+
+STATE-04
+Hunt Anomalies, Not Diamonds. The operator should not search only for an obvious diamond shape. The correct approach is to search for anomalies and then eliminate innocent explanations.
+
+An anomaly may be:
+
+An object that is obviously foreign to the human body; or
+
+A normal anatomical structure that resembles a concealed object and could be misinterpreted.
+
+The operator should ask:
+
+“What is this, and does it belong here?”
+
+Key takeaway: Account for what is normal and isolate what remains unexplained. Examine the whole image and account for normal anatomical patterns.
+
+STATE-05
+Know Where Concealment Is Possible. Concealment is generally limited to locations that can be accessed without surgery or a healing wound. The three main routes are natural openings, the digestive tract, and external body or clothing sites.
+
+Natural openings include the eyes or a prosthetic eye, ears, nose, mouth, anus, penis, vagina and urethra. External sites that must not be overlooked include under the scrotum or armpits, between toes, under nails, inside shoes and within sanitary towels.
+
+Look for both a possible stone and the shape of a container, such as a straw, tube, capsule, plastic bag or retrieval string. The Viewer interprets the image and follows the approved escalation procedure; the Viewer does not conduct a search.
+
+Key takeaway: Concealment is possible only in plausible anatomical or external locations. Assess the location, any container shape and the approved response procedure together. The three illustrated categories are natural openings, the digestive tract, and external body or clothing sites.
+
+STATE-06
+Use the Discriminators. Normal anatomy usually has an organised appearance. It is commonly consistent, symmetrical, textured or repeated in an expected location.
+
+A suspicious object is more likely to be:
+
+Isolated
+
+Uniformly dense
+
+Unrelated to a normal anatomical pattern
+
+New when compared with an earlier image
+
+Moving through the digestive tract over time
+
+No single clue should be used alone. The operator should combine location, pattern, texture, movement and reference comparison.
+
+Key takeaway: Anatomy is generally patterned and textured. A concealed object is more likely to be isolated and uniform. Compare the isolated, uniform feature with the surrounding patterned anatomy.

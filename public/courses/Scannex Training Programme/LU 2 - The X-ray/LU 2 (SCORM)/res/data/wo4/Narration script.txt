@@ -1,0 +1,32 @@
+INTRO
+Five Layers of Scannex Safety. Learning outcome: Recognise the connected controls designed to support safe, authorised Scannex screening. Scannex safety is designed in depth. Select each layer to see how equipment design, dose control and professional operation combine. Narration is optional. Enlarge the images to examine their detail, review the summary, then complete this activity’s knowledge check.
+
+SUMMARY
+Five Layers of Scannex Safety. Summary. Safety depends on connected controls. Equipment features, dose management and disciplined operation work together; no single control should carry the whole burden.
+
+STATE-01
+Controlled dose. Exposure is measured, limited and recorded against the applicable public-protection requirements.
+
+Key takeaway: Measurement and records support controlled exposure. Why this matters: Measurement and records support controlled exposure. The records, authorisation document and operator illustrate accountable control. The image does not show a measured dose.
+
+STATE-02
+Focused beam and filtering. Collimation keeps the beam where it is needed, while filtering removes low-energy radiation that would add dose without improving the image.
+
+Key takeaway: Beam control and filtering contribute to a useful image and dose control. Why this matters: Beam control and filtering contribute to a useful image and dose control. The source, filtering element and vertical detector illustrate controlled transmission. This is a conceptual diagram, not a component-identification guide.
+
+STATE-03
+Integrated controller. Scanning movement and X-ray production are controlled together. If movement stops, the system is designed to stop X-ray production.
+
+Key takeaway: Movement and X-ray production form a coordinated control system. Why this matters: Movement and X-ray production form a coordinated control system. The controller at the left is connected to the scan assembly. The illustration represents coordination of movement and X-ray production.
+
+STATE-04
+Safety interlocks. Interlocks and authorised operating conditions prevent a scan from occurring outside the intended controlled process.
+
+Key takeaway: Respect interlocks and report concerns through the approved safety route. Why this matters: Respect interlocks and report concerns through the approved safety route. Two control switches illustrate layered interlocks. Confirm exact hardware and fault responses in the approved system instructions.
+
+STATE-05
+Professional operation. Trained operators follow the approved procedure, respect safety boundaries and escalate equipment or process concerns promptly.
+
+Dose records, licensing, authorised procedures and trained operators provide accountable control. Use the approved system instructions for manufacturer-specific operating and fault responses.
+
+Key takeaway: Authorised procedures, records and trained operators make safety accountable. Why this matters: Authorised procedures, records and trained operators make safety accountable. The records, authorisation document and trained operator connect professional operation with accountability.

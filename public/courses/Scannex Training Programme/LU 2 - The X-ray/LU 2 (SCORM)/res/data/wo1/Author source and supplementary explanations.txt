@@ -1,0 +1,13 @@
+Approved voice: en-ZA-LukeNeural, rate -25%.
+Source: current Full online LU2 and preserved APGI LU2 interactions.
+The Key takeaway statements, captions and glossary are supplementary teaching. Modified source passages are recorded in LU2 review notes. Manufacturer-specific dose comparisons and fault behaviour require the approved documentation.
+
+[
+  {
+    "title": "Your learning route",
+    "body": "Welcome to Learning Unit 2. Watch the opening clip, then complete the eight activities covering material appearance, X-ray history, layered safety, image quality, the electromagnetic family, X-ray production, clear explanations and dose context. Each activity has a summary and a knowledge check. Read the unit recap and glossary before the final knowledge check. Select each labelled control, enlarge the images and play or stop narration as you choose. This course uses AI-generated narration.\n\nKey takeaway: Connect image formation, interpretation and approved safety controls.",
+    "image": "images/state-01.png",
+    "caption": "The full-body scan path links the source, person, vertical detector and display. The conceptual horizontal beam does not represent horizontal detector travel.",
+    "alt": "The full-body scan path links the source, person, vertical detector and display. The conceptual horizontal beam does not represent horizontal detector travel."
+  }
+]

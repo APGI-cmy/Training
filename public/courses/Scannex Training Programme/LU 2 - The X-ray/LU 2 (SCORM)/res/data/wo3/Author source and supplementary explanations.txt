@@ -1,0 +1,38 @@
+Approved voice: en-ZA-LukeNeural, rate -25%.
+Source: current Full online LU2 and preserved APGI LU2 interactions.
+The Key takeaway statements, captions and glossary are supplementary teaching. Modified source passages are recorded in LU2 review notes. Manufacturer-specific dose comparisons and fault behaviour require the approved documentation.
+
+[
+  {
+    "title": "An unexpected glow",
+    "body": "In 1895, Wilhelm Conrad Röntgen noticed that an unseen emission from a covered experimental tube caused a distant fluorescent screen to glow. He later showed that the radiation could pass through material and expose a photographic plate.\n\nKey takeaway: Röntgen discovered X-rays in 1895 while investigating an unexpected glow.",
+    "takeaway": "Röntgen discovered X-rays in 1895 while investigating an unexpected glow.",
+    "image": "images/state-01.png",
+    "caption": "The fluorescent screen on the right glows in the historical reconstruction. This represents the observation that led to the discovery.",
+    "alt": "The fluorescent screen on the right glows in the historical reconstruction. This represents the observation that led to the discovery."
+  },
+  {
+    "title": "The X-ray",
+    "body": "Röntgen called the new radiation X-rays because its nature was initially unknown. The discovery made it possible to see inside materials without opening them.\n\nKey takeaway: The name X-ray reflected the initially unknown nature of the radiation.",
+    "takeaway": "The name X-ray reflected the initially unknown nature of the radiation.",
+    "image": "images/state-02.png",
+    "caption": "This reconstruction illustrates Röntgen’s early investigation and a hand image. It is not an authentic historical photograph.",
+    "alt": "This reconstruction illustrates Röntgen’s early investigation and a hand image. It is not an authentic historical photograph."
+  },
+  {
+    "title": "Safety lessons",
+    "body": "Early users did not understand the risks of overexposure. Their experience led to radiation protection principles, controlled equipment and safer procedures.\n\nKey takeaway: Uncontrolled exposure led to lessons that inform modern radiation protection.",
+    "takeaway": "Uncontrolled exposure led to lessons that inform modern radiation protection.",
+    "image": "images/state-03.png",
+    "caption": "The early tube and modern full-body chamber contrast the discovery with controlled modern use. The image does not specify a dose.",
+    "alt": "The early tube and modern full-body chamber contrast the discovery with controlled modern use. The image does not specify a dose."
+  },
+  {
+    "title": "Precision Scannex",
+    "body": "Modern Scannex applies the same principle with a focused beam, sensitive detectors, operating controls and strict dose management.\n\nKey takeaway: Modern imaging combines the scientific principle with approved equipment and controls.",
+    "takeaway": "Modern imaging combines the scientific principle with approved equipment and controls.",
+    "image": "images/state-04.png",
+    "caption": "The full-body chamber and monitor represent the modern screening context. This is a conceptual illustration.",
+    "alt": "The full-body chamber and monitor represent the modern screening context. This is a conceptual illustration."
+  }
+]

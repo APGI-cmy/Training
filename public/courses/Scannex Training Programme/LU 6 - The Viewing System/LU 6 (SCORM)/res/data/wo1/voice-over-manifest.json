@@ -1,0 +1,50 @@
+[
+  {
+    "state": "introduction",
+    "file": "intro.mp3",
+    "text": "This activity explains viewing system glossary. Use the viewing system methodically and make a documented, accountable decision. Select each panel to work through the approved practice.",
+    "wordCount": 26
+  },
+  {
+    "state": "ADD",
+    "file": "state-01.mp3",
+    "text": "Automatic Diamond DetectionA software aid that flags possible objects for the Viewer’s attention. It supports the Viewer but does not replace human judgement.",
+    "wordCount": 23
+  },
+  {
+    "state": "Emboss",
+    "file": "state-02.mp3",
+    "text": "An image-processing technique that makes edges and surface textures appear raised or recessed.",
+    "wordCount": 13
+  },
+  {
+    "state": "IP Address",
+    "file": "state-03.mp3",
+    "text": "The Internet Protocol address used to connect the viewing station to the image server.",
+    "wordCount": 14
+  },
+  {
+    "state": "IVS",
+    "file": "state-04.mp3",
+    "text": "Image Viewing SystemThe software used to examine and process Scannex images.",
+    "wordCount": 11
+  },
+  {
+    "state": "Palette",
+    "file": "state-05.mp3",
+    "text": "The colours or shades of grey assigned to different X-ray densities. Changing the palette changes how the same image data appears.",
+    "wordCount": 21
+  },
+  {
+    "state": "Un-sharp Mask",
+    "file": "state-06.mp3",
+    "text": "An image-processing mode that sharpens detail and emphasises edges.",
+    "wordCount": 9
+  },
+  {
+    "state": "summary",
+    "file": "summary.mp3",
+    "text": "You have reviewed ADD, Emboss, IP Address, IVS. Apply the approved procedure consistently, record what matters and escalate uncertainty rather than improvising.",
+    "wordCount": 22
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "code": "SC-LU06-RECAP",
+  "title": "The Viewing System: Unit Recap",
+  "voice": "en-ZA-LukeNeural",
+  "rate": "-25%",
+  "audioReady": [],
+  "audioPending": [
+    "intro",
+    "summary",
+    "state-01",
+    "state-02",
+    "state-03",
+    "state-04"
+  ],
+  "releaseStatus": "Author review - revised narration and native publication pending",
+  "sections": 4
+}

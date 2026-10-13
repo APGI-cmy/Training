@@ -1,0 +1,41 @@
+INTRO
+How Dose Is Kept Low. Learning outcome: Explain the engineered controls that reduce dose while preserving useful image quality. Low dose is achieved through a group of deliberate engineering controls. Select each point to see how the system removes unnecessary exposure while retaining a useful image. Narration is optional. Enlarge an image to examine its detail. Review the summary before the knowledge check.
+
+SUMMARY
+How Dose Is Kept Low. Summary. The lowest useful dose comes from efficient operation, beam control, brief exposure, safety interlocks and continuous output monitoring.
+
+STATE-01
+Low-energy operation. The system uses the lowest X-ray energy that still produces a useful image.
+
+This describes the approved system design and optimisation. Do not adjust energy or exposure outside the authorised settings. Lower photon energy alone does not guarantee a lower dose.
+
+Key takeaway: Use the approved, optimised system settings; do not adjust energy yourself. Why this matters: Use the approved, optimised system settings; do not adjust energy yourself. The outline identifies the upper-left Lowest useful energy panel. Use approved optimised settings; this is a conceptual system illustration. This balances image quality with radiation protection through approved operating design.
+
+STATE-02
+Beam filtering. Low-energy X-rays that would add dose without improving the image are filtered out before they reach the person.
+
+Key takeaway: Filtering removes radiation that adds dose without useful image information. Why this matters: Filtering removes radiation that adds dose without useful image information. The outline identifies the middle-left filtering panel, between the source and detector. It illustrates removal of low-energy radiation. Filtering removes energy that would not contribute useful information.
+
+STATE-03
+Tight collimation. Collimation confines the beam to where it is needed. This limits unwanted scatter and supports a sharp image.
+
+Key takeaway: Collimation confines the beam to the intended scan geometry. Why this matters: Collimation confines the beam to the intended scan geometry. The outline identifies the lower-left Before and Controlled beam comparison. It illustrates collimation. 
+
+STATE-04
+Short exposure. A brief scan time reduces dose. The system does not expose the person for longer than necessary.
+
+Key takeaway: Brief exposure and avoidance of unnecessary repeats support dose control. Why this matters: Brief exposure and avoidance of unnecessary repeats support dose control. The outline identifies the upper-right Brief exposure panel. It illustrates control of exposure duration. Correct operation and positioning help avoid repeated scans.
+
+STATE-05
+Interlocks and shutdown. The system emits radiation only when conditions are correct. If something is wrong, interlocks stop operation automatically.
+
+Interlocks address their specified conditions; do not assume that every fault is automatically detected. Report abnormal behaviour and follow the exact manufacturer and site instructions.
+
+Key takeaway: Respect interlocks and report abnormal behaviour even when no alarm appears. Why this matters: Respect interlocks and report abnormal behaviour even when no alarm appears. The outline identifies the middle-right Conditions correct and Automatic stop panel. Verify the exact interlock behaviour in the approved manufacturer instructions. An interlock must never be bypassed or treated as an inconvenience.
+
+STATE-06
+DAP monitoring. A Dose Area Product meter continuously measures radiation output and creates an objective record that the system remains within specification.
+
+DAP is also described as air kerma-area product, expressed in units such as Gy·cm². It is an output-monitoring quantity, not a direct effective-dose reading in sieverts. The approved dosimetry method determines any conversion. Monitoring complements QA; it does not prove compliance by itself.
+
+Key takeaway: DAP monitoring supports an auditable output record; it does not replace QA. Why this matters: DAP monitoring supports an auditable output record; it does not replace QA. The outline identifies the lower-right Continuous measurement and Auditable record panel. The displayed DAP value is illustrative, not a scan-dose specification. This supports traceable review rather than relying on guesswork.

@@ -1,0 +1,25 @@
+INTRO
+Radiation Dose in Context. Learning outcome: Describe how Scannex exposure is measured, controlled and kept in perspective. Radiation protection uses defined dose quantities, approved controls and regulatory oversight. Select each panel to put dose information into context. Narration is optional. Review the summary, then complete the knowledge check.
+
+SUMMARY
+Radiation Dose in Context. Summary. Use the correct dose quantity and units. Apply approved exposure controls and maintain records. Explain the role of scientific recommendations and national requirements. Use only verified scan values when making comparisons and refer specific dose questions through the approved safety route.
+
+STATE-01
+The language of dose. Equivalent and effective radiation dose are expressed in sieverts. In practical radiation protection, smaller units are commonly used: millisieverts and microsieverts. One sievert equals one thousand millisieverts, and one millisievert equals one thousand microsieverts. Use the dose quantity specified in the approved records.
+
+Key takeaway: Equivalent and effective dose use the sievert and its smaller units. Why this matters: Equivalent and effective dose use the sievert and its smaller units. The three unit symbols are used as a reminder of sievert, millisievert and microsievert. Their sizes are illustrative, not a dose comparison.
+
+STATE-02
+International framework. The ICRP provides the international scientific framework for radiation protection. National authorities apply and enforce relevant requirements locally.
+
+Key takeaway: Scientific recommendations and local regulatory requirements have different roles. Why this matters: Scientific recommendations and local regulatory requirements have different roles. The connected elements represent a protection framework. The narrative explains the distinct roles of scientific recommendations and national regulation.
+
+STATE-03
+Public protection. The approved radiation-protection programme controls exposure for people being scanned. Follow the applicable authorisation, dose-management requirements and recording procedure. Use the approved scan-dose information and refer specific limit questions through the safety route.
+
+Key takeaway: Use approved controls and records rather than making a blanket safety promise. Why this matters: Use approved controls and records rather than making a blanket safety promise. The protected-person illustration represents the purpose of radiation protection. It is not evidence of a particular scan dose or regulatory limit.
+
+STATE-04
+Dose in familiar context. A dose comparison must use a verified Scannex scan value, the same dose quantity and a stated reference. Medical X-ray doses depend on the examination and technique. Flight exposure depends on factors such as route and duration. Use approved information and do not describe a scan as equivalent to a particular flight without that basis.
+
+Key takeaway: A dose comparison needs an approved scan value and a stated reference. Why this matters: A dose comparison needs an approved scan value and a stated reference. The scanner, chest image and aircraft represent different exposure contexts. No numerical equivalence is asserted by this illustration.

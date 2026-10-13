@@ -1,0 +1,46 @@
+Approved voice: en-ZA-LukeNeural, rate -25%.
+Source: current Full online LU2 and preserved APGI LU2 interactions.
+The Key takeaway statements, captions and glossary are supplementary teaching. Modified source passages are recorded in LU2 review notes. Manufacturer-specific dose comparisons and fault behaviour require the approved documentation.
+
+[
+  {
+    "title": "Controlled dose",
+    "body": "Exposure is measured, limited and recorded against the applicable public-protection requirements.\n\nKey takeaway: Measurement and records support controlled exposure.",
+    "takeaway": "Measurement and records support controlled exposure.",
+    "image": "images/state-01.png",
+    "caption": "The records, authorisation document and operator illustrate accountable control. The image does not show a measured dose.",
+    "alt": "The records, authorisation document and operator illustrate accountable control. The image does not show a measured dose."
+  },
+  {
+    "title": "Focused beam and filtering",
+    "body": "Collimation keeps the beam where it is needed, while filtering removes low-energy radiation that would add dose without improving the image.\n\nKey takeaway: Beam control and filtering contribute to a useful image and dose control.",
+    "takeaway": "Beam control and filtering contribute to a useful image and dose control.",
+    "image": "images/state-02.png",
+    "caption": "The source, filtering element and vertical detector illustrate controlled transmission. This is a conceptual diagram, not a component-identification guide.",
+    "alt": "The source, filtering element and vertical detector illustrate controlled transmission. This is a conceptual diagram, not a component-identification guide."
+  },
+  {
+    "title": "Integrated controller",
+    "body": "Scanning movement and X-ray production are controlled together. If movement stops, the system is designed to stop X-ray production.\n\nKey takeaway: Movement and X-ray production form a coordinated control system.",
+    "takeaway": "Movement and X-ray production form a coordinated control system.",
+    "image": "images/state-03.png",
+    "caption": "The controller at the left is connected to the scan assembly. The illustration represents coordination of movement and X-ray production.",
+    "alt": "The controller at the left is connected to the scan assembly. The illustration represents coordination of movement and X-ray production."
+  },
+  {
+    "title": "Safety interlocks",
+    "body": "Interlocks and authorised operating conditions prevent a scan from occurring outside the intended controlled process.\n\nKey takeaway: Respect interlocks and report concerns through the approved safety route.",
+    "takeaway": "Respect interlocks and report concerns through the approved safety route.",
+    "image": "images/state-04.png",
+    "caption": "Two control switches illustrate layered interlocks. Confirm exact hardware and fault responses in the approved system instructions.",
+    "alt": "Two control switches illustrate layered interlocks. Confirm exact hardware and fault responses in the approved system instructions."
+  },
+  {
+    "title": "Professional operation",
+    "body": "Trained operators follow the approved procedure, respect safety boundaries and escalate equipment or process concerns promptly.\n\nDose records, licensing, authorised procedures and trained operators provide accountable control. Use the approved system instructions for manufacturer-specific operating and fault responses.\n\nKey takeaway: Authorised procedures, records and trained operators make safety accountable.",
+    "takeaway": "Authorised procedures, records and trained operators make safety accountable.",
+    "image": "images/state-05.png",
+    "caption": "The records, authorisation document and trained operator connect professional operation with accountability.",
+    "alt": "The records, authorisation document and trained operator connect professional operation with accountability."
+  }
+]

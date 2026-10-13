@@ -1,0 +1,27 @@
+INTRO
+Image Interpretation Glossary. Learning outcome: Explain the terms used when interpreting and enhancing a Scannex image. Start with the vocabulary used throughout this unit. Select each term, read its definition and use the labelled diagram to connect the term to the Viewer’s work.
+
+SUMMARY
+Key takeaway: ADD draws attention to possible objects but does not replace judgement. Emboss and Un-sharp Mask emphasise edges and detail. An IP address identifies the image server, and IVS means Image Viewing System. A palette changes the colours or shades used to display the same image data. Use these terms accurately when describing your interpretation.
+
+STATE-01
+ADD. Automatic Diamond Detection
+
+A software aid that flags possible objects for the Viewer’s attention. It supports the Viewer but does not replace human judgement. A flag draws attention; it is not a final detection decision.
+
+STATE-02
+Emboss. An image-processing technique that makes edges and surface textures appear raised or recessed. A processing mode changes appearance, not the underlying scan data.
+
+STATE-03
+IP Address. The Internet Protocol address used to connect the viewing station to the image server. In the hosted practice setup the TrainingTool server address is 127.0.0.1. Follow the supplied connection instructions.
+
+STATE-04
+IVS. Image Viewing System
+
+The software used to examine and process Scannex images. The viewing software helps the operator examine the scan; it does not replace judgement.
+
+STATE-05
+Palette. The colours or shades of grey assigned to different X-ray densities. Changing the palette changes how the same image data appears. Changing the palette does not add a new object or remove one from the scan data.
+
+STATE-06
+Un-sharp Mask. An image-processing mode that sharpens detail and emphasises edges. Sharpened detail is an aid. Interpret the whole area and use more than one viewing mode.

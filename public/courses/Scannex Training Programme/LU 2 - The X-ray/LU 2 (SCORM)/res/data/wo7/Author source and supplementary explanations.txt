@@ -1,0 +1,46 @@
+Approved voice: en-ZA-LukeNeural, rate -25%.
+Source: current Full online LU2 and preserved APGI LU2 interactions.
+The Key takeaway statements, captions and glossary are supplementary teaching. Modified source passages are recorded in LU2 review notes. Manufacturer-specific dose comparisons and fault behaviour require the approved documentation.
+
+[
+  {
+    "title": "Heat releases electrons",
+    "body": "A small filament inside the sealed tube is heated, releasing free electrons.\n\nKey takeaway: Heating the filament releases electrons inside the tube.",
+    "takeaway": "Heating the filament releases electrons inside the tube.",
+    "image": "images/state-01.png",
+    "caption": "The heated filament is at the source end of the conceptual tube. It releases electrons inside the tube.",
+    "alt": "The heated filament is at the source end of the conceptual tube. It releases electrons inside the tube."
+  },
+  {
+    "title": "High voltage accelerates them",
+    "body": "High voltage drives the electrons at high speed toward a target inside the tube.\n\nKey takeaway: High voltage accelerates electrons towards the target.",
+    "takeaway": "High voltage accelerates electrons towards the target.",
+    "image": "images/state-02.png",
+    "caption": "The source end is on the left and the target is on the right. The dotted path represents electrons accelerating towards the target. This is a conceptual physics illustration, not an instruction to adjust equipment.",
+    "alt": "The source end is on the left and the target is on the right. The dotted path represents electrons accelerating towards the target. This is a conceptual physics illustration, not an instruction to adjust equipment."
+  },
+  {
+    "title": "Collision releases X-rays",
+    "body": "When electrons strike the target, part of their energy is released as X-rays.\n\nKey takeaway: Electron impact releases part of the energy as X-rays.",
+    "takeaway": "Electron impact releases part of the energy as X-rays.",
+    "image": "images/state-03.png",
+    "caption": "The target is the sloping surface on the right. Electron impact produces X-rays.",
+    "alt": "The target is the sloping surface on the right. Electron impact produces X-rays."
+  },
+  {
+    "title": "A narrow fan beam is formed",
+    "body": "A precision collimator shapes the X-rays into a narrow fan beam. This keeps the beam focused and sharp.\n\nKey takeaway: A collimator shapes the emitted radiation into a controlled fan beam.",
+    "takeaway": "A collimator shapes the emitted radiation into a controlled fan beam.",
+    "image": "images/state-04.png",
+    "caption": "The X-rays leaving the tube are subsequently shaped by a collimator. This image illustrates the tube and emitted beam, not the exact collimator assembly.",
+    "alt": "The X-rays leaving the tube are subsequently shaped by a collimator. This image illustrates the tube and emitted beam, not the exact collimator assembly."
+  },
+  {
+    "title": "The detector builds the image",
+    "body": "X-rays that pass through the person reach the detector, which converts the information into a digital image for the Viewer.\n\nKey takeaway: The detector converts transmitted X-ray information into image data.",
+    "takeaway": "The detector converts transmitted X-ray information into image data.",
+    "image": "images/state-05.png",
+    "caption": "The full-body scan path links the source, person, vertical detector and display. The conceptual horizontal beam does not represent horizontal detector travel.",
+    "alt": "The full-body scan path links the source, person, vertical detector and display. The conceptual horizontal beam does not represent horizontal detector travel."
+  }
+]

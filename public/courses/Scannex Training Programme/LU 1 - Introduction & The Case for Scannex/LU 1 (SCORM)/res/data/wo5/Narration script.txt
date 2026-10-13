@@ -1,0 +1,30 @@
+INTRO
+From X-ray Discovery to Scannex. Learning outcome: Describe how X-ray science developed into a controlled, useful screening technology. Scannex uses a scientific principle with a long history. Follow the timeline to see how discovery, safety learning and regulation led to modern screening practice. Enlarge the images to examine their detail. Narration is optional. Complete the corresponding knowledge check after the activity summary.
+
+SUMMARY
+From X-ray Discovery to Scannex. Summary. Modern screening draws on a long record of scientific discovery and safety learning. It is a controlled, regulated technology whose safe use depends on competent, disciplined operators.
+
+STATE-01
+Early experiments. Scientists in the late eighteenth and nineteenth centuries investigated electrical discharge, light and cathode rays in evacuated tubes. Their work laid the foundation for later discoveries.
+
+Key takeaway: Earlier investigations created the foundation for later discoveries. Why this matters: Earlier investigations created the foundation for later discoveries. An illustrative evacuated tube represents early electrical and cathode-ray investigations; it is not a historical photograph.
+
+STATE-02
+1895: the X-ray is discovered. Wilhelm Conrad Röntgen observed a previously unknown ray that could pass through solid material and expose a photographic plate. He named it an X-ray because its nature was initially unknown.
+
+Key takeaway: Röntgen’s 1895 discovery opened a new way to examine internal differences. Why this matters: Röntgen’s 1895 discovery opened a new way to examine internal differences. The historical scene illustrates Röntgen’s discovery and the passage of X-rays through material. It is a reconstruction, not an authentic record.
+
+STATE-03
+Safety lessons shape modern practice. Early users did not understand the risks of overexposure. Their experience led to strict radiation safety principles, controlled equipment and the operating procedures used today.
+
+Key takeaway: Modern controlled use reflects the lessons learned from early exposure. Why this matters: Modern controlled use reflects the lessons learned from early exposure. Historical safety learning informs controlled modern use. This diagram does not specify dose limits.
+
+STATE-04
+Beneficial technology in daily life. X-ray and related imaging support diagnostic medicine, treatment, airport and border security, parcel screening and many other legitimate purposes.
+
+Key takeaway: Imaging has several legitimate uses, each with its own approved purpose and controls. Why this matters: Imaging has several legitimate uses, each with its own approved purpose and controls. Separate panels show medicine and several security applications. The baggage-screening examples are other applications; they are not the full-body Scannex system.
+
+STATE-05
+From science to Scannex. Scannex applies the same fundamental principle. Materials affect X-rays differently, allowing a trained operator to identify unusual density without relying on a physical search.
+
+Key takeaway: Different materials affect X-rays differently; competent operators interpret the result. Why this matters: Different materials affect X-rays differently; competent operators interpret the result. The full-body chamber and human-body monitor illustrate Scannex’s application of differential X-ray effects. The operator must interpret the image.

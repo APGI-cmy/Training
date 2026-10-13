@@ -1,0 +1,32 @@
+INTRO
+How Materials Appear in an X-ray Image. Learning outcome: Explain how material density affects the brightness of an X-ray image. Scannex images are created because different materials allow different amounts of X-ray energy to reach the detector. Select each material group to see the pattern a Viewer must interpret. Narration is optional. Enlarge the images to examine their detail, review the summary, then complete this activity’s knowledge check.
+
+SUMMARY
+How Materials Appear in an X-ray Image. Summary. A Viewer reads a pattern of density, shape and location. One bright area alone is not a conclusion; it must be considered in context.
+
+STATE-01
+Air appears dark. Air allows most X-rays through. The detector receives more radiation, so air-filled areas appear dark.
+
+Key takeaway: In the normal greyscale display, air-filled areas appear dark. Why this matters: In the normal greyscale display, air-filled areas appear dark. The highlighted dark lung areas are in the middle image on the right. This is a conceptual teaching composite, not an operational scan.
+
+STATE-02
+Soft tissue appears grey. Muscle, fat and organs allow some X-rays through and block some. They usually appear in shades of grey.
+
+Key takeaway: Soft tissue normally appears in intermediate shades of grey. Why this matters: Soft tissue normally appears in intermediate shades of grey. The shoulder and under-arm soft-tissue areas are highlighted in the top image on the right.
+
+STATE-03
+Bone appears light. Bone is denser and blocks more X-rays. Less radiation reaches the detector, so bone appears light or bright.
+
+Key takeaway: Bone blocks more X-rays and normally appears light. Why this matters: Bone blocks more X-rays and normally appears light. The highlighted spine and other skeletal structures show the light appearance of bone.
+
+STATE-04
+Dense objects stand out. Dense objects block more X-rays than the surrounding material and can stand out as bright areas. The Viewer must still consider their shape, location and relationship to normal anatomy.
+
+Key takeaway: Brightness is a clue to examine in context, not proof of concealment. Why this matters: Brightness is a clue to examine in context, not proof of concealment. Compare the watch in place with the watch removed. A dense ordinary item can obscure surrounding detail; visibility alone does not identify an item conclusively.
+
+STATE-05
+The Viewer reads the pattern. Interpretation is not about one bright spot alone. The Viewer considers an object’s density, shape, location and relationship to normal anatomy or ordinary items.
+
+Attenuation is the reduction of the X-ray beam as it passes through material. The image is a map of differences in attenuation. Material composition, thickness and beam energy also affect the result. Inverting the display reverses the normal light and dark appearance.
+
+Key takeaway: Compare density, shape and location before reaching a conclusion. Why this matters: Compare density, shape and location before reaching a conclusion. Compare air, soft tissue, bone and a possible dense object. The composite illustrates a pattern, not a final decision.

@@ -1,0 +1,27 @@
+INTRO
+Where X-rays Fit. Learning outcome: Explain why X-rays can reveal internal differences and why their use is controlled. X-rays are one form of electromagnetic energy. Select each point to see how their wavelength and energy make screening possible while requiring careful control. Narration is optional. Enlarge the images to examine their detail, review the summary, then complete this activity’s knowledge check.
+
+SUMMARY
+Where X-rays Fit. Summary. X-rays are produced only when needed and are controlled because their high energy can affect atoms. That same property makes careful image-based screening possible.
+
+STATE-01
+One electromagnetic family. Radio waves, microwaves, infrared, visible light, ultraviolet, X-rays and gamma rays are all forms of electromagnetic energy.
+
+Key takeaway: X-rays belong to the electromagnetic family. Why this matters: X-rays belong to the electromagnetic family. Follow the labelled electromagnetic families from radio waves to gamma rays. The highlighted region identifies X-rays.
+
+STATE-02
+Short wavelength, high energy. X-rays have a much shorter wavelength and higher energy than visible light. This allows them to pass through materials that visible light cannot.
+
+Key takeaway: Compared with visible light, X-rays have a shorter wavelength and higher energy. Why this matters: Compared with visible light, X-rays have a shorter wavelength and higher energy. The waves compare wavelength and energy. Shorter wavelength corresponds to higher photon energy.
+
+STATE-03
+Why X-rays are ionising. X-rays can remove an electron from an atom. This process is called ionisation and is why exposure must be controlled. Image contrast results from differences in how materials attenuate X-rays.
+
+Key takeaway: Ionisation means removing an electron from an atom. Why this matters: Ionisation means removing an electron from an atom. The incoming photon ejects an electron and leaves an ionised atom. Exposure controls address this effect.
+
+STATE-04
+Produced only when needed. Scannex generates X-rays on demand inside a sealed tube. They do not exist before the scan and do not remain after the system stops.
+
+This statement refers to X-rays produced by the tube. It does not mean that background radiation elsewhere disappears.
+
+Key takeaway: The tube produces X-rays during operation; they are not stored in the person. Why this matters: The tube produces X-rays during operation; they are not stored in the person. Compare the tube switched off, operating and switched off again. X-ray generation ends when production stops.

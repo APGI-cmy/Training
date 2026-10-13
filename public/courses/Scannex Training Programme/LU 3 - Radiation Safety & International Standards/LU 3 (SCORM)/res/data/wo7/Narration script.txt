@@ -1,0 +1,30 @@
+INTRO
+Quality Assurance and Records. Learning outcome: Describe how routine checks, records and escalation keep Scannex safe and reliable. Quality assurance is the evidence that Scannex remains fit for purpose. Follow the process to see how checks, records and independent review protect image quality and safety. Narration is optional. Enlarge an image to examine its detail. Review the summary before the knowledge check. The schedules and retention periods taught here are those in the supplied course protocol. Confirm the current licence conditions and approved site schedule with the RPO.
+
+SUMMARY
+Quality Assurance and Records. Summary. Quality assurance combines routine testing, accurate records, active review and independent audit so faults and trends are found early.
+
+STATE-01
+Quality assurance. Under the supplied course protocol: The system is checked before first use and at least every three months. Image quality is checked using a suitable test phantom. Follow the current authorised site procedure and licence conditions.
+
+Key takeaway: Follow the approved QA schedule and check that equipment is within its date. Why this matters: Follow the approved QA schedule and check that equipment is within its date. The Quarterly, QA and Image check labels illustrate the supplied course QA schedule and a suitable test phantom. Confirm the current site schedule with the RPO. A phantom provides a known reference so any decline can be detected objectively.
+
+STATE-02
+Keep the logbook current. Under the supplied course protocol: The logbook records equipment details, maintenance, replacements, test results, staff training and licence conditions. Follow the current authorised site procedure and licence conditions.
+
+Key takeaway: Maintain the equipment, maintenance, training and licence logbook. Why this matters: Maintain the equipment, maintenance, training and licence logbook. Follow the logbook to equipment, maintenance and test records. Include the actual licence and staff-training entries required by the approved procedure. It creates a traceable operating history for the installation.
+
+STATE-03
+Record every exposure. Under the supplied course protocol: Personal dose records must contain the required exposure details and be retained for at least 10 years from the last entry. Follow the current authorised site procedure and licence conditions.
+
+Key takeaway: Record every exposure and retain the required dose records. Why this matters: Record every exposure and retain the required dose records. Every exposure and 10-year retention are linked with protected records. This illustrates the supplied course protocol; confirm the current retention requirement. Complete records support long-term protection review and regulatory accountability.
+
+STATE-04
+Review and escalate. Under the supplied course protocol: Dose records are checked weekly and monthly. A significant unexpected dose deviation must be reported immediately under the approved reporting process. Follow the current authorised site procedure and licence conditions.
+
+Key takeaway: Review records on schedule and report significant unexpected deviations. Why this matters: Review records on schedule and report significant unexpected deviations. The Weekly and Monthly panels lead to checking and reporting a deviation. These intervals come from the supplied course protocol. Do not wait for the next review cycle if a serious variation is identified.
+
+STATE-05
+Audit and report. Under the supplied course protocol: Independent annual audits review quality assurance and procedures. An annual regulatory report records examinations and collective dose. Follow the current authorised site procedure and licence conditions.
+
+Key takeaway: Independent review and formal reports support accountability. Why this matters: Independent review and formal reports support accountability. Independent audit, QA records and annual reporting are linked. Follow the current authorised reporting schedule. Independent review helps confirm that the local programme remains sound over time.

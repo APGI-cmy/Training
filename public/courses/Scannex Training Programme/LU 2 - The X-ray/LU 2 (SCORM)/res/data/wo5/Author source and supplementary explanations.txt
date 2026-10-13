@@ -1,0 +1,38 @@
+Approved voice: en-ZA-LukeNeural, rate -25%.
+Source: current Full online LU2 and preserved APGI LU2 interactions.
+The Key takeaway statements, captions and glossary are supplementary teaching. Modified source passages are recorded in LU2 review notes. Manufacturer-specific dose comparisons and fault behaviour require the approved documentation.
+
+[
+  {
+    "title": "High-resolution detectors",
+    "body": "Sensitive digital detectors capture fine differences between lighter and denser materials, helping small dense objects stand out.\n\nKey takeaway: Sensitive detectors help reveal differences in transmitted X-rays.",
+    "takeaway": "Sensitive detectors help reveal differences in transmitted X-rays.",
+    "image": "images/state-01.png",
+    "caption": "The vertical detector array is on the right of the assembly and receives transmitted X-rays.",
+    "alt": "The vertical detector array is on the right of the assembly and receives transmitted X-rays."
+  },
+  {
+    "title": "Collimation",
+    "body": "The collimator keeps the X-ray beam narrow and controlled. This improves sharpness and reduces unwanted scatter.\n\nKey takeaway: Collimation controls the beam and reduces unwanted scatter.",
+    "takeaway": "Collimation controls the beam and reduces unwanted scatter.",
+    "image": "images/state-02.png",
+    "caption": "Compare the wider beam at left with the controlled narrow beam at right. The illustration represents beam control.",
+    "alt": "Compare the wider beam at left with the controlled narrow beam at right. The illustration represents beam control."
+  },
+  {
+    "title": "Filtering",
+    "body": "Low-energy X-rays add dose without adding useful image information. Scannex filters them out before they reach the person.\n\nKey takeaway: Filtering removes low-energy X-rays before they reach the person.",
+    "takeaway": "Filtering removes low-energy X-rays before they reach the person.",
+    "image": "images/state-03.png",
+    "caption": "The filtering element lies between the source at left and the vertical detector at right in this conceptual illustration.",
+    "alt": "The filtering element lies between the source at left and the vertical detector at right in this conceptual illustration."
+  },
+  {
+    "title": "Viewer tools",
+    "body": "Brightness, contrast, sharpening, zoom and other viewing tools help the Viewer bring out features of interest without increasing the scan dose.\n\nKey takeaway: Viewer tools change the display of existing data without a new exposure.",
+    "takeaway": "Viewer tools change the display of existing data without a new exposure.",
+    "image": "images/state-04.png",
+    "caption": "The monitor at left represents display tools applied to an existing body image. The full-body chamber remains a separate part of the system.",
+    "alt": "The monitor at left represents display tools applied to an existing body image. The full-body chamber remains a separate part of the system."
+  }
+]

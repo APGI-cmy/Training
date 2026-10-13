@@ -1,0 +1,25 @@
+INTRO
+Quality Assurance and Records. Learning outcome: Explain Scannex system safeguards and segregated roles, apply the supplied scan workflow, respond through authorised support, and maintain quality checks and records. This activity explains quality assurance and records. Select each labelled control, read the complete narrative, enlarge the illustration and review the summary before its knowledge check. Follow the current approved site procedure; these illustrations are conceptual teaching examples. Narration is optional.
+
+SUMMARY
+Quality Assurance and Records. Summary. Check inspection and release status before use. Record the scheduled phantom test and escalate a missing or failed result. Keep the machine logbook complete and accurate. Retain, protect, back up and recover the required records.
+
+STATE-01
+Quality assurance. Under the supplied course protocol: Qualified specialists inspect the equipment before use and at least every three months thereafter. Keep the scanner out of service if a required inspection, repair or release has not been completed. Follow current licence conditions and the approved site schedule.
+
+Key takeaway: Check inspection and release status before use. Why this matters: Check inspection and release status before use. The specialist checks the full-body chamber and records the inspection. Only an authorised specialist performs this work.
+
+STATE-02
+Image testing. Under the supplied course protocol: A test phantom is used every three months to confirm the scanner still shows the required level of detail. Record the result and escalate a failed or missing test. Follow current licence conditions and the approved site schedule.
+
+Key takeaway: Record the scheduled phantom test and escalate a missing or failed result. Why this matters: Record the scheduled phantom test and escalate a missing or failed result. The test object and displayed pattern represent a phantom image-quality check. Use the actual approved phantom and acceptance criteria.
+
+STATE-03
+Machine logbook. Under the supplied course protocol: The machine logbook records the Radiation Protection Officer, test results, maintenance, repairs, staff training and the lockout process. Complete entries promptly and accurately. Follow current licence conditions and the approved site schedule.
+
+Key takeaway: Keep the machine logbook complete and accurate. Why this matters: Keep the machine logbook complete and accurate. The open record book illustrates recording tests, maintenance, repairs, training and lockout promptly.
+
+STATE-04
+Dose and audit records. Under the supplied course protocol: Dose records are retained for ten years, while database records must be backed up and recoverable after an incident. They provide evidence that the system has been operated and reviewed lawfully. Follow current licence conditions and the approved site schedule.
+
+Key takeaway: Retain, protect, back up and recover the required records. Why this matters: Retain, protect, back up and recover the required records. The database, lock, backup and recovery symbols illustrate retaining protected records and recovering them after an incident.

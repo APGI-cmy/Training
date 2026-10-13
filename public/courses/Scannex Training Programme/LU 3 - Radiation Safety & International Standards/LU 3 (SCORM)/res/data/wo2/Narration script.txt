@@ -1,0 +1,31 @@
+INTRO
+Radiation Dose in Context. Learning outcome: Explain how Scannex dose is measured and controlled within the public-protection framework. Radiation dose is best understood in practical, professional language. Select each panel to see the units, limits and comparisons that help an operator explain Scannex calmly and accurately. Narration is optional. Enlarge an image to examine its detail. Review the summary before the knowledge check.
+
+SUMMARY
+Radiation Dose in Context. Summary. Use the specified dose quantity and correct units. Public protection applies to justified Category 2 security screening, and the approved programme may set lower constraints. Follow authorised screening and records. Use verified scan-dose values when making comparisons.
+
+STATE-01
+The unit of dose. Radiation protection uses the sievert. In day-to-day work, dose is normally discussed in millisieverts and microsieverts.
+
+Equivalent and effective dose use the sievert. One sievert is 1,000 millisieverts; one millisievert is 1,000 microsieverts. The approved record specifies the dose quantity being used. Older documents may use rem, an older radiation-dose unit. Recognise it when reading older records, and use the units specified by the current approved programme.
+
+Key takeaway: Use the specified dose quantity and the correct unit. Why this matters: Use the specified dose quantity and the correct unit. The unit reminder distinguishes sievert, millisievert and microsievert. One sievert equals 1,000 millisieverts; one millisievert equals 1,000 microsieverts. A microsievert is a very small unit, which is why it is useful for describing individual low-dose screening events.
+
+STATE-02
+Public protection. People being scanned are protected using the conservative public limit: 1 mSv per year. This includes workers, visitors and others passing through screening.
+
+This is the public effective-dose ceiling in the protection framework for justified Category 2 non-medical security imaging. It is not a target or an allowance for repeated scans. Follow the applicable licence and the approved programme, including any lower dose constraints.
+
+Key takeaway: The public limit is a ceiling; authorised screening constraints may be lower. Why this matters: The public limit is a ceiling; authorised screening constraints may be lower. The diagram links measured, recorded exposure with the public-protection ceiling and the approved process. It does not show a measured scan dose. 
+
+STATE-03
+Radiation workers. Radiation workers are trained, monitored and managed under occupational controls. Their limit is different because exposure is part of their work.
+
+Distinguish occupational exposure from the security scan of a worker. Employment alone does not permit the occupational limit to be used for that person’s screening.
+
+Key takeaway: Being employed does not make a person’s security scan an occupational exposure. Why this matters: Being employed does not make a person’s security scan an occupational exposure. The diagram contrasts occupational monitoring with the approved protection framework. A worker being screened is still subject to the screening controls. This does not reduce the need for discipline: training, monitoring and local licence conditions remain essential.
+
+STATE-04
+Where Scannex sits. Scannex screening is described in this course in microsieverts. Use the verified scan value for the approved equipment, protocol and dose quantity. A comparison with a flight or medical X-ray requires that verified value and a stated reference. Flight exposure varies with route and duration; medical X-ray dose varies with the examination and technique. Do not promise a particular equivalence without that basis.
+
+Key takeaway: Make comparisons only with verified scan values and a stated reference. Why this matters: Make comparisons only with verified scan values and a stated reference. The diagram links an approved scan value to a supported comparison. No specific flight or medical-examination equivalence is asserted. 
