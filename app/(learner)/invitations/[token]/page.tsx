@@ -3,6 +3,7 @@ import Link from "next/link";
 import { acceptInvitation } from "@/server/actions/invitations/accept-invitation";
 import { getCurrentSession, signOut } from "@/server/auth/session";
 import { invitationErrorMessage } from "@/lib/invitations/redemption-feedback";
+import { requireLearnerProfile } from "@/server/auth/learner-onboarding";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,8 @@ export default async function InvitationRedemptionPage({
     const registerHref = `/register?token=${encodeURIComponent(token)}`;
     return <main className="content-band"><div className="content-inner auth-panel"><p className="eyebrow">Course invitation</p><h1>Access your APGI invitation</h1><p>Sign in, or create an account with the email address that received this invitation. Course access is granted only after you accept the invitation.</p>{feedback ? <p className="form-error" role="alert">{feedback}</p> : null}<div className="button-row"><Link className="primary-button" href={signInHref}>Sign in</Link><Link className="secondary-button" href={registerHref}>Create account</Link></div></div></main>;
   }
+
+  await requireLearnerProfile(session);
 
   async function switchAccount() {
     "use server";

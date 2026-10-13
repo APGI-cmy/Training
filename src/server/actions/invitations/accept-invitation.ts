@@ -1,8 +1,10 @@
 "use server";
 
 import { createHash, randomUUID } from "node:crypto";
-import { requireSession } from "@/server/auth/session";
+import { requireSession, type AlpSession } from "@/server/auth/session";
 import { adminRest } from "@/server/supabase/admin-rest";
+import { getPendingCourseInvitations } from "@/server/services/invitations/pending-for-learner";
+import { getCourseBySlug } from "@/lib/courses";
 
 async function recordInvalidAttempt(actorId: string, tokenHash: string, failed: string) {
   await adminRest("/rest/v1/audit_events", {
@@ -34,7 +36,7 @@ async function ensureLearnerRecord(userId: string, email: string | undefined) {
 
   const profile = await adminRest("/rest/v1/profiles?on_conflict=user_id", {
     method: "POST",
-    headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+    headers: { Prefer: "resolution=ignore-duplicates,return=minimal" },
     body: JSON.stringify({ user_id: userId, email: email?.trim().toLowerCase() ?? null })
   });
   return profile.ok;
@@ -50,6 +52,11 @@ export async function acceptInvitation(token: string) {
 
   const rows = (await response.json()) as Array<Record<string, string | null>>;
   const invitation = rows[0];
+  return redeemInvitation(session, invitation, tokenHash);
+}
+
+// Internal only: each public action authenticates before calling this helper.
+async function redeemInvitation(session: AlpSession, invitation: Record<string, string | null> | undefined, tokenHash: string) {
   const now = new Date();
   const invitationEmail = invitation?.recipient_email?.trim().toLowerCase();
   const sessionEmail = session.user.email?.trim().toLowerCase();
@@ -145,4 +152,22 @@ export async function acceptInvitation(token: string) {
   if (!enrolmentEvent.ok) return { ok: false, error: "enrolment_audit_failed" };
 
   return { ok: true, courseId };
+}
+
+export async function acceptPendingInvitations() {
+  const session = await requireSession();
+  if (!session.user.email_confirmed_at) return { ok: false, error: "email_unconfirmed" };
+  try {
+    const invitations = await getPendingCourseInvitations(session);
+    const courseIds: string[] = [];
+    for (const invitation of invitations) {
+      if (!getCourseBySlug(invitation.course_id)) return { ok: false, error: "course_unavailable" };
+      const result = await redeemInvitation(session, invitation, "");
+      if (!result.ok || !result.courseId) return { ok: false, error: result.error ?? "redemption_failed" };
+      courseIds.push(result.courseId);
+    }
+    return { ok: true, courseIds };
+  } catch {
+    return { ok: false, error: "invitation_lookup_failed" };
+  }
 }

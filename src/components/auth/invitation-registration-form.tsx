@@ -12,7 +12,7 @@ export function InvitationRegistrationForm({ token }: { token: string }) {
   if (state.continueUrl) {
     return <section className="state-card">
       <p className="feedback feedback-correct" role="status">{state.message}</p>
-      <Link className="primary-button" href={state.continueUrl}>Continue to sign in and accept invitation</Link>
+      <Link className="primary-button" href={state.continueUrl}>Sign in and complete your profile</Link>
     </section>;
   }
 
@@ -23,5 +23,6 @@ export function InvitationRegistrationForm({ token }: { token: string }) {
     {state.error ? <p className="feedback feedback-review" role="alert">{state.error}</p> : null}
     {state.message ? <p className="feedback feedback-correct" role="status">{state.message}</p> : null}
     <button className="primary-button" type="submit" disabled={pending}>{pending ? "Creating account…" : "Create APGI account"}</button>
+    <Link href={`/alp-sign-in?next=${encodeURIComponent(`/invitations/${token}`)}`}>Already have an account? Sign in</Link>
   </form>;
 }
