@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/server/auth/session";
 import { upsertProfile } from "@/server/services/profiles";
+import { redirect } from "next/navigation";
+import { acceptPendingInvitations } from "@/server/actions/invitations/accept-invitation";
 
 export type ProfileActionState = {
   error?: string;
@@ -39,5 +41,14 @@ export async function updateProfileAction(
   }
 
   revalidatePath("/profile");
+  if (formData.get("complete_onboarding") === "true") {
+    const accepted = await acceptPendingInvitations();
+    if (!accepted.ok) return { error: accepted.error === "email_unconfirmed"
+      ? "Your profile is saved. Confirm your email address before accepting your course invitation."
+      : "Your profile is saved, but your course invitation could not be accepted. Please try saving again or contact your training administrator." };
+    revalidatePath("/dashboard");
+    revalidatePath("/catalogue");
+    redirect("/dashboard?welcome=1");
+  }
   return { success: "Profile saved." };
 }

@@ -6,6 +6,7 @@ import { requireSession } from "@/server/auth/session";
 import { getCourseCommerceSettings } from "@/server/services/commerce/get-course-commerce";
 import { getAvailableCourseIds } from "@/server/services/organisations/get-organisations";
 import { CourseCardCover } from "@/components/course/CourseCardCover";
+import { requireLearnerProfile } from "@/server/auth/learner-onboarding";
 
 export const metadata = {
   title: "Course catalogue"
@@ -42,6 +43,7 @@ export function getMyLearningEntries(entries: CourseEntry[]) {
 
 export default async function CataloguePage({ searchParams }: CatalogueProps) {
   const session = await requireSession();
+  await requireLearnerProfile(session);
   const { view } = (await searchParams) ?? {};
   const courses = getCourses();
   const commerce = await getCourseCommerceSettings(courses.map((course) => course.slug));

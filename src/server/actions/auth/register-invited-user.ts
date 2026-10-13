@@ -2,28 +2,13 @@
 
 import { createHash } from "node:crypto";
 import { adminRest } from "@/server/supabase/admin-rest";
+import { claimAuthEmailBudget } from "@/server/services/auth-email-budget";
+import { sendAccountConfirmationEmail } from "@/server/services/email/send-account-confirmation";
 
 export type InvitationRegistrationState = { ok?: boolean; error?: string; message?: string; continueUrl?: string };
 
-function getPublicAuthConfig() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim().replace(/\/$/, "");
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
-  if (!url || !anonKey) return null;
-  return { url, anonKey };
-}
-
 function getInvitationSignInPath(token: string) {
   return `/alp-sign-in?next=${encodeURIComponent(`/invitations/${token}`)}`;
-}
-
-function getInvitationReturnUrl(token: string) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
-  if (!appUrl) return null;
-  try {
-    return new URL(getInvitationSignInPath(token), appUrl).toString();
-  } catch {
-    return null;
-  }
 }
 
 export async function registerInvitedUser(_previousState: InvitationRegistrationState, formData: FormData): Promise<InvitationRegistrationState> {
@@ -31,7 +16,7 @@ export async function registerInvitedUser(_previousState: InvitationRegistration
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
 
-  if (!token || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 12) {
+  if (!token || token.length > 512 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || password.length < 12 || password.length > 256) {
     return { error: "Enter the invited email address and a password of at least 12 characters." };
   }
 
@@ -41,28 +26,29 @@ export async function registerInvitedUser(_previousState: InvitationRegistration
 
   const invitation = ((await invitationResponse.json()) as Array<{ recipient_email?: string; expires_at?: string; revoked_at?: string | null; redeemed_at?: string | null; status?: string }>)[0];
   const invitationEmail = invitation?.recipient_email?.trim().toLowerCase();
-  if (!invitationEmail || invitationEmail !== email || invitation.revoked_at || invitation.redeemed_at || invitation.status === "revoked" || (invitation.expires_at && new Date(invitation.expires_at) <= new Date())) {
+  if (!invitationEmail || invitationEmail !== email || invitation.revoked_at || invitation.redeemed_at || !["pending", "sent"].includes(invitation.status ?? "") || !invitation.expires_at || !(new Date(invitation.expires_at).getTime() > Date.now())) {
     return { error: "This invitation cannot be used. Request a new invitation from APGI." };
   }
 
-  const auth = getPublicAuthConfig();
-  const emailRedirectTo = getInvitationReturnUrl(token);
-  if (!auth || !emailRedirectTo) return { error: "Account registration is not configured yet. Contact APGI support." };
-
-  const response = await fetch(`${auth.url}/auth/v1/signup`, {
-    method: "POST",
-    headers: { apikey: auth.anonKey, "content-type": "application/json" },
-    body: JSON.stringify({ email, password, options: { emailRedirectTo } }),
-    cache: "no-store"
-  });
-  if (!response.ok) {
-    // Keep the response generic so this page cannot be used to enumerate accounts.
-    return { error: "We could not complete registration. If you already have an account, sign in using the invitation link instead." };
+  try {
+    if (!(await claimAuthEmailBudget("signup", email))) return { error: "Please wait before requesting another account confirmation. You can sign in if you already have an account." };
+    // Generate the signup confirmation through the auth provider, then deliver it
+    // using the same production email service as course invitations.
+    const generated = await adminRest("/auth/v1/admin/generate_link", {
+      method: "POST", body: JSON.stringify({ type: "signup", email, password })
+    });
+    if (!generated.ok) return { error: "We could not complete registration. If you already have an account, sign in using the invitation link instead." };
+    const payload = await generated.json() as { hashed_token?: string };
+    if (!payload.hashed_token || !(await sendAccountConfirmationEmail(email, payload.hashed_token))) {
+      return { error: "Your account confirmation email could not be sent. Please contact your training administrator, or use Forgot password if your account was created." };
+    }
+  } catch {
+    return { error: "Account registration is temporarily unavailable. Please contact your training administrator." };
   }
 
   return {
     ok: true,
-    message: "Your account has been created. Confirm your email if asked, then sign in to accept your course invitation.",
+    message: "Check your email for ‘Confirm your APGI Training account’. Open it and confirm your email to go straight to your profile. After saving your profile, your enrolled course will appear on your dashboard.",
     continueUrl: getInvitationSignInPath(token)
   };
 }

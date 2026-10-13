@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { getPortalEntryDestination } from "@/lib/auth/post-sign-in-destination";
 import { getCurrentSession, getUserRoles, signInWithPassword, signOut } from "@/server/auth/session";
+import { requireLearnerProfile } from "@/server/auth/learner-onboarding";
 
 export type SignInState = {
   error?: string;
@@ -35,6 +36,7 @@ export async function signInAction(_state: SignInState, formData: FormData): Pro
   }
 
   const roles = await getUserRoles(session.accessToken);
+  await requireLearnerProfile(session, roles);
   redirect(returnTo ?? getPortalEntryDestination(roles));
 }
 

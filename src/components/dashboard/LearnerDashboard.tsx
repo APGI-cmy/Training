@@ -12,8 +12,7 @@ export function LearnerDashboard({ dashboard }: { dashboard: LearnerDashboardMod
             <p className="eyebrow">Learner dashboard</p>
             <h1>Your APGI learning dashboard</h1>
             <p>
-              Continue approved learning pathways, review saved course progress, and open the W3
-              progress-enabled learner course shell.
+              Your enrolled courses and saved progress are shown below. Select a course to start or continue learning.
             </p>
           </div>
           <ProgressIndicator
@@ -27,11 +26,12 @@ export function LearnerDashboard({ dashboard }: { dashboard: LearnerDashboardMod
         <div className="content-inner">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Assigned courses</p>
-              <h2>Available learning pathways</h2>
+              <p className="eyebrow">Your learning</p>
+              <h2>Your enrolled courses</h2>
             </div>
           </div>
           <div className="card-grid">
+            {dashboard.courses.length === 0 ? <p>You have no enrolled courses yet. If you are expecting a course invitation, contact your training administrator.</p> : null}
             {dashboard.courses.map((course) => (
               <article className="course-card course-card--visual" key={course.id}>
                 <CourseCardCover courseSlug={course.slug} />

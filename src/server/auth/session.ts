@@ -9,6 +9,7 @@ const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 8;
 type AlpAuthUser = {
   id: string;
   email?: string;
+  email_confirmed_at?: string | null;
 };
 
 export type AlpSession = {
@@ -92,6 +93,15 @@ export async function signInWithPassword(email: string, password: string) {
     };
   }
 
+  await storeVerifiedSession(payload);
+  return { ok: true };
+}
+
+// Internal server helper. Only call with a successful auth-provider response,
+// never with a session/user object submitted by the browser.
+export async function storeVerifiedSession(payload: SupabaseTokenResponse) {
+  if (!payload.access_token || !payload.user?.id) throw new Error("INVALID_VERIFIED_SESSION");
+
   const cookieStore = await cookies();
   const cookieOptions = {
     httpOnly: true,
@@ -105,11 +115,12 @@ export async function signInWithPassword(email: string, password: string) {
 
   if (payload.refresh_token) {
     cookieStore.set(REFRESH_COOKIE, payload.refresh_token, cookieOptions);
+  } else {
+    cookieStore.delete(REFRESH_COOKIE);
   }
 
   cookieStore.set(USER_COOKIE, payload.user.id, cookieOptions);
 
-  return { ok: true };
 }
 
 export async function signOut() {
@@ -153,7 +164,8 @@ export async function getCurrentSession(): Promise<AlpSession | null> {
     refreshToken,
     user: {
       id: user.id ?? userId,
-      email: user.email
+      email: user.email,
+      email_confirmed_at: user.email_confirmed_at
     }
   };
 }

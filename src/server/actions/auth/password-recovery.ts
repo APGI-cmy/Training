@@ -1,12 +1,12 @@
 "use server";
 
-import { createHmac } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getSupabaseRestUrl, signOut } from "@/server/auth/session";
 import { adminRest } from "@/server/supabase/admin-rest";
 import { sendPasswordRecoveryEmail } from "@/server/services/email/send-password-recovery";
 import { safeRecoveryNext } from "@/lib/auth/safe-recovery-next";
+import { claimAuthEmailBudget } from "@/server/services/auth-email-budget";
 
 export type PasswordRecoveryState = { error?: string; message?: string };
 const RECOVERY_COOKIE = "alp_recovery_token";
@@ -20,14 +20,7 @@ export async function requestPasswordRecovery(_state: PasswordRecoveryState, for
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceKey) return { error: "Password recovery is temporarily unavailable. Please contact APGI support." };
   try {
-    for (const [key, limit] of [[`email:${email}`, 3], ["global", 100]] as const) {
-      const opaqueKey = createHmac("sha256", serviceKey).update(key).digest("hex");
-      const budget = await adminRest("/rest/v1/rpc/claim_password_recovery_budget", {
-        method: "POST", body: JSON.stringify({ p_key: opaqueKey, p_limit: limit })
-      });
-      if (!budget.ok) throw new Error("RECOVERY_LIMIT_UNAVAILABLE");
-      if ((await budget.json()) !== true) return { message: GENERIC_MESSAGE };
-    }
+    if (!(await claimAuthEmailBudget("recovery", email))) return { message: GENERIC_MESSAGE };
     const generated = await adminRest("/auth/v1/admin/generate_link", {
       method: "POST", body: JSON.stringify({ type: "recovery", email })
     });

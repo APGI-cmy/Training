@@ -5,10 +5,10 @@ const nextConfig: NextConfig = {
     root: process.cwd()
   },
   async headers() {
-    return [{ source: "/reset-password", headers: [
+    return ["/reset-password", "/confirm-account"].map(source => ({ source, headers: [
       { key: "Referrer-Policy", value: "no-referrer" },
       { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" }
-    ] }];
+    ] }));
   },
   async redirects() {
     return [
