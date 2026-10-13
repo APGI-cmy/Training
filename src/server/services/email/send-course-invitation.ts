@@ -63,8 +63,8 @@ export async function sendCourseInvitationEmail(input: InvitationEmailInput): Pr
         from,
         to: [input.recipientEmail],
         subject: `Your APGI course invitation: ${input.courseTitle}`,
-        html: `<p>You have been invited to enrol in <strong>${courseTitle}</strong>.</p><p><a href="${invitationUrl}">Accept your course invitation</a></p><p>This single-use link expires ${escapeHtml(expiry)}. You must sign in or create an APGI account using this email address.</p><p>If you were not expecting this invitation, you can ignore this email.</p>`,
-        text: `You have been invited to enrol in ${input.courseTitle}. Accept your course invitation: ${invitationUrl}\n\nThis single-use link expires ${expiry}. You must sign in or create an APGI account using this email address.`
+        html: `<p>You have been invited to enrol in <strong>${courseTitle}</strong>.</p><p><a href="${invitationUrl}">Open your course invitation</a></p><p>This link expires ${escapeHtml(expiry)}. Sign in or create an APGI account using this email address, then complete and save your learner profile. Your invited course will appear on your dashboard automatically; no separate acceptance or approval is needed.</p><p>If you were not expecting this invitation, you can ignore this email.</p>`,
+        text: `You have been invited to enrol in ${input.courseTitle}. Open your course invitation: ${invitationUrl}\n\nThis link expires ${expiry}. Sign in or create an APGI account using this email address, then complete and save your learner profile. Your invited course will appear on your dashboard automatically; no separate acceptance or approval is needed.`
       }),
       cache: "no-store"
     });

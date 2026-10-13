@@ -18,7 +18,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
     getPendingCourseInvitations(session).catch(() => [])
   ]);
   const completingOnboarding = onboarding === "invitation" || onboarding === "required"
-    || (!isStaffAccount(roles) && !isLearnerProfileComplete(profile));
+    || (!isStaffAccount(roles) && (!isLearnerProfileComplete(profile) || pendingInvitations.length > 0));
 
   return (
     <main>
@@ -39,9 +39,9 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
           <section className="profile-panel">
             <h2>Profile</h2>
             {completingOnboarding && pendingInvitations.length > 0 ? <div className="state-card">
-              <p><strong>Your course invitations</strong></p>
+              <p><strong>Your invited courses</strong></p>
               <ul>{pendingInvitations.map(invitation => <li key={invitation.id}>{getCourseBySlug(invitation.course_id)?.title ?? "APGI course"}</li>)}</ul>
-              <p>Saving your profile will also accept these valid invitations issued to your account email.</p>
+              <p>Save your profile to make these courses available immediately on your dashboard. No separate acceptance or approval is needed.</p>
             </div> : null}
             <ProfileForm profile={profile} onboarding={completingOnboarding} />
           </section>

@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({ session: vi.fn(), rest: vi.fn() }));
+const mocks = vi.hoisted(() => ({ session: vi.fn(), rest: vi.fn(), profile: vi.fn() }));
 vi.mock("@/server/auth/session", () => ({ requireSession: mocks.session }));
 vi.mock("@/server/supabase/admin-rest", () => ({ adminRest: mocks.rest }));
+vi.mock("@/server/services/profiles", () => ({ getProfile: mocks.profile }));
 import { getPendingCourseInvitations } from "@/server/services/invitations/pending-for-learner";
 import { acceptPendingInvitations } from "@/server/actions/invitations/accept-invitation";
 
@@ -10,7 +11,12 @@ const session = { accessToken: "learner-token", user: { id: "actual-learner", em
 const invitation = { id: "own-invitation", recipient_email: "learner@example.invalid", course_id: "scannex-training-programme", organisation_id: "organisation", expires_at: "2099-01-01T00:00:00Z", revoked_at: null, redeemed_at: null, status: "sent" };
 
 describe("Verified mailbox invitation acceptance during onboarding", () => {
-  beforeEach(() => { vi.resetAllMocks(); mocks.session.mockResolvedValue(session); });
+  beforeEach(() => { vi.resetAllMocks(); mocks.session.mockResolvedValue(session); mocks.profile.mockResolvedValue({ certificate_name: "Learner Test" }); });
+  it("does not let a direct action call grant a course before the profile is saved", async () => {
+    mocks.profile.mockResolvedValue(null);
+    expect(await acceptPendingInvitations()).toEqual({ ok: false, error: "profile_required" });
+    expect(mocks.rest).not.toHaveBeenCalled();
+  });
   it("requires authentication before querying or granting anything", async () => {
     mocks.session.mockRejectedValue(new Error("UNAUTHENTICATED"));
     await expect(acceptPendingInvitations()).rejects.toThrow("UNAUTHENTICATED");

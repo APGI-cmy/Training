@@ -10,12 +10,12 @@ Scope: administrator-issued course invitations and manual allocation, Scannex co
 - Shared database rate limits cap recovery requests at three per email per hour and 100 across the platform per hour. Only opaque HMAC identifiers are stored. Browser roles cannot access this table/function.
 - Direct browser execution of the audit-writing RPC is revoked. Trusted server code and existing postgres-owned profile/file triggers retain their access.
 - New learners must complete their profile before opening Dashboard, Catalogue or a learning unit. Staff routes remain available. Profile completion uses the existing required certificate-name field.
-- Saving the onboarding profile explicitly accepts valid, unexpired course invitations addressed to the learner's authenticated, verified email. The page lists those invitations before saving. Recipient/status/expiry checks are repeated on the server, and existing saved profile details are preserved during enrolment.
+- Saving any learner profile automatically enrols valid, unexpired course invitations addressed to the learner's authenticated, verified email. The page lists those courses before saving, including when the profile was completed earlier. Enrolment no longer depends on a hidden onboarding field, and the separate acceptance screen is removed. Recipient/status/expiry checks are repeated on the server, and existing saved profile details are preserved during enrolment.
 - Signup confirmation emails use the established Resend delivery service rather than Supabase's built-in mailer. The single-use confirmation is verified after an explicit button click, establishes the provider-authenticated session, and directs the learner to Profile. Signup and recovery have separate shared email rate limits. No email-verification requirement has been disabled.
 
 ## Checks completed
 
-- 78/78 focused regression cases passed: invitation authorization, mismatched-account denial, readable feedback, SCORM persistence boundaries, Viewer eligibility/session behavior, recovery rate limiting, invalid/reused recovery links, password confirmation, missing recovery authentication, token confidentiality, return-path validation, profile-first routing, save-before-enrolment ordering, verified-recipient invitation acceptance, signup confirmation delivery and confirmation-to-Profile routing. Run `npm run test:learner-release`.
+- 91/91 focused regression cases passed: invitation authorization, mismatched-account denial, readable feedback, SCORM persistence boundaries, Viewer eligibility/session behavior, recovery rate limiting, invalid/reused recovery links, password confirmation, missing recovery authentication, token confidentiality, return-path validation, profile-first routing, save-before-enrolment ordering, verified-recipient invitation acceptance, signup confirmation delivery and confirmation-to-Profile routing. Run `npm run test:learner-release`.
 - TypeScript check and optimized production build passed.
 - Media validation confirmed 74 MP4 files are actual media objects.
 - Live course checks passed for eight compiled LU entries, eight introduction videos and 61 web-object URLs on training-platform-kappa.vercel.app.
@@ -26,7 +26,7 @@ Scope: administrator-issued course invitations and manual allocation, Scannex co
 
 ## Release gates still pending
 
-1. User saves their profile in the published onboarding flow; confirm invitation redemption, course enrolment and the course card on Dashboard.
+1. Completed: live Profile save redeemed the matching invitation, created the learner enrolment, and displayed Scannex on Dashboard. The ordinary Profile save regression and read-only invitation-link routing are covered by the current 91 tests.
 2. Verify saved learner progress after leaving/reopening a learning unit. The new signup-confirmation route has regression coverage; an additional fresh-account human signup/email test has not yet been performed after replacing the built-in mailer.
 3. Confirm the published fixes on the final production commit/deployment and record that identity before issuing the final release seal.
 
