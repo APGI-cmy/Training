@@ -6,7 +6,7 @@ import type { AlpProfile } from "@/server/services/profiles";
 
 const initialState: ProfileActionState = {};
 
-export function ProfileForm({ profile, onboarding = false }: { profile: AlpProfile | null; onboarding?: boolean }) {
+export function ProfileForm({ profile, onboarding = false, administratorInvitation = false }: { profile: AlpProfile | null; onboarding?: boolean; administratorInvitation?: boolean }) {
   const [state, formAction, pending] = useActionState(updateProfileAction, initialState);
 
   return (
@@ -37,7 +37,7 @@ export function ProfileForm({ profile, onboarding = false }: { profile: AlpProfi
         <p className="feedback feedback-correct">{state.success}</p>
       </> : null}
       <button className="primary-button" type="submit" disabled={pending}>
-        {pending ? "Saving..." : onboarding ? "Save profile and open dashboard" : "Save profile"}
+        {pending ? "Saving..." : onboarding ? administratorInvitation ? "Save profile and open Administration" : "Save profile and open dashboard" : "Save profile"}
       </button>
     </form>
   );

@@ -44,7 +44,7 @@ export async function updateProfileAction(
   revalidatePath("/profile");
   // Enrolment is a server decision, not a hidden field supplied by one form.
   // A regular Profile save must finish onboarding too.
-  if (!isStaffAccount(await getUserRoles(session.accessToken))) {
+  if (!isStaffAccount(await getUserRoles(session.accessToken)) || formData.get("complete_onboarding") === "true") {
     const accepted = await acceptPendingInvitations();
     if (!accepted.ok) return { error: accepted.error === "email_unconfirmed"
       ? "Your profile is saved. Confirm your email address to open your invited course."

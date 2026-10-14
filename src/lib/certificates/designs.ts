@@ -27,7 +27,7 @@ export function frame(s: CertificateSnapshot): Decoration[] {
     case "minimal": return [{x:82,y:35,w:680,h:3,color:a},{x:82,y:540,w:680,h:1,color:p}];
     case "heritage": return [border,...[28,794].flatMap(x=>[28,543].map(y=>({x,y,w:20,h:20,color:a,radius:10}))),{x:40,y:40,w:762,h:515,color:a,stroke:true}];
     case "geometric": return [border,{x:24,y:24,w:80,h:15,color:b},{x:24,y:24,w:15,h:90,color:b},{x:738,y:556,w:80,h:15,color:a},{x:803,y:481,w:15,h:90,color:a}];
-    case "academy": return [{x:20,y:20,w:802,h:555,color:p,stroke:true},{x:29,y:29,w:784,h:537,color:a,stroke:true},{x:100,y:397,w:76,h:76,color:a,radius:38}];
+    case "academy": return [{x:20,y:20,w:802,h:547,color:p,stroke:true},{x:29,y:29,w:784,h:529,color:a,stroke:true},{x:100,y:397,w:76,h:76,color:a,radius:38}];
     case "prestige": return [border,{x:29,y:29,w:784,h:537,color:a,stroke:true},{x:34,y:34,w:774,h:527,color:p,stroke:true},{x:108,y:405,w:60,h:60,color:a,radius:30}];
     case "horizon": return [{x:0,y:546,w:842,h:49,color:p},{x:0,y:535,w:842,h:6,color:b},{x:60,y:530,w:722,h:2,color:a}];
   }
