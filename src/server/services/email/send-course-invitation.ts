@@ -36,10 +36,12 @@ function getAppUrl() {
 }
 
 export function isInvitationDeliveryConfigured() {
+  if (process.env.ALP_ENVIRONMENT === "v2-staging") return false;
   return Boolean(process.env.RESEND_API_KEY?.trim() && process.env.EMAIL_FROM?.trim() && getAppUrl());
 }
 
 export async function sendCourseInvitationEmail(input: InvitationEmailInput): Promise<InvitationEmailResult> {
+  if (process.env.ALP_ENVIRONMENT === "v2-staging") return { ok: false, error: "EMAIL_NOT_CONFIGURED" };
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.EMAIL_FROM?.trim();
   const appUrl = getAppUrl();

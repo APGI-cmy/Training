@@ -1,11 +1,11 @@
 {
   "name": "apgi-training-platform",
-  "version": "1.0.0",
+  "version": "2.0.0-dev.0",
   "private": true,
   "description": "Next.js learning platform for APGI VPSHR training content.",
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/verify-course-media.mjs",
+    "prebuild": "node --experimental-strip-types scripts/verify-environment-isolation.mjs && node scripts/verify-course-media.mjs",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",

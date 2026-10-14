@@ -33,6 +33,7 @@ function parseSessionTtl(value: string | undefined) {
 export function getViewerLabConfig(
   source: Record<string, string | undefined> = process.env
 ): ViewerLabConfig | null {
+  if (source.ALP_ENVIRONMENT === "v2-staging") return null;
   const enabled = parseEnabled(source.SCANNEX_VIEWER_LAB_ENABLED);
   const region = source.SCANNEX_VIEWER_LAB_REGION?.trim();
   const stackName = source.SCANNEX_VIEWER_LAB_STACK_NAME?.trim();

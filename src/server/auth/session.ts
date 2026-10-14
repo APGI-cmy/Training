@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { assertStagingIsolation } from "@/server/environment-isolation";
 
 const ACCESS_COOKIE = "alp_access_token";
 const REFRESH_COOKIE = "alp_refresh_token";
@@ -33,6 +34,7 @@ type SupabaseTokenResponse = {
 };
 
 function getSupabasePublicConfig() {
+  assertStagingIsolation();
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 

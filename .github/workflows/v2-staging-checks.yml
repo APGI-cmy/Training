@@ -1,0 +1,34 @@
+name: Version 2 staging checks
+on:
+  push:
+    branches: [v2-development]
+  pull_request:
+    branches: [v2-development]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      # Build fixtures only. No working database, mail, payment or AWS secrets.
+      ALP_ENVIRONMENT: v2-staging
+      ALP_STAGING_DATABASE_REF: eaaqgtdpvbxdgjxphjie
+      NEXT_PUBLIC_SUPABASE_URL: https://eaaqgtdpvbxdgjxphjie.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_ci_fixture
+      SUPABASE_SERVICE_ROLE_KEY: sb_secret_ci_fixture
+      NEXT_PUBLIC_APP_URL: https://training-platform-v2-staging.vercel.app
+      ALP_EMAIL_MODE: disabled
+      ALP_PAYMENTS_MODE: disabled
+      SCANNEX_VIEWER_LAB_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run test:learner-release
+      - run: npm run build

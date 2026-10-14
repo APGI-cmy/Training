@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { safeRecoveryNext } from "@/lib/auth/safe-recovery-next";
 
 export async function sendPasswordRecoveryEmail(email: string, tokenHash: string, next: string): Promise<boolean> {
+  if (process.env.ALP_ENVIRONMENT === "v2-staging") return false;
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.EMAIL_FROM?.trim();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
