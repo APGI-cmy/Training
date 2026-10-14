@@ -6,7 +6,7 @@ This development release runs only at https://training-platform-v2-staging.verce
 
 Johan's separately created, verified staging account is `johan.ras@apginc.ca`. Its administrator role was assigned only in the isolated database. Its password is entered privately by Johan and is not copied from Version 1.
 
-Open Administration after signing in. The hosting project's existing Vercel sign-in protection remains enabled.
+Open Administration after signing in. The user approved removing the extra Vercel sign-in gate on 14 October 2026. Platform sign-in and administrator authority remain required for all administration pages and actions.
 
 ## Invitations and groups
 
@@ -14,7 +14,7 @@ Open Administration after signing in. The hosting project's existing Vercel sign
 - Only a current administrator can create administrator invitations. Redemption rechecks the inviter's authority, expiry, revocation, exact verified email and Profile. The database grants the role transactionally and records an audit event.
 - Create named groups on Invitations. An ungrouped enrolment is displayed as **Individual learner (no group)**. Groups belong to an organisation and cannot be assigned across organisations.
 - Bulk imports accept `group_name` and a default group. Create the named group first; an explicit row name overrides the default. Administrator invitations must be made individually, not by bulk import.
-- Staging creates private invitation links and does not send email. For new accounts, confirmation and reset links are captured in **Test messages**, accessible only to signed-in administrators. Use each link with its matching fictional test account. Passwords are never stored in this message table. Auth-provider expiry and single-use rules still apply.
+- V2 now emails invitations and account confirmation/reset links using a dedicated, domain-scoped sending-only credential. Messages explicitly identify the V2 test environment and link only to its canonical address. Use **Send invitation email / Resend email** on an active invitation to deliver an earlier unsent invitation. Resending rotates its token, invalidates older links and is throttled for one minute. Signup still verifies the exact invited mailbox before Profile can activate the stored role. **Test messages** contains only earlier email-disabled captures; new emailed Auth links are not copied there. Fictional .invalid addresses cannot receive real mail.
 
 ## Notifications and progress
 
@@ -22,7 +22,7 @@ The inviter receives an in-app notification when a verified learner saves Profil
 
 Learners displays per-course unit completion bars, completion counts, group assignment and latest saved activity. Scannex progress counts its eight required learning units; its summative assessment remains separate. A 100% learning bar does not by itself authorize certification. Failed progress reads display unavailable rather than an invented completion percentage.
 
-No enrolment notification email is sent from staging. Enabling a future real email delivery channel requires a release plan; it is not part of this isolated test deployment.
+Enrolment notifications remain in-app. The enabled email channel is limited to invitations, confirmation and password recovery.
 
 ## Certificates
 
@@ -34,11 +34,11 @@ Scannex eligibility requires a verified learner, active enrolment, certificate n
 
 VPSHR Level 0 currently requires its configured introduction plus twelve learning units. Each course has explicit database completion requirements; an unknown course cannot self-issue a certificate.
 
-Every certificate has a unique number, immutable signed record, QR code and verification address. A server-held HMAC key authenticates the record including the number, learner, course, organisation, date and branding snapshot. Verification reveals the certificate identity and validity, not private account emails, user IDs or marks. PDF downloads are restricted to the owner or an administrator. This is register-based authentication, not an X.509 digital signature on the PDF. Staging certificates carry a conspicuous TEST label and are not valid qualifications. The staging verification page remains behind the project's Vercel protection.
+Every certificate has a unique number, immutable signed record, QR code and verification address. A server-held HMAC key authenticates the record including the number, learner, course, organisation, date and branding snapshot. Verification reveals the certificate identity and validity, not private account emails, user IDs or marks. PDF downloads are restricted to the owner or an administrator. This is register-based authentication, not an X.509 digital signature on the PDF. Staging certificates carry a conspicuous TEST label and are not valid qualifications. The minimal certificate verification page is publicly reachable; certificate PDF downloads still require the owner or an administrator.
 
 ## Verification on 14 October 2026
 
-- 125 release and feature tests passed; 51 established regression tests passed; TypeScript checking and the complete application build passed. Invitation tests explicitly select their mocked delivery environment so inherited CI staging variables cannot create false failures; a dedicated test verifies no email service call in staging.
+- 146 release and feature tests passed; 51 established regression tests passed; TypeScript checking and the complete application build passed. Invitation tests explicitly select their mocked delivery environment so inherited CI staging variables cannot create false failures; dedicated tests verify disabled mode, explicitly enabled V2 mail, resend authority, token rotation and provider acceptance/auditing.
 - Seven guarded integration cases passed against the isolated database: profile gate, learner enrolment/group/notification, wrong-mailbox rejection, administrator grant/idempotence, all-unit requirement, assessor gate and one numbered authenticated PDF after fictional assessor approval.
 - An additional real integration case passed: invited account creation, privately captured confirmation, actual provider email verification, captured password recovery with a safe return address, and denial of privileged message/role/certificate operations to anonymous and ordinary authenticated clients.
 - All ten certificate PDFs were generated and rendered for visual review. Font embedding supports the tested accented and Cyrillic names. The final design review corrected border and footer overlaps.
@@ -51,4 +51,8 @@ Opt-in database integration tests require ignored staging credentials and the is
 
 All four feature migrations have been applied only to `eaaqgtdpvbxdgjxphjie`. Build and runtime safeguards reject the Version 1 hosting project, database or live email/payment/Viewer credentials. Development stays on `v2-development`; do not merge these changes or the Supabase branch into production.
 
-A future learner release requires review of completion criteria, real notification delivery, public certificate verification, existing enrolment/progress preservation and rollback. This test release does not change officially enrolled learners' access or courses.
+A future learner release requires review of completion criteria, notification preferences, existing enrolment/progress preservation and rollback. This test release does not change officially enrolled learners' access or courses.
+
+## Email correction - 14 October 2026
+
+The user explicitly requested real invitation email delivery after creating an administrator invitation in V2, and approved platform-only sign-in instead of the extra Vercel gate. The provider credential was created as a separate sending-only key restricted to the verified apginc.ca domain; the V1 credential was not copied into staging or modified. No database schema or production changes are part of this correction. Only the specifically requested pending invitation is sent during verification. Provider acceptance and subsequent delivery are recorded separately; acceptance alone does not prove inbox arrival.

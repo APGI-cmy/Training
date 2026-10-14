@@ -8,7 +8,7 @@ import { registerInvitedUser } from '@/server/actions/auth/register-invited-user
 import { sendPasswordRecoveryEmail } from '@/server/services/email/send-password-recovery';
 beforeAll(() => {
   const mode=process.env.NODE_ENV; vi.stubEnv('NODE_ENV','development');
-  nextEnv.loadEnvConfig(process.cwd(),true); vi.stubEnv('NODE_ENV',mode); assertStagingIsolation();
+  nextEnv.loadEnvConfig(process.cwd(),true); vi.stubEnv('NODE_ENV',mode); vi.stubEnv('ALP_EMAIL_MODE','disabled'); assertStagingIsolation();
 });
 describe('Version 2 private signup messages', () => {
   it('registers and confirms an invited fictional account without sending email',async () => {

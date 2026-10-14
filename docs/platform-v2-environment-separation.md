@@ -12,11 +12,11 @@ Version 2 development uses a separate checkout, hosting project and database. Ve
 | Vercel project | `prj_ORt9BeL7D469cnEOZs04cyHD5s5y` | `prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf` |
 | Supabase project | `ooujszdvncwijbuzpjfp` | `eaaqgtdpvbxdgjxphjie` |
 | Supabase branch | Production | `v2-staging`, persistent |
-| Email | Existing live service | Disabled |
+| Email | Existing live service | Separate, domain-scoped sending credential; invitation and account emails enabled |
 | Payments | Manual enrolment release | Disabled |
 | AWS Viewer | Existing live fleet and role | Disconnected |
 
-The test website requires Vercel sign-in. Platform accounts remain separate: a live password or administrator session does not grant a staging account. Test accounts must be created separately. A page banner identifies Version 2, and all pages request exclusion from search indexing.
+On 14 October 2026 the user approved removing V2's additional Vercel sign-in gate so invited administrators can open their emails without a Vercel account. Protected administrator and learner pages still require platform sign-in and role/enrolment checks. Platform accounts remain separate: a live password or administrator session does not grant a staging account. Test accounts must be created separately. A page banner identifies Version 2, and all pages request exclusion from search indexing.
 
 ## Work locations
 
@@ -32,7 +32,7 @@ Before creating test accounts, verified counts were zero Auth users, learners, e
 
 ## Safeguards and verification
 
-Build and server startup reject the live database endpoint, wrong hosting project, live application address, mismatched legacy keys and connected email, payment or AWS credentials. Database requests repeat the isolation check. Staging email methods return without contacting a provider. Viewer configuration is unavailable even if settings are accidentally inherited.
+Build and server startup reject the live database endpoint, wrong hosting project, live application address, mismatched legacy keys and connected production email, payment or AWS credentials. Database requests repeat the isolation check. Transactional mail is permitted only with ALP_EMAIL_MODE=transactional, STAGING_EMAIL_SCOPE=apgi-v2-invitations, a dedicated STAGING_RESEND_API_KEY and a verified STAGING_EMAIL_FROM at apginc.ca. Production RESEND_API_KEY and EMAIL_FROM remain forbidden. All mail is labelled [APGI V2 TEST] and links only to the canonical V2 origin. Email-disabled capture mode is retained for fictional integration QA. Viewer configuration is unavailable even if settings are accidentally inherited.
 
 Local checks passed: 105 release and isolation tests, 51 established regression tests, TypeScript checking and a complete Next.js build. All 74 MP4 objects remain actual media. Anonymous requests cannot read invitations. Privileged REST and Auth requests use the new database's credentials.
 
@@ -44,4 +44,4 @@ Develop on `v2-development` or branches based on it. Target development pull req
 
 Never merge this staging setup into `main`, promote it over the live address, apply its migrations to the live database, or merge the Supabase test branch into production. A future learner release needs explicit approval, a plan for existing enrolments and progress, migration review, a fresh backup and rollback plan, and final learner-flow QA. Per-enrolment course version selection is a future feature; environment separation alone does not provide it.
 
-Continue inviting real learners through Version 1. Use fictional test records in Version 2. A dedicated staging administrator account and private authentication message capture are now configured; see [Version 2 features and QA](platform-v2-features-and-qa.md). Payments and Viewer streaming remain disabled.
+Continue inviting real learners through Version 1. Use fictional test records in Version 2. A dedicated staging administrator account and controlled transactional email are now configured; see [Version 2 features and QA](platform-v2-features-and-qa.md). Payments and Viewer streaming remain disabled.

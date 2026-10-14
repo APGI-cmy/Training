@@ -13,7 +13,7 @@ import { issueMyCertificate, saveCertificateDesign, revokeCertificate } from '@/
 import { signCertificate, authenticCertificate } from '@/server/certificates/authentication';
 import { certificateDesigns, type CertificateRecord } from '@/lib/certificates/designs';
 
-beforeEach(()=>{vi.resetAllMocks();m.admin.mockResolvedValue({session:{user:{id:'inviter'}}});m.session.mockResolvedValue({user:{id:'owner',email_confirmed_at:'2026-01-01'}});});
+beforeEach(()=>{vi.resetAllMocks();vi.stubEnv('ALP_ENVIRONMENT','v2-staging');vi.stubEnv('ALP_EMAIL_MODE','disabled');m.admin.mockResolvedValue({session:{user:{id:'inviter'}}});m.session.mockResolvedValue({user:{id:'owner',email_confirmed_at:'2026-01-01'}});});
 afterEach(()=>vi.unstubAllEnvs());
 describe('Version 2 role and certificate authority',()=>{
   const invite={recipientEmail:'person@example.invalid',role:'admin' as const,organisationId:'org',courseId:'',basis:'internal_allocation',reason:'Testing',expiresAt:'2099-01-01',confirmAdminAccess:true};

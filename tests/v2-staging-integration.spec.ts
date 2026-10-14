@@ -31,6 +31,7 @@ async function account(label:string){
 beforeAll(async()=>{
   const testMode=process.env.NODE_ENV;vi.stubEnv('NODE_ENV','development');
   nextEnv.loadEnvConfig(process.cwd(),true);vi.stubEnv('NODE_ENV',testMode);
+  vi.stubEnv('ALP_EMAIL_MODE','disabled'); // Fictional integration accounts must never receive real mail.
   assertStagingIsolation();
   const [people,orgs]=await Promise.all([rest('/auth/v1/admin/users?page=1&per_page=100'),rest('/rest/v1/organisations?slug=eq.apgi&select=id')]);
   actor=people.users.find((u:any)=>u.email==='johan.ras@apginc.ca')?.id;org=orgs[0].id;if(!actor)throw new Error('Staging administrator not found');

@@ -35,6 +35,11 @@ describe("V2 isolation from enrolled V1 learners", () => {
     const jwt = `eyJ.${Buffer.from(JSON.stringify({ ref: "ooujszdvncwijbuzpjfp" })).toString("base64url")}.signature`;
     expect(() => assertStagingIsolation({ ...stage, SUPABASE_SERVICE_ROLE_KEY: jwt })).toThrow("V2_ISOLATION_BLOCKED");
   });
+  it('permits expressly scoped transactional mail while keeping all other live services blocked',()=>{
+    const enabled={...stage,ALP_EMAIL_MODE:'transactional',STAGING_EMAIL_SCOPE:'apgi-v2-invitations',STAGING_RESEND_API_KEY:'re_dedicated_fixture',STAGING_EMAIL_FROM:'APGI V2 <no_reply@apginc.ca>'};
+    expect(()=>assertStagingIsolation(enabled)).not.toThrow();
+    for(const change of [{STAGING_EMAIL_SCOPE:''},{STAGING_RESEND_API_KEY:''},{STAGING_EMAIL_FROM:'someone@example.com'},{RESEND_API_KEY:'inherited-live-key'},{AWS_ROLE_ARN:'live'},{ALP_PAYMENTS_MODE:'enabled'}])expect(()=>assertStagingIsolation({...enabled,...change})).toThrow('V2_ISOLATION_BLOCKED');
+  });
   it("does not send invitations, confirmation or recovery emails, even with accidentally inherited keys", async () => {
     vi.stubEnv("ALP_ENVIRONMENT", "v2-staging"); vi.stubEnv("RESEND_API_KEY", "accidental-key");
     const network = vi.fn(); vi.stubGlobal("fetch", network);

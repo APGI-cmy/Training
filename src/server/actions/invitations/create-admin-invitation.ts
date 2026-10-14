@@ -3,6 +3,8 @@ import { createHash, randomBytes } from "node:crypto";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { adminRest } from "@/server/supabase/admin-rest";
 import type { InvitationInput, CreateInvitationState } from "./create-invitation";
+import { deliverStoredInvitation } from "@/server/services/invitations/deliver-stored-invitation";
+import { revalidatePath } from "next/cache";
 export async function createAdminInvitation(input: InvitationInput): Promise<CreateInvitationState> {
   const { session } = await requireAdmin();
   const email = input.recipientEmail.trim().toLowerCase(); const expires = new Date(input.expiresAt);
@@ -21,8 +23,7 @@ export async function createAdminInvitation(input: InvitationInput): Promise<Cre
     await adminRest(`/rest/v1/course_invitations?id=eq.${row.id}`, { method: "PATCH", body: JSON.stringify({ status: "revoked", revoked_at: new Date().toISOString() }) });
     return { ok: false, error: "INVITATION_AUDIT_FAILED" };
   }
-  // This development line has no outbound email credentials. The administrator
-  // can test the exact invitation in a separate browser/account.
-  const url = new URL(`/invitations/${token}`, process.env.NEXT_PUBLIC_APP_URL).toString();
-  return { ok: true, invitationId: row.id, deliveryStatus: "staging_link", invitationUrl: url };
+  const result=await deliverStoredInvitation({id:row.id,recipientEmail:email,role:'admin',courseTitle:'Platform administration',token,expiresAt:expires.toISOString(),actorId:session.user.id});
+  revalidatePath('/admin/invitations');
+  return result;
 }

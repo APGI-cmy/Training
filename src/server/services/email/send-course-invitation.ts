@@ -1,7 +1,10 @@
 import "server-only";
+import { createHash } from "node:crypto";
+import { deliverTransactionalEmail, emailConfiguration } from "./transactional-delivery";
 
 export type InvitationEmailInput = {
   invitationId: string;
+  invitedRole?: "learner" | "admin";
   recipientEmail: string;
   courseTitle: string;
   invitationToken: string;
@@ -22,59 +25,16 @@ function escapeHtml(value: string) {
   })[character] ?? character);
 }
 
-function getAppUrl() {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
-  if (!appUrl) return null;
-
-  try {
-    const parsed = new URL(appUrl);
-    if (process.env.NODE_ENV === "production" && parsed.protocol !== "https:") return null;
-    return parsed;
-  } catch {
-    return null;
-  }
-}
-
-export function isInvitationDeliveryConfigured() {
-  if (process.env.ALP_ENVIRONMENT === "v2-staging") return false;
-  return Boolean(process.env.RESEND_API_KEY?.trim() && process.env.EMAIL_FROM?.trim() && getAppUrl());
-}
+export function isInvitationDeliveryConfigured() { return Boolean(emailConfiguration()); }
 
 export async function sendCourseInvitationEmail(input: InvitationEmailInput): Promise<InvitationEmailResult> {
-  if (process.env.ALP_ENVIRONMENT === "v2-staging") return { ok: false, error: "EMAIL_NOT_CONFIGURED" };
-  const apiKey = process.env.RESEND_API_KEY?.trim();
-  const from = process.env.EMAIL_FROM?.trim();
-  const appUrl = getAppUrl();
-
-  if (!apiKey || !from || !appUrl) return { ok: false, error: "EMAIL_NOT_CONFIGURED" };
-  if (/[\r\n]/.test(from) || /[\r\n]/.test(input.recipientEmail)) return { ok: false, error: "EMAIL_DELIVERY_FAILED" };
-
-  const invitationUrl = new URL(`/invitations/${encodeURIComponent(input.invitationToken)}`, appUrl).toString();
-  const expiry = new Date(input.expiresAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Africa/Johannesburg" });
-  const courseTitle = escapeHtml(input.courseTitle);
-
-  try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${apiKey}`,
-        "content-type": "application/json",
-        "idempotency-key": `course-invitation-${input.invitationId}`
-      },
-      body: JSON.stringify({
-        from,
-        to: [input.recipientEmail],
-        subject: `Your APGI course invitation: ${input.courseTitle}`,
-        html: `<p>You have been invited to enrol in <strong>${courseTitle}</strong>.</p><p><a href="${invitationUrl}">Open your course invitation</a></p><p>This link expires ${escapeHtml(expiry)}. Sign in or create an APGI account using this email address, then complete and save your learner profile. Your invited course will appear on your dashboard automatically; no separate acceptance or approval is needed.</p><p>If you were not expecting this invitation, you can ignore this email.</p>`,
-        text: `You have been invited to enrol in ${input.courseTitle}. Open your course invitation: ${invitationUrl}\n\nThis link expires ${expiry}. Sign in or create an APGI account using this email address, then complete and save your learner profile. Your invited course will appear on your dashboard automatically; no separate acceptance or approval is needed.`
-      }),
-      cache: "no-store"
-    });
-
-    if (!response.ok) return { ok: false, error: "EMAIL_DELIVERY_FAILED" };
-    const payload = (await response.json().catch(() => ({}))) as { id?: string };
-    return { ok: true, providerMessageId: payload.id ?? null };
-  } catch {
-    return { ok: false, error: "EMAIL_DELIVERY_FAILED" };
-  }
+  const config=emailConfiguration();
+  if(!config)return {ok:false,error:"EMAIL_NOT_CONFIGURED"};
+  const invitationUrl=new URL(`/invitations/${encodeURIComponent(input.invitationToken)}`,config.origin).toString();
+  const expiry=new Date(input.expiresAt).toLocaleString("en-GB",{dateStyle:"medium",timeStyle:"short",timeZone:"Africa/Johannesburg"});
+  const admin=input.invitedRole==='admin';
+  const heading=admin?'You have been invited to join APGI Training as a platform administrator.':`You have been invited to enrol in ${input.courseTitle}.`;
+  const instructions=admin?'Sign in or create an account using this email address, then complete and save your profile. Your verified invitation will activate full administrator access in Version 2.':'Sign in or create an APGI account using this email address, then complete and save your learner profile. Your invited course will appear on your dashboard automatically; no separate acceptance or approval is needed.';
+  const label=admin?'Open your administrator invitation':'Open your course invitation';
+  return deliverTransactionalEmail({to:input.recipientEmail,subject:admin?'Your APGI administrator invitation':`Your APGI course invitation: ${input.courseTitle}`,html:`<p>${escapeHtml(heading)}</p><p><a href="${escapeHtml(invitationUrl)}">${label}</a></p><p>This link expires ${escapeHtml(expiry)}.</p><p>${instructions}</p><p>If you were not expecting this invitation, you can ignore it. ${admin ? "Administrator rights are granted only after the matching email account is verified and Profile is saved." : ""}</p>`,text:`${heading} ${label}: ${invitationUrl}\n\nThis link expires ${expiry}. ${instructions}`,idempotencyKey:`course-invitation-${input.invitationId}-${createHash('sha256').update(input.invitationToken).digest('hex').slice(0,20)}`});
 }

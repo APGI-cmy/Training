@@ -1,5 +1,6 @@
 "use server";
 
+import { usesStagingMailCapture } from "@/server/environment-isolation";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getSupabaseRestUrl, signOut } from "@/server/auth/session";
@@ -12,7 +13,7 @@ export type PasswordRecoveryState = { error?: string; message?: string };
 const RECOVERY_COOKIE = "alp_recovery_token";
 const NEXT_COOKIE = "alp_recovery_next";
 function recoveryMessage() {
-  return process.env.ALP_ENVIRONMENT === "v2-staging"
+  return usesStagingMailCapture()
     ? "If a test account exists, its reset link is available to your staging administrator in Test messages. No email is sent from Version 2 staging."
     : "If an account exists for this email address, a password-reset email will arrive shortly. Check your junk folder too.";
 }

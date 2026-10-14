@@ -4,8 +4,18 @@ export const STAGING_PROJECT_ID = "prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf";
 export const STAGING_DATABASE_REF = "eaaqgtdpvbxdgjxphjie";
 export const STAGING_ORIGIN = "https://training-platform-v2-staging.vercel.app";
 export const LIVE_DATABASE_REF = "ooujszdvncwijbuzpjfp";
+export const STAGING_EMAIL_SCOPE = "apgi-v2-invitations";
 
 type Environment = Record<string, string | undefined>;
+
+export function stagingEmailEnabled(env: Environment = process.env) {
+  return env.ALP_ENVIRONMENT === "v2-staging" && env.ALP_EMAIL_MODE === "transactional"
+    && env.STAGING_EMAIL_SCOPE === STAGING_EMAIL_SCOPE;
+}
+
+export function usesStagingMailCapture(env: Environment = process.env) {
+  return env.ALP_ENVIRONMENT === "v2-staging" && !stagingEmailEnabled(env);
+}
 
 export function assertStagingIsolation(env: Environment = process.env) {
   const fail = (reason: string): never => { throw new Error(`V2_ISOLATION_BLOCKED: ${reason}`); };
@@ -35,7 +45,12 @@ export function assertStagingIsolation(env: Environment = process.env) {
   try { origin = new URL(env.NEXT_PUBLIC_APP_URL ?? ""); } catch { return fail("invalid application address"); }
   const local = env.NODE_ENV !== "production" && ["localhost", "127.0.0.1"].includes(origin.hostname);
   if (origin.origin !== STAGING_ORIGIN && !local) fail("wrong application address");
-  if (env.ALP_EMAIL_MODE !== "disabled") fail("outbound email must be disabled");
+  if (!["disabled", "transactional"].includes(env.ALP_EMAIL_MODE ?? "")) fail("unapproved email delivery mode");
+  if (env.ALP_EMAIL_MODE === "transactional") {
+    if (!stagingEmailEnabled(env)) fail("explicit staging email scope is required");
+    if (!env.STAGING_RESEND_API_KEY?.startsWith("re_")) fail("dedicated staging email credential is required");
+    if (!/^(?:[^<>\r\n]+\s*<)?[^\s<>@]+@apginc\.ca>?$/i.test(env.STAGING_EMAIL_FROM ?? "")) fail("verified staging sender is required");
+  }
   if (env.ALP_PAYMENTS_MODE !== "disabled") fail("payments must be disabled");
   if (env.SCANNEX_VIEWER_LAB_ENABLED !== "false") fail("Viewer streaming must be disabled");
   for (const key of ["RESEND_API_KEY", "EMAIL_FROM", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET",

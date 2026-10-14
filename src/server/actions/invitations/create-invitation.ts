@@ -7,6 +7,7 @@ import { sendCourseInvitationEmail } from "@/server/services/email/send-course-i
 import { adminRest } from "@/server/supabase/admin-rest";
 import { validGroup } from "@/server/services/groups";
 import { createAdminInvitation } from "./create-admin-invitation";
+import { usesStagingMailCapture } from "@/server/environment-isolation";
 
 const invitationBases = new Set(["external_payment", "corporate_order", "complimentary_marketing", "internal_allocation", "other"]);
 
@@ -223,7 +224,7 @@ export async function createAndSendInvitation(input: InvitationInput): Promise<C
   }
 
   const course = getCourseBySlug(clean.courseId);
-  if (process.env.ALP_ENVIRONMENT === "v2-staging") {
+  if (usesStagingMailCapture()) {
     return { ok: true, invitationId, deliveryStatus: "staging_link", invitationUrl: new URL(`/invitations/${token}`, process.env.NEXT_PUBLIC_APP_URL).toString() };
   }
   const delivery = await sendCourseInvitationEmail({
