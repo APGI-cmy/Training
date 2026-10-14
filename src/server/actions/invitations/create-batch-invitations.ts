@@ -7,6 +7,7 @@ export type BatchInvitationResult = {
   recipientEmail: string;
   ok: boolean;
   error?: string;
+  invitationUrl?: string;
 };
 
 export async function createBatchInvitations(input: { invitations: InvitationInput[] }) {
@@ -15,6 +16,7 @@ export async function createBatchInvitations(input: { invitations: InvitationInp
   const recipientResults: BatchInvitationResult[] = [];
 
   for (const invitation of input.invitations.slice(0, 250)) {
+    if (invitation.role === "admin") { recipientResults.push({ recipientEmail: invitation.recipientEmail, ok: false, error: "ADMIN_INVITATIONS_REQUIRE_INDIVIDUAL_CONFIRMATION" }); continue; }
     const recipientEmail = invitation.recipientEmail.trim().toLowerCase();
     const duplicateKey = `${recipientEmail}:${invitation.courseId.trim()}`;
     if (unique.has(duplicateKey)) {
@@ -23,7 +25,7 @@ export async function createBatchInvitations(input: { invitations: InvitationInp
     }
     unique.add(duplicateKey);
     const result = await createAndSendInvitation(invitation);
-    recipientResults.push({ recipientEmail, ok: result.ok, error: result.error });
+    recipientResults.push({ recipientEmail, ok: result.ok, error: result.error, invitationUrl: result.invitationUrl });
   }
 
   return {

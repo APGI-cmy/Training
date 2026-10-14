@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  outputFileTracingIncludes: {
+    "/api/certificates/*": ["./public/certificate-fonts/**", "./public/branding/apgi-logo.png"]
+  },
   turbopack: {
     root: process.cwd()
   },

@@ -49,6 +49,7 @@ export async function updateProfileAction(
     if (!accepted.ok) return { error: accepted.error === "email_unconfirmed"
       ? "Your profile is saved. Confirm your email address to open your invited course."
       : "Your profile is saved, but your invited course could not be opened yet. Please try saving again or contact your training administrator." };
+    if ((await getUserRoles(session.accessToken)).includes("admin")) redirect("/admin");
     revalidatePath("/dashboard");
     revalidatePath("/catalogue");
     if (accepted.courseIds?.length || formData.get("complete_onboarding") === "true") {

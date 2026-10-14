@@ -85,6 +85,7 @@ async function redeemInvitation(session: AlpSession, invitation: Record<string, 
       status: "enrolled",
       source: "admin",
       organisation_id: organisationId,
+      group_id: invitation.group_id ?? null,
       referral_share_bps: 0,
       access_granted_at: now.toISOString(),
       access_revoked_at: null,
@@ -136,6 +137,11 @@ export async function acceptPendingInvitations() {
     const invitations = await getPendingCourseInvitations(session);
     const courseIds: string[] = [];
     for (const invitation of invitations) {
+      if (invitation.invited_role === "admin") {
+        const redeemed = await adminRest("/rest/v1/rpc/v2_redeem_admin_invitation", { method: "POST", body: JSON.stringify({ p_invitation: invitation.id, p_user: session.user.id }) });
+        if (!redeemed.ok) return { ok: false, error: "admin_invitation_invalid" };
+        continue;
+      }
       if (!getCourseBySlug(invitation.course_id)) return { ok: false, error: "course_unavailable" };
       const result = await redeemInvitation(session, invitation);
       if (!result.ok || !result.courseId) return { ok: false, error: result.error ?? "redemption_failed" };

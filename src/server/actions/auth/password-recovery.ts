@@ -11,7 +11,11 @@ import { claimAuthEmailBudget } from "@/server/services/auth-email-budget";
 export type PasswordRecoveryState = { error?: string; message?: string };
 const RECOVERY_COOKIE = "alp_recovery_token";
 const NEXT_COOKIE = "alp_recovery_next";
-const GENERIC_MESSAGE = "If an account exists for this email address, a password-reset email will arrive shortly. Check your junk folder too.";
+function recoveryMessage() {
+  return process.env.ALP_ENVIRONMENT === "v2-staging"
+    ? "If a test account exists, its reset link is available to your staging administrator in Test messages. No email is sent from Version 2 staging."
+    : "If an account exists for this email address, a password-reset email will arrive shortly. Check your junk folder too.";
+}
 
 export async function requestPasswordRecovery(_state: PasswordRecoveryState, formData: FormData): Promise<PasswordRecoveryState> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
@@ -20,18 +24,18 @@ export async function requestPasswordRecovery(_state: PasswordRecoveryState, for
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceKey) return { error: "Password recovery is temporarily unavailable. Please contact APGI support." };
   try {
-    if (!(await claimAuthEmailBudget("recovery", email))) return { message: GENERIC_MESSAGE };
+    if (!(await claimAuthEmailBudget("recovery", email))) return { message: recoveryMessage() };
     const generated = await adminRest("/auth/v1/admin/generate_link", {
       method: "POST", body: JSON.stringify({ type: "recovery", email })
     });
     // Do not reveal whether an account exists. Never return recovery tokens to the caller.
     if (!generated.ok) {
       if (generated.status >= 500 || generated.status === 401 || generated.status === 403) throw new Error("RECOVERY_SERVICE_UNAVAILABLE");
-      return { message: GENERIC_MESSAGE };
+      return { message: recoveryMessage() };
     }
     const payload = await generated.json() as { hashed_token?: string };
     if (!payload.hashed_token || !(await sendPasswordRecoveryEmail(email, payload.hashed_token, next))) throw new Error("RECOVERY_EMAIL_UNAVAILABLE");
-    return { message: GENERIC_MESSAGE };
+    return { message: recoveryMessage() };
   } catch {
     return { error: "Password recovery is temporarily unavailable. Please contact APGI support." };
   }

@@ -1852,3 +1852,11 @@ body:has(.learner-scorm-full) .learner-shell {
   .admin-alert { align-items: stretch; flex-direction: column; }
   .app-toast { top: 76px; right: 16px; }
 }
+/* Staging administration: certificates and learner progress. */
+.certificate-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.certificate-preview { width: 100%; height: auto; display: block; background: white; border: 1px solid #c9d3df; margin: 16px 0; }
+.learner-progress-block { min-width: 220px; margin-bottom: 20px; }
+.learner-progress-block progress { display: block; width: 100%; height: 12px; accent-color: var(--brand-accent, #0587a6); margin: 8px 0; }
+.learner-progress-block form { margin-top: 8px; display: grid; gap: 8px; }
+.learner-progress-block select { max-width: 260px; }
+@media (max-width: 1000px) { .certificate-gallery { grid-template-columns: 1fr; } }

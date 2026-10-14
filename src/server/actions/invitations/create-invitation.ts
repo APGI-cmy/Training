@@ -5,6 +5,8 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import { getCourseBySlug } from "@/lib/courses";
 import { sendCourseInvitationEmail } from "@/server/services/email/send-course-invitation";
 import { adminRest } from "@/server/supabase/admin-rest";
+import { validGroup } from "@/server/services/groups";
+import { createAdminInvitation } from "./create-admin-invitation";
 
 const invitationBases = new Set(["external_payment", "corporate_order", "complimentary_marketing", "internal_allocation", "other"]);
 
@@ -19,12 +21,16 @@ export type InvitationInput = {
   reference?: string;
   company?: string;
   organisationId?: string;
+  role?: "learner" | "admin";
+  groupId?: string;
+  confirmAdminAccess?: boolean;
 };
 
 export type CreateInvitationState = {
   ok: boolean;
   invitationId?: string;
-  deliveryStatus?: "sent";
+  deliveryStatus?: "sent" | "staging_link";
+  invitationUrl?: string;
   error?: string;
 };
 
@@ -40,7 +46,9 @@ function normaliseInput(input: InvitationInput): InvitationInput {
     expiresAt: input.expiresAt.trim(),
     reference: input.reference?.trim() || undefined,
     company: input.company?.trim() || undefined,
-    organisationId: input.organisationId?.trim() || undefined
+    organisationId: input.organisationId?.trim() || undefined,
+    role: input.role ?? "learner", groupId: input.groupId?.trim() || undefined,
+    confirmAdminAccess: input.confirmAdminAccess
   };
 }
 
@@ -162,11 +170,14 @@ async function createPendingEnrolmentIfApplicable(invitationId: string, input: I
 export async function createAndSendInvitation(input: InvitationInput): Promise<CreateInvitationState> {
   // This exported Server Action can be called directly, without the admin page.
   const actor = (await requireAdmin()).session.user.id;
+  if (input.role && !["learner", "admin"].includes(input.role)) return { ok: false, error: "INVITATION_ROLE_INVALID" };
+  if (input.role === "admin") return createAdminInvitation(input);
   const clean = normaliseInput(input);
   const validationError = validateInput(clean);
   if (validationError) return { ok: false, error: validationError };
   const organisation = await getOrganisationShare(clean.organisationId);
   if (!organisation) return { ok: false, error: "INVITATION_ORGANISATION_INVALID" };
+  if (!(await validGroup(clean.groupId, clean.organisationId))) return { ok: false, error: "GROUP_ORGANISATION_MISMATCH" };
 
   const activeInvitationError = await ensureNoActiveInvitation(clean, actor);
   if (activeInvitationError) return { ok: false, error: activeInvitationError };
@@ -185,6 +196,7 @@ export async function createAndSendInvitation(input: InvitationInput): Promise<C
       token_hash: tokenHash,
       created_by: actor,
       status: "pending",
+      invited_role: "learner", group_id: clean.groupId ?? null,
       organisation_id: organisation.id,
       metadata: { reference: clean.reference ?? null, company: clean.company ?? null, organisation_id: organisation.id, referral_share_bps: organisation.default_referral_share_bps }
     })
@@ -211,6 +223,9 @@ export async function createAndSendInvitation(input: InvitationInput): Promise<C
   }
 
   const course = getCourseBySlug(clean.courseId);
+  if (process.env.ALP_ENVIRONMENT === "v2-staging") {
+    return { ok: true, invitationId, deliveryStatus: "staging_link", invitationUrl: new URL(`/invitations/${token}`, process.env.NEXT_PUBLIC_APP_URL).toString() };
+  }
   const delivery = await sendCourseInvitationEmail({
     invitationId,
     recipientEmail: clean.recipientEmail,
@@ -254,9 +269,11 @@ export async function createInvitation(formData: FormData): Promise<CreateInvita
 }
 
 export async function createInvitationWithState(_previousState: CreateInvitationState, formData: FormData): Promise<CreateInvitationState> {
+  if (formData.get("role") === "admin") return createAdminInvitation({ recipientEmail: String(formData.get("recipientEmail") ?? ""), courseId: "", role: "admin", basis: "internal_allocation", reason: String(formData.get("reason") ?? ""), expiresAt: String(formData.get("expiresAt") ?? ""), organisationId: String(formData.get("organisationId") ?? ""), confirmAdminAccess: formData.get("confirmAdminAccess") === "on" });
   const courseIds = formData.getAll("courseIds").map(String).filter(Boolean);
   if (!courseIds.length) return { ok: false, error: "INVITATION_COURSE_REQUIRED" };
   let firstInvitationId: string | undefined;
+  let firstUrl: string | undefined;
   for (const courseId of courseIds) {
     const result = await createAndSendInvitation({
       recipientEmail: String(formData.get("recipientEmail") ?? ""),
@@ -266,10 +283,12 @@ export async function createInvitationWithState(_previousState: CreateInvitation
       expiresAt: String(formData.get("expiresAt") ?? ""),
       reference: String(formData.get("reference") ?? ""),
       company: String(formData.get("company") ?? ""),
-      organisationId: String(formData.get("organisationId") ?? "")
+      organisationId: String(formData.get("organisationId") ?? ""),
+      groupId: String(formData.get("groupId") ?? ""), role: "learner"
     });
     if (!result.ok) return { ...result, invitationId: firstInvitationId };
     firstInvitationId ??= result.invitationId;
+    firstUrl ??= result.invitationUrl;
   }
-  return { ok: true, invitationId: firstInvitationId, deliveryStatus: "sent" };
+  return { ok: true, invitationId: firstInvitationId, deliveryStatus: firstUrl ? "staging_link" : "sent", invitationUrl: firstUrl };
 }

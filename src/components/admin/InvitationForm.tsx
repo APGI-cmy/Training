@@ -1,99 +1,31 @@
 "use client";
-
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { createInvitationWithState, type CreateInvitationState } from "@/server/actions/invitations/create-invitation";
-
-const initialState: CreateInvitationState = { ok: false };
-
-export function InvitationForm({
-  courses,
-  organisations,
-  defaultExpiry
-}: {
-  courses: Array<{ id: string; title: string }>;
-  organisations: Array<{ id: string; name: string }>;
-  defaultExpiry: string;
+export function InvitationForm({ courses, organisations, defaultExpiry, groups = [] }: {
+  courses: Array<{ id: string; title: string }>; organisations: Array<{ id: string; name: string }>;
+  defaultExpiry: string; groups?: Array<{ id: string; name: string; organisation_id: string }>;
 }) {
-  const [state, action, pending] = useActionState(createInvitationWithState, initialState);
+  const [state, action, pending] = useActionState(createInvitationWithState, { ok: false } as CreateInvitationState);
+  const [role, setRole] = useState("learner");
+  const [organisationId, setOrganisationId] = useState("");
   const deliveryStatus = state.deliveryStatus ?? "created_not_sent";
-
-  return (
-    <>
-      <form action={action} className="admin-form-card invitation-form">
-        <div className="admin-card-heading invitation-form-heading">
-          <div>
-            <p className="eyebrow">Individual invitation</p>
-            <h2>Invitation details</h2>
-          </div>
-        </div>
-        <p className="form-guidance">Choose the learner, the courses to enrol them in and the organisation profile that will shape their catalogue access.</p>
-
-        <div className="admin-form-grid invitation-form-grid">
-          <label className="admin-span-two">
-            <span>Learner email</span>
-            <input name="recipientEmail" type="email" required />
-          </label>
-          <label className="admin-span-two">
-            <span>Initial course enrolments</span>
-            <select name="courseIds" required multiple size={Math.min(4, Math.max(2, courses.length))}>
-              {courses.map((course) => <option key={course.id} value={course.id}>{course.title}</option>)}
-            </select>
-            <span className="field-hint">Select one or more courses to issue with this invitation. The learner’s organisation also determines any client-only courses visible in their catalogue.</span>
-          </label>
-          <label>
-            <span>Organisation profile</span>
-            <select name="organisationId" required defaultValue="">
-              <option value="" disabled>Select the learner's organisation</option>
-              {organisations.map((organisation) => <option key={organisation.id} value={organisation.id}>{organisation.name}</option>)}
-            </select>
-          </label>
-          <label>
-            <span>Access basis</span>
-            <select name="basis" required>
-              <option value="external_payment">External payment</option>
-              <option value="corporate_order">Corporate order</option>
-              <option value="complimentary_marketing">Complimentary marketing</option>
-              <option value="internal_allocation">Internal allocation</option>
-              <option value="other">Other</option>
-            </select>
-          </label>
-          <label className="admin-span-two">
-            <span>Reason</span>
-            <textarea name="reason" required />
-          </label>
-
-          <div className="invitation-form-meta admin-span-two">
-            <label>
-              <span>Reference</span>
-              <input name="reference" placeholder="Order, PO or internal reference" />
-            </label>
-            <label>
-              <span>Company</span>
-              <input name="company" placeholder="Organisation name" />
-            </label>
-            <label>
-              <span>Expires at</span>
-              <input name="expiresAt" type="datetime-local" defaultValue={defaultExpiry} required />
-            </label>
-          </div>
-        </div>
-
-        <div className="invitation-form-actions">
-          <button className="primary-button" type="submit" disabled={pending}>{pending ? "Creating…" : "Create invitation"}</button>
-        </div>
-      </form>
-
-      {state.error ? <p role="alert">Invitation could not be created: {state.error}</p> : null}
-      {state.ok ? (
-        <section className="notice-card" aria-live="polite">
-          <h3>{deliveryStatus === "sent" ? "Invitation email accepted" : "Invitation created"}</h3>
-          <p>
-            {deliveryStatus === "sent"
-              ? "The email provider accepted the invitation for delivery. The learner signs in with the invited email address and saves their profile to open the course automatically."
-              : "Email delivery has not been confirmed. Check the invitation status before asking the learner to look for the email."}
-          </p>
-        </section>
-      ) : null}
-    </>
-  );
+  return <form action={action} className="admin-form-card invitation-form">
+    <div className="admin-card-heading"><div><p className="eyebrow">Individual invitation</p><h2>Invite a learner or administrator</h2></div></div>
+    <div className="admin-form-grid invitation-form-grid">
+      <label><span>Platform role</span><select name="role" value={role} onChange={e => setRole(e.target.value)}><option value="learner">Learner</option><option value="admin">Administrator</option></select></label>
+      <label><span>Invited email</span><input name="recipientEmail" type="email" required /></label>
+      <label><span>Organisation</span><select name="organisationId" required value={organisationId} onChange={e => setOrganisationId(e.target.value)}><option value="" disabled>Select an organisation</option>{organisations.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}</select></label>
+      {role === "learner" ? <>
+        <label><span>Learner group</span><select name="groupId" key={organisationId} defaultValue=""><option value="">Individual learner (no group)</option>{groups.filter(g => g.organisation_id === organisationId).map(g => <option key={g.id} value={g.id}>{g.name}</option>)}</select></label>
+        <label className="admin-span-two"><span>Initial course enrolments</span><select name="courseIds" required multiple size={Math.min(4, Math.max(2, courses.length))}>{courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}</select><span className="field-hint">Select one or more courses. Saving the matching learner profile activates these invitations.</span></label>
+        <label><span>Access basis</span><select name="basis"><option value="external_payment">External payment</option><option value="corporate_order">Corporate order</option><option value="complimentary_marketing">Complimentary marketing</option><option value="internal_allocation">Internal allocation</option><option value="other">Other</option></select></label>
+      </> : <label className="admin-span-two"><input name="confirmAdminAccess" type="checkbox" required /> I authorise full platform administrator access, including learner records and access management.</label>}
+      <label><span>Expires at</span><input name="expiresAt" type="datetime-local" defaultValue={defaultExpiry} required /></label>
+      <label className="admin-span-two"><span>Reason</span><textarea name="reason" required /></label>
+      <label><span>Reference</span><input name="reference" /></label><label><span>Company</span><input name="company" /></label>
+    </div>
+    <button className="primary-button" disabled={pending}>{pending ? "Creating…" : "Create invitation"}</button>
+    {state.error ? <p role="alert" className="form-error">Invitation could not be created: {state.error}</p> : null}
+    {state.ok ? <div className="notice-card" role="status"><strong>Invitation created</strong>{state.invitationUrl ? <><p>Staging: no email was sent. Open this link using the invited test account.</p><a href={state.invitationUrl} target="_blank" rel="noopener noreferrer">Open test invitation</a><input aria-label="Test invitation link" readOnly value={state.invitationUrl} /></> : <p>{deliveryStatus === 'sent' ? 'The email provider accepted the invitation.' : 'Email delivery has not been confirmed.'}</p>}</div> : null}
+  </form>;
 }

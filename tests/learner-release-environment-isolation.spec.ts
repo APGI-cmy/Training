@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+vi.mock('../src/server/services/email/staging-capture',()=>({captureStagingAuthEmail:vi.fn(async()=>true)}));
 import { assertStagingIsolation, STAGING_DATABASE_REF, STAGING_ORIGIN, STAGING_PROJECT_ID } from "../src/server/environment-isolation";
 import { sendCourseInvitationEmail } from "../src/server/services/email/send-course-invitation";
 import { sendAccountConfirmationEmail } from "../src/server/services/email/send-account-confirmation";
@@ -38,8 +39,8 @@ describe("V2 isolation from enrolled V1 learners", () => {
     vi.stubEnv("ALP_ENVIRONMENT", "v2-staging"); vi.stubEnv("RESEND_API_KEY", "accidental-key");
     const network = vi.fn(); vi.stubGlobal("fetch", network);
     await sendCourseInvitationEmail({ invitationId: "test", recipientEmail: "learner@example.invalid", courseTitle: "Test", invitationToken: "test", expiresAt: "2099-01-01" });
-    expect(await sendAccountConfirmationEmail("learner@example.invalid", "test")).toBe(false);
-    expect(await sendPasswordRecoveryEmail("learner@example.invalid", "test", "/profile")).toBe(false);
+    expect(await sendAccountConfirmationEmail("learner@example.invalid", "test")).toBe(true);
+    expect(await sendPasswordRecoveryEmail("learner@example.invalid", "test", "/profile")).toBe(true);
     expect(network).not.toHaveBeenCalled();
   });
   it("does not configure a Viewer session when live settings are accidentally inherited", () => {

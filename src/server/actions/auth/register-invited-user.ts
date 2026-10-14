@@ -48,7 +48,7 @@ export async function registerInvitedUser(_previousState: InvitationRegistration
 
   return {
     ok: true,
-    message: "Check your email for ‘Confirm your APGI Training account’. Open it and confirm your email to go straight to your profile. After saving your profile, your enrolled course will appear on your dashboard.",
+    message: process.env.ALP_ENVIRONMENT==='v2-staging' ? "No email was sent. Your staging administrator can open your confirmation link in Test messages. Confirm your test account, then save your profile to activate the invited role or course." : "Check your email for ‘Confirm your APGI Training account’. Open it and confirm your email to go straight to your profile. After saving your profile, your enrolled course will appear on your dashboard.",
     continueUrl: getInvitationSignInPath(token)
   };
 }

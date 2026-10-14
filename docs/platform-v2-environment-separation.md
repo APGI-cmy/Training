@@ -44,4 +44,4 @@ Develop on `v2-development` or branches based on it. Target development pull req
 
 Never merge this staging setup into `main`, promote it over the live address, apply its migrations to the live database, or merge the Supabase test branch into production. A future learner release needs explicit approval, a plan for existing enrolments and progress, migration review, a fresh backup and rollback plan, and final learner-flow QA. Per-enrolment course version selection is a future feature; environment separation alone does not provide it.
 
-Continue inviting real learners through Version 1. Use fictional test records in Version 2. A dedicated staging administrator account, email capture, payment sandbox and separate Viewer testing can be configured as subsequent development tasks.
+Continue inviting real learners through Version 1. Use fictional test records in Version 2. A dedicated staging administrator account and private authentication message capture are now configured; see [Version 2 features and QA](platform-v2-features-and-qa.md). Payments and Viewer streaming remain disabled.

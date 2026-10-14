@@ -1,8 +1,9 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
+import { captureStagingAuthEmail } from "./staging-capture";
 
 export async function sendAccountConfirmationEmail(email: string, tokenHash: string): Promise<boolean> {
-  if (process.env.ALP_ENVIRONMENT === "v2-staging") return false;
+  if (process.env.ALP_ENVIRONMENT === "v2-staging") return captureStagingAuthEmail(email,tokenHash,'confirmation');
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.EMAIL_FROM?.trim();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
