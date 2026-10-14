@@ -1,8 +1,10 @@
+import { requireAdmin } from "@/lib/auth/require-admin";
 import Link from "next/link";
 import { getCourses } from "@/lib/courses";
 import { CourseCardCover } from "@/components/course/CourseCardCover";
 
-export default function AdminCoursesPage() {
+export default async function AdminCoursesPage() {
+  await requireAdmin();
   const courses = getCourses();
 
   return (

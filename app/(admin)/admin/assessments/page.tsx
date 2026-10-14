@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { ScannexAssessmentWorkspace } from "@/components/admin/ScannexAssessmentWorkspace";
 import { getCourses } from "@/lib/courses";
 import { getAdminLearners } from "@/lib/services/admin/get-admin-learners";
@@ -6,6 +7,7 @@ import { getAssessmentBookings } from "@/server/services/assessments/get-assessm
 export const dynamic = "force-dynamic";
 
 export default async function AssessmentsPage() {
+  await requireAdmin();
   const [learnersPage, bookings] = await Promise.all([getAdminLearners({ page: 1 }), getAssessmentBookings()]);
   const learners = learnersPage.learners.map((learner) => ({ id: learner.id, name: learner.name, email: learner.email, status: learner.status }));
   const courses = getCourses().map((course) => ({ id: course.id, title: course.title }));

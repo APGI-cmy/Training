@@ -1,9 +1,11 @@
+import { requireAdmin } from "@/lib/auth/require-admin";
 import Link from "next/link";
 import { getCourses } from "@/lib/courses";
 import { EnrolmentManagementWorkspace } from "@/components/admin/EnrolmentManagementWorkspace";
 import { getAdminLearner } from "@/lib/services/admin/get-admin-learners";
 
 export default async function EnrolmentAdministrationPage({ searchParams }: { searchParams: Promise<{ learnerId?: string }> }) {
+  await requireAdmin();
   const params = await searchParams;
   const [courses, learner] = await Promise.all([
     Promise.resolve(getCourses().map(({ id, title }) => ({ id, title }))),

@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { OrganisationWorkspace } from "@/components/admin/OrganisationWorkspace";
 import { getCourses } from "@/lib/courses";
 import { getBrandingPresets } from "@/server/services/branding/course-branding";
@@ -5,6 +6,7 @@ import { getOrganisationsForAdmin } from "@/server/services/organisations/get-or
 import { adminRest } from "@/server/supabase/admin-rest";
 
 export default async function OrganisationsPage() {
+  await requireAdmin();
   const courses = getCourses().map(({ id, title }) => ({ id, title }));
   const [organisations, presets, settingsResponse, availabilityResponse] = await Promise.all([
     getOrganisationsForAdmin(), getBrandingPresets(),

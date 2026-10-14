@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { getOrganisationsForAdmin } from "@/server/services/organisations/get-organisations";
 import { adminRest } from "@/server/supabase/admin-rest";
 import { getSupabaseRestUrl } from "@/server/auth/session";
@@ -5,6 +6,7 @@ import { certificateDesigns, type CertificateSnapshot, type CertificateRecord } 
 import { CertificatePreview } from "@/components/certificates/CertificatePreview";
 import { saveCertificateDesign, revokeCertificate } from "@/server/actions/certificates";
 export default async function CertificateDesigns({searchParams}:{searchParams:Promise<{organisationId?:string}>}){
+  await requireAdmin();
   const params=await searchParams; const organisations=await getOrganisationsForAdmin();
   const org=organisations.find(o=>o.id===params.organisationId) ?? organisations[0];
   const settings=org?await adminRest(`/rest/v1/organisations?id=eq.${org.id}&select=logo_path,certificate_template_id&limit=1`):null;

@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { InvitationDeliveryControl } from "@/components/admin/InvitationDeliveryControl";
 import { InvitationForm } from "@/components/admin/InvitationForm";
 import { LearnerImportWorkspace } from "@/components/admin/LearnerImportWorkspace";
@@ -8,6 +9,7 @@ import { createGroup } from "@/server/actions/groups";
 import { adminRest } from "@/server/supabase/admin-rest";
 
 export default async function InvitationsPage() {
+  await requireAdmin();
   const courses = getCourses().map(({ id, title }) => ({ id, title }));
   const organisations = (await getActiveOrganisations()).map(({ id, name, slug }) => ({ id, name, slug }));
   const defaultExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16);

@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth/require-admin";
 import Link from "next/link";
 import { getAdminLearners } from "@/lib/services/admin/get-admin-learners";
 import { getGroups } from "@/server/services/groups";
@@ -9,6 +10,7 @@ type PageProps = { searchParams: Promise<{ q?: string; page?: string }> };
 function formatDate(value: string) { return new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value)); }
 
 export default async function LearnersPage({ searchParams }: PageProps) {
+  await requireAdmin();
   const params = await searchParams;
   const directory = await getAdminLearners({ search: params.q, page: Number(params.page ?? "1") });
   const query = params.q?.trim() ?? "";

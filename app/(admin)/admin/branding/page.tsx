@@ -1,9 +1,11 @@
+import { requireAdmin } from "@/lib/auth/require-admin";
 import Link from "next/link";
 import { BrandingForm } from "@/components/admin/BrandingForm";
 import { getCourses, getCourseBySlug } from "@/lib/courses";
 import { getBrandingPresets, getCourseBrandingForAdmin } from "@/server/services/branding/course-branding";
 
 export default async function BrandingPage({ searchParams }: { searchParams: Promise<{ course?: string }> }) {
+  await requireAdmin();
   const params = await searchParams;
   const selectedCourse = getCourseBySlug(params.course ?? "") ?? getCourses()[0];
   const [branding, presets] = await Promise.all([
