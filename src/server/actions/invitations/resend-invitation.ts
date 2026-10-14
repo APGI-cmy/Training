@@ -15,7 +15,7 @@ export async function resendInvitation(_state:CreateInvitationState,form:FormDat
   if(!row || row.revoked_at || row.redeemed_at || !['pending','sent'].includes(row.status) || !(new Date(row.expires_at).getTime()>Date.now()))return {ok:false,error:'INVITATION_NOT_ACTIVE'};
   const org=await adminRest(`/rest/v1/organisations?id=eq.${encodeURIComponent(row.organisation_id)}&is_active=eq.true&select=id`);
   if(!org.ok || !(await org.json()).length)return {ok:false,error:'INVITATION_ORGANISATION_INVALID'};
-  const recent=await adminRest(`/rest/v1/course_invitation_events?invitation_id=eq.${id}&created_at=gt.${encodeURIComponent(new Date(Date.now()-60000).toISOString())}&select=id&limit=1`);
+  const recent=await adminRest(`/rest/v1/course_invitation_events?invitation_id=eq.${id}&occurred_at=gt.${encodeURIComponent(new Date(Date.now()-60000).toISOString())}&select=id&limit=1`);
   if(!recent.ok)return {ok:false,error:'INVITATION_LOOKUP_FAILED'};
   if((await recent.json()).length)return {ok:false,error:'WAIT_ONE_MINUTE_BEFORE_RESENDING'};
   // A single atomic comparison prevents two simultaneous resend requests from
