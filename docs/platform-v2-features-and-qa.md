@@ -38,7 +38,7 @@ Every certificate has a unique number, immutable signed record, QR code and veri
 
 ## Verification on 14 October 2026
 
-- 124 release and feature tests passed; 51 established regression tests passed; TypeScript checking and the complete application build passed.
+- 125 release and feature tests passed; 51 established regression tests passed; TypeScript checking and the complete application build passed. Invitation tests explicitly select their mocked delivery environment so inherited CI staging variables cannot create false failures; a dedicated test verifies no email service call in staging.
 - Seven guarded integration cases passed against the isolated database: profile gate, learner enrolment/group/notification, wrong-mailbox rejection, administrator grant/idempotence, all-unit requirement, assessor gate and one numbered authenticated PDF after fictional assessor approval.
 - An additional real integration case passed: invited account creation, privately captured confirmation, actual provider email verification, captured password recovery with a safe return address, and denial of privileged message/role/certificate operations to anonymous and ordinary authenticated clients.
 - All ten certificate PDFs were generated and rendered for visual review. Font embedding supports the tested accented and Cyrillic names. The final design review corrected border and footer overlaps.
