@@ -19,7 +19,7 @@ function clean(value: FormDataEntryValue | null) {
 
 export async function updateProfileAction(
   _state: ProfileActionState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ProfileActionState> {
   const session = await requireSession();
 
@@ -34,7 +34,7 @@ export async function updateProfileAction(
     preferred_name: clean(formData.get("preferred_name")),
     certificate_name: certificateName,
     phone: clean(formData.get("phone")),
-    country: clean(formData.get("country"))
+    country: clean(formData.get("country")),
   });
 
   if (!result.ok) {
@@ -44,15 +44,28 @@ export async function updateProfileAction(
   revalidatePath("/profile");
   // Enrolment is a server decision, not a hidden field supplied by one form.
   // A regular Profile save must finish onboarding too.
-  if (!isStaffAccount(await getUserRoles(session.accessToken)) || formData.get("complete_onboarding") === "true") {
+  if (
+    !isStaffAccount(await getUserRoles(session.accessToken)) ||
+    formData.get("complete_onboarding") === "true"
+  ) {
     const accepted = await acceptPendingInvitations();
-    if (!accepted.ok) return { error: accepted.error === "email_unconfirmed"
-      ? "Your profile is saved. Confirm your email address to open your invited course."
-      : "Your profile is saved, but your invited course could not be opened yet. Please try saving again or contact your training administrator." };
-    if ((await getUserRoles(session.accessToken)).includes("admin")) redirect("/admin");
+    if (!accepted.ok)
+      return {
+        error:
+          accepted.error === "email_unconfirmed"
+            ? "Your profile is saved. Confirm your email address to open your invited course."
+            : "Your profile is saved, but your invited course could not be opened yet. Please try saving again or contact your training administrator.",
+      };
+    if ((await getUserRoles(session.accessToken)).includes("admin"))
+      redirect("/admin");
+    if (accepted.companyIds?.length)
+      redirect(`/company/${accepted.companyIds[0]}`);
     revalidatePath("/dashboard");
     revalidatePath("/catalogue");
-    if (accepted.courseIds?.length || formData.get("complete_onboarding") === "true") {
+    if (
+      accepted.courseIds?.length ||
+      formData.get("complete_onboarding") === "true"
+    ) {
       redirect("/dashboard?welcome=1");
     }
   }
