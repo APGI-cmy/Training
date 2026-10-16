@@ -2,7 +2,7 @@
 import { useId } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { calculateServiceCosts, costServices, newServiceSelection, readServiceSelection, type ServiceSelection } from "@/lib/service-costs";
+import { calculateServiceCosts, costServices, defaultAiUsage, newServiceSelection, readServiceSelection, type ServiceSelection } from "@/lib/service-costs";
 import { baselineRateCatalogue, catalogueDate, rateAmount, type RateCatalogue } from "@/lib/service-rate-register";
 import { FieldHelp } from "./FieldHelp";
 import { AutomaticCurrencyRates, CurrencyEquivalents } from "./AutomaticCurrencyRates";
@@ -17,7 +17,7 @@ export function ServiceCostChecklist({raw,currency,onChange,catalogue=baselineRa
   const update=(patch:Partial<ServiceSelection>)=>onChange(JSON.stringify({...selection,...patch,reviewed:false}));
   const change=(id:string,key:string,value:string)=>update({services:{...selection.services,[id]:{...selection.services[id],[key]:value}}});
   const toggle=(id:string,enabled:boolean)=>{
-    const services={...selection.services};if(!enabled)delete services[id];else services[id]={plan:costServices.find(s=>s.id===id)?.plans?.[0]?.id??(id==="ai"?"luna":""),units:"1",extra_monthly:"0",extra_per_learner:"0",extra_percent:"0",months:"1",licence:"single"};
+    const services={...selection.services};if(!enabled)delete services[id];else services[id]={plan:costServices.find(s=>s.id===id)?.plans?.[0]?.id??(id==="ai"?"luna":""),units:"1",extra_monthly:"0",extra_per_learner:"0",extra_percent:"0",months:"1",licence:"single",...(id==="ai"?defaultAiUsage:{})};
     update({services});
   };
   let result:ReturnType<typeof calculateServiceCosts>|undefined,error="";
@@ -62,7 +62,7 @@ export function ServiceCostChecklist({raw,currency,onChange,catalogue=baselineRa
               {input("input_tokens","AI input tokens per enrolment","Expected total input tokens including reused conversation context. Enter zero if none.")}
               {input("output_tokens","AI output / reasoning tokens per enrolment","Expected total billed output including reasoning. Enter zero if none.")}
               {input("extra_per_learner","AI other usage per enrolment (USD)","Allowance for tools, web search, storage, audio, images or long-context premiums not covered by these text token rates.")}
-              <p className="admin-span-two field-hint">Standard text requests up to 272,000 input tokens each; no cache discount assumed. Long-context, regional processing, faster tiers and non-text usage need their applicable rate or extra allowance. Token counts are your estimate until V3 usage analytics is added.</p>
+              <p className="admin-span-two field-hint">Starting allowance for the whole course per enrolment: 1,000,000 input tokens, 200,000 output/reasoning tokens and USD 0 other usage. Adjust these estimates to suit the course; they are not usage limits or measured consumption. Standard text requests up to 272,000 input tokens each; no cache discount assumed. Long-context, regional processing, faster tiers and non-text usage need their applicable rate or extra allowance.</p>
               {(()=>{try{const ai=calculateServiceCosts({...selection,enrolments:selection.enrolments||"1",services:{ai:f}},"USD",false,catalogue);return <p className="admin-span-two currency-allowance" role="status"><strong>AI allowance per learner: USD {(ai.estimate.hostingFixedCents/100).toFixed(2)}</strong><br/><CurrencyEquivalents amount={(ai.estimate.hostingFixedCents/100).toFixed(2)} from="USD" quote={selection.fxMode==="auto"?selection.fxQuote:null}/></p>;}catch{return null;}})()}
             </>:null}
             {service.id==="stripe"?<>

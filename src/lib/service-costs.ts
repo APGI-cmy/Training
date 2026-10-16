@@ -29,6 +29,9 @@ export const costServices: ServiceDefinition[] = [
   { id:"other",name:"Other operating costs",source:"",note:"Use for domains, applicable provider tax, additional services or a documented reserve. Do not repeat costs already included above."},
 ];
 export type ServiceInputs = Record<string,string>;
+// Provisional whole-course allowance per enrolment, editable before review.
+// These values are estimates, not measured consumption or an enforced usage cap.
+export const defaultAiUsage = {input_tokens:"1000000",output_tokens:"200000",extra_per_learner:"0"} as const;
 export type ServiceSelection = { version:string; enrolments:string; usdFx:string; cadFx:string; fxMode?:"auto"|"manual"; fxQuote?:ExchangeQuote; administration:string; contingency?:string; reviewed:boolean; services:Record<string,ServiceInputs> };
 export function newServiceSelection(catalogue:RateCatalogue=baselineRateCatalogue): ServiceSelection { return {version:catalogue.version,enrolments:"",usdFx:"",cadFx:"",fxMode:"auto",administration:"6",contingency:"10",reviewed:false,services:{}}; }
 export function readServiceSelection(raw: string): ServiceSelection {
