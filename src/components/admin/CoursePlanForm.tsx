@@ -84,7 +84,10 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
   };
   const selectedCourse = courses.find(c => c.slug === values.course_id);
   const returnPath = values.course_id ? `/admin/courses/${values.course_id}/publish` : "/admin/agreements";
-  return <form ref={formRef} action={action}>
+  return <form ref={formRef} action={action} onSubmit={event=>{
+    const submitter=(event.nativeEvent as SubmitEvent).submitter;
+    if(step!==3||!(submitter instanceof HTMLButtonElement)||submitter.name!=="intent")event.preventDefault();
+  }}>
     <input type="hidden" name="workspace" value="course_plan" /><input type="hidden" name="kind" value="course_agreement" />
     <input type="hidden" name="cost_mode" value={useServices?"services":"saved"}/><input type="hidden" name="service_costs" value={values.service_costs}/>
     <input type="hidden" name="title" value={`${selectedCourse?.title ?? "Course"} — ${brand?.name ?? "Brand"}`.slice(0,150)} />
@@ -119,7 +122,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
       <label title="Record any exception that must be included in the approval schedule.">Notes for the agreement<textarea name="notes" value={values.notes} onChange={event=>update("notes")(event.target.value)} maxLength={5000} rows={3}/></label>
       <p className="notice-card">This saves a planning draft only. It does not publish the course, send invitations, approve an agreement, change a learner price or activate a payment. Partner acceptance and controlled publication are the next implementation stage.</p>
     </fieldset>
-    <div className="planning-controls">{step>0 ? <button type="button" className="secondary-button" onClick={()=>setStep(current=>current-1)}>Back</button> : null}{step<3 ? <button type="button" className="primary-button" onClick={advance}>Continue</button> : <button className="primary-button" disabled={pending||!quote}>{pending?"Saving…":"Save course and terms draft"}</button>}</div>
+    <div className="planning-controls">{step>0 ? <button key="back" type="button" className="secondary-button" onClick={()=>setStep(current=>current-1)}>Back</button> : null}{step<3 ? <button key="continue" type="button" className="primary-button" onClick={event=>{event.preventDefault();advance();}}>Continue</button> : <button key="save-draft" type="submit" name="intent" value="save_course_draft" className="primary-button" disabled={pending||!quote}>{pending?"Saving…":"Save course and terms draft"}</button>}</div>
     {state.error ? <p role="alert" className="form-error">{state.error}</p> : null}{state.success ? <p role="status" className="form-success">{state.success}</p> : null}
   </form>;
 }

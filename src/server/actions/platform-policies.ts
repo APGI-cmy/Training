@@ -232,6 +232,8 @@ export async function saveCommercialDraft(
     if (org) await requireCompany(validId(org));
     const course = formText(form, "course_id") || null;
     const workspace = formText(form, "workspace");
+    if(workspace==="course_plan"&&form.get("intent")!=="save_course_draft")
+      throw new Error("Review the course plan, then select Save course and terms draft explicitly.");
     if (workspace === "course_plan" && (!org || !course || kind !== "course_agreement"))
       throw new Error("A course plan requires a company and course.");
     if (workspace === "cost_profile" && (org || course || kind !== "operating_cost"))
