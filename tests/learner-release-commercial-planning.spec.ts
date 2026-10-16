@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { allocationAtPrice, applicableApgiShare, costEstimate, minimumCourseQuote, moneyCents, percentageBps, type PlanningInput } from "@/lib/commercial-planning";
-import { reviewerEmails } from "@/lib/company-structure";
+import { reviewerEmails, policyScopeLabel } from "@/lib/company-structure";
 import { publicationReturnPath } from "@/lib/publication-return";
 const input: PlanningInput = { minimumApgiCents:10000,apgiShareBps:2000,recoveryBps:2500,outstandingCents:1000000,hostingFixedCents:1000,hostingRateBps:0,stripeFixedCents:0,stripeRateBps:0,administrationBps:600 };
 describe("Cost-first course price planning",()=>{
@@ -41,6 +41,10 @@ describe("Cost-first course price planning",()=>{
  });
 });
 describe("Reviewer rows and safe branding return",()=>{
+ it("does not mislabel a company agreement as internal when the company is inactive",()=>{
+  expect(policyScopeLabel({visibility:"company",organisation_id:"retired"},[])).toContain("Company agreement");
+  expect(policyScopeLabel({visibility:"internal",organisation_id:null},[])).toBe("Confidential internal");
+ });
  it("reads separate email rows and preserves compatibility with pasted lists",()=>{
   const f=new FormData();f.append("reviewers","First@example.invalid");f.append("reviewers","second@example.invalid");expect(reviewerEmails(f)).toEqual(["first@example.invalid","second@example.invalid"]);
   f.set("reviewers","first@example.invalid, second@example.invalid");expect(reviewerEmails(f)).toHaveLength(2);

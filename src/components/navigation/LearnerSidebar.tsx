@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SidebarNavigation } from "@/components/navigation/SidebarNavigation";
 import { SignOutControl } from "@/components/auth/sign-out-control";
 import { BrandingName } from "@/components/branding/BrandingName";
 import { getCurrentSession, getUserRoles } from "@/server/auth/session";
@@ -22,44 +22,32 @@ export async function LearnerSidebar() {
         </p>
       </div>
 
-      <nav className="sidebar-links" aria-label="Learner route navigation">
-        <Link href="/dashboard">Dashboard</Link>
-        <Link href="/catalogue">Course catalogue</Link>
-        <Link href="/catalogue?view=my-learning">Enrolled courses</Link>
-        <Link href="/profile">Profile</Link>
-        {session ? <Link href="/company">Company workspaces</Link> : null}
-        {session ? <Link href="/policies">Policies and reviews</Link> : null}
-        {isAdmin ? <Link href="/admin">Administration</Link> : null}
-        {isAdmin ? <Link href="/admin/learners">Learners</Link> : null}
-        {isAdmin ? <Link href="/admin/invitations">Invitations</Link> : null}
-        {isAdmin ? (
-          <Link href="/admin/notifications">Notifications</Link>
-        ) : null}
-        {isAdmin ? (
-          <Link href="/admin/test-messages">Test messages</Link>
-        ) : null}
-        {isAdmin ? (
-          <Link href="/admin/certificates">Certificate designs</Link>
-        ) : null}
-        {isAdmin ? (
-          <Link href="/admin/enrolments">Manage enrolments</Link>
-        ) : null}
-        {isAdmin ? (
-          <Link href="/admin/assessments">Scannex assessments</Link>
-        ) : null}
-        {isAdmin ? <Link href="/admin/courses">Course preview</Link> : null}
-        {isAdmin ? <Link href="/admin/payments">Payments</Link> : null}
-        {isAdmin ? (
-          <Link href="/admin/companies">Companies and branding</Link>
-        ) : null}
-        {isAdmin ? <Link href="/admin/policies">Platform policies</Link> : null}
-        {principal ? (
-          <Link href="/admin/agreements">Commercial drafts</Link>
-        ) : null}
-        {isAdmin ? (
-          <Link href="/admin/email-templates">Email previews</Link>
-        ) : null}
-      </nav>
+      <SidebarNavigation items={[
+        { href: "/dashboard", label: "Dashboard" },
+        { href: "/catalogue", label: "Course catalogue" },
+        { href: "/catalogue?view=my-learning", label: "Enrolled courses" },
+        { href: "/profile", label: "Profile" },
+        ...(session ? [
+          { href: "/company", label: "Company workspaces" },
+          { href: "/policies", label: "Policies and reviews" },
+        ] : []),
+        ...(isAdmin ? [
+          { href: "/admin", label: "Administration" },
+          { href: "/admin/learners", label: "Learners" },
+          { href: "/admin/invitations", label: "Invitations" },
+          { href: "/admin/notifications", label: "Notifications" },
+          { href: "/admin/test-messages", label: "Test messages" },
+          { href: "/admin/certificates", label: "Certificate designs" },
+          { href: "/admin/enrolments", label: "Manage enrolments" },
+          { href: "/admin/assessments", label: "Scannex assessments" },
+          { href: "/admin/courses", label: "Course preview" },
+          { href: "/admin/payments", label: "Payments" },
+          { href: "/admin/companies", label: "Companies and branding" },
+          { href: "/admin/policies", label: "Platform policies" },
+          ...(principal ? [{ href: "/admin/agreements", label: "Commercial drafts" }] : []),
+          { href: "/admin/email-templates", label: "Email previews" },
+        ] : []),
+      ]} />
 
       <div className="sidebar-actions">
         <SignOutControl />

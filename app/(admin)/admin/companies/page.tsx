@@ -51,7 +51,7 @@ export default async function CompaniesPage({searchParams}: {searchParams: Promi
             <p>
               {c.slug} · brand revision {c.brand_revision}
             </p>
-            <Link className="primary-button" href={`/company/${c.id}`}>
+            <Link className="primary-button" href={`/company/${c.id}${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}>
               Manage company
             </Link>
           </article>

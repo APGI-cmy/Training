@@ -6,6 +6,7 @@ import {
 } from "@/server/services/company-structure";
 import { PolicyDraftForm } from "@/components/admin/PolicyDraftForm";
 import { requireSession } from "@/server/auth/session";
+import { policyScopeLabel } from "@/lib/company-structure";
 import { isPlatformPrincipal } from "@/server/services/platform-principals";
 export default async function AdminPoliciesPage() {
   await requireAdmin();
@@ -41,8 +42,7 @@ export default async function AdminPoliciesPage() {
             </strong>
             <span>
               {p.status} ·{" "}
-              {companies.find((c) => c.id === p.organisation_id)?.name ??
-                "Confidential internal"}
+              {policyScopeLabel(p, companies)}
             </span>
             <Link className="secondary-button" href={`/policies/${p.id}`}>
               Open document and decisions

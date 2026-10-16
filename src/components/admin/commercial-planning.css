@@ -1,4 +1,5 @@
 /* Guided agreement preparation */
+.policy-draft-grid > label { align-self: start; }
 .reviewer-fields { min-width: 0; border: 1px solid var(--border-color, #35516a); border-radius: 8px; padding: 1rem; }
 .reviewer-row { display: flex; gap: .6rem; align-items: end; margin-bottom: .7rem; }
 .reviewer-row label { flex: 1; min-width: 0; }
@@ -9,7 +10,7 @@
 .field-help { display: inline-block; position: relative; }
 .field-help-button { border: 1px solid #8cb8cd; border-radius:50%; color:inherit; background:transparent; width:1.6rem; height:1.6rem; cursor:pointer; }
 .field-help-button:focus-visible { outline:3px solid #e9bb55; outline-offset:3px; }
-.field-help-text { position:fixed; z-index:20; width:min(19rem,65vw); padding:.8rem; border:1px solid #8cb8cd; border-radius:8px; background:#102b46; color:#f5f8fc; font-size:.9rem; font-weight:400; box-shadow:0 4px 15px #0005; }
+.field-help-text { position:fixed; z-index:20; width:min(19rem,65vw); overflow:auto; padding:.8rem; border:1px solid #8cb8cd; border-radius:8px; background:#102b46; color:#f5f8fc; font-size:.9rem; font-weight:400; box-shadow:0 4px 15px #0005; }
 .field-help-text[hidden],.commercial-step[hidden] { display:none; }
 .commercial-step { border:0; padding:1rem 0; min-width:0; }
 .commercial-step legend { font-weight:700; font-size:1.2rem; padding-top:1rem; }

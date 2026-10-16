@@ -64,6 +64,13 @@
   font-weight: 600;
 }
 
+.sidebar-links a[aria-current="page"] {
+  border-color: var(--accent);
+  background: var(--surface-strong);
+  box-shadow: inset 4px 0 0 var(--accent);
+  text-decoration: none;
+}
+
 .sidebar-actions {
   margin-top: auto;
 }

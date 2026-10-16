@@ -71,6 +71,10 @@ export type PolicyRecord = {
   created_by: string;
   previous_version_id: string | null;
 };
+export function policyScopeLabel(policy: Pick<PolicyRecord,"visibility"|"organisation_id">, companies: {id: string; name: string}[]) {
+  if (policy.visibility === "internal") return "Confidential internal";
+  return companies.find(company => company.id === policy.organisation_id)?.name ?? "Company agreement - company not in active list";
+}
 export type DraftRecord = {
   id: string;
   organisation_id: string | null;
