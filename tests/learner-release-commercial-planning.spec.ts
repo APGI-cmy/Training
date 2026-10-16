@@ -65,4 +65,7 @@ describe("Server recalculation of submitted drafts",()=>{
  it("rejects currency mismatch and an already-paid balance marked recoverable",async()=>{
   fixture.configuration.currency="CAD";await expect(coursePlanConfiguration(plan())).rejects.toThrow("same currency");fixture.configuration.currency="USD";const f=plan();f.set("already_paid","10000");await expect(coursePlanConfiguration(f)).rejects.toThrow("positive outstanding");
  });
+ it("keeps a partner-owned course on the APGI storefront under a partner agreement",async()=>{
+  const f=plan();f.set("organisation_id","11111111-1111-4111-8111-111111111111");const config=await coursePlanConfiguration(f);expect(config.agreement_scope).toBe("partner");expect(config.contract_partner_id).toBe("22222222-2222-4222-8222-222222222222");expect(config.development_funder).toBe("APGI platform");
+ });
 });

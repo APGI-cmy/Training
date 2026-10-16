@@ -39,11 +39,12 @@ export async function coursePlanConfiguration(form: FormData) {
   const estimate = costEstimate(profile.configuration);
   const quote = minimumCourseQuote({ ...estimate, minimumApgiCents: moneyCents(formText(form, "minimum_apgi_income"), "minimum APGI income"), apgiShareBps: shareBps, recoveryBps: percentageBps(recovery, "development recovery percentage"), outstandingCents: developmentCost - alreadyPaid });
   const configuration: Record<string, string | null> = {
-    planning_version: "1", agreement_scope: brand.company.slug === "apgi" ? "apgi_course" : "partner", currency,
+    planning_version: "1", agreement_scope: ownApgi ? "apgi_course" : "partner", currency,
+    contract_partner_id: brand.company.slug !== "apgi" ? brand.company.id : owner.company.slug !== "apgi" ? owner.company.id : null,
     rights_holder: ownerId, rights_holder_name: owner.company.name, brand_name: brand.company.name,
     brand_revision: String(brand.company.brand_revision), development_status: developmentStatus,
     development_cost: (developmentCost / 100).toFixed(2), already_paid: (alreadyPaid / 100).toFixed(2),
-    development_funder: brand.company.slug === "apgi" ? "SRMS" : "APGI platform",
+    development_funder: ownApgi ? "SRMS" : "APGI platform",
     recovery_rate: recovery, recovery_base: partnerPlanningDefaults.recoveryBase,
     customer_source: source, apgi_share: (shareBps / 100).toFixed(2), platform_user_share: ((10000 - shareBps) / 100).toFixed(2),
     minimum_apgi_income: formText(form, "minimum_apgi_income"), cost_profile_id: profile.id,
