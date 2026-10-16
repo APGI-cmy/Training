@@ -30,6 +30,6 @@ describe("Selected service cost estimates",()=>{
  it("reconciles the calculated service costs with the agreed cost-first distribution",()=>{
   const s=base();s.services.stripe={plan:"custom",rate:"2.9",fixed:"0.30",extra_percent:"0",evidence:"account quote"};
   const r=calculateServiceCosts(s,"USD",true),p={...r.estimate,minimumApgiCents:10000,apgiShareBps:2000,recoveryBps:2500,outstandingCents:100000};const q=minimumCourseQuote(p);
-  expect(q.costs+q.administration+q.recovery+q.apgi+q.partner).toBe(q.price);expect(q.administration).toBe(Math.ceil(q.costs*.06));expect(q.apgi).toBeGreaterThanOrEqual(10000);expect(allocationAtPrice(q.price-1,p).apgi).toBeLessThan(10000);
+  expect(q.costs+q.contingency+q.administration+q.recovery+q.apgi+q.partner).toBe(q.price);expect(q.administration).toBe(Math.ceil(q.costs*.06));expect(q.apgi).toBeGreaterThanOrEqual(10000);expect(allocationAtPrice(q.price-1,p).apgi).toBeLessThan(10000);
  });
 });

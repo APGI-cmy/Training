@@ -28,8 +28,8 @@ export const costServices: ServiceDefinition[] = [
   { id:"other",name:"Other operating costs",source:"",note:"Use for domains, applicable provider tax, additional services or a documented reserve. Do not repeat costs already included above."},
 ];
 export type ServiceInputs = Record<string,string>;
-export type ServiceSelection = { version:string; enrolments:string; usdFx:string; cadFx:string; administration:string; reviewed:boolean; services:Record<string,ServiceInputs> };
-export function newServiceSelection(catalogue:RateCatalogue=baselineRateCatalogue): ServiceSelection { return {version:catalogue.version,enrolments:"",usdFx:"",cadFx:"",administration:"6",reviewed:false,services:{}}; }
+export type ServiceSelection = { version:string; enrolments:string; usdFx:string; cadFx:string; administration:string; contingency?:string; reviewed:boolean; services:Record<string,ServiceInputs> };
+export function newServiceSelection(catalogue:RateCatalogue=baselineRateCatalogue): ServiceSelection { return {version:catalogue.version,enrolments:"",usdFx:"",cadFx:"",administration:"6",contingency:"10",reviewed:false,services:{}}; }
 export function readServiceSelection(raw: string): ServiceSelection {
   if (!raw) return newServiceSelection();
   if(raw.length>24000) throw Error("The service selection is too large.");
@@ -38,6 +38,8 @@ export function readServiceSelection(raw: string): ServiceSelection {
   const v=value as ServiceSelection;
   if(typeof v.version!=="string"||typeof v.reviewed!=="boolean"||!v.services||typeof v.services!=="object"||Array.isArray(v.services))throw Error("Re-enter the service selection.");
   for(const key of ["enrolments","usdFx","cadFx","administration"] as const)if(typeof v[key]!=="string"||v[key].length>40)throw Error("Check service assumptions.");
+  if(v.contingency===undefined){v.contingency="10";v.reviewed=false;}
+  if(typeof v.contingency!=="string"||v.contingency.length>40)throw Error("Check the other-cost contingency.");
   for(const [id,fields] of Object.entries(v.services)) {
     if(!costServices.some(s=>s.id===id)||!fields||typeof fields!=="object"||Array.isArray(fields))throw Error("Choose a listed service.");
     if(Object.keys(fields).length>20||Object.values(fields).some(x=>typeof x!=="string"||x.length>500))throw Error("Check service details.");
@@ -61,6 +63,7 @@ export function calculateServiceCosts(selection:ServiceSelection,currency:string
   if(!Object.keys(selection.services).length)throw Error("Tick the services this course uses.");
   const enrolments=count(selection.enrolments,"expected monthly paid course enrolments");
   const administrationBps=percentageBps(selection.administration,"administration on costs");
+  const contingencyBps=percentageBps(selection.contingency??"10","other-cost contingency");
   const needUsd=Object.keys(selection.services).some(id=>id!=="stripe");
   const usdFx=currency==="USD"?scale:needUsd?decimal(selection.usdFx,`value of USD 1 in ${currency}`,true):scale;
   const convert=(micro:bigint,fx:bigint)=>{const n=Number(ceil(micro*fx,BigInt(10000)*scale));if(!Number.isSafeInteger(n)||n>1e12)throw Error("Service estimate is too large.");return n;};
@@ -115,6 +118,6 @@ export function calculateServiceCosts(selection:ServiceSelection,currency:string
     lines.push({id:service.id,name:service.name,plan,source:service.source,basis,fixedCents,rateBps});
   }
   if(requireReviewed&&!selection.reviewed)throw Error("Confirm the selected plans, usage, quotas and extra-cost allowances before saving.");
-  const estimate:CostEstimate={hostingFixedCents:lines.filter(l=>l.id!=="stripe").reduce((n,l)=>n+l.fixedCents,0),hostingRateBps:0,stripeFixedCents:lines.find(l=>l.id==="stripe")?.fixedCents??0,stripeRateBps:lines.find(l=>l.id==="stripe")?.rateBps??0,administrationBps};
+  const estimate:CostEstimate={hostingFixedCents:lines.filter(l=>l.id!=="stripe").reduce((n,l)=>n+l.fixedCents,0),hostingRateBps:0,stripeFixedCents:lines.find(l=>l.id==="stripe")?.fixedCents??0,stripeRateBps:lines.find(l=>l.id==="stripe")?.rateBps??0,administrationBps,contingencyBps};
   return {estimate,lines,snapshot:{catalogueVersion:catalogue.version,checkedOn:catalogueDate(catalogue),rateValues:{...catalogue.values},currency,enrolments:selection.enrolments,usdFx:needUsd?(currency==="USD"?"1":selection.usdFx):null,cadFx:selection.services.stripe?.plan!=="custom"&&selection.services.stripe?(currency==="CAD"?"1":selection.cadFx):null,selection:normalised,lines}};
 }
