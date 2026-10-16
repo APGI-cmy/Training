@@ -3,6 +3,7 @@ import { allocationAtPrice, applicableApgiShare, costEstimate, minimumCourseQuot
 import { reviewerEmails, policyScopeLabel } from "@/lib/company-structure";
 import { publicationReturnPath } from "@/lib/publication-return";
 import { newServiceSelection } from "@/lib/service-costs";
+vi.mock("@/server/services/service-rate-register",async()=>({currentRateCatalogue:async()=>(await import("@/lib/service-rate-register")).baselineRateCatalogue}));
 const input: PlanningInput = { minimumApgiCents:10000,apgiShareBps:2000,recoveryBps:2500,outstandingCents:1000000,hostingFixedCents:1000,hostingRateBps:0,stripeFixedCents:0,stripeRateBps:0,administrationBps:600 };
 describe("Cost-first course price planning",()=>{
  it("prices backwards to the APGI minimum with recovery before the owner split",()=>{

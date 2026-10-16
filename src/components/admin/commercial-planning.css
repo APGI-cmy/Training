@@ -31,5 +31,11 @@
 .service-breakdown th,.service-breakdown td { text-align:left; padding:.7rem; border-bottom:1px solid var(--line); vertical-align:top; }
 .service-breakdown caption { text-align:left; padding:.5rem 0; }
 .service-breakdown { border:1px solid var(--line); border-radius:8px; padding:1rem; margin:1rem 0; }
+.rate-provider { min-width:0; border:1px solid var(--line); border-radius:8px; padding:1rem; margin:1.2rem 0; }
+.rate-provider legend { font-size:1.1rem; font-weight:700; }
+.rate-table { width:100%; border-collapse:collapse; }
+.rate-table th,.rate-table td { text-align:left; vertical-align:top; padding:.7rem; border-bottom:1px solid var(--line); }
+.rate-table input { width:8rem; min-width:6rem; }
+.rate-table caption { text-align:left; padding:.4rem; }
 @media(max-width:600px) { .service-options { grid-template-columns:1fr; } }
 @media(max-width:600px) { .reviewer-row { align-items:stretch; flex-direction:column; } }

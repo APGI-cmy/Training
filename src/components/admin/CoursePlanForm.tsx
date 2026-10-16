@@ -9,6 +9,7 @@ import type { StructureState } from "@/lib/company-structure";
 import { FieldHelp } from "./FieldHelp";
 import { ServiceCostChecklist } from "./ServiceCostChecklist";
 import { calculateServiceCosts, readServiceSelection } from "@/lib/service-costs";
+import { baselineRateCatalogue, type RateCatalogue } from "@/lib/service-rate-register";
 
 export type PlanCompany = { id: string; name: string; slug: string };
 export type PlanCostProfile = { id: string; title: string; configuration: Record<string, string | null> };
@@ -23,9 +24,9 @@ export function PlanningField({ name, label, help, value, onChange, options, req
       : <input id={id} name={name} title={help} value={value} onChange={event => onChange(event.target.value)} required={required} readOnly={readOnly} placeholder={placeholder} maxLength={250} />}
   </div>;
 }
-export function CoursePlanForm({ companies, courses, costProfiles, principalId, initialCourse = "", initialBrand = "" }: {
+export function CoursePlanForm({ companies, courses, costProfiles, principalId, initialCourse = "", initialBrand = "", catalogue=baselineRateCatalogue }: {
   companies: PlanCompany[]; courses: {slug: string; title: string}[]; costProfiles: PlanCostProfile[];
-  principalId: string; initialCourse?: string; initialBrand?: string;
+  principalId: string; initialCourse?: string; initialBrand?: string; catalogue?:RateCatalogue;
 }) {
   const [state, action, pending] = useActionState<StructureState, FormData>(saveCommercialDraft, {});
   const router=useRouter();
@@ -66,7 +67,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
   let serviceResult:ReturnType<typeof calculateServiceCosts>|undefined;
   let quote: ReturnType<typeof minimumCourseQuote> | null = null, quoteError = "Choose a course, brand, legal owner and complete service assumptions, then enter the minimum APGI income.";
   try {
-    if(useServices)serviceResult=calculateServiceCosts(readServiceSelection(values.service_costs),values.currency,true);
+    if(useServices)serviceResult=calculateServiceCosts(readServiceSelection(values.service_costs),values.currency,true,catalogue);
     const estimate=useServices?serviceResult?.estimate:profile?costEstimate(profile.configuration):null;
     if (estimate && owner && brand && values.development_status && share) {
       const development = moneyCents(values.development_cost || "0", "development cost");
@@ -110,7 +111,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
       {field("currency","Currency","Course price currency. Provider rates are converted using your explicit planning exchange rates. USD is the draft default.",{options:["USD","CAD","EUR","GBP","ZAR"].map(value=>({value,label:value}))})}
       {field("minimum_apgi_income","Minimum APGI income per learner","What the combined APGI platform should retain after running costs, the cost-only administration fee, development recovery and the partner split. Internal APGI/SRMS distributions remain separate.",{required:true,placeholder:"Example: 100.00"})}
       {costProfiles.length?<div className="admin-span-two"><label>Cost preparation method<select value={values.cost_mode} onChange={e=>update("cost_mode")(e.target.value)}><option value="services">Select services here</option><option value="saved">Use an earlier saved estimate</option></select></label></div>:null}
-      {useServices?<ServiceCostChecklist raw={values.service_costs} currency={values.currency} onChange={update("service_costs")}/>:field("cost_profile_id","Saved platform cost estimate","Use a previously prepared estimate in the course currency. Select services here instead to prepare one on this page.",{required:true,options:[{value:"",label:"Choose an earlier estimate"},...costProfiles.filter(p=>p.configuration.currency===values.currency).map(p=>({value:p.id,label:p.title}))]})}
+      {useServices?<ServiceCostChecklist catalogue={catalogue} raw={values.service_costs} currency={values.currency} onChange={update("service_costs")}/>:field("cost_profile_id","Saved platform cost estimate","Use a previously prepared estimate in the course currency. Select services here instead to prepare one on this page.",{required:true,options:[{value:"",label:"Choose an earlier estimate"},...costProfiles.filter(p=>p.configuration.currency===values.currency).map(p=>({value:p.id,label:p.title}))]})}
       {ownApgi ? <input type="hidden" name="customer_source" value="apgi"/> : field("customer_source","Who provides the customer?","For partner-owned courses: owner-sourced gives 80% to the owner and 20% to APGI; APGI-sourced gives 60% to the owner and 40% to APGI. Both apply after costs and recovery.",{options:[{value:"owner",label:"Course owner / partner"},{value:"apgi",label:"APGI"}]})}
       {!ownApgi ? <label className="admin-span-two"><input type="checkbox" name="custom_shares" checked={custom} onChange={event=>update("custom_shares")(event.target.checked?"on":"")} /> Tailor the APGI/partner share for this draft</label> : null}
       {custom ? field("apgi_share","APGI share (%)","Combined APGI platform share of the pool after costs and recovery. The partner receives the remainder. A changed split requires acceptance of the exact terms.",{required:true}) : <p>APGI share: {share ?? "A tailored licensing schedule is required"}{share ? `% · Partner share: ${(100-Number(share)).toFixed(2)}%` : ""}</p>}

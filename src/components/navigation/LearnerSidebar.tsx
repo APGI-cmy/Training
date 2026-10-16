@@ -44,7 +44,7 @@ export async function LearnerSidebar() {
           { href: "/admin/payments", label: "Payments" },
           { href: "/admin/companies", label: "Companies and branding" },
           { href: "/admin/policies", label: "Platform policies" },
-          ...(principal ? [{ href: "/admin/agreements", label: "Commercial drafts" }] : []),
+          ...(principal ? [{ href: "/admin/agreements", label: "Commercial drafts" }, { href: "/admin/service-costs", label: "Service cost register" }] : []),
           { href: "/admin/email-templates", label: "Email previews" },
         ] : []),
       ]} />

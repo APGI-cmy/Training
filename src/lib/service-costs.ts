@@ -1,4 +1,5 @@
 import { moneyCents, percentageBps, type CostEstimate } from "./commercial-planning";
+import { baselineRateCatalogue, catalogueDate, rateAmount, type RateCatalogue } from "./service-rate-register";
 
 // Reviewed public rate card; never refreshed implicitly inside an accepted agreement.
 export const RATE_VERSION = "2026-10-16.1";
@@ -28,7 +29,7 @@ export const costServices: ServiceDefinition[] = [
 ];
 export type ServiceInputs = Record<string,string>;
 export type ServiceSelection = { version:string; enrolments:string; usdFx:string; cadFx:string; administration:string; reviewed:boolean; services:Record<string,ServiceInputs> };
-export function newServiceSelection(): ServiceSelection { return {version:RATE_VERSION,enrolments:"",usdFx:"",cadFx:"",administration:"6",reviewed:false,services:{}}; }
+export function newServiceSelection(catalogue:RateCatalogue=baselineRateCatalogue): ServiceSelection { return {version:catalogue.version,enrolments:"",usdFx:"",cadFx:"",administration:"6",reviewed:false,services:{}}; }
 export function readServiceSelection(raw: string): ServiceSelection {
   if (!raw) return newServiceSelection();
   if(raw.length>24000) throw Error("The service selection is too large.");
@@ -54,8 +55,8 @@ function count(value:string,label:string) {if(!/^\d{1,7}$/.test(value)||Number(v
 function tokens(value:string,label:string) {if(!/^\d{1,10}$/.test(value))throw Error(`Enter ${label} as a whole number, including zero if none.`);return BigInt(value);}
 const moneyUsd=(v:string,label:string)=>BigInt(moneyCents(v,label))*BigInt(10000);
 export type ServiceLine = {id:string;name:string;plan:string;source:string;basis:string;fixedCents:number;rateBps:number};
-export function calculateServiceCosts(selection:ServiceSelection,currency:string,requireReviewed=false) {
-  if(selection.version!==RATE_VERSION)throw Error("The pricing catalogue changed. Review the current service rates before saving.");
+export function calculateServiceCosts(selection:ServiceSelection,currency:string,requireReviewed=false,catalogue:RateCatalogue=baselineRateCatalogue) {
+  if(selection.version!==catalogue.version)throw Error("The pricing catalogue changed. Review the current service rates before saving.");
   if(!["USD","CAD","EUR","GBP","ZAR"].includes(currency))throw Error("Choose a supported course currency.");
   if(!Object.keys(selection.services).length)throw Error("Tick the services this course uses.");
   const enrolments=count(selection.enrolments,"expected monthly paid course enrolments");
@@ -75,33 +76,34 @@ export function calculateServiceCosts(selection:ServiceSelection,currency:string
       if(!preset&&!custom)throw Error(`Choose the ${service.name} plan.`);
       if(custom&&(!f.evidence||f.evidence.trim().length<3))throw Error(`Record the quote or invoice reference for ${service.name}.`);
       const units=count(f.units,`${service.name} plan / instance quantity`);
-      const monthly=moneyUsd(custom?f.monthly:preset!.monthly,`${service.name} monthly amount`)*units+moneyUsd(f.extra_monthly,`${service.name} additional monthly costs`);
-      usd=ceil(monthly,group);plan=custom?"Own quoted monthly rate":preset!.label;
-      basis=`${units} × USD ${custom?f.monthly:preset!.monthly}/month + USD ${f.extra_monthly} additional/month, divided by ${group} paid enrolments.`;
+      const amount=custom?f.monthly:rateAmount(catalogue,`${service.id}.${preset!.id}`);
+      const monthly=moneyUsd(amount,`${service.name} monthly amount`)*units+moneyUsd(f.extra_monthly,`${service.name} additional monthly costs`);
+      usd=ceil(monthly,group);plan=custom?"Own quoted monthly rate":preset!.label.replace(/USD [\d.]+\/month/,`USD ${amount}/month`);
+      basis=`${units} × USD ${amount}/month + USD ${f.extra_monthly} additional/month, divided by ${group} paid enrolments.`;
     } else if(service.id==="aws") {
       if(!f.evidence||f.evidence.trim().length<3)throw Error("Record the AWS region, instance and quote reference.");
       const hours=decimal(f.hours,"AWS practice hours per enrolment",true),hourly=decimal(f.hourly,"AWS hourly USD quote",true);
       const months=count(f.months,"AWS licence months per enrolment");
-      const licences:Record<string,string>={single:"4.19",multi:"6.42",linux:"0"};
+      const licences:Record<string,string>={single:rateAmount(catalogue,"aws.single"),multi:rateAmount(catalogue,"aws.multi"),linux:rateAmount(catalogue,"aws.linux")};
       if(!Object.hasOwn(licences,f.licence))throw Error("Choose the AWS fleet licence.");
       usd=ceil(hours*hourly,scale)+moneyUsd(licences[f.licence],"AWS licence")*months+ceil(moneyUsd(f.extra_monthly,"AWS idle / other monthly allowance"),group);
       plan=`${f.licence} fleet; ${f.evidence}`;basis=`${f.hours} hours × USD ${f.hourly} + ${months} licence month(s) at USD ${licences[f.licence]} + USD ${f.extra_monthly}/month ÷ ${group}.`;
     } else if(service.id==="ai") {
       const terra=f.plan==="terra";if(!terra&&f.plan!=="custom")throw Error("Choose an AI rate model.");
       if(!terra&&(!f.evidence||f.evidence.trim().length<3))throw Error("Record the AI model and rate reference.");
-      const input=decimal(terra?"2":f.input_rate,"AI input rate per million tokens"),output=decimal(terra?"12":f.output_rate,"AI output rate per million tokens");
+      const input=decimal(terra?rateAmount(catalogue,"ai.terra.input"):f.input_rate,"AI input rate per million tokens"),output=decimal(terra?rateAmount(catalogue,"ai.terra.output"):f.output_rate,"AI output rate per million tokens");
       usd=ceil(tokens(f.input_tokens,"AI input tokens per enrolment")*input+tokens(f.output_tokens,"AI output tokens per enrolment")*output,BigInt(1000000))+moneyUsd(f.extra_per_learner,"AI other cost per enrolment");
       plan=terra?"GPT-5.6 Terra, standard short-context text":`Own model rates: ${f.evidence}`;
       basis=`${f.input_tokens} input tokens × USD ${Number(input)/1e6}/million + ${f.output_tokens} output/reasoning tokens × USD ${Number(output)/1e6}/million + USD ${f.extra_per_learner} other usage.`;
     } else if(service.id==="stripe") {
-      const routes:Record<string,string>={ca_domestic:"2.9",ca_international:"3.7",ca_fx:"5.7"};
+      const routes:Record<string,string>={ca_domestic:rateAmount(catalogue,"stripe.ca_domestic"),ca_international:rateAmount(catalogue,"stripe.ca_international"),ca_fx:rateAmount(catalogue,"stripe.ca_fx")};
       const custom=f.plan==="custom";if(!custom&&!Object.hasOwn(routes,f.plan))throw Error("Choose the Stripe account and card route.");
       if(custom&&(!f.evidence||f.evidence.trim().length<3))throw Error("Record the Stripe country and rate reference.");
       const extra=percentageBps(f.extra_percent,"additional Stripe charges");
       rateBps=percentageBps(custom?f.rate:routes[f.plan],"Stripe percentage")+extra;
       if(rateBps>10000)throw Error("Stripe charges must not exceed 100%.");
       if(custom)fixedCents=moneyCents(f.fixed,"Stripe fixed fee in course currency");
-      else {const fx=currency==="CAD"?scale:decimal(selection.cadFx,`value of CAD 1 in ${currency}`,true);fixedCents=convert(BigInt(300000),fx);}
+      else {const fx=currency==="CAD"?scale:decimal(selection.cadFx,`value of CAD 1 in ${currency}`,true);fixedCents=convert(moneyUsd(rateAmount(catalogue,"stripe.fixed"),"Stripe fixed CAD fee"),fx);}
       plan=custom?`Own Stripe rate: ${f.evidence}`:f.plan=== "ca_domestic"?"Canada / domestic cards":f.plan==="ca_international"?"Canada / international cards":"Canada / international cards with currency conversion";
       basis=`${rateBps/100}% of price + ${currency} ${(fixedCents/100).toFixed(2)} per successful payment. Add Connect and other applicable charges separately.`;
     } else {
@@ -114,5 +116,5 @@ export function calculateServiceCosts(selection:ServiceSelection,currency:string
   }
   if(requireReviewed&&!selection.reviewed)throw Error("Confirm the selected plans, usage, quotas and extra-cost allowances before saving.");
   const estimate:CostEstimate={hostingFixedCents:lines.filter(l=>l.id!=="stripe").reduce((n,l)=>n+l.fixedCents,0),hostingRateBps:0,stripeFixedCents:lines.find(l=>l.id==="stripe")?.fixedCents??0,stripeRateBps:lines.find(l=>l.id==="stripe")?.rateBps??0,administrationBps};
-  return {estimate,lines,snapshot:{catalogueVersion:RATE_VERSION,checkedOn:RATE_CHECKED,currency,enrolments:selection.enrolments,usdFx:needUsd?(currency==="USD"?"1":selection.usdFx):null,cadFx:selection.services.stripe?.plan!=="custom"&&selection.services.stripe?(currency==="CAD"?"1":selection.cadFx):null,selection:normalised,lines}};
+  return {estimate,lines,snapshot:{catalogueVersion:catalogue.version,checkedOn:catalogueDate(catalogue),rateValues:{...catalogue.values},currency,enrolments:selection.enrolments,usdFx:needUsd?(currency==="USD"?"1":selection.usdFx):null,cadFx:selection.services.stripe?.plan!=="custom"&&selection.services.stripe?(currency==="CAD"?"1":selection.cadFx):null,selection:normalised,lines}};
 }
