@@ -19,7 +19,7 @@ describe("Other-cost contingency",()=>{
   }
  });
  it("adds the reserve to old working selections while preserving entered usage and requiring a fresh acknowledgement",()=>{
-  const s={...newServiceSelection(),enrolments:"37",reviewed:true,services:{vercel:{plan:"pro",units:"2",extra_monthly:"12"}}};delete s.contingency;
+  const s={...newServiceSelection(),fxMode:"manual" as const,enrolments:"37",reviewed:true,services:{vercel:{plan:"pro",units:"2",extra_monthly:"12"}}};delete s.contingency;
   const parsed=readServiceSelection(JSON.stringify(s));expect(parsed.contingency).toBe("10");expect(parsed.enrolments).toBe("37");expect(parsed.services).toEqual(s.services);expect(parsed.reviewed).toBe(false);expect(()=>calculateServiceCosts(parsed,"USD",true)).toThrow("Confirm");
  });
  it("does not add a contingency to older saved aggregate estimates or silently recalculate their totals",()=>{
@@ -27,7 +27,7 @@ describe("Other-cost contingency",()=>{
  });
  it("rejects invalid reserves and supports a deliberately reviewed zero reserve",()=>{
   expect(()=>minimumCourseQuote({...base,contingencyBps:10001})).toThrow();expect(()=>minimumCourseQuote({...base,contingencyBps:-1})).toThrow();
-  const s={...newServiceSelection(),enrolments:"1",contingency:"0",reviewed:true,services:{vercel:{plan:"pro",units:"1",extra_monthly:"0"}}};expect(calculateServiceCosts(s,"USD",true).estimate.contingencyBps).toBe(0);
+  const s={...newServiceSelection(),fxMode:"manual" as const,enrolments:"1",contingency:"0",reviewed:true,services:{vercel:{plan:"pro",units:"1",extra_monthly:"0"}}};expect(calculateServiceCosts(s,"USD",true).estimate.contingencyBps).toBe(0);
   s.contingency="";expect(()=>calculateServiceCosts(s,"USD",true)).toThrow();
  });
 });

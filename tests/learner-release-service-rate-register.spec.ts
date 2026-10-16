@@ -14,7 +14,7 @@ import {GET} from "../app/api/cron/service-costs/route";
 describe("Central service cost register",()=>{
  beforeEach(()=>{vi.clearAllMocks();vi.unstubAllEnvs();});
  it("looks up reviewed server rates, rejects stale selections and keeps the earlier snapshot unchanged",()=>{
-  const s={...newServiceSelection(),enrolments:"50",reviewed:true,services:{supabase:{plan:"pro",units:"1",extra_monthly:"0",monthly:"1"}}};
+  const s={...newServiceSelection(),fxMode:"manual" as const,enrolments:"50",reviewed:true,services:{supabase:{plan:"pro",units:"1",extra_monthly:"0",monthly:"1"}}};
   const old=calculateServiceCosts(s,"USD",true);
   const updated={...baselineRateCatalogue,version:"new-version",values:{...baselineRateCatalogue.values,"supabase.pro":"30"}};
   expect(()=>calculateServiceCosts(s,"USD",true,updated)).toThrow("catalogue changed");
@@ -23,7 +23,7 @@ describe("Central service cost register",()=>{
  });
  it("looks up variable AI, AWS licence and Stripe rates instead of trusting client rate overrides",()=>{
   const c={...baselineRateCatalogue,values:{...baselineRateCatalogue.values,"aws.single":"5","ai.terra.input":"3","stripe.fixed":"0.40","stripe.ca_domestic":"3.1"}};
-  const s={...newServiceSelection(c),enrolments:"1",cadFx:"1",services:{ai:{plan:"terra",input_tokens:"1000000",output_tokens:"0",extra_per_learner:"0"},aws:{licence:"single",months:"1",hours:"1",hourly:"1",evidence:"Ireland fleet quote",extra_monthly:"0"},stripe:{plan:"ca_domestic",extra_percent:"0",rate:"0",fixed:"0"}}};
+  const s={...newServiceSelection(c),fxMode:"manual" as const,enrolments:"1",cadFx:"1",services:{ai:{plan:"terra",input_tokens:"1000000",output_tokens:"0",extra_per_learner:"0"},aws:{licence:"single",months:"1",hours:"1",hourly:"1",evidence:"Ireland fleet quote",extra_monthly:"0"},stripe:{plan:"ca_domestic",extra_percent:"0",rate:"0",fixed:"0"}}};
   const r=calculateServiceCosts(s,"USD",false,c);expect(r.estimate.hostingFixedCents).toBe(900);expect(r.estimate.stripeFixedCents).toBe(40);expect(r.estimate.stripeRateBps).toBe(310);
  });
  it("requires the entire defined rate set and valid monetary/percentage units",()=>{

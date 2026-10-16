@@ -12,6 +12,8 @@ export const rateDefinitions:RateDefinition[] = [
   {key:"aws.linux",service:"aws",label:"Linux Windows-licence charge",currency:"USD",unit:"per active user-month",amount:"0"},
   {key:"ai.terra.input",service:"ai",label:"GPT-5.6 Terra standard short-context input",currency:"USD",unit:"per million tokens",amount:"2"},
   {key:"ai.terra.output",service:"ai",label:"GPT-5.6 Terra standard short-context output",currency:"USD",unit:"per million tokens",amount:"12"},
+  {key:"ai.luna.input",service:"ai",label:"GPT-6 Luna standard short-context input",currency:"USD",unit:"per million tokens",amount:"0.10"},
+  {key:"ai.luna.output",service:"ai",label:"GPT-6 Luna standard short-context output",currency:"USD",unit:"per million tokens",amount:"0.50"},
   {key:"stripe.ca_domestic",service:"stripe",label:"Canada domestic card percentage",currency:"%",unit:"of payment",amount:"2.9"},
   {key:"stripe.ca_international",service:"stripe",label:"Canada international card percentage",currency:"%",unit:"of payment",amount:"3.7"},
   {key:"stripe.ca_fx",service:"stripe",label:"Canada international card plus conversion",currency:"%",unit:"of payment",amount:"5.7"},
@@ -36,5 +38,17 @@ export function rateAmount(catalogue:RateCatalogue,key:string):string {
   const value=catalogue.values[key];
   if(typeof value!=="string")throw Error("The service rate table is incomplete. Contact a platform principal.");
   return value;
+}
+// Rolling V2 release: read the complete earlier table while the additive Luna
+// migration is pending. Only these newly researched keys may be bootstrapped.
+// Rate review submissions still require every current key; no unknown rate is zeroed.
+export function readRateValues(value:unknown):Record<string,string> {
+  if(value&&typeof value==="object"&&!Array.isArray(value)){
+    const v=value as Record<string,unknown>;
+    const previous=rateDefinitions.filter(d=>!d.key.startsWith("ai.luna."));
+    if(Object.keys(v).length===previous.length&&previous.every(d=>Object.hasOwn(v,d.key)))
+      return validateRateValues({...v,"ai.luna.input":"0.10","ai.luna.output":"0.50"});
+  }
+  return validateRateValues(value);
 }
 export function catalogueDate(catalogue:RateCatalogue){return new Date(catalogue.checkedOn+"T00:00:00Z").toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric",timeZone:"UTC"});}

@@ -39,3 +39,5 @@
 .rate-table caption { text-align:left; padding:.4rem; }
 @media(max-width:600px) { .service-options { grid-template-columns:1fr; } }
 @media(max-width:600px) { .reviewer-row { align-items:stretch; flex-direction:column; } }
+
+.currency-panel{margin-block:1rem}.currency-output{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;font-size:1.2rem}.currency-allowance{padding:1rem;border:1px solid var(--border,#45657b);border-radius:.5rem}.currency-panel .planning-controls{flex-wrap:wrap}

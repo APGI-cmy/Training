@@ -1,7 +1,7 @@
 import {describe,it,expect} from "vitest";
 import {calculateServiceCosts,newServiceSelection,readServiceSelection,RATE_VERSION,type ServiceSelection} from "@/lib/service-costs";
 import {allocationAtPrice,minimumCourseQuote} from "@/lib/commercial-planning";
-function base():ServiceSelection {return {...newServiceSelection(),enrolments:"50",reviewed:true,services:{supabase:{plan:"pro",units:"1",extra_monthly:"0"},vercel:{plan:"pro",units:"1",extra_monthly:"0"}}};}
+function base():ServiceSelection {return {...newServiceSelection(),fxMode:"manual" as const,enrolments:"50",reviewed:true,services:{supabase:{plan:"pro",units:"1",extra_monthly:"0"},vercel:{plan:"pro",units:"1",extra_monthly:"0"}}};}
 describe("Selected service cost estimates",()=>{
  it("allocates shared subscriptions once and does not add included credits as a second charge",()=>{
   const r=calculateServiceCosts(base(),"USD",true);expect(r.estimate.hostingFixedCents).toBe(90);expect(r.lines.map(l=>l.fixedCents)).toEqual([50,40]);expect(r.snapshot.catalogueVersion).toBe(RATE_VERSION);

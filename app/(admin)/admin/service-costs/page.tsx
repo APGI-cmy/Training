@@ -6,6 +6,7 @@ import { currentRateCatalogue } from "@/server/services/service-rate-register";
 import { rows } from "@/server/services/company-structure";
 import { ServiceRateRegister } from "@/components/admin/ServiceRateRegister";
 import { costServices } from "@/lib/service-costs";
+import { ExchangeRateReference } from "@/components/admin/AutomaticCurrencyRates";
 
 export default async function ServiceCostsPage(){
   await requireAdmin();try{await requirePlatformPrincipal();}catch{notFound();}
@@ -22,6 +23,7 @@ export default async function ServiceCostsPage(){
     <section className="directory-card"><h2>Latest source checks</h2><p>Last automatic or manual observation, shown in South African time. A monthly human review is recommended even when price figures appear unchanged. Source checks do not verify your actual bill.</p>
       <div className="service-table-wrap"><table className="rate-table"><thead><tr><th>Service</th><th>Last checked</th><th>Result</th></tr></thead><tbody>{costServices.filter(s=>s.source).map(s=>{const c=checks.find(x=>x.source_id===s.id);return <tr key={s.id}><th scope="row">{s.name}</th><td>{c?date(c.checked_at):"No check recorded"}</td><td>{c?<><strong>{c.status==="changed"?"Possible price change":c.status==="unavailable"?"Manual check required":c.status==="observed"?"Initial observation":"No price-figure change detected"}</strong><p>{c.summary}</p><details><summary>Extracted figures — not approved rates</summary><p>{c.amount_signals.join(" · ")||"No readable prices returned."}</p></details></>:"Waiting for the first source check."}</td></tr>;})}</tbody></table></div>
     </section>
+    <ExchangeRateReference/>
     <ServiceRateRegister catalogue={catalogue}/>
     <section className="directory-card"><h2>Rate review history</h2><p>Each saved version is retained. New rates never rewrite an earlier course snapshot.</p>{history.map(h=><details key={h.version}><summary>{date(h.created_at)} · {h.version===catalogue.version?"Current reviewed version":"Earlier version"}</summary><p>{h.review_note}</p><p>Reference: {h.version}</p></details>)}</section>
   </main>;

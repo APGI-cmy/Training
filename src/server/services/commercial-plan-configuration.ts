@@ -5,6 +5,7 @@ import { getCourseBySlug } from "@/lib/courses";
 import { requireCompany, rows } from "./company-structure";
 import { calculateServiceCosts, readServiceSelection } from "@/lib/service-costs";
 import { currentRateCatalogue } from "./service-rate-register";
+import { verifiedServiceExchange } from "./currency-rates";
 
 export function planningCostConfiguration(form: FormData) {
   const configuration: Record<string, string | null> = { planning_version: "1", currency: formText(form, "currency"), administration_rate: formText(form, "administration_rate"), hosting_fixed: formText(form, "hosting_fixed"), hosting_rate: formText(form, "hosting_rate"), stripe_fixed: formText(form, "stripe_fixed"), stripe_rate: formText(form, "stripe_rate"), cost_period: formText(form, "cost_period", 3, 250), notes: formText(form, "notes", 0, 5000) || null };
@@ -23,7 +24,7 @@ export async function coursePlanConfiguration(form: FormData) {
   if(!["saved","services"].includes(mode))throw Error("Choose a valid cost preparation method.");
   let profile:{id:string;configuration:Record<string,string|null>}|undefined;
   let serviceResult:ReturnType<typeof calculateServiceCosts>|undefined;
-  if(mode==="services")serviceResult=calculateServiceCosts(readServiceSelection(formText(form,"service_costs",1,24000)),currency,true,await currentRateCatalogue());
+  if(mode==="services")serviceResult=calculateServiceCosts(await verifiedServiceExchange(readServiceSelection(formText(form,"service_costs",1,24000)),currency),currency,true,await currentRateCatalogue());
   else {
     profile=(await rows<{id:string;configuration:Record<string,string|null>}>(`/rest/v1/commercial_agreement_drafts?id=eq.${validId(formText(form,"cost_profile_id"))}&kind=eq.operating_cost&status=eq.draft&organisation_id=is.null&select=id,configuration&limit=1`))[0];
     if(!profile||profile.configuration.planning_version!=="1")throw Error("Choose a complete planning cost profile.");

@@ -67,7 +67,7 @@ describe("Server recalculation of submitted drafts",()=>{
  beforeEach(()=>{fixture.configuration.currency="USD";});
  it("calculates selected services on the server and preserves an auditable snapshot without a saved profile",async()=>{
   const f=plan();f.set("cost_mode","services");f.delete("cost_profile_id");
-  const selection={...newServiceSelection(),enrolments:"50",reviewed:true,services:{supabase:{plan:"pro",units:"1",extra_monthly:"0",monthly:"0"},vercel:{plan:"pro",units:"1",extra_monthly:"0"}}};
+  const selection={...newServiceSelection(),fxMode:"manual" as const,enrolments:"50",reviewed:true,services:{supabase:{plan:"pro",units:"1",extra_monthly:"0",monthly:"0"},vercel:{plan:"pro",units:"1",extra_monthly:"0"}}};
   f.set("service_costs",JSON.stringify(selection));const config=await coursePlanConfiguration(f);
   expect(config.cost_profile_id).toBeNull();expect(config.hosting_fixed).toBe("0.90");expect(config.minimum_course_price).not.toBe("1.00");expect(config.contingency_rate).toBe("10.00");expect(config.estimated_contingency).toBe("0.09");
   const snapshot=JSON.parse(config.service_cost_snapshot!);expect(snapshot.lines).toHaveLength(2);expect(snapshot.lines[0].source).toBe("https://supabase.com/pricing");expect(config.estimated_apgi_income).toBe("100.00");

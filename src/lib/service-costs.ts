@@ -1,5 +1,6 @@
 import { moneyCents, percentageBps, type CostEstimate } from "./commercial-planning";
 import { baselineRateCatalogue, catalogueDate, rateAmount, type RateCatalogue } from "./service-rate-register";
+import { exchangeRate, validateExchangeQuote, type ExchangeQuote } from "./currency-rates";
 
 // Reviewed public rate card; never refreshed implicitly inside an accepted agreement.
 export const RATE_VERSION = "2026-10-16.1";
@@ -23,13 +24,13 @@ export const costServices: ServiceDefinition[] = [
     {id:"scale",label:"Scale — USD 90/month",monthly:"90",note:"100,000 emails/month. Extra emails and add-ons are additional."},
   ]},
   { id:"aws",name:"AWS — Scannex practice lab",source:"https://aws.amazon.com/workspaces/applications/pricing/",note:"Enter the hourly quote for the actual region and instance. The published US example is not an Ireland rate. Include idle capacity, image builders, networking and storage in the monthly allowance."},
-  { id:"ai",name:"AI — learner assistance",source:"https://developers.openai.com/api/docs/models/gpt-5.6-terra",note:"Text API estimate. Select the model being budgeted; this does not enable AI. Output includes reasoning tokens. Tool calls, audio, images and storage need an extra allowance."},
+  { id:"ai",name:"AI — learner assistance",source:"https://developers.openai.com/api/docs/pricing",note:"Text API estimate. Select the model being budgeted; this does not enable AI. Output includes reasoning tokens. Tool calls, audio, images and storage need an extra allowance."},
   { id:"stripe",name:"Stripe — payment processing",source:"https://stripe.com/en-ca/pricing",note:"Canadian account card rates. Select the payment route and add any Connect, tax-service or other processing charges. Other account countries require your own rates."},
   { id:"other",name:"Other operating costs",source:"",note:"Use for domains, applicable provider tax, additional services or a documented reserve. Do not repeat costs already included above."},
 ];
 export type ServiceInputs = Record<string,string>;
-export type ServiceSelection = { version:string; enrolments:string; usdFx:string; cadFx:string; administration:string; contingency?:string; reviewed:boolean; services:Record<string,ServiceInputs> };
-export function newServiceSelection(catalogue:RateCatalogue=baselineRateCatalogue): ServiceSelection { return {version:catalogue.version,enrolments:"",usdFx:"",cadFx:"",administration:"6",contingency:"10",reviewed:false,services:{}}; }
+export type ServiceSelection = { version:string; enrolments:string; usdFx:string; cadFx:string; fxMode?:"auto"|"manual"; fxQuote?:ExchangeQuote; administration:string; contingency?:string; reviewed:boolean; services:Record<string,ServiceInputs> };
+export function newServiceSelection(catalogue:RateCatalogue=baselineRateCatalogue): ServiceSelection { return {version:catalogue.version,enrolments:"",usdFx:"",cadFx:"",fxMode:"auto",administration:"6",contingency:"10",reviewed:false,services:{}}; }
 export function readServiceSelection(raw: string): ServiceSelection {
   if (!raw) return newServiceSelection();
   if(raw.length>24000) throw Error("The service selection is too large.");
@@ -40,9 +41,15 @@ export function readServiceSelection(raw: string): ServiceSelection {
   for(const key of ["enrolments","usdFx","cadFx","administration"] as const)if(typeof v[key]!=="string"||v[key].length>40)throw Error("Check service assumptions.");
   if(v.contingency===undefined){v.contingency="10";v.reviewed=false;}
   if(typeof v.contingency!=="string"||v.contingency.length>40)throw Error("Check the other-cost contingency.");
+  if(v.fxMode===undefined)v.fxMode=[v.usdFx,v.cadFx].some(n=>/^\d+(\.\d{1,6})?$/.test(n)&&Number(n)>0)?"manual":"auto";
+  if(v.fxMode!=="auto"&&v.fxMode!=="manual")throw Error("Choose automatic or documented manual exchange rates.");
   for(const [id,fields] of Object.entries(v.services)) {
     if(!costServices.some(s=>s.id===id)||!fields||typeof fields!=="object"||Array.isArray(fields))throw Error("Choose a listed service.");
     if(Object.keys(fields).length>20||Object.values(fields).some(x=>typeof x!=="string"||x.length>500))throw Error("Check service details.");
+  }
+  const ai=v.services.ai;
+  if(ai?.plan==="custom"&&/^(luna|gpt[- ]6[- ]luna)$/i.test(ai.evidence?.trim()??"")&&!ai.input_rate&&!ai.output_rate){
+    v.services.ai={...ai,plan:"luna"};v.reviewed=false;
   }
   return v;
 }
@@ -65,6 +72,8 @@ export function calculateServiceCosts(selection:ServiceSelection,currency:string
   const administrationBps=percentageBps(selection.administration,"administration on costs");
   const contingencyBps=percentageBps(selection.contingency??"10","other-cost contingency");
   const needUsd=Object.keys(selection.services).some(id=>id!=="stripe");
+  const currencyQuote=selection.fxMode==="auto"?validateExchangeQuote(selection.fxQuote):null;
+  if(currencyQuote)selection={...selection,usdFx:exchangeRate(currencyQuote,"USD",currency),cadFx:exchangeRate(currencyQuote,"CAD",currency)};
   const usdFx=currency==="USD"?scale:needUsd?decimal(selection.usdFx,`value of USD 1 in ${currency}`,true):scale;
   const convert=(micro:bigint,fx:bigint)=>{const n=Number(ceil(micro*fx,BigInt(10000)*scale));if(!Number.isSafeInteger(n)||n>1e12)throw Error("Service estimate is too large.");return n;};
   const lines:ServiceLine[]=[];const normalised:ServiceSelection={...selection,services:{}};
@@ -72,7 +81,7 @@ export function calculateServiceCosts(selection:ServiceSelection,currency:string
     const f=selection.services[service.id];if(!f)continue;
     normalised.services[service.id]={...f};
     const group=f.allocation_enrolments?count(f.allocation_enrolments,`${service.name} sharing enrolments`):enrolments;
-    let usd=BigInt(0),plan="",basis="",fixedCents=0,rateBps=0;
+    let usd=BigInt(0),plan="",basis="",fixedCents=0,rateBps=0,source=service.source;
     if(service.plans) {
       const preset=service.plans.find(p=>p.id===f.plan);
       const custom=f.plan==="custom";
@@ -92,11 +101,12 @@ export function calculateServiceCosts(selection:ServiceSelection,currency:string
       usd=ceil(hours*hourly,scale)+moneyUsd(licences[f.licence],"AWS licence")*months+ceil(moneyUsd(f.extra_monthly,"AWS idle / other monthly allowance"),group);
       plan=`${f.licence} fleet; ${f.evidence}`;basis=`${f.hours} hours × USD ${f.hourly} + ${months} licence month(s) at USD ${licences[f.licence]} + USD ${f.extra_monthly}/month ÷ ${group}.`;
     } else if(service.id==="ai") {
-      const terra=f.plan==="terra";if(!terra&&f.plan!=="custom")throw Error("Choose an AI rate model.");
-      if(!terra&&(!f.evidence||f.evidence.trim().length<3))throw Error("Record the AI model and rate reference.");
-      const input=decimal(terra?rateAmount(catalogue,"ai.terra.input"):f.input_rate,"AI input rate per million tokens"),output=decimal(terra?rateAmount(catalogue,"ai.terra.output"):f.output_rate,"AI output rate per million tokens");
+      const preset=f.plan==="terra"||f.plan==="luna";if(!preset&&f.plan!=="custom")throw Error("Choose an AI rate model.");
+      if(!preset&&(!f.evidence||f.evidence.trim().length<3))throw Error("Record the AI model and rate reference.");
+      const input=decimal(preset?rateAmount(catalogue,`ai.${f.plan}.input`):f.input_rate,"AI input rate per million tokens"),output=decimal(preset?rateAmount(catalogue,`ai.${f.plan}.output`):f.output_rate,"AI output rate per million tokens");
       usd=ceil(tokens(f.input_tokens,"AI input tokens per enrolment")*input+tokens(f.output_tokens,"AI output tokens per enrolment")*output,BigInt(1000000))+moneyUsd(f.extra_per_learner,"AI other cost per enrolment");
-      plan=terra?"GPT-5.6 Terra, standard short-context text":`Own model rates: ${f.evidence}`;
+      plan=preset?`${f.plan==="luna"?"GPT-6 Luna":"GPT-5.6 Terra"}, standard short-context text`:`Own model rates: ${f.evidence}`;
+      if(preset)source=`https://developers.openai.com/api/docs/models/${f.plan==="luna"?"gpt-6-luna":"gpt-5.6-terra"}`;
       basis=`${f.input_tokens} input tokens × USD ${Number(input)/1e6}/million + ${f.output_tokens} output/reasoning tokens × USD ${Number(output)/1e6}/million + USD ${f.extra_per_learner} other usage.`;
     } else if(service.id==="stripe") {
       const routes:Record<string,string>={ca_domestic:rateAmount(catalogue,"stripe.ca_domestic"),ca_international:rateAmount(catalogue,"stripe.ca_international"),ca_fx:rateAmount(catalogue,"stripe.ca_fx")};
@@ -115,9 +125,9 @@ export function calculateServiceCosts(selection:ServiceSelection,currency:string
       plan=f.evidence;basis=`USD ${f.per_learner} per enrolment + USD ${f.monthly}/month ÷ ${group}.`;
     }
     if(service.id!=="stripe")fixedCents=convert(usd,usdFx);
-    lines.push({id:service.id,name:service.name,plan,source:service.source,basis,fixedCents,rateBps});
+    lines.push({id:service.id,name:service.name,plan,source,basis,fixedCents,rateBps});
   }
   if(requireReviewed&&!selection.reviewed)throw Error("Confirm the selected plans, usage, quotas and extra-cost allowances before saving.");
   const estimate:CostEstimate={hostingFixedCents:lines.filter(l=>l.id!=="stripe").reduce((n,l)=>n+l.fixedCents,0),hostingRateBps:0,stripeFixedCents:lines.find(l=>l.id==="stripe")?.fixedCents??0,stripeRateBps:lines.find(l=>l.id==="stripe")?.rateBps??0,administrationBps,contingencyBps};
-  return {estimate,lines,snapshot:{catalogueVersion:catalogue.version,checkedOn:catalogueDate(catalogue),rateValues:{...catalogue.values},currency,enrolments:selection.enrolments,usdFx:needUsd?(currency==="USD"?"1":selection.usdFx):null,cadFx:selection.services.stripe?.plan!=="custom"&&selection.services.stripe?(currency==="CAD"?"1":selection.cadFx):null,selection:normalised,lines}};
+  return {estimate,lines,snapshot:{catalogueVersion:catalogue.version,checkedOn:catalogueDate(catalogue),rateValues:{...catalogue.values},currency,enrolments:selection.enrolments,usdFx:needUsd?(currency==="USD"?"1":selection.usdFx):null,cadFx:selection.services.stripe?.plan!=="custom"&&selection.services.stripe?(currency==="CAD"?"1":selection.cadFx):null,currencyQuote,selection:normalised,lines}};
 }
