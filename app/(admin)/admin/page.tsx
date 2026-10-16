@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { adminRest } from "@/server/supabase/admin-rest";
+import { isPlatformPrincipal } from "@/server/services/platform-principals";
 
 export default async function AdminPage() {
   const { session } = await requireAdmin();
+  const principal = await isPlatformPrincipal(session);
   const response = await adminRest(
     `/rest/v1/admin_notifications?recipient_user_id=eq.${session.user.id}&read_at=is.null&select=id&limit=100`,
   );
@@ -67,10 +69,10 @@ export default async function AdminPage() {
           <strong>Platform policies</strong>
           <span>File policy versions and request recorded approvals.</span>
         </Link>
-        <Link href="/admin/agreements">
+        {principal ? <Link href="/admin/agreements">
           <strong>Commercial drafts</strong>
           <span>Prepare unapproved cost and revenue agreements.</span>
-        </Link>
+        </Link> : null}
         <Link href="/admin/payments">
           <strong>Payments</strong>
           <span>Set course prices and prepare recipient allocation rules.</span>

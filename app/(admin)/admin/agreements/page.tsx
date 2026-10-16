@@ -1,4 +1,6 @@
+import { requirePlatformPrincipal } from "@/server/services/platform-principals";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { notFound } from "next/navigation";
 import { accessibleCompanies, rows } from "@/server/services/company-structure";
 import { StructureForm } from "@/components/admin/StructureForm";
 import { saveCommercialDraft } from "@/server/actions/platform-policies";
@@ -9,6 +11,7 @@ import {
 import { getCourses } from "@/lib/courses";
 export default async function AgreementsPage() {
   await requireAdmin();
+  try { await requirePlatformPrincipal(); } catch { notFound(); }
   const [companies, drafts] = await Promise.all([
     accessibleCompanies(),
     rows<DraftRecord>(
@@ -31,8 +34,9 @@ export default async function AgreementsPage() {
       <section className="notice-card">
         <strong>Financial activation is unavailable</strong>
         <p>
-          The requested 10%, 50%, 6% and internal 50/50 values remain proposals,
-          not automatically applied defaults. Leave fields blank until agreed.
+          Running costs and their cost-only administration fee must come first.
+          Course shares, recovery bases and company distributions require an approved schedule.
+          No values are automatically applied. Leave fields blank until agreed.
           Policy approval alone does not activate a financial draft.
         </p>
       </section>

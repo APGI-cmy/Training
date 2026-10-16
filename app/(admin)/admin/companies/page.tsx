@@ -3,8 +3,10 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import { accessibleCompanies } from "@/server/services/company-structure";
 import { StructureForm } from "@/components/admin/StructureForm";
 import { companyStructureAction } from "@/server/actions/company-structure";
+import { isPlatformPrincipal } from "@/server/services/platform-principals";
 export default async function CompaniesPage() {
   await requireAdmin();
+  const principal = await isPlatformPrincipal();
   const companies = await accessibleCompanies();
   return (
     <main className="admin-page">
@@ -51,7 +53,7 @@ export default async function CompaniesPage() {
         ))}
       </section>
       <p>
-        <Link href="/admin/agreements">Commercial draft workspace</Link> ·{" "}
+        {principal ? <><Link href="/admin/agreements">Commercial draft workspace</Link> ·{" "}</> : null}
         <Link href="/admin/policies">Platform policies</Link>
       </p>
     </main>

@@ -6,9 +6,10 @@ import {
 } from "@/server/services/company-structure";
 import { StructureForm } from "@/components/admin/StructureForm";
 import { policyStructureAction } from "@/server/actions/platform-policies";
-import { policySignatories } from "@/lib/company-structure";
+import { isPlatformPrincipal } from "@/server/services/platform-principals";
 export default async function AdminPoliciesPage() {
   await requireAdmin();
+  const principal = await isPlatformPrincipal();
   const [companies, policies] = await Promise.all([
     accessibleCompanies(),
     listPolicies(),
@@ -26,7 +27,7 @@ export default async function AdminPoliciesPage() {
           </p>
         </div>
       </header>
-      <section className="admin-form-card">
+      {principal ? <section className="admin-form-card">
         <h2>Create a policy draft</h2>
         <StructureForm action={policyStructureAction} label="Save policy draft">
           <input type="hidden" name="operation" value="create" />
@@ -46,7 +47,7 @@ export default async function AdminPoliciesPage() {
           <label>
             Company scope
             <select name="organisation_id">
-              <option value="">APGI internal / named reviewers only</option>
+              <option value="">Confidential internal - two principals only</option>
               {companies.map((c) => (
                 <option value={c.id} key={c.id}>
                   {c.name}
@@ -58,9 +59,7 @@ export default async function AdminPoliciesPage() {
             Required reviewer emails
             <textarea
               name="reviewers"
-              defaultValue={policySignatories.join("\n")}
-              required
-              placeholder="One email per line. Include both designated APGI signatories where required."
+              placeholder="For a company agreement: your APGI representative email and the company signatory email(s). Internal documents always use exactly the two principals."
             />
           </label>
           <label className="admin-span-two">
@@ -81,7 +80,7 @@ export default async function AdminPoliciesPage() {
             </small>
           </label>
         </StructureForm>
-      </section>
+      </section> : <p>Company agreements available to your role appear below. Internal governance is restricted.</p>}
       <section className="directory-card">
         <h2>Document register</h2>
         {policies.map((p) => (
@@ -92,7 +91,7 @@ export default async function AdminPoliciesPage() {
             <span>
               {p.status} ·{" "}
               {companies.find((c) => c.id === p.organisation_id)?.name ??
-                "APGI internal / named reviewers"}
+                "Confidential internal"}
             </span>
             <Link className="secondary-button" href={`/policies/${p.id}`}>
               Open document and decisions

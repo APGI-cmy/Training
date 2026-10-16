@@ -88,12 +88,14 @@ async function policyFixture(previous?: string) {
     body: "Fictional policy for isolated integration QA only.",
     content_hash: createHash("sha256").update(id).digest("hex"),
     organisation_id: org,
+    visibility: "company",
     created_by: actor,
     previous_version_id: previous ?? null,
   });
   await rest(
     "/rest/v1/policy_reviewers",
-    [owner, outsider].map((u) => ({ policy_id: id, email: u.user.email })),
+    [...[owner, outsider].map((u) => ({ policy_id: id, email: u.user.email })),
+      { policy_id: id, email: "johan.ras@apginc.ca" }],
   );
   return id;
 }
@@ -238,7 +240,7 @@ describe("V2 company structure integration", () => {
       "ENROLMENT_COMPANY_TRANSFER_REQUIRES_REVIEW",
     );
   });
-  it("locks a submitted policy, requires two distinct decisions and retains rejection", async () => {
+  it("locks a submitted policy, requires designated decisions and retains rejection", async () => {
     policy = await policyFixture();
     const submit = await rpc("v2_policy_review", {
       p_policy: policy,
@@ -319,6 +321,7 @@ describe("V2 company structure integration", () => {
           })
         ).ok,
       ).toBe(true);
+    expect((await rpc("v2_policy_review", { p_policy: revised, p_actor: actor, p_action: "approve" })).ok).toBe(true);
     expect(
       (
         await rest(
@@ -330,7 +333,7 @@ describe("V2 company structure integration", () => {
       await rest(
         `/rest/v1/policy_decisions?policy_id=eq.${revised}&select=email`,
       ),
-    ).toHaveLength(2);
+    ).toHaveLength(3);
     const bad = await adminRest("/rest/v1/commercial_agreement_drafts", {
       method: "POST",
       body: JSON.stringify({

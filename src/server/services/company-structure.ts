@@ -6,6 +6,7 @@ import {
   type AlpSession,
 } from "@/server/auth/session";
 import { adminRest } from "@/server/supabase/admin-rest";
+import { isPlatformPrincipal } from "./platform-principals";
 import {
   validId,
   type CompanyRecord,
@@ -97,7 +98,8 @@ export async function companyOfferings(id: string) {
 }
 export async function listPolicies() {
   const actor = await companyActor();
-  let filter = "";
+  const principal = await isPlatformPrincipal(actor.session);
+  let filter = principal ? "" : "&visibility=eq.company";
   if (!actor.isAdmin) {
     if (!actor.session.user.email_confirmed_at) return [];
     const memberships = await ownMemberships(actor.session, true);
@@ -112,7 +114,7 @@ export async function listPolicies() {
     if (assignments.length)
       clauses.push(`id.in.(${assignments.map((m) => m.policy_id).join(",")})`);
     if (!clauses.length) return [];
-    filter = `&or=(${clauses.join(",")})`;
+    filter += `&or=(${clauses.join(",")})`;
   }
   const policies = await rows<PolicyRecord>(
     `/rest/v1/platform_policy_versions?select=*${filter}&order=created_at.desc&limit=100`,
@@ -128,13 +130,16 @@ export async function listPolicies() {
 export async function requirePolicy(id: string) {
   const actor = await companyActor();
   validId(id);
+  const metadata = (
+    await rows<{ organisation_id: string | null; visibility: "internal" | "company" }>(
+      `/rest/v1/platform_policy_versions?id=eq.${id}&select=organisation_id,visibility&limit=1`,
+    )
+  )[0];
+  if (!metadata || !["internal", "company"].includes(metadata.visibility))
+    throw new Error("You do not have access to this policy.");
+  if (metadata.visibility === "internal" && !(await isPlatformPrincipal(actor.session)))
+    throw new Error("You do not have access to this policy.");
   if (!actor.isAdmin) {
-    const metadata = (
-      await rows<{ organisation_id: string | null }>(
-        `/rest/v1/platform_policy_versions?id=eq.${id}&select=organisation_id&limit=1`,
-      )
-    )[0];
-    if (!metadata) throw new Error("You do not have access to this policy.");
     const owner = metadata.organisation_id
       ? (await ownMemberships(actor.session, true)).some(
           (m) => m.organisation_id === metadata.organisation_id,

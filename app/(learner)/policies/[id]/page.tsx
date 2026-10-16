@@ -3,6 +3,7 @@ import { requireSession } from "@/server/auth/session";
 import { requirePolicy, rows } from "@/server/services/company-structure";
 import { StructureForm } from "@/components/admin/StructureForm";
 import { policyStructureAction } from "@/server/actions/platform-policies";
+import { isPlatformPrincipal } from "@/server/services/platform-principals";
 export default async function PolicyPage({
   params,
 }: {
@@ -16,7 +17,8 @@ export default async function PolicyPage({
   } catch {
     notFound();
   }
-  const { policy: p, isAdmin, session } = access;
+  const { policy: p, session } = access;
+  const canManage = await isPlatformPrincipal(session);
   const reviewers = await rows<{ email: string }>(
     `/rest/v1/policy_reviewers?policy_id=eq.${id}&select=email`,
   );
@@ -29,7 +31,7 @@ export default async function PolicyPage({
   }>(
     `/rest/v1/policy_decisions?policy_id=eq.${id}&select=email,decision,reason,decided_at,content_hash&order=decided_at.asc`,
   );
-  const deliveries = isAdmin
+  const deliveries = canManage
     ? await rows<{ recipient_email: string; status: string }>(
         `/rest/v1/policy_email_deliveries?policy_id=eq.${id}&select=recipient_email,status`,
       )
@@ -103,7 +105,7 @@ export default async function PolicyPage({
           </StructureForm>
         ) : null}
       </section>
-      {isAdmin && p.status === "draft" ? (
+      {canManage && p.status === "draft" ? (
         <section className="admin-form-card">
           <h2>Submit for review</h2>
           <p>
@@ -119,7 +121,7 @@ export default async function PolicyPage({
           </StructureForm>
         </section>
       ) : null}
-      {isAdmin && deliveries.length ? (
+      {canManage && deliveries.length ? (
         <section className="admin-form-card">
           <h2>Review email delivery</h2>
           {deliveries.map((d) => (
@@ -136,7 +138,7 @@ export default async function PolicyPage({
           </StructureForm>
         </section>
       ) : null}
-      {isAdmin && p.status !== "draft" ? (
+      {canManage && p.status !== "draft" ? (
         <section className="admin-form-card">
           <h2>Create a revised version</h2>
           <p>

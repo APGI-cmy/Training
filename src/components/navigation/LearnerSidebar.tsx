@@ -2,11 +2,13 @@ import Link from "next/link";
 import { SignOutControl } from "@/components/auth/sign-out-control";
 import { BrandingName } from "@/components/branding/BrandingName";
 import { getCurrentSession, getUserRoles } from "@/server/auth/session";
+import { isPlatformPrincipal } from "@/server/services/platform-principals";
 
 export async function LearnerSidebar() {
   const session = await getCurrentSession();
   const roles = session ? await getUserRoles(session.accessToken) : [];
   const isAdmin = roles.includes("admin");
+  const principal = isAdmin && session ? await isPlatformPrincipal(session) : false;
 
   return (
     <aside className="learner-sidebar" aria-label="Learner navigation">
@@ -51,7 +53,7 @@ export async function LearnerSidebar() {
           <Link href="/admin/companies">Companies and branding</Link>
         ) : null}
         {isAdmin ? <Link href="/admin/policies">Platform policies</Link> : null}
-        {isAdmin ? (
+        {principal ? (
           <Link href="/admin/agreements">Commercial drafts</Link>
         ) : null}
         {isAdmin ? (

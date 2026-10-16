@@ -46,6 +46,7 @@ export type OfferingRecord = {
 };
 export type PolicyRecord = {
   id: string;
+  visibility: "internal" | "company";
   title: string;
   organisation_id: string | null;
   version_label: string;

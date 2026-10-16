@@ -1,7 +1,7 @@
 "use server";
 import { createHash, randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "@/lib/auth/require-admin";
+import { requirePlatformPrincipal } from "@/server/services/platform-principals";
 import { requireSession, getSupabaseRestUrl } from "@/server/auth/session";
 import { adminRest } from "@/server/supabase/admin-rest";
 import {
@@ -29,11 +29,14 @@ import {
   STAGING_ORIGIN,
 } from "@/server/environment-isolation";
 async function notifyPolicy(id: string) {
+  const { policy } = await requirePolicy(id);
   const pending = await rows<{ recipient_email: string; status: string }>(
     `/rest/v1/policy_email_deliveries?policy_id=eq.${id}&status=in.(pending,failed)&select=recipient_email,status`,
   );
   let failed = 0;
   for (const item of pending) {
+    if (policy.visibility === "internal" && !policySignatories.some((email) => email === item.recipient_email))
+      throw new Error("Internal review recipients must be the two platform principals.");
     if (usesStagingMailCapture()) {
       await write(
         `/rest/v1/policy_email_deliveries?policy_id=eq.${id}&recipient_email=eq.${encodeURIComponent(item.recipient_email)}`,
@@ -83,7 +86,7 @@ export async function policyStructureAction(
   const op = String(form.get("operation") ?? "");
   try {
     if (op === "create" || op === "revise") {
-      await requireAdmin();
+      await requirePlatformPrincipal();
       const previous =
         op === "revise"
           ? (await requirePolicy(validId(formText(form, "policy_id", 36, 36))))
@@ -92,19 +95,18 @@ export async function policyStructureAction(
       const title = previous?.title ?? formText(form, "title", 3, 180),
         version = formText(form, "version_label", 1, 60),
         body = formText(form, "body", 10, 40000);
-      const org =
-        previous?.organisation_id ??
-        (formText(form, "organisation_id") || null);
+      const org = previous ? previous.organisation_id : (formText(form, "organisation_id") || null);
+      const visibility = previous?.visibility ?? (org ? "company" : "internal");
       if (org) await requireCompany(validId(org));
-      const reviewers = [
-        ...new Set([
-          ...policySignatories,
-          ...formText(form, "reviewers", 0, 3000)
+      const requestedReviewers = formText(form, "reviewers", 0, 3000)
             .split(/[\n,;]+/)
             .map((s) => s.trim().toLowerCase())
-            .filter(Boolean),
-        ]),
-      ];
+            .filter(Boolean);
+      if (visibility === "internal" && requestedReviewers.some((email) => !policySignatories.some((p) => p === email)))
+        throw new Error("Internal policies are restricted to the two platform principals. Use a company agreement for external reviewers.");
+      const reviewers = [...new Set(visibility === "internal" ? policySignatories : requestedReviewers)];
+      if (visibility === "company" && (reviewers.length < 2 || !reviewers.includes(session.user.email!.toLowerCase()) || !reviewers.some((email) => !policySignatories.some((p) => p === email))))
+        throw new Error("Include your APGI representative email and at least one company signatory. Internal signatories are not automatically added.");
       if (reviewers.length > 20 || reviewers.some((s) => !emailPattern.test(s)))
         throw new Error("Enter up to 20 valid reviewer emails.");
       const id = randomUUID();
@@ -137,10 +139,11 @@ export async function policyStructureAction(
         if (!uploaded.ok) throw new Error("The PDF could not be stored.");
       }
       const hash = createHash("sha256")
-        .update(JSON.stringify({ title, version, body, org, fileHash }))
+        .update(JSON.stringify({ title, version, body, org, fileHash, visibility }))
         .digest("hex");
       await write("/rest/v1/platform_policy_versions", {
         id,
+        visibility,
         title,
         version_label: version,
         body,
@@ -167,7 +170,7 @@ export async function policyStructureAction(
     const id = validId(formText(form, "policy_id", 36, 36));
     await requirePolicy(id);
     if (op === "notify") {
-      await requireAdmin();
+      await requirePlatformPrincipal();
       const failed = await notifyPolicy(id);
       return {
         success: failed
@@ -177,7 +180,7 @@ export async function policyStructureAction(
     }
     if (!["submit", "approve", "reject"].includes(op))
       throw new Error("Choose a valid policy action.");
-    if (op === "submit") await requireAdmin();
+    if (op === "submit") await requirePlatformPrincipal();
     if (op !== "submit" && form.get("confirm_decision") !== "on")
       throw new Error(
         "Confirm that you reviewed this exact version before recording your decision.",
@@ -217,7 +220,7 @@ export async function saveCommercialDraft(
   _state: StructureState,
   form: FormData,
 ): Promise<StructureState> {
-  const { session } = await requireAdmin();
+  const { session } = await requirePlatformPrincipal();
   try {
     const kind = formText(form, "kind");
     if (
