@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { allocationAtPrice, applicableApgiShare, costEstimate, minimumCourseQuote, moneyCents, percentageBps, type PlanningInput } from "@/lib/commercial-planning";
 import { reviewerEmails, policyScopeLabel } from "@/lib/company-structure";
 import { publicationReturnPath } from "@/lib/publication-return";
+import { newServiceSelection } from "@/lib/service-costs";
 const input: PlanningInput = { minimumApgiCents:10000,apgiShareBps:2000,recoveryBps:2500,outstandingCents:1000000,hostingFixedCents:1000,hostingRateBps:0,stripeFixedCents:0,stripeRateBps:0,administrationBps:600 };
 describe("Cost-first course price planning",()=>{
  it("prices backwards to the APGI minimum with recovery before the owner split",()=>{
@@ -63,6 +64,14 @@ import { coursePlanConfiguration } from "@/server/services/commercial-plan-confi
 function plan(){const f=new FormData();for(const [k,v]of Object.entries({organisation_id:"22222222-2222-4222-8222-222222222222",rights_holder:"22222222-2222-4222-8222-222222222222",cost_profile_id:"33333333-3333-4333-8333-333333333333",course_id:"scannex-training-programme",currency:"USD",development_status:"recover",development_cost:"10000",already_paid:"0",minimum_apgi_income:"100",recovery_rate:"25",customer_source:"owner",minimum_course_price:"1"}))f.set(k,v);return f;}
 describe("Server recalculation of submitted drafts",()=>{
  beforeEach(()=>{fixture.configuration.currency="USD";});
+ it("calculates selected services on the server and preserves an auditable snapshot without a saved profile",async()=>{
+  const f=plan();f.set("cost_mode","services");f.delete("cost_profile_id");
+  const selection={...newServiceSelection(),enrolments:"50",reviewed:true,services:{supabase:{plan:"pro",units:"1",extra_monthly:"0",monthly:"0"},vercel:{plan:"pro",units:"1",extra_monthly:"0"}}};
+  f.set("service_costs",JSON.stringify(selection));const config=await coursePlanConfiguration(f);
+  expect(config.cost_profile_id).toBeNull();expect(config.hosting_fixed).toBe("0.90");expect(config.minimum_course_price).not.toBe("1.00");
+  const snapshot=JSON.parse(config.service_cost_snapshot!);expect(snapshot.lines).toHaveLength(2);expect(snapshot.lines[0].source).toBe("https://supabase.com/pricing");expect(config.estimated_apgi_income).toBe("100.00");
+  selection.reviewed=false;f.set("service_costs",JSON.stringify(selection));await expect(coursePlanConfiguration(f)).rejects.toThrow("Confirm");
+ });
  it("ignores a forged browser price and stores the exact cost snapshot and new recovery order",async()=>{
   const config=await coursePlanConfiguration(plan());expect(config.minimum_course_price).toBe("677.26");expect(config.recovery_base).toBe("cost_cleared_pool");expect(config.development_funder).toBe("APGI platform");expect(config).not.toHaveProperty("johan_share");expect(config).not.toHaveProperty("srms_share");
  });
