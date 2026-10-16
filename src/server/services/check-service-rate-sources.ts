@@ -10,10 +10,11 @@ export async function checkServiceRateSources() {
   const day=new Date().toISOString().slice(0,10);
   const results:{service:string;status:string}[]=[];
   const sources=costServices.filter(s=>s.source);
+  const [review]=await rows<{created_at:string}>("/rest/v1/service_rate_catalogues?select=created_at&order=created_at.desc&limit=1");
   for(let i=0;i<sources.length;i+=2) {
     await Promise.all(sources.slice(i,i+2).map(async source=>{
       let status:"observed"|"unchanged"|"changed"|"unavailable"="unavailable",hash:string|null=null,signals:string[]=[],summary="Pricing source could not be read. Retain reviewed rates and check manually.";
-      const previous=await rows<{source_hash:string;status:string}>(`/rest/v1/service_rate_source_checks?source_id=eq.${source.id}&source_hash=not.is.null&order=checked_at.desc&select=source_hash,status&limit=1`);
+      const previous=await rows<{source_hash:string;status:string;checked_at:string}>(`/rest/v1/service_rate_source_checks?source_id=eq.${source.id}&source_hash=not.is.null&order=checked_at.desc&select=source_hash,status,checked_at&limit=1`);
       try {
         // Fixed official URLs only; no redirects, account data, arbitrary URLs or AI calls.
         const response=await fetch(source.source,{redirect:"error",cache:"no-store",signal:AbortSignal.timeout(12000),headers:{"user-agent":"APGI-Rate-Review/1.0","accept":"text/html,text/plain"}});
@@ -24,7 +25,7 @@ export async function checkServiceRateSources() {
         try {for(;;){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>3000000)throw Error("Source too large");html+=decoder.decode(value,{stream:true});}}finally{await reader.cancel();}
         signals=extractPriceSignals(html);if(!signals.length)throw Error("No readable prices");
         hash=createHash("sha256").update(JSON.stringify(signals)).digest("hex");status=observationStatus(previous[0]?.source_hash,hash);
-        if(status==="unchanged"&&previous[0]?.status==="changed")status="changed";
+        if(status==="unchanged"&&previous[0]?.status==="changed"&&(!review||Date.parse(review.created_at)<=Date.parse(previous[0].checked_at)))status="changed";
         summary=status==="changed"?"Price figures on the source changed. A principal must check plan, currency, quota and terms before updating rates.":status==="observed"?"First source observation. Extracted figures are not verified plan rates; review against the official page.":"No change in the extracted price figures. This does not verify plan terms, discounts, quotas or your invoice.";
       } catch { /* Fail closed: unavailable evidence never replaces reviewed prices. */ }
       await write("/rest/v1/service_rate_source_checks?on_conflict=source_id,check_day",{source_id:source.id,check_day:day,checked_at:new Date().toISOString(),status,source_hash:hash,amount_signals:signals,summary});

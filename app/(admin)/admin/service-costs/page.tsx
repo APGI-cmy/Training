@@ -15,8 +15,10 @@ export default async function ServiceCostsPage(){
     rows<{version:string;checked_on:string;review_note:string;created_at:string}>("/rest/v1/service_rate_catalogues?select=version,checked_on,review_note,created_at&order=created_at.desc&limit=20")
   ]);
   const date=(v:string)=>new Date(v).toLocaleString("en-GB",{timeZone:"Africa/Johannesburg"});
+  const reviewDue=Date.now()-Date.parse(catalogue.checkedOn+"T00:00:00Z")>=30*86400000;
   return <main className="admin-page"><header className="admin-page-header"><div><p className="eyebrow">Private platform administration</p><h1>Service cost register</h1><p>One rate register feeds the course service checklist. Usage stays with the course; saved agreement figures stay fixed.</p></div></header>
     <nav className="planning-controls"><Link href="/admin/agreements">Back to course agreements</Link></nav>
+    {reviewDue?<p className="notice-card" role="status">The reviewed rate table is at least 30 days old. Check the official prices and allowances, then save a reviewed version before relying on new course estimates.</p>:null}
     <section className="directory-card"><h2>Latest source checks</h2><p>Last automatic or manual observation, shown in South African time. A monthly human review is recommended even when price figures appear unchanged. Source checks do not verify your actual bill.</p>
       <div className="service-table-wrap"><table className="rate-table"><thead><tr><th>Service</th><th>Last checked</th><th>Result</th></tr></thead><tbody>{costServices.filter(s=>s.source).map(s=>{const c=checks.find(x=>x.source_id===s.id);return <tr key={s.id}><th scope="row">{s.name}</th><td>{c?date(c.checked_at):"No check recorded"}</td><td>{c?<><strong>{c.status==="changed"?"Possible price change":c.status==="unavailable"?"Manual check required":c.status==="observed"?"Initial observation":"No price-figure change detected"}</strong><p>{c.summary}</p><details><summary>Extracted figures — not approved rates</summary><p>{c.amount_signals.join(" · ")||"No readable prices returned."}</p></details></>:"Waiting for the first source check."}</td></tr>;})}</tbody></table></div>
     </section>
