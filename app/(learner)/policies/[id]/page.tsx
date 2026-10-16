@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { requireSession } from "@/server/auth/session";
 import { requirePolicy, rows } from "@/server/services/company-structure";
+import { ReviewerFields } from "@/components/admin/ReviewerFields";
+import { policySignatories } from "@/lib/company-structure";
 import { StructureForm } from "@/components/admin/StructureForm";
 import { policyStructureAction } from "@/server/actions/platform-policies";
 import { isPlatformPrincipal } from "@/server/services/platform-principals";
@@ -155,14 +157,7 @@ export default async function PolicyPage({
               New version label
               <input name="version_label" required maxLength={60} />
             </label>
-            <label>
-              Required reviewers
-              <textarea
-                name="reviewers"
-                defaultValue={reviewers.map((r) => r.email).join("\n")}
-                required
-              />
-            </label>
+            <ReviewerFields locked={p.visibility === "internal"} initialEmails={p.visibility === "internal" ? [...policySignatories] : reviewers.map(r => r.email)} />
             <label className="admin-span-two">
               Revised summary and terms
               <textarea

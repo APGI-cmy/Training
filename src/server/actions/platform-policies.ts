@@ -4,12 +4,14 @@ import { revalidatePath } from "next/cache";
 import { requirePlatformPrincipal } from "@/server/services/platform-principals";
 import { requireSession, getSupabaseRestUrl } from "@/server/auth/session";
 import { adminRest } from "@/server/supabase/admin-rest";
+import { coursePlanConfiguration, planningCostConfiguration } from "@/server/services/commercial-plan-configuration";
 import {
   formText,
   validId,
   emailPattern,
   financialDraftConfiguration,
   policySignatories,
+  reviewerEmails,
   type StructureState,
 } from "@/lib/company-structure";
 import {
@@ -98,10 +100,7 @@ export async function policyStructureAction(
       const org = previous ? previous.organisation_id : (formText(form, "organisation_id") || null);
       const visibility = previous?.visibility ?? (org ? "company" : "internal");
       if (org) await requireCompany(validId(org));
-      const requestedReviewers = formText(form, "reviewers", 0, 3000)
-            .split(/[\n,;]+/)
-            .map((s) => s.trim().toLowerCase())
-            .filter(Boolean);
+      const requestedReviewers = reviewerEmails(form);
       if (visibility === "internal" && requestedReviewers.some((email) => !policySignatories.some((p) => p === email)))
         throw new Error("Internal policies are restricted to the two platform principals. Use a company agreement for external reviewers.");
       const reviewers = [...new Set(visibility === "internal" ? policySignatories : requestedReviewers)];
@@ -232,6 +231,17 @@ export async function saveCommercialDraft(
     const org = formText(form, "organisation_id") || null;
     if (org) await requireCompany(validId(org));
     const course = formText(form, "course_id") || null;
+    const workspace = formText(form, "workspace");
+    if (workspace === "course_plan" && (!org || !course || kind !== "course_agreement"))
+      throw new Error("A course plan requires a company and course.");
+    if (workspace === "cost_profile" && (org || course || kind !== "operating_cost"))
+      throw new Error("Cost profiles are maintained in the internal workspace.");
+    if ((kind === "internal_distribution" || kind === "operating_cost") && org)
+      throw new Error("Internal distributions and operating costs belong in the private internal workspace.");
+    if (org && (formText(form, "johan_share") || formText(form, "jorrie_share") || formText(form, "srms_share")))
+      throw new Error("Partner agreements use the combined APGI share; internal distributions are separate.");
+    const configuration = workspace === "course_plan" ? await coursePlanConfiguration(form)
+      : workspace === "cost_profile" ? planningCostConfiguration(form) : financialDraftConfiguration(form);
     const id = randomUUID();
     await write("/rest/v1/commercial_agreement_drafts", {
       id,
@@ -239,7 +249,7 @@ export async function saveCommercialDraft(
       course_id: course,
       title: formText(form, "title", 3, 150),
       kind,
-      configuration: financialDraftConfiguration(form),
+      configuration,
       created_by: session.user.id,
     });
     await companyAudit(session.user.id, org, id, "commercial_draft_saved");

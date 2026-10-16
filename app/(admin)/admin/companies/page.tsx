@@ -4,10 +4,12 @@ import { accessibleCompanies } from "@/server/services/company-structure";
 import { StructureForm } from "@/components/admin/StructureForm";
 import { companyStructureAction } from "@/server/actions/company-structure";
 import { isPlatformPrincipal } from "@/server/services/platform-principals";
-export default async function CompaniesPage() {
+import { publicationReturnPath } from "@/lib/publication-return";
+export default async function CompaniesPage({searchParams}: {searchParams: Promise<{returnTo?:string}>}) {
   await requireAdmin();
   const principal = await isPlatformPrincipal();
   const companies = await accessibleCompanies();
+  const returnTo = principal ? publicationReturnPath((await searchParams).returnTo) : null;
   return (
     <main className="admin-page">
       <header className="admin-page-header">
@@ -25,10 +27,12 @@ export default async function CompaniesPage() {
         <h2>Create a company</h2>
         <StructureForm action={companyStructureAction} label="Create company">
           <input type="hidden" name="operation" value="create" />
+          {returnTo ? <input type="hidden" name="return_to" value={returnTo}/> : null}
           <label>
             Company name
             <input name="name" required maxLength={120} />
           </label>
+          {returnTo ? <p>Set up branding first. Partner invitations follow the course agreement workflow.</p> : <>
           <label>
             Business-owner email (optional)
             <input name="owner_email" type="email" />
@@ -37,6 +41,7 @@ export default async function CompaniesPage() {
               create the company.
             </small>
           </label>
+          </>}
         </StructureForm>
       </section>
       <section className="admin-launch-grid">

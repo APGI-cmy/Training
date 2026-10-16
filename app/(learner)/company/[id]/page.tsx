@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { publicationReturnPath } from "@/lib/publication-return";
+import { isPlatformPrincipal } from "@/server/services/platform-principals";
 import { notFound } from "next/navigation";
 import { requireSession } from "@/server/auth/session";
 import {
@@ -16,9 +18,10 @@ import {
 import { getCourses, getCourseBySlug } from "@/lib/courses";
 import { CourseCardCover } from "@/components/course/CourseCardCover";
 export default async function CompanyPage({
-  params,
+  params, searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{returnTo?:string}>;
 }) {
   await requireSession();
   const { id } = await params;
@@ -29,6 +32,8 @@ export default async function CompanyPage({
     notFound();
   }
   const { company, session, isAdmin } = access;
+  const principal = isAdmin && await isPlatformPrincipal(session);
+  const returnTo = principal ? publicationReturnPath((await searchParams).returnTo) : null;
   const owner =
     isAdmin ||
     (await ownMemberships(session, true)).some((m) => m.organisation_id === id);
@@ -67,6 +72,7 @@ export default async function CompanyPage({
         </form>
       </header>
       <nav className="button-row">
+        {returnTo ? <Link href={`${returnTo}?brand=${id}`}>Return to course preparation</Link> : null}
         <Link href="/company">Switch company</Link>
         {owner ? <Link href="/policies">Policies and reviews</Link> : null}
         {isAdmin ? <Link href="/admin/companies">All companies</Link> : null}
@@ -99,7 +105,7 @@ export default async function CompanyPage({
             })}
         </div>
         {!offerings.length ? <p>No courses assigned yet.</p> : null}
-        {isAdmin ? (
+        {principal ? (
           <StructureForm
             action={companyStructureAction}
             label="Save course assignment"
@@ -138,7 +144,7 @@ export default async function CompanyPage({
       </section>
       {owner ? (
         <>
-          <CompanyBrandForm company={company} />
+          <CompanyBrandForm company={company} returnTo={returnTo} />
           <section className="admin-form-card">
             <h2>Request a course or platform change</h2>
             <StructureForm

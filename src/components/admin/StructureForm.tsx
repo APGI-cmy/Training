@@ -1,5 +1,6 @@
 "use client";
 import { useActionState, useEffect, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import type { StructureState } from "@/lib/company-structure";
 export function StructureForm({
   action,
@@ -13,9 +14,10 @@ export function StructureForm({
   className?: string;
 }) {
   const [state, submit, pending] = useActionState(action, {});
+  const router = useRouter();
   useEffect(() => {
-    if (state.success) window.dispatchEvent(new Event("alp-branding-updated"));
-  }, [state.success]);
+    if (state.success) { window.dispatchEvent(new Event("alp-branding-updated")); router.refresh(); }
+  }, [state.success, router]);
   return (
     <form action={submit} className={className}>
       {children}

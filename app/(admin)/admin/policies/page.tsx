@@ -4,12 +4,13 @@ import {
   accessibleCompanies,
   listPolicies,
 } from "@/server/services/company-structure";
-import { StructureForm } from "@/components/admin/StructureForm";
-import { policyStructureAction } from "@/server/actions/platform-policies";
+import { PolicyDraftForm } from "@/components/admin/PolicyDraftForm";
+import { requireSession } from "@/server/auth/session";
 import { isPlatformPrincipal } from "@/server/services/platform-principals";
 export default async function AdminPoliciesPage() {
   await requireAdmin();
-  const principal = await isPlatformPrincipal();
+  const session = await requireSession();
+  const principal = await isPlatformPrincipal(session);
   const [companies, policies] = await Promise.all([
     accessibleCompanies(),
     listPolicies(),
@@ -29,57 +30,7 @@ export default async function AdminPoliciesPage() {
       </header>
       {principal ? <section className="admin-form-card">
         <h2>Create a policy draft</h2>
-        <StructureForm action={policyStructureAction} label="Save policy draft">
-          <input type="hidden" name="operation" value="create" />
-          <label>
-            Policy title
-            <input name="title" required minLength={3} maxLength={180} />
-          </label>
-          <label>
-            Version label
-            <input
-              name="version_label"
-              required
-              placeholder="Draft 0.1"
-              maxLength={60}
-            />
-          </label>
-          <label>
-            Company scope
-            <select name="organisation_id">
-              <option value="">Confidential internal - two principals only</option>
-              {companies.map((c) => (
-                <option value={c.id} key={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Required reviewer emails
-            <textarea
-              name="reviewers"
-              placeholder="For a company agreement: your APGI representative email and the company signatory email(s). Internal documents always use exactly the two principals."
-            />
-          </label>
-          <label className="admin-span-two">
-            Summary and terms
-            <textarea
-              name="body"
-              required
-              minLength={10}
-              maxLength={40000}
-              rows={6}
-            />
-          </label>
-          <label>
-            PDF document (optional)
-            <input type="file" name="pdf" accept="application/pdf" />
-            <small>
-              Private PDF, up to 3 MB. Submitted versions cannot be overwritten.
-            </small>
-          </label>
-        </StructureForm>
+        <PolicyDraftForm companies={companies.map(c => ({id:c.id,name:c.name}))} principalEmail={session.user.email ?? ""} />
       </section> : <p>Company agreements available to your role appear below. Internal governance is restricted.</p>}
       <section className="directory-card">
         <h2>Document register</h2>

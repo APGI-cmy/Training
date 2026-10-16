@@ -5,7 +5,7 @@ import { companyStructureAction } from "@/server/actions/company-structure";
 import { certificateDesigns } from "@/lib/certificates/designs";
 import { getSupabaseRestUrl } from "@/server/auth/session";
 import type { CompanyRecord } from "@/lib/company-structure";
-export function CompanyBrandForm({ company }: { company: CompanyRecord }) {
+export function CompanyBrandForm({ company, returnTo }: { company: CompanyRecord; returnTo?: string | null }) {
   return (
     <section className="admin-form-card">
       <h2>Branding and certificate</h2>
@@ -31,6 +31,7 @@ export function CompanyBrandForm({ company }: { company: CompanyRecord }) {
       >
         <input type="hidden" name="operation" value="brand" />
         <input type="hidden" name="organisation_id" value={company.id} />
+        {returnTo ? <input type="hidden" name="return_to" value={returnTo} /> : null}
         <label>
           Company display name
           <input

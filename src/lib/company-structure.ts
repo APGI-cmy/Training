@@ -5,6 +5,18 @@ export const policySignatories = [
   "johan.ras@apginc.ca",
   "jorrie.jordaan@apginc.ca",
 ] as const;
+export function reviewerEmails(form: FormData) {
+  const values = form.getAll("reviewers");
+  if (values.length > 20 || values.some(value => typeof value !== "string"))
+    throw new Error("Enter up to 20 reviewer email addresses.");
+  const emails = values.flatMap(value => String(value).split(/[\n,;]+/))
+    .map(value => value.trim().toLowerCase()).filter(Boolean);
+  if (emails.length > 20 || emails.some(value => value.length > 254 || !emailPattern.test(value)))
+    throw new Error("Enter one valid email address for each reviewer.");
+  if (new Set(emails).size !== emails.length)
+    throw new Error("Each reviewer must have a different email address.");
+  return emails;
+}
 export function validId(id: string) {
   if (!uuidPattern.test(id))
     throw new Error("Choose a valid company or record.");
@@ -91,6 +103,9 @@ export const financialDraftFields = [
   "administration_rate",
   "johan_share",
   "jorrie_share",
+  "apgi_share",
+  "srms_share",
+  "platform_user_share",
   "calculation_basis",
   "notes",
 ] as const;
@@ -108,6 +123,7 @@ export function financialDraftConfiguration(form: FormData) {
           "johan_share",
           "jorrie_share",
           "post_recovery_share",
+          "apgi_share", "srms_share", "platform_user_share",
         ].includes(field))
     ) {
       const n = Number(raw);
@@ -123,5 +139,7 @@ export function financialDraftConfiguration(form: FormData) {
   }
   if (result.currency && !/^[A-Z]{3}$/.test(result.currency))
     throw new Error("Use a three-letter uppercase currency code.");
+  if (result.apgi_share && result.srms_share && Number(result.apgi_share) + Number(result.srms_share) !== 100)
+    throw new Error("APGI and SRMS distribution percentages must total 100%.");
   return result;
 }

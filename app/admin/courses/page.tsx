@@ -3,9 +3,11 @@ import Link from "next/link";
 import { getCourses } from "@/lib/courses";
 import { CourseCardCover } from "@/components/course/CourseCardCover";
 import styles from "./courses.module.css";
+import { isPlatformPrincipal } from "@/server/services/platform-principals";
 
 export default async function AdminCoursesPage() {
   await requireAdmin();
+  const principal = await isPlatformPrincipal();
   const courses = getCourses();
 
   return (
@@ -27,6 +29,7 @@ export default async function AdminCoursesPage() {
               <Link className="button-link" href={`/admin/courses/${course.slug}/preview`}>
                 Preview course
               </Link>
+              {principal ? <Link className="button-link" href={`/admin/courses/${course.slug}/publish`}>Prepare publication</Link> : null}
             </div>
           </article>
         ))}

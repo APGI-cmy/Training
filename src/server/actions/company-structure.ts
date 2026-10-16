@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { requirePlatformPrincipal } from "@/server/services/platform-principals";
+import { publicationReturnPath } from "@/lib/publication-return";
 import { requireSession, getSupabaseRestUrl } from "@/server/auth/session";
 import { getCourseBySlug } from "@/lib/courses";
 import { isBrandColor } from "@/lib/branding";
@@ -109,6 +111,8 @@ export async function companyStructureAction(
       if (owner) link = await ownerInvitation(session.user.id, id, owner);
       revalidatePath("/admin/companies");
       revalidatePath("/admin/organisations");
+      const returnTo = publicationReturnPath(formText(form, "return_to"));
+      if (returnTo) redirect(`/company/${id}?returnTo=${encodeURIComponent(returnTo)}`);
       return {
         success: `${name} created. Commercial terms remain unconfigured.${owner ? " Owner invitation prepared." : ""}`,
         link,
@@ -197,6 +201,7 @@ export async function companyStructureAction(
     } else if (op === "offering") {
       if (!access.isAdmin)
         throw new Error("Only APGI administrators can assign courses.");
+      await requirePlatformPrincipal();
       const course = formText(form, "course_id"),
         status = formText(form, "status");
       if (
@@ -274,6 +279,11 @@ export async function companyStructureAction(
     revalidatePath(`/company/${id}`);
     revalidatePath("/admin/certificates");
     revalidatePath("/admin/invitations");
+    const returnTo = publicationReturnPath(formText(form, "return_to"));
+    if (op === "brand" && access.isAdmin && returnTo) {
+      await requirePlatformPrincipal();
+      redirect(`${returnTo}?brand=${encodeURIComponent(id)}`);
+    }
     return { success: "Saved. Financial arrangements remain drafts." };
   } catch (error) {
     if (error instanceof Error && "digest" in error) throw error;
