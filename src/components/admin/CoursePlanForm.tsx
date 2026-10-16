@@ -44,7 +44,12 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
   // The initial route identifies the draft restored on navigation back from branding.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [principalId, initialCourse, initialBrand]);
-  useEffect(() => { if (ready) try { sessionStorage.setItem(storageKey(values.course_id), JSON.stringify({time:Date.now(),values})); } catch {} }, [values, ready, principalId]);
+  useEffect(() => { if (ready) try {
+    const saved=JSON.stringify({time:Date.now(),values});
+    sessionStorage.setItem(storageKey(values.course_id),saved);
+    // The general wizard resumes the latest course as well as its scoped route.
+    sessionStorage.setItem(storageKey(""),saved);
+  } catch {} }, [values, ready, principalId]);
   const update = (key: string) => (value: string) => setValues(current => {
     const next={...current,[key]:value};
     if(key==="currency")try{next.service_costs=JSON.stringify({...readServiceSelection(current.service_costs),reviewed:false});}catch{next.service_costs="";}
