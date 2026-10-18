@@ -15,9 +15,10 @@ type AnswerState = Record<string, QuestionAnswer>;
 interface QuizEngineProps {
   unitId: string;
   questions: QuizQuestion[];
+  preview?: boolean;
 }
 
-export function QuizEngine({ unitId, questions }: QuizEngineProps) {
+export function QuizEngine({ unitId, questions, preview=false }: QuizEngineProps) {
   const [answers, setAnswers] = useState<AnswerState>({});
   const [submitted, setSubmitted] = useState(false);
   const score = useMemo(
@@ -32,13 +33,13 @@ export function QuizEngine({ unitId, questions }: QuizEngineProps) {
 
   function submitQuiz() {
     setSubmitted(true);
-    window.localStorage.setItem(`apgi-training-score-${unitId}`, scoreLabel);
+    if(!preview)window.localStorage.setItem(`apgi-training-score-${unitId}`, scoreLabel);
   }
 
   function resetQuiz() {
     setAnswers({});
     setSubmitted(false);
-    window.localStorage.removeItem(`apgi-training-score-${unitId}`);
+    if(!preview)window.localStorage.removeItem(`apgi-training-score-${unitId}`);
   }
 
   return (

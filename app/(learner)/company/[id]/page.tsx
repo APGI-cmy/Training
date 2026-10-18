@@ -127,18 +127,15 @@ export default async function CompanyPage({
               Offering status
               <select name="status">
                 <option value="draft">Draft</option>
-                <option value="published">
-                  Published for company invitations
-                </option>
                 <option value="archived">
                   Archived (existing enrolments retained)
                 </option>
               </select>
             </label>
             <p className="admin-span-two">
-              A course can be assigned to several companies. Publishing an
-              assignment does not enrol learners, grant assessment access or
-              enable payments.
+              A course can be assigned to several companies. To publish a new
+              release, complete <Link href="/course-reviews">Course reviews and publication</Link>.
+              Publication does not enrol learners or enable payments.
             </p>
           </StructureForm>
         ) : null}

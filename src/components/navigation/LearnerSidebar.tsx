@@ -30,6 +30,7 @@ export async function LearnerSidebar() {
         ...(session ? [
           { href: "/company", label: "Company workspaces" },
           { href: "/policies", label: "Policies and reviews" },
+          { href: "/course-reviews", label: "Course reviews" },
         ] : []),
         ...(isAdmin ? [
           { href: "/admin", label: "Administration" },

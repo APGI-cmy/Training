@@ -5,7 +5,7 @@
   "description": "Next.js learning platform for APGI VPSHR training content.",
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node --experimental-strip-types scripts/verify-environment-isolation.mjs && node scripts/verify-course-media.mjs",
+    "prebuild": "node --experimental-strip-types scripts/verify-environment-isolation.mjs && node scripts/verify-course-media.mjs && node scripts/course-review-manifest.mjs",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",

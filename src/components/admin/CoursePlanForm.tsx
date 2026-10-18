@@ -33,6 +33,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
   const router=useRouter();
   useEffect(()=>{if(state.success)router.refresh();},[state.success,router]);
   const [step, setStep] = useState(0); const formRef = useRef<HTMLFormElement>(null);
+  const [submittedValues,setSubmittedValues]=useState("");
   const [ready, setReady] = useState(false);
   const [values, setValues] = useState<Record<string, string>>({ course_id: initialCourse, organisation_id: initialBrand, rights_holder: "", designer_name: "", designer_company: "", development_status: "", development_cost: "0", already_paid: "0", recovery_rate: partnerPlanningDefaults.recoveryRate, currency: "USD", minimum_apgi_income: "", cost_profile_id: "", cost_mode:"services", service_costs:"", customer_source: "owner", custom_shares: "", apgi_share: "", notes: "" });
   const storageKey = (course: string) => `apgi-course-planning-v1:${principalId}:${course || "new"}`;
@@ -89,6 +90,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
   return <form ref={formRef} action={action} onSubmit={event=>{
     const submitter=(event.nativeEvent as SubmitEvent).submitter;
     if(step!==3||!(submitter instanceof HTMLButtonElement)||submitter.name!=="intent")event.preventDefault();
+    else setSubmittedValues(JSON.stringify(values));
   }}>
     <input type="hidden" name="workspace" value="course_plan" /><input type="hidden" name="kind" value="course_agreement" />
     <input type="hidden" name="cost_mode" value={useServices?"services":"saved"}/><input type="hidden" name="service_costs" value={values.service_costs}/>
@@ -124,9 +126,9 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
     <fieldset data-step="3" className="commercial-step" hidden={step!==3}><legend>{ownApgi?"Review the APGI course price":"Review the draft terms"}</legend>
       {quote ? <><h3>Calculated minimum course price: {money(quote.price)}</h3><p><CurrencyEquivalents amount={(quote.price/100).toFixed(2)} from={values.currency} quote={serviceResult?.snapshot.currencyQuote}/></p><dl className="draft-fields">{[["Estimated running costs",quote.costs],["Other costs — contingency",quote.contingency],["Administration on costs (excluding reserve)",quote.administration],["Development recovery",quote.recovery],["APGI income",quote.apgi],["Partner income",quote.partner]].map(([label,value])=><div key={String(label)}><dt>{label}</dt><dd>{money(Number(value))}</dd></div>)}</dl>{serviceResult?<ul>{serviceResult.lines.map(l=><li key={l.id}>{l.name}: {l.plan} — {money(l.fixedCents)}{l.rateBps?` + ${l.rateBps/100}% of price`:""}</li>)}</ul>:null}<p>{selectedCourse?.title} · {brand?.name} · Legal owner: {owner?.name}</p><p>Course designer: {values.designer_name} · {values.designer_company}</p><p>The course price must not fall below this calculated floor under these assumptions. The partner may propose a higher price. Recovery stops at the recorded balance; actual payments and refunds must be reconciled.</p></> : <p className="form-error" role="alert">{quoteError}</p>}
       <label title="Record any exception that must be included in the approval schedule.">Notes for the agreement<textarea name="notes" value={values.notes} onChange={event=>update("notes")(event.target.value)} maxLength={5000} rows={3}/></label>
-      <p className="notice-card">This saves a planning draft only. It does not publish the course, send invitations, approve an agreement, change a learner price or activate a payment. Partner acceptance and controlled publication are the next implementation stage.</p>
+      <p className="notice-card">Save this exact commercial version, then continue to request course review, collect independent endorsements and approve publication. Saving alone does not send invitations, accept terms, publish the course or activate a payment.</p>
     </fieldset>
     <div className="planning-controls">{step>0 ? <button key="back" type="button" className="secondary-button" onClick={()=>setStep(current=>current-1)}>Back</button> : null}{step<3 ? <button key="continue" type="button" className="primary-button" onClick={event=>{event.preventDefault();advance();}}>Continue</button> : <button key="save-draft" type="submit" name="intent" value="save_course_draft" className="primary-button" disabled={pending||!quote}>{pending?"Saving…":"Save course and terms draft"}</button>}</div>
-    {state.error ? <p role="alert" className="form-error">{state.error}</p> : null}{state.success ? <p role="status" className="form-success">{state.success}</p> : null}
+    {state.error ? <p role="alert" className="form-error">{state.error}</p> : null}{state.success ? <p role="status" className="form-success">{state.success}</p> : null}{state.link&&!pending&&submittedValues===JSON.stringify(values)?<p><Link className="primary-button" href={state.link}>5. Continue to course review</Link></p>:null}
   </form>;
 }

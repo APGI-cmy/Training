@@ -209,6 +209,8 @@ export async function companyStructureAction(
         !["draft", "published", "archived"].includes(status)
       )
         throw new Error("Choose a valid course and status.");
+      if (status === "published")
+        throw new Error("Publish through Course reviews and publication after the exact release has passed review. This menu cannot bypass that approval.");
       await write(
         "/rest/v1/organisation_offerings?on_conflict=organisation_id,course_id",
         {

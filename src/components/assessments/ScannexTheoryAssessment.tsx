@@ -6,20 +6,23 @@ import {
   type ScannexTheoryActionState
 } from "@/server/actions/assessments/submit-scannex-theory-attempt";
 import type { ScannexTheoryAnswerState, ScannexTheoryQuestion } from "@/types/scannex-assessment";
+import {previewReviewTheory} from "@/server/actions/course-reviews";
 
 const initialState: ScannexTheoryActionState = {};
 
 export function ScannexTheoryAssessment({
   courseSlug,
   questions,
-  latestResult
+  latestResult,
+  reviewId
 }: {
   courseSlug: string;
   questions: ScannexTheoryQuestion[];
   latestResult: { score: number; maxScore: number; submittedAt: string } | null;
+  reviewId?: string;
 }) {
   const [answers, setAnswers] = useState<ScannexTheoryAnswerState>({});
-  const [state, action, pending] = useActionState(submitScannexTheoryAttempt, initialState);
+  const [state, action, pending] = useActionState(reviewId?previewReviewTheory:submitScannexTheoryAttempt, initialState);
 
   function setAnswer(question: ScannexTheoryQuestion, optionId: string) {
     setAnswers((current) => {
@@ -41,7 +44,7 @@ export function ScannexTheoryAssessment({
           <div>
             <p className="eyebrow">Part A: knowledge assessment</p>
             <h2 id="scannex-theory-heading">Scannex theory assessment</h2>
-            <p>Answer every question. The correct answers are assessed securely after submission and are not displayed.</p>
+            <p>{reviewId?"Review preview: scoring is checked on the server, but no learner attempt, grade or certificate is recorded.":"Answer every question. The correct answers are assessed securely after submission and are not displayed."}</p>
           </div>
           <div className="score-badge">68 marks</div>
         </div>
@@ -53,6 +56,7 @@ export function ScannexTheoryAssessment({
         ) : null}
 
         <form action={action} className="assessment-form">
+          {reviewId?<input type="hidden" name="round_id" value={reviewId}/>:null}
           <input name="courseSlug" type="hidden" value={courseSlug} readOnly />
           <input name="answers" type="hidden" value={JSON.stringify(answers)} readOnly />
 
@@ -95,7 +99,7 @@ export function ScannexTheoryAssessment({
 
           <div className="button-row">
             <button className="primary-button" type="submit" disabled={pending}>
-              {pending ? "Recording assessment…" : "Submit knowledge assessment"}
+              {pending ? "Checking assessment…" : reviewId?"Check preview answers (no learner record)":"Submit knowledge assessment"}
             </button>
           </div>
         </form>

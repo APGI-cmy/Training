@@ -89,6 +89,7 @@ export type StructureState = {
   error?: string;
   success?: string;
   link?: string;
+  draftId?: string;
 };
 export const financialDraftFields = [
   "currency",

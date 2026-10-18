@@ -244,8 +244,11 @@ export async function saveCommercialDraft(
       throw new Error("Partner agreements use the combined APGI share; internal distributions are separate.");
     const configuration = workspace === "course_plan" ? await coursePlanConfiguration(form)
       : workspace === "cost_profile" ? planningCostConfiguration(form) : financialDraftConfiguration(form);
-    const id = randomUUID();
-    await write("/rest/v1/commercial_agreement_drafts", {
+    const saveKey = createHash("sha256").update(JSON.stringify({ actor:session.user.id,kind,org,course,configuration,title:formText(form,"title",3,150) })).digest("hex");
+    const existing = await rows<{id:string}>(`/rest/v1/commercial_agreement_drafts?save_key=eq.${saveKey}&select=id&limit=1`);
+    const id = existing[0]?.id ?? randomUUID();
+    if(!existing.length) {
+    const saved = await adminRest("/rest/v1/commercial_agreement_drafts?on_conflict=save_key", { method:"POST",headers:{Prefer:"resolution=ignore-duplicates,return=representation"},body:JSON.stringify({
       id,
       organisation_id: org,
       course_id: course,
@@ -253,10 +256,17 @@ export async function saveCommercialDraft(
       kind,
       configuration,
       created_by: session.user.id,
-    });
+      save_key:saveKey,
+    }) });
+    if(!saved.ok)throw Error("The draft could not be saved. Your current entries are retained.");
+    const result = await saved.json() as {id:string}[];
+    if(!result.length){const duplicate=await rows<{id:string}>(`/rest/v1/commercial_agreement_drafts?save_key=eq.${saveKey}&select=id&limit=1`);return {success:"This exact draft was already saved.",draftId:duplicate[0]?.id,link:workspace==="course_plan"&&duplicate[0]?`/course-reviews/new?plan=${duplicate[0].id}`:undefined};}
+    }
     await companyAudit(session.user.id, org, id, "commercial_draft_saved");
     revalidatePath("/admin/agreements");
     return {
+      draftId:id,
+      link:workspace==="course_plan"?`/course-reviews/new?plan=${id}`:undefined,
       success:
         "Saved as a non-operative draft. It cannot charge fees, distribute income or activate rates.",
     };
