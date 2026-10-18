@@ -1,7 +1,7 @@
 -- V2 only. All fixtures, role bindings, approval records and offering changes roll back.
 begin;
 do $$
-declare actor uuid; actor_email text; second_id uuid; org uuid; brand_rev integer; plan uuid:=gen_random_uuid(); rid uuid:=gen_random_uuid(); d jsonb; p jsonb; w jsonb; v jsonb; cfg jsonb; blocked boolean; qa_org uuid:=gen_random_uuid(); other_id uuid:=gen_random_uuid(); plan2 uuid:=gen_random_uuid(); rid2 uuid:=gen_random_uuid();
+declare actor uuid; actor_email text; second_id uuid; org uuid; brand_rev integer; plan uuid:=gen_random_uuid(); rid uuid:=gen_random_uuid(); d jsonb; p jsonb; w jsonb; v jsonb; cfg jsonb; blocked boolean; qa_org uuid:=gen_random_uuid(); other_id uuid:=gen_random_uuid(); plan2 uuid:=gen_random_uuid(); rid2 uuid:=gen_random_uuid(); plan3 uuid:=gen_random_uuid(); rid3 uuid:=gen_random_uuid();
 begin
  select user_id,email into actor,actor_email from public.platform_principals where email='johan.ras@apginc.ca' and public.v2_is_platform_principal(user_id);
  if actor is null then raise exception 'No principal fixture';end if;
@@ -68,6 +68,17 @@ begin
  exception when others then blocked=true;end;if not blocked then raise exception 'Unresolved negotiation reopened';end if;
  perform public.v2_publish_reviewed_course(rid2,3,actor,repeat('a',64));
  if not exists(select 1 from public.organisation_offerings where organisation_id=qa_org and reviewed_release_id=rid2 and status='published') then raise exception 'Partner approved release missing';end if;
+ -- A third-party owner approving an APGI-branded offering remains scoped to their own company.
+ insert into public.commercial_agreement_drafts(id,organisation_id,course_id,title,kind,configuration,created_by) values(plan3,org,'vpshr-level-0','QA rollback-only cross-brand plan','course_agreement',cfg,actor);
+ select brand_revision into brand_rev from public.organisations where id=org;
+ d=jsonb_set(d,'{workflow,partnerCompanyId}',to_jsonb(qa_org));d=jsonb_set(d,'{workflow,ownerId}',to_jsonb(qa_org));d=jsonb_set(d,'{workflow,commercials,0,planId}',to_jsonb(plan3));d=jsonb_set(d,'{workflow,commercials,0,acceptance,brandRevision}',to_jsonb(brand_rev));
+ insert into public.course_review_rounds(id,plan_id,organisation_id,course_id,fingerprint,document) values(rid3,plan3,org,'vpshr-level-0',repeat('a',64),d);
+ delete from public.user_roles where user_id=second_id and role='admin';
+ blocked=false;begin perform public.v2_publish_reviewed_course(rid3,1,actor,repeat('a',64));exception when others then blocked=true;end;if not blocked then raise exception 'Revoked APGI principal approval was accepted';end if;
+ insert into public.user_roles(user_id,role) values(second_id,'admin') on conflict do nothing;
+ perform public.v2_publish_reviewed_course(rid3,1,actor,repeat('a',64));
+ if exists(select 1 from public.organisation_memberships where user_id=other_id and organisation_id=org) then raise exception 'Cross-brand owner gained APGI membership';end if;
+
 end $$;
-select 'PASS: content-first creation, duplicate protection, dual principal decisions, stale-write protection, content/branding version gates, unresolved defects, price floor, scoped partner acceptance, owner revocation, counter-offer limits and atomic explicit publication. All QA fixtures rolled back.' as verification;
+select 'PASS: content-first creation, duplicate protection, dual principal decisions, stale-write protection, content/branding version gates, unresolved defects, price floor, scoped partner acceptance, owner revocation, counter-offer limits, current principal authority, cross-brand owner isolation and atomic explicit publication. All QA fixtures rolled back.' as verification;
 rollback;

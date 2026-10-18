@@ -9,12 +9,13 @@ export function ReviewForm({id,operation,children,label="Save",hidden={},disable
  return <form action={action} className="review-form"><input type="hidden" name="round_id" value={id}/><input type="hidden" name="operation" value={operation}/>{Object.entries(hidden).map(([name,value])=><input key={name} type="hidden" name={name} value={value}/>)}{children}<button className="primary-button" disabled={pending||disabled}>{pending?"Saving…":label}</button>{state.error?<p className="form-error" role="alert">{state.error}</p>:null}{state.success?<p className="form-success" role="status">{state.success}</p>:null}</form>;
 }
 export function RequestReviewForm({courseId,email,companies,initialBrand="",initialCredits={}}:{courseId:string;email:string;companies:{id:string;name:string;slug:string}[];initialBrand?:string;initialCredits?:Record<string,string>}){
- const [brandId,setBrandId]=useState(initialBrand||companies.find(c=>c.slug==="apgi")?.id||"");const apgi=companies.find(c=>c.id===brandId)?.slug==="apgi";
+ const [brandId,setBrandId]=useState(initialBrand||companies.find(c=>c.slug==="apgi")?.id||"");const brandIsApgi=companies.find(c=>c.id===brandId)?.slug==="apgi";
  const [state,action,pending]=useActionState<ReviewActionState,FormData>(createCourseReview,{}),prefix=useId();
- const [people,setPeople]=useState(()=>[{id:0,email,role:"primary"},{id:1,email:apgi?(email==="johan.ras@apginc.ca"?"jorrie.jordaan@apginc.ca":"johan.ras@apginc.ca"):"",role:"primary"}]);
+ const [people,setPeople]=useState(()=>[{id:0,email,role:"primary"},{id:1,email:brandIsApgi?(email==="johan.ras@apginc.ca"?"jorrie.jordaan@apginc.ca":"johan.ras@apginc.ca"):"",role:"primary"}]);
  const [next,setNext]=useState(2),[restored,setRestored]=useState(false);
  const setupKey=`apgi-content-review-setup:${email}:${courseId}`;
  const [metadata,setMetadata]=useState({rights_holder:initialCredits.rights_holder||brandId,designer_name:initialCredits.designer_name||"",designer_company:initialCredits.designer_company||"",terms_acceptor:""});
+ const apgi=brandIsApgi&&companies.find(c=>c.id===metadata.rights_holder)?.slug==="apgi";
  const [cutoff,setCutoff]=useState(new Date(Date.now()+7*86400000+7200000).toISOString().slice(0,16));
  useEffect(()=>{try{const raw=sessionStorage.getItem(setupKey);if(raw){const saved=JSON.parse(raw);if(Date.now()-Number(saved.time)<86400000){if(saved.metadata)setMetadata(current=>({...current,...saved.metadata}));if(Array.isArray(saved.people)&&saved.people.length>=2){setPeople(saved.people);setNext(Math.max(...saved.people.map((p:{id:number})=>p.id))+1);}if(typeof saved.cutoff==="string")setCutoff(saved.cutoff);if(!initialBrand&&companies.some(c=>c.id===saved.brandId))setBrandId(saved.brandId);}}}catch{/* Setup remains usable without tab storage. */}setRestored(true);
  // Restore once for this principal/course. The returned brand query takes precedence.

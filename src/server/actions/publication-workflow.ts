@@ -99,7 +99,7 @@ Publication remains subject to a final APGI principal action. Company learner pa
 
  }else if(op==="partner_accept"||op==="partner_decline"){
 
-  if(!w.partner||email!==w.partnerEmail)throw Error("Only the nominated company owner may decide this offer.");await requirePartnerOwner(round.organisation_id,session.user.id);
+  if(!w.partner||email!==w.partnerEmail)throw Error("Only the nominated company owner may decide this offer.");await requirePartnerOwner(w.partnerCompanyId??round.organisation_id,session.user.id);
 
   if(op==="partner_accept")acceptPartner(w,{email,userId:session.user.id,at:now,price:moneyCents(formText(form,"overall_price",1,30),"overall learner fee"),brandRevision:source.brand.brand_revision,contentFingerprint:source.fingerprint,confirmContent:form.get("confirm_content")==="on",confirmBrand:form.get("confirm_brand")==="on",confirmTerms:form.get("confirm_terms")==="on"});
 

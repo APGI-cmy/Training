@@ -40,7 +40,7 @@ export default async function CompanyPage({
     isAdmin ||
     (await ownMemberships(session, true)).some((m) => m.organisation_id === id);
   if(owner&&candidateReturn?.startsWith("/course-reviews/")&&!candidateReturn.startsWith("/course-reviews/new?")){const {requireReview}=await import("@/server/services/course-reviews");try{const r=await requireReview(candidateReturn.split("/").at(-1)!);if(r.round.organisation_id===id)returnTo=candidateReturn;}catch{/* An unrelated review never becomes a return target. */}}
-  const workflows=owner?await rows<{id:string;document:{title:string;workflow?:{partnerEmail:string;stage:string}}}>(`/rest/v1/course_review_rounds?organisation_id=eq.${id}&status=eq.open&select=id,document`):[];
+  const workflows=owner?await rows<{id:string;document:{title:string;workflow?:{partnerEmail:string;stage:string}}}>(`/rest/v1/course_review_rounds?or=(organisation_id.eq.${id},document->workflow->>partnerCompanyId.eq.${id})&status=eq.open&select=id,document`):[];
   const offerings = await companyOfferings(id);
   const requests = owner
     ? await rows<{
