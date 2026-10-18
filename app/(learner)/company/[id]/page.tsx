@@ -17,6 +17,7 @@ import {
 } from "@/server/actions/company-structure";
 import { getCourses, getCourseBySlug } from "@/lib/courses";
 import { CourseCardCover } from "@/components/course/CourseCardCover";
+import catalogueStyles from "@/components/course/compact-course-catalogue.module.css";
 export default async function CompanyPage({
   params, searchParams,
 }: {
@@ -79,13 +80,13 @@ export default async function CompanyPage({
       </nav>
       <section className="admin-form-card">
         <h2>Company courses</h2>
-        <div className="company-course-grid">
+        <div className={catalogueStyles.grid}>
           {offerings
             .filter((o) => isAdmin || o.status === "published")
             .map((o) => {
               const c = getCourseBySlug(o.course_id);
               return c ? (
-                <article className="course-card course-card--visual" key={o.id}>
+                <article className={`course-card course-card--visual ${catalogueStyles.card}`} key={o.id}>
                   <CourseCardCover courseSlug={c.slug} />
                   <div className="course-card-body">
                     <h3>{c.title}</h3>

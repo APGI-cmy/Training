@@ -14,6 +14,8 @@ export function planningCostConfiguration(form: FormData) {
   return configuration;
 }
 export async function coursePlanConfiguration(form: FormData) {
+  const designerName=formText(form,"designer_name",2,180);
+  const designerCompany=formText(form,"designer_company",2,180);
   const org = validId(formText(form, "organisation_id"));
   const ownerId = validId(formText(form, "rights_holder"));
   const course = formText(form, "course_id");
@@ -49,6 +51,7 @@ export async function coursePlanConfiguration(form: FormData) {
     planning_version: "1", agreement_scope: ownApgi ? "apgi_course" : "partner", currency,
     contract_partner_id: brand.company.slug !== "apgi" ? brand.company.id : owner.company.slug !== "apgi" ? owner.company.id : null,
     rights_holder: ownerId, rights_holder_name: owner.company.name, brand_name: brand.company.name,
+    designer_name:designerName,designer_company:designerCompany,
     brand_revision: String(brand.company.brand_revision), development_status: developmentStatus,
     development_cost: (developmentCost / 100).toFixed(2), already_paid: (alreadyPaid / 100).toFixed(2),
     development_funder: ownApgi ? "SRMS" : "APGI platform",
@@ -67,5 +70,6 @@ export async function coursePlanConfiguration(form: FormData) {
     notes: formText(form, "notes", 0, 5000) || null,
   };
   configuration.terms_summary = `${brand.company.name}: ${getCourseBySlug(course)!.title}. Current declared owner: ${owner.company.name}. Planning minimum learner price ${currency} ${(quote.price/100).toFixed(2)}; minimum combined APGI income ${currency} ${(moneyCents(formText(form,"minimum_apgi_income"),"minimum income")/100).toFixed(2)}. Running costs are provided first, plus ${estimate.administrationBps/100}% administration on eligible costs only. A separate ${((estimate.contingencyBps??0)/100).toFixed(2)}% operating-cost contingency of ${currency} ${(quote.contingency/100).toFixed(2)} is reserved; it is not an incurred expense and attracts no administration fee. Reconcile it against actual costs and release any unused reserve through the agreed recovery and sharing rules. Development recovery is ${recovery}% of the cost-cleared pool before sharing, capped at ${currency} ${((developmentCost-alreadyPaid)/100).toFixed(2)} outstanding. The remaining pool is shared ${(shareBps/100).toFixed(2)}% APGI and ${((10000-shareBps)/100).toFixed(2)}% partner. No separate fixed hosting or seat subscription. Any proposed higher price must be recalculated against the same cost and income requirements. This working draft does not approve rights, transfer ownership, publish a course or activate payment terms.`;
+  configuration.terms_summary += ` Course design credit: ${designerName}, ${designerCompany}. Design credit is recorded separately from legal ownership and does not itself transfer rights.`;
   return configuration;
 }

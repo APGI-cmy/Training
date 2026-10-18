@@ -62,7 +62,7 @@ describe("Reviewer rows and safe branding return",()=>{
 const fixture=vi.hoisted(()=>({ configuration:{planning_version:"1",currency:"USD",hosting_fixed:"10",hosting_rate:"0",stripe_fixed:"0",stripe_rate:"0",administration_rate:"6"} as Record<string,string|null> }));
 vi.mock("@/server/services/company-structure",()=>({requireCompany:vi.fn(async(id:string)=>({company:{id,slug:id.endsWith("1")?"apgi":"partner",name:id.endsWith("1")?"APGI":"Partner",brand_revision:3}})),rows:vi.fn(async()=>[{id:"33333333-3333-4333-8333-333333333333",configuration:fixture.configuration}])}));
 import { coursePlanConfiguration } from "@/server/services/commercial-plan-configuration";
-function plan(){const f=new FormData();for(const [k,v]of Object.entries({organisation_id:"22222222-2222-4222-8222-222222222222",rights_holder:"22222222-2222-4222-8222-222222222222",cost_profile_id:"33333333-3333-4333-8333-333333333333",course_id:"scannex-training-programme",currency:"USD",development_status:"recover",development_cost:"10000",already_paid:"0",minimum_apgi_income:"100",recovery_rate:"25",customer_source:"owner",minimum_course_price:"1"}))f.set(k,v);return f;}
+function plan(){const f=new FormData();for(const [k,v]of Object.entries({organisation_id:"22222222-2222-4222-8222-222222222222",rights_holder:"22222222-2222-4222-8222-222222222222",cost_profile_id:"33333333-3333-4333-8333-333333333333",course_id:"scannex-training-programme",designer_name:"Example Designer",designer_company:"Example Design Company",currency:"USD",development_status:"recover",development_cost:"10000",already_paid:"0",minimum_apgi_income:"100",recovery_rate:"25",customer_source:"owner",minimum_course_price:"1"}))f.set(k,v);return f;}
 describe("Server recalculation of submitted drafts",()=>{
  beforeEach(()=>{fixture.configuration.currency="USD";});
  it("calculates selected services on the server and preserves an auditable snapshot without a saved profile",async()=>{
@@ -75,6 +75,10 @@ describe("Server recalculation of submitted drafts",()=>{
  });
  it("ignores a forged browser price and stores the exact cost snapshot and new recovery order",async()=>{
   const config=await coursePlanConfiguration(plan());expect(config.minimum_course_price).toBe("677.26");expect(config.recovery_base).toBe("cost_cleared_pool");expect(config.development_funder).toBe("APGI platform");expect(config).not.toHaveProperty("johan_share");expect(config).not.toHaveProperty("srms_share");
+ });
+ it("records design credit separately from legal ownership and requires it on new course plans",async()=>{
+  const f=plan(),config=await coursePlanConfiguration(f);expect(config.designer_name).toBe("Example Designer");expect(config.designer_company).toBe("Example Design Company");expect(config.rights_holder_name).toBe("Partner");expect(config.terms_summary).toContain("does not itself transfer rights");
+  f.delete("designer_name");await expect(coursePlanConfiguration(f)).rejects.toThrow("designer name");f.set("designer_name","Example Designer");f.delete("designer_company");await expect(coursePlanConfiguration(f)).rejects.toThrow("designer company");
  });
  it("rejects currency mismatch and an already-paid balance marked recoverable",async()=>{
   fixture.configuration.currency="CAD";await expect(coursePlanConfiguration(plan())).rejects.toThrow("same currency");fixture.configuration.currency="USD";const f=plan();f.set("already_paid","10000");await expect(coursePlanConfiguration(f)).rejects.toThrow("positive outstanding");

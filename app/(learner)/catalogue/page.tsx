@@ -6,6 +6,7 @@ import { requireSession } from "@/server/auth/session";
 import { getCourseCommerceSettings } from "@/server/services/commerce/get-course-commerce";
 import { getAvailableCourseIds } from "@/server/services/organisations/get-organisations";
 import { CourseCardCover } from "@/components/course/CourseCardCover";
+import styles from "@/components/course/compact-course-catalogue.module.css";
 import { requireLearnerProfile } from "@/server/auth/learner-onboarding";
 
 export const metadata = {
@@ -63,8 +64,8 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
     : getCatalogueEntries(sourceEntries);
 
   return (
-    <main className="page-shell">
-      <header className="page-header">
+    <main className={`page-shell ${styles.page}`}>
+      <header className={`page-header ${styles.header}`}>
         <p className="eyebrow">{view === "my-learning" ? "Enrolled courses" : "Course catalogue"}</p>
         <h1>{view === "my-learning" ? "Your enrolled courses" : "Choose your next learning journey"}</h1>
         <p>
@@ -74,14 +75,14 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
         </p>
       </header>
 
-      <section className="course-grid" aria-label={view === "my-learning" ? "My learning courses" : "Published courses"}>
+      <section className={`course-grid ${styles.grid}`} aria-label={view === "my-learning" ? "My learning courses" : "Published courses"}>
         {entries.length === 0 ? <p>No courses are currently linked to your learning profile.</p> : null}
         {entries.map(({ course, decision }) => {
           const state = stateLabels[decision.status];
           const pricing = commerce.get(course.slug) ?? defaultCourseCommerceSetting(course.slug);
 
           return (
-            <article className="course-card course-card--visual" key={course.id}>
+            <article className={`course-card course-card--visual ${styles.card}`} key={course.id}>
               <CourseCardCover courseSlug={course.slug} />
               <div className="course-card-body">
               <p className="eyebrow">{course.level}</p>
