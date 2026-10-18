@@ -39,7 +39,7 @@ export default async function CompanyPage({
   const owner =
     isAdmin ||
     (await ownMemberships(session, true)).some((m) => m.organisation_id === id);
-  if(owner&&candidateReturn?.startsWith("/course-reviews/")){const {requireReview}=await import("@/server/services/course-reviews");try{const r=await requireReview(candidateReturn.split("/").at(-1)!);if(r.round.organisation_id===id)returnTo=candidateReturn;}catch{/* An unrelated review never becomes a return target. */}}
+  if(owner&&candidateReturn?.startsWith("/course-reviews/")&&!candidateReturn.startsWith("/course-reviews/new?")){const {requireReview}=await import("@/server/services/course-reviews");try{const r=await requireReview(candidateReturn.split("/").at(-1)!);if(r.round.organisation_id===id)returnTo=candidateReturn;}catch{/* An unrelated review never becomes a return target. */}}
   const workflows=owner?await rows<{id:string;document:{title:string;workflow?:{partnerEmail:string;stage:string}}}>(`/rest/v1/course_review_rounds?organisation_id=eq.${id}&status=eq.open&select=id,document`):[];
   const offerings = await companyOfferings(id);
   const requests = owner
@@ -78,7 +78,7 @@ export default async function CompanyPage({
         </form>
       </header>
       <nav className="button-row">
-        {returnTo ? <Link href={`${returnTo}?brand=${id}`}>Return to course preparation</Link> : null}
+        {returnTo ? <Link href={`${returnTo}${returnTo.includes("?")?"&":"?"}brand=${id}`}>Return to course preparation</Link> : null}
         <Link href="/company">Switch company</Link>
         {owner ? <Link href="/policies">Policies and reviews</Link> : null}
         {isAdmin ? <Link href="/admin/companies">All companies</Link> : null}

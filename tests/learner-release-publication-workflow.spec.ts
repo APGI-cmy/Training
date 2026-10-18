@@ -1,5 +1,6 @@
 import {describe,it,expect} from "vitest";
 import {acceptPartner,approveCommercial,bothCommercialApprovals,commercialPublicationBlockers,commercialPrincipals,currentCommercial,declinePartner,quoteCommercial,type PublicationWorkflow} from "@/lib/publication-workflow";
+import {publicationReturnPath} from "@/lib/publication-return";
 import {canWork,needsReminder,type ReviewRound} from "@/lib/course-review";
 const config={development_status:"recover",development_cost:"1000",already_paid:"0",recovery_rate:"25",hosting_fixed:"1",hosting_rate:"0",stripe_fixed:"0.30",stripe_rate:"2.90",administration_rate:"6",contingency_rate:"10",minimum_apgi_income:"100",apgi_share:"20",currency:"USD"};
 function workflow(partner=true):PublicationWorkflow{const q=quoteCommercial(config);return {version:2,stage:"apgi_approval",designerName:"Designer",designerCompany:"Designer company",ownerId:"owner",partner,partnerEmail:"owner@example.com",contentApproval:{at:"now",email:commercialPrincipals[0],userId:"johan",fingerprint:"hash"},counterOffers:0,commercials:[{id:"version1",planId:"plan",at:"now",submittedAt:"now",configuration:config,decisions:[],floor:q.floor,proposedPrice:q.floor,counterRound:0}]};}
@@ -8,6 +9,7 @@ function offered(){const w=workflow();decision(w,0);decision(w,1);w.stage="partn
 const acceptance={email:"owner@example.com",userId:"owner",at:"now",price:100000,brandRevision:4,contentFingerprint:"hash",confirmContent:true,confirmBrand:true,confirmTerms:true};
 const proposal={email:"owner@example.com",userId:"owner",at:"now",reasons:["distribution"],explanation:"Please adjust the share",apgiShare:"15"};
 describe("Continuous course publication approval",()=>{
+ it("restricts brand-setup returns to known course workflows",()=>{expect(publicationReturnPath("/course-reviews/new?course=vpshr-level-0")).toBe("/course-reviews/new?course=vpshr-level-0");expect(publicationReturnPath("/course-reviews/new?course=unknown")).toBeNull();expect(publicationReturnPath("https://evil.example/course-reviews/new?course=vpshr-level-0")).toBeNull();});
  it("does not treat content approval as commercial sign-off",()=>{const w=workflow();expect(bothCommercialApprovals(currentCommercial(w))).toBe(false);expect(commercialPublicationBlockers(w,"hash",4).join()).toMatch(/Both Johan/);});
  it("requires distinct decisions from the two principals",()=>{const w=workflow();decision(w,0);expect(()=>decision(w,1,"principal-0")).toThrow(/independently/);expect(()=>decision(w,0)).toThrow(/committed/);decision(w,1);expect(bothCommercialApprovals(currentCommercial(w))).toBe(true);});
  it("rejects an unknown principal",()=>{const w=workflow();expect(()=>approveCommercial(w,{email:"outsider@example.com",userId:"x",at:"now",decision:"approve",reason:"fake"},4)).toThrow(/Only/);});

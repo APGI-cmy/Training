@@ -37,6 +37,7 @@ begin
  blocked=false;begin perform public.v2_publish_reviewed_course(rid,5,actor,repeat('a',64));exception when others then blocked=true;end;if not blocked then raise exception 'Below-floor fee published';end if;
  d=jsonb_set(d,'{workflow,commercials,0,proposedPrice}','10000');perform public.v2_commit_course_review(rid,5,d,actor,'qa_price_fixed','[]');
  perform public.v2_publish_reviewed_course(rid,6,actor,repeat('a',64));
+ if not exists(select 1 from public.course_review_mail where round_id=rid and kind='published') then raise exception 'Publication email not atomic';end if;
  if not exists(select 1 from public.organisation_offerings where organisation_id=org and course_id='vpshr-level-0' and reviewed_release_id=rid and status='published') then raise exception 'Atomic publication missing';end if;
  insert into public.organisations(id,name,slug) values(qa_org,'QA rollback-only company','qa-'||qa_org);
  blocked=false;begin insert into public.organisation_offerings(organisation_id,course_id,status,created_by) values(qa_org,'vpshr-level-0','published',actor);exception when others then blocked=true;end;if not blocked then raise exception 'Direct bypass accepted';end if;

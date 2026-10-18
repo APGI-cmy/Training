@@ -56,7 +56,7 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
   if(op==="publish"){
    if(!principal)throw Error("Only Johan or Jorrie may publish.");
    if(form.get("confirm_release")!=="on")throw Error("Confirm the exact reviewed release before publishing.");
-   await publishReview(round,session.user.id,access.source.fingerprint,access.source.brand.brand_revision);
+   await publishReview(round,session.user.id,access.source.fingerprint,access.source.brand.brand_revision);   try{await processReviewMail();}catch{/* Publication and its outbox are committed atomically; delivery can retry. */}
    revalidatePath(`/company/${round.organisation_id}`);revalidatePath(`/course-reviews/${id}`);
    return {success:"Reviewed release published for this V2 company. Prices, payments and V1 remain unchanged."};
   }
