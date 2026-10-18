@@ -31,7 +31,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
 }) {
   const [state, action, pending] = useActionState<StructureState, FormData>(saveCommercialDraft, {});
   const router=useRouter();
-  useEffect(()=>{if(state.success)router.refresh();},[state.success,router]);
+  useEffect(()=>{if(state.success&&!workflowContext)router.refresh();},[state.success,router,workflowContext]);
   const [step, setStep] = useState(0); const formRef = useRef<HTMLFormElement>(null);
   const [submittedValues,setSubmittedValues]=useState("");
   const [ready, setReady] = useState(false);
@@ -135,6 +135,6 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
       <p className="notice-card">Save this exact commercial version, then continue to joint APGI commercial sign-off. Content approval is separate and must already be recorded for an active publication workflow. Saving alone does not send invitations, accept terms, publish the course or activate a payment.</p>
     </fieldset>
     <div className="planning-controls">{step>0 ? <button key="back" type="button" className="secondary-button" onClick={()=>setStep(current=>current-1)}>Back</button> : null}{step<3 ? <button key="continue" type="button" className="primary-button" onClick={event=>{event.preventDefault();advance();}}>Continue</button> : <button key="save-draft" type="submit" name="intent" value="save_course_draft" className="primary-button" disabled={pending||!quote}>{pending?"Saving…":"Save course and terms draft"}</button>}</div>
-    {state.error ? <p role="alert" className="form-error">{state.error}</p> : null}{state.success ? <p role="status" className="form-success">{state.success}</p> : null}{state.link&&!pending&&submittedValues===JSON.stringify(values)?<p><Link className="primary-button" href={state.link}>Continue publication workflow</Link></p>:null}
+    {state.error ? <p role="alert" className="form-error">{state.error}</p> : null}{state.success ? <p role="status" className="form-success">{state.success}</p> : null}{state.link&&!pending?<div>{submittedValues!==JSON.stringify(values)?<p>Continue opens the saved version. Save again to include any later changes made on this page.</p>:null}<p><Link className="primary-button" href={state.link}>Continue with saved commercial version</Link></p></div>:null}
   </form>;
 }
