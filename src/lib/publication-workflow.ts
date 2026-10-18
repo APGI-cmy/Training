@@ -25,7 +25,7 @@ export function approveCommercial(w:PublicationWorkflow,d:CommercialDecision,bra
 export function declinePartner(w:PublicationWorkflow,p:PartnerProposal){
  if(p.email!==w.partnerEmail)throw Error("Only the nominated company owner can decline this offer.");
  const v=currentCommercial(w);if(!v||w.stage!=="partner_offer"||!bothCommercialApprovals(v)||!v.offeredAt||v.acceptance||v.proposal)throw Error("There is no current approved partner offer to decline.");
- if(!p.reasons.length||p.reasons.some(r=>!(r in rejectionReasons))||p.explanation.trim().length<5)throw Error("Select a reason and explain the change you propose.");
+ if(!p.reasons.length||p.reasons.some(r=>!Object.hasOwn(rejectionReasons,r))||p.explanation.trim().length<5)throw Error("Select a reason and explain the change you propose.");
  if(p.reasons.includes("distribution")&&!p.apgiShare)throw Error("Propose the combined APGI percentage; the company receives the remainder.");
  if(p.reasons.includes("recovery")&&!p.recoveryRate)throw Error("Propose a development recovery percentage.");
  if(p.reasons.includes("price")&&!p.price)throw Error("Propose an overall course fee.");
