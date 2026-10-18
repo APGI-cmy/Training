@@ -3,9 +3,9 @@ import {useActionState,useId,useState} from "react";
 import Link from "next/link";
 import {courseReviewAction,createCourseReview,type ReviewActionState} from "@/server/actions/course-reviews";
 import type {ReactNode} from "react";
-export function ReviewForm({id,operation,children,label="Save",hidden={}}:{id:string;operation:string;children?:ReactNode;label?:string;hidden?:Record<string,string>}){
+export function ReviewForm({id,operation,children,label="Save",hidden={},disabled=false}:{id:string;operation:string;children?:ReactNode;label?:string;hidden?:Record<string,string>;disabled?:boolean}){
  const [state,action,pending]=useActionState<ReviewActionState,FormData>(courseReviewAction,{});
- return <form action={action} className="review-form"><input type="hidden" name="round_id" value={id}/><input type="hidden" name="operation" value={operation}/>{Object.entries(hidden).map(([name,value])=><input key={name} type="hidden" name={name} value={value}/>)}{children}<button className="primary-button" disabled={pending}>{pending?"Saving…":label}</button>{state.error?<p className="form-error" role="alert">{state.error}</p>:null}{state.success?<p className="form-success" role="status">{state.success}</p>:null}</form>;
+ return <form action={action} className="review-form"><input type="hidden" name="round_id" value={id}/><input type="hidden" name="operation" value={operation}/>{Object.entries(hidden).map(([name,value])=><input key={name} type="hidden" name={name} value={value}/>)}{children}<button className="primary-button" disabled={pending||disabled}>{pending?"Saving…":label}</button>{state.error?<p className="form-error" role="alert">{state.error}</p>:null}{state.success?<p className="form-success" role="status">{state.success}</p>:null}</form>;
 }
 export function RequestReviewForm({planId,email,apgi}:{planId:string;email:string;apgi:boolean}){
  const [state,action,pending]=useActionState<ReviewActionState,FormData>(createCourseReview,{}),prefix=useId();
