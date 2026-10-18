@@ -1,0 +1,20 @@
+import {describe,it,expect,vi,beforeEach} from "vitest";
+const m=vi.hoisted(()=>({access:vi.fn(),commit:vi.fn(),mail:vi.fn(()=>[]),process:vi.fn(),onboard:vi.fn(),owner:vi.fn()}));
+vi.mock("@/server/services/course-reviews",()=>({requireReview:m.access,commitReview:m.commit,reviewEvent:vi.fn(),reviewMail:m.mail,processReviewMail:m.process}));
+vi.mock("@/server/services/publication-workflow",()=>({internalWorkflowMail:m.mail,preparePartnerOnboarding:m.onboard,requirePartnerOwner:m.owner}));
+vi.mock("next/cache",()=>({revalidatePath:vi.fn()}));
+import {publicationWorkflowAction} from "@/server/actions/publication-workflow";
+const id="11111111-1111-4111-8111-111111111111";
+const cfg={hosting_fixed:"1",hosting_rate:"0",stripe_fixed:"0.30",stripe_rate:"2.90",administration_rate:"6",development_cost:"1000",already_paid:"0",recovery_rate:"25",development_status:"recover",minimum_apgi_income:"1",apgi_share:"20"};
+function access(){return {principal:true,email:"johan.ras@apginc.ca",session:{user:{id:"johan"}},fresh:true,source:{fingerprint:"hash",brand:{brand_revision:1,name:"Company",primary_color:"#102b47",logo_path:null}},round:{id,organisation_id:id,status:"open",fingerprint:"hash",revision:1,document:{participants:[],workflow:{version:2,stage:"apgi_approval",partner:true,partnerEmail:"owner@example.com",contentApproval:{fingerprint:"hash"},commercials:[{id:"version",submittedAt:"now",configuration:cfg,proposedPrice:10000,decisions:[{email:"johan.ras@apginc.ca",userId:"johan",decision:"approve"}],counterRound:0}],counterOffers:0}}}};}
+function form(operation:string){const f=new FormData();f.set("round_id",id);f.set("operation",operation);f.set("version_id","version");return f;}
+describe("Publication server authority and exact-version checks",()=>{
+ beforeEach(()=>{vi.clearAllMocks();m.access.mockResolvedValue(access());m.onboard.mockResolvedValue("https://example.com/invite");m.owner.mockResolvedValue(undefined);});
+ it("does not prepare onboarding or send an offer with only one principal decision",async()=>{const r=await publicationWorkflowAction({},form("send_offer"));expect(r.error).toMatch(/Both/);expect(m.onboard).not.toHaveBeenCalled();expect(m.commit).not.toHaveBeenCalled();});
+ it("rejects a stale commercial version before any side effect",async()=>{const f=form("commercial_decision");f.set("version_id","old");const r=await publicationWorkflowAction({},f);expect(r.error).toMatch(/version changed/);expect(m.commit).not.toHaveBeenCalled();});
+ it("cannot count a repeated principal approval twice",async()=>{const f=form("commercial_decision");f.set("decision","approve");f.set("confirm_terms","on");f.set("reason","Reviewed exact version");const r=await publicationWorkflowAction({},f);expect(r.error).toMatch(/committed/);expect(m.commit).not.toHaveBeenCalled();});
+ it("denies principal-only actions to ordinary reviewers",async()=>{m.access.mockResolvedValue({...access(),principal:false,email:"reviewer@example.com"});const r=await publicationWorkflowAction({},form("submit_commercials"));expect(r.error).toMatch(/Only Johan/);expect(m.commit).not.toHaveBeenCalled();});
+ it("denies partner decisions by an unrelated signed-in company owner",async()=>{m.access.mockResolvedValue({...access(),principal:false,email:"wrong@example.com"});const r=await publicationWorkflowAction({},form("partner_accept"));expect(r.error).toMatch(/nominated/);expect(m.owner).not.toHaveBeenCalled();});
+ it("rechecks active company ownership before accepting",async()=>{m.access.mockResolvedValue({...access(),principal:false,email:"owner@example.com"});m.owner.mockRejectedValue(Error("Owner access revoked"));const r=await publicationWorkflowAction({},form("partner_accept"));expect(r.error).toMatch(/revoked/);expect(m.commit).not.toHaveBeenCalled();});
+ it("rejects actions against changed course content",async()=>{m.access.mockResolvedValue({...access(),fresh:false});const r=await publicationWorkflowAction({},form("send_offer"));expect(r.error).toMatch(/content changed/);expect(m.onboard).not.toHaveBeenCalled();});
+});

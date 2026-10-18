@@ -282,9 +282,9 @@ export async function companyStructureAction(
     revalidatePath("/admin/certificates");
     revalidatePath("/admin/invitations");
     const returnTo = publicationReturnPath(formText(form, "return_to"));
-    if (op === "brand" && access.isAdmin && returnTo) {
-      await requirePlatformPrincipal();
-      redirect(`${returnTo}?brand=${encodeURIComponent(id)}`);
+    if(op==="brand"&&returnTo){
+      if(returnTo.startsWith("/course-reviews/")){const {requireReview}=await import("@/server/services/course-reviews");const review=await requireReview(returnTo.split("/").at(-1)!);if(review.round.organisation_id!==id)throw Error("Return to this company's review only.");redirect(returnTo);}
+      if(access.isAdmin){await requirePlatformPrincipal();redirect(`${returnTo}?brand=${encodeURIComponent(id)}`);}
     }
     return { success: "Saved. Financial arrangements remain drafts." };
   } catch (error) {

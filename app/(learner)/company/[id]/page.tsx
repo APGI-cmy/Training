@@ -34,10 +34,13 @@ export default async function CompanyPage({
   }
   const { company, session, isAdmin } = access;
   const principal = isAdmin && await isPlatformPrincipal(session);
-  const returnTo = principal ? publicationReturnPath((await searchParams).returnTo) : null;
+  const candidateReturn = publicationReturnPath((await searchParams).returnTo);
+  let returnTo = principal ? candidateReturn : null;
   const owner =
     isAdmin ||
     (await ownMemberships(session, true)).some((m) => m.organisation_id === id);
+  if(owner&&candidateReturn?.startsWith("/course-reviews/")){const {requireReview}=await import("@/server/services/course-reviews");try{const r=await requireReview(candidateReturn.split("/").at(-1)!);if(r.round.organisation_id===id)returnTo=candidateReturn;}catch{/* An unrelated review never becomes a return target. */}}
+  const workflows=owner?await rows<{id:string;document:{title:string;workflow?:{partnerEmail:string;stage:string}}}>(`/rest/v1/course_review_rounds?organisation_id=eq.${id}&status=eq.open&select=id,document`):[];
   const offerings = await companyOfferings(id);
   const requests = owner
     ? await rows<{
@@ -57,6 +60,8 @@ export default async function CompanyPage({
     : [];
   return (
     <main className="admin-page">
+      {workflows.filter(r=>principal||r.document.workflow?.partnerEmail===session.user.email?.toLowerCase()).map(r=><section className="admin-form-card" key={r.id}><h2>{r.document.title}</h2><p>Publication: {r.document.workflow?.stage.replaceAll("_"," ")??"Content review"}</p><Link href={`/course-reviews/${r.id}`}>Continue course approval</Link></section>)}
+      {owner&&!isAdmin?<section className="admin-form-card"><h2>Learner enrolments and payments</h2><p>Company learner payments must use an enabled platform-managed payment route. Payments are disabled in V2, so paid enrolment and learner-invitation controls remain unavailable. Use the change-request form below to ask APGI for assistance. Company owners cannot mark learners paid or grant an off-platform payment override.</p></section>:null}
       <header className="admin-page-header">
         <div>
           <p className="eyebrow">Hosted by APGI</p>

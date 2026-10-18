@@ -25,9 +25,9 @@ export function PlanningField({ name, label, help, value, onChange, options, req
       : <input id={id} name={name} title={help} value={value} onChange={event => onChange(event.target.value)} required={required} readOnly={readOnly} placeholder={placeholder} maxLength={name.startsWith("designer_")?180:250} />}
   </div>;
 }
-export function CoursePlanForm({ companies, courses, costProfiles, principalId, initialCourse = "", initialBrand = "", catalogue=baselineRateCatalogue }: {
+export function CoursePlanForm({ companies, courses, costProfiles, principalId, initialCourse = "", initialBrand = "", workflowContext, catalogue=baselineRateCatalogue }: {
   companies: PlanCompany[]; courses: {slug: string; title: string}[]; costProfiles: PlanCostProfile[];
-  principalId: string; initialCourse?: string; initialBrand?: string; catalogue?:RateCatalogue;
+  principalId: string; initialCourse?: string; initialBrand?: string; catalogue?:RateCatalogue; workflowContext?:{id:string;ownerId:string;designerName:string;designerCompany:string;configuration?:Record<string,string|null>};
 }) {
   const [state, action, pending] = useActionState<StructureState, FormData>(saveCommercialDraft, {});
   const router=useRouter();
@@ -43,10 +43,11 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
         setValues(current => ({...current,...Object.fromEntries(Object.entries(saved.values ?? {}).filter(([key,value]) => key in current && typeof value === "string")), ...(initialBrand ? {organisation_id:initialBrand} : {})}));
       }
     }} catch { /* A browser may disable tab storage. Saving remains available. */ }
+    if(workflowContext)setValues(current=>({...current,...Object.fromEntries(Object.entries(workflowContext.configuration??{}).filter(([key,value])=>key in current&&typeof value==="string")) as Record<string,string>,...(workflowContext.configuration?{custom_shares:workflowContext.configuration.agreement_scope==="partner"?"on":""}:{}),...(workflowContext.configuration?.service_cost_snapshot?{service_costs:JSON.stringify(JSON.parse(workflowContext.configuration.service_cost_snapshot).selection)}:{}),course_id:initialCourse,organisation_id:initialBrand,rights_holder:workflowContext.ownerId,designer_name:workflowContext.designerName,designer_company:workflowContext.designerCompany}));
     setReady(true);
   // The initial route identifies the draft restored on navigation back from branding.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [principalId, initialCourse, initialBrand]);
+  }, [principalId, initialCourse, initialBrand, workflowContext]);
   useEffect(() => { if (ready) try {
     const saved=JSON.stringify({time:Date.now(),values});
     sessionStorage.setItem(storageKey(values.course_id),saved);
@@ -54,11 +55,15 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
     sessionStorage.setItem(storageKey(""),saved);
   } catch {} }, [values, ready, principalId]);
   const update = (key: string) => (value: string) => setValues(current => {
+    if(workflowContext&&["course_id","organisation_id","rights_holder","designer_name","designer_company"].includes(key))return current;
     const next={...current,[key]:value};
     if(key==="currency")try{next.service_costs=JSON.stringify({...readServiceSelection(current.service_costs),reviewed:false});}catch{next.service_costs="";}
     return next;
   });
-  const field = (name: string, label: string, help: string, extra: {options?:Choice[]; required?:boolean; placeholder?:string} = {}) => <PlanningField name={name} label={label} help={help} value={values[name] ?? ""} onChange={update(name)} {...extra} />;
+  const field = (name: string, label: string, help: string, extra: {options?:Choice[]; required?:boolean; placeholder?:string} = {}) => {
+    const locked=!!workflowContext&&["course_id","organisation_id","rights_holder","designer_name","designer_company"].includes(name);
+    return <PlanningField name={name} label={label} help={locked?`${help} Recorded during approved content review; start a new content review to change it.`:help} value={values[name]??""} onChange={update(name)} {...extra} readOnly={locked} options={locked&&extra.options?extra.options.filter(o=>o.value===values[name]):extra.options}/>;
+  };
   const brand = companies.find(c => c.id === values.organisation_id), owner = companies.find(c => c.id === values.rights_holder);
   const ownApgi = brand?.slug === "apgi" && owner?.slug === "apgi";
   const standardShare = applicableApgiShare(owner?.slug === "apgi", brand?.slug === "apgi", values.customer_source);
@@ -92,6 +97,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
     if(step!==3||!(submitter instanceof HTMLButtonElement)||submitter.name!=="intent")event.preventDefault();
     else setSubmittedValues(JSON.stringify(values));
   }}>
+    {workflowContext?<input type="hidden" name="workflow_round_id" value={workflowContext.id}/>:null}
     <input type="hidden" name="workspace" value="course_plan" /><input type="hidden" name="kind" value="course_agreement" />
     <input type="hidden" name="cost_mode" value={useServices?"services":"saved"}/><input type="hidden" name="service_costs" value={values.service_costs}/>
     <input type="hidden" name="title" value={`${selectedCourse?.title ?? "Course"} — ${brand?.name ?? "Brand"}`.slice(0,150)} />
@@ -126,9 +132,9 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
     <fieldset data-step="3" className="commercial-step" hidden={step!==3}><legend>{ownApgi?"Review the APGI course price":"Review the draft terms"}</legend>
       {quote ? <><h3>Calculated minimum course price: {money(quote.price)}</h3><p><CurrencyEquivalents amount={(quote.price/100).toFixed(2)} from={values.currency} quote={serviceResult?.snapshot.currencyQuote}/></p><dl className="draft-fields">{[["Estimated running costs",quote.costs],["Other costs — contingency",quote.contingency],["Administration on costs (excluding reserve)",quote.administration],["Development recovery",quote.recovery],["APGI income",quote.apgi],["Partner income",quote.partner]].map(([label,value])=><div key={String(label)}><dt>{label}</dt><dd>{money(Number(value))}</dd></div>)}</dl>{serviceResult?<ul>{serviceResult.lines.map(l=><li key={l.id}>{l.name}: {l.plan} — {money(l.fixedCents)}{l.rateBps?` + ${l.rateBps/100}% of price`:""}</li>)}</ul>:null}<p>{selectedCourse?.title} · {brand?.name} · Legal owner: {owner?.name}</p><p>Course designer: {values.designer_name} · {values.designer_company}</p><p>The course price must not fall below this calculated floor under these assumptions. The partner may propose a higher price. Recovery stops at the recorded balance; actual payments and refunds must be reconciled.</p></> : <p className="form-error" role="alert">{quoteError}</p>}
       <label title="Record any exception that must be included in the approval schedule.">Notes for the agreement<textarea name="notes" value={values.notes} onChange={event=>update("notes")(event.target.value)} maxLength={5000} rows={3}/></label>
-      <p className="notice-card">Save this exact commercial version, then continue to request course review, collect independent endorsements and approve publication. Saving alone does not send invitations, accept terms, publish the course or activate a payment.</p>
+      <p className="notice-card">Save this exact commercial version, then continue to joint APGI commercial sign-off. Content approval is separate and must already be recorded for an active publication workflow. Saving alone does not send invitations, accept terms, publish the course or activate a payment.</p>
     </fieldset>
     <div className="planning-controls">{step>0 ? <button key="back" type="button" className="secondary-button" onClick={()=>setStep(current=>current-1)}>Back</button> : null}{step<3 ? <button key="continue" type="button" className="primary-button" onClick={event=>{event.preventDefault();advance();}}>Continue</button> : <button key="save-draft" type="submit" name="intent" value="save_course_draft" className="primary-button" disabled={pending||!quote}>{pending?"Saving…":"Save course and terms draft"}</button>}</div>
-    {state.error ? <p role="alert" className="form-error">{state.error}</p> : null}{state.success ? <p role="status" className="form-success">{state.success}</p> : null}{state.link&&!pending&&submittedValues===JSON.stringify(values)?<p><Link className="primary-button" href={state.link}>5. Continue to course review</Link></p>:null}
+    {state.error ? <p role="alert" className="form-error">{state.error}</p> : null}{state.success ? <p role="status" className="form-success">{state.success}</p> : null}{state.link&&!pending&&submittedValues===JSON.stringify(values)?<p><Link className="primary-button" href={state.link}>Continue publication workflow</Link></p>:null}
   </form>;
 }

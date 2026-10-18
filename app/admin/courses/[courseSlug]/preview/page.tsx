@@ -31,6 +31,7 @@ export default async function AdminCoursePreviewPage({ params }: PageProps) {
           This preview is role-gated for administrators and reads course content without creating
           learner enrolments or progress records.
         </p>
+      <Link className="primary-button" href={`/course-reviews/new?course=${course.slug}`}>Start content review and publication workflow</Link>
       </header>
 
       {course.slug === "scannex-training-programme" ? (

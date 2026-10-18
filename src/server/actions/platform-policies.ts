@@ -1,4 +1,5 @@
 "use server";
+import {attachCommercialPlan} from "@/server/services/publication-workflow";
 import { createHash, randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { requirePlatformPrincipal } from "@/server/services/platform-principals";
@@ -260,13 +261,15 @@ export async function saveCommercialDraft(
     }) });
     if(!saved.ok)throw Error("The draft could not be saved. Your current entries are retained.");
     const result = await saved.json() as {id:string}[];
-    if(!result.length){const duplicate=await rows<{id:string}>(`/rest/v1/commercial_agreement_drafts?save_key=eq.${saveKey}&select=id&limit=1`);return {success:"This exact draft was already saved.",draftId:duplicate[0]?.id,link:workspace==="course_plan"&&duplicate[0]?`/course-reviews/new?plan=${duplicate[0].id}`:undefined};}
+    if(!result.length){const duplicate=await rows<{id:string}>(`/rest/v1/commercial_agreement_drafts?save_key=eq.${saveKey}&select=id&limit=1`);if(!duplicate[0])throw Error("The saved draft is unavailable. Reload before retrying.");const workflow=formText(form,"workflow_round_id");if(workflow)await attachCommercialPlan(validId(workflow),duplicate[0].id,session.user.id);return {success:"This exact draft was already saved.",draftId:duplicate[0].id,link:workflow?`/course-reviews/${workflow}`:workspace==="course_plan"?`/course-reviews/new?plan=${duplicate[0].id}`:undefined};}
     }
+    const workflow=formText(form,"workflow_round_id");
+    if(workflow)await attachCommercialPlan(validId(workflow),id,session.user.id);
     await companyAudit(session.user.id, org, id, "commercial_draft_saved");
     revalidatePath("/admin/agreements");
     return {
       draftId:id,
-      link:workspace==="course_plan"?`/course-reviews/new?plan=${id}`:undefined,
+      link:workflow?`/course-reviews/${workflow}`:workspace==="course_plan"?`/course-reviews/new?plan=${id}`:undefined,
       success:
         "Saved as a non-operative draft. It cannot charge fees, distribute income or activate rates.",
     };
