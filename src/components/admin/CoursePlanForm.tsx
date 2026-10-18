@@ -36,7 +36,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
   const [submittedValues,setSubmittedValues]=useState("");
   const [ready, setReady] = useState(false);
   const [values, setValues] = useState<Record<string, string>>({ course_id: initialCourse, organisation_id: initialBrand, rights_holder: "", designer_name: "", designer_company: "", development_status: "", development_cost: "0", already_paid: "0", recovery_rate: partnerPlanningDefaults.recoveryRate, currency: "USD", minimum_apgi_income: "", cost_profile_id: "", cost_mode:"services", service_costs:"", customer_source: "owner", custom_shares: "", apgi_share: "", notes: "" });
-  const storageKey = (course: string) => `apgi-course-planning-v1:${principalId}:${course || "new"}`;
+  const storageKey = (course: string) => `apgi-course-planning-v1:${principalId}:${course || "new"}${workflowContext?`:workflow:${workflowContext.id}`:""}`;
   useEffect(() => {
     try { const raw = sessionStorage.getItem(storageKey(initialCourse)); if (raw) {
       const saved = JSON.parse(raw); if (saved && typeof saved === "object" && Date.now() - Number(saved.time) < 86400000) {
@@ -52,7 +52,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
     const saved=JSON.stringify({time:Date.now(),values});
     sessionStorage.setItem(storageKey(values.course_id),saved);
     // The general wizard resumes the latest course as well as its scoped route.
-    sessionStorage.setItem(storageKey(""),saved);
+    if(!workflowContext)sessionStorage.setItem(storageKey(""),saved);
   } catch {} }, [values, ready, principalId]);
   const update = (key: string) => (value: string) => setValues(current => {
     if(workflowContext&&["course_id","organisation_id","rights_holder","designer_name","designer_company"].includes(key))return current;
