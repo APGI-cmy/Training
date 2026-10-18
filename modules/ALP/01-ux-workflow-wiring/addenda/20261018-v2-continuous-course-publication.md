@@ -29,4 +29,6 @@ Daily reviewer reminders stop on task completion, decline or cutoff. The request
 - Protect every publication path at the database and server; preserve V1, existing enrolments, earlier drafts and disabled V2 payment/Viewer modes.
 - Verify notification scoping/deduplication and fail-closed company payment controls with automated and isolated database/browser QA.
 
+When a partner owns a course published under APGI branding, that owner's commercial approval remains required. Their owner membership is bound to their own company, not APGI. They can review APGI's publishing brand but cannot edit APGI branding or settings. The publishing company and contracting partner are recorded separately.
+
 This file defines the implementation target. Deployment and verification evidence must be recorded separately; its existence alone does not demonstrate that any gate is live or approved.
