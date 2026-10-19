@@ -16,7 +16,7 @@ export function ReviewForm({id,operation,children,label="Save",hidden={},disable
 }
 export function CoverageConfirmation({id,unit,confirmed,locked=false}:{id:string;unit:string;confirmed:boolean;locked?:boolean}){
  const [checked,setChecked]=useState(false);
- return <ReviewForm id={id} operation="coverage" label={confirmed?"Coverage saved":"Confirm coverage"} disabled={confirmed||locked} hidden={{unit}}><label><input type="checkbox" name="confirm_coverage" required checked={confirmed||checked} disabled={confirmed||locked} onChange={e=>setChecked(e.target.checked)}/> I reviewed this entire LU, including its quizzes and tests.</label>{confirmed?<p className="form-success">Confirmed and saved. This remains recorded when you return.</p>:null}</ReviewForm>;
+ return <ReviewForm id={id} operation="coverage" label={confirmed?"Coverage saved":"Confirm coverage"} disabled={confirmed||locked} hidden={{unit}}><label><input key={confirmed?"saved":"draft"} type="checkbox" name="confirm_coverage" required checked={confirmed||checked} disabled={confirmed||locked} onChange={e=>setChecked(e.target.checked)}/> I reviewed this entire LU, including its quizzes and tests.</label>{confirmed?<p className="form-success">Confirmed and saved. This remains recorded when you return.</p>:null}</ReviewForm>;
 }
 export function RequestReviewForm({courseId,email,companies,initialBrand="",initialCredits={}}:{courseId:string;email:string;companies:{id:string;name:string;slug:string}[];initialBrand?:string;initialCredits?:Record<string,string>}){
  const [brandId,setBrandId]=useState(initialBrand||companies.find(c=>c.slug==="apgi")?.id||"");const brandIsApgi=companies.find(c=>c.id===brandId)?.slug==="apgi";
