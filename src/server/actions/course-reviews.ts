@@ -16,7 +16,7 @@ import {getSupabaseRestUrl} from "@/server/auth/session";
 
 import {formText,validId} from "@/lib/company-structure";
 
-import {reviewPeople,currentReport,canWork,normalizedEmail,activeFindings,findingCategories,recordFinding,type ReviewRound,type ReviewFinding} from "@/lib/course-review";
+import {reviewPeople,currentReport,canWork,normalizedEmail,activeFindings,findingCategories,recordFinding,satisfactoryParts,satisfactionStatement,type ReviewRound,type ReviewFinding} from "@/lib/course-review";
 
 import {assertReviewWork,claimReviewer,commitReview,processReviewMail,publishReview,requireReview,reviewEvent,reviewMail,reviewSource,contentSource} from "@/server/services/course-reviews";
 
@@ -189,10 +189,12 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
     if(!d.units.some(u=>u.slug===unit))throw Error("Choose the LU or assessment being reviewed.");
 
     const findingId=randomUUID();let attachment:string|undefined;
-    const outcome=form.get("outcome")==="satisfied"?"satisfied":"issue";
+    const parts=satisfactoryParts(form.getAll("satisfied_part").map(String));
+    const outcome=form.get("outcome")==="satisfied"&&form.get("has_issue")!=="on"&&form.get("blocking")!=="on"?"satisfied":"issue";
     const categories=findingCategories(form.getAll("category").map(String).concat(form.getAll("custom_category").map(String)));
-    const comment=outcome==="satisfied"?"I am happy with this slide, learning unit, quiz or e-book. Nothing to add.":text(form,"comment",3);
-    const finding:ReviewFinding={id:findingId,unit,reference,categories,category:categories.join(", "),outcome,blocking:outcome!=="satisfied"&&form.get("blocking")==="on",author:email,userId:session.user.id,at:now,text:comment,status:outcome==="satisfied"?"closed" as const:"open" as const,replies:[],attachment};
+    const extra=outcome==="satisfied"?formText(form,"comment",0,5000):text(form,"comment",3);
+    const comment=outcome==="satisfied"?satisfactionStatement(parts)+(extra?"\n\nReviewer comments:\n"+extra:" Nothing to add."):(parts.length?satisfactionStatement(parts)+"\n\n":"")+extra;
+    const finding:ReviewFinding={id:findingId,unit,reference,categories,satisfiedParts:parts,category:categories.join(", "),outcome,blocking:outcome!=="satisfied"&&form.get("blocking")==="on",author:email,userId:session.user.id,at:now,text:comment,status:outcome==="satisfied"?"closed" as const:"open" as const,replies:[],attachment};
     recordFinding(d,finding,formText(form,"replace_id"));
 
     const file=form.get("screenshot");

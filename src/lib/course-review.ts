@@ -4,7 +4,17 @@ export type ReviewPerson = { email: string; role: "primary" | "peer" | "partner"
 
 export type ReviewReport = { id: string; email: string; userId: string; at: string; text: string; coverage: string[]; endorsements: { email: string; userId: string; at: string; decision: "approve" | "changes"; text: string }[] };
 
-export type ReviewFinding = { id: string; unit: string; reference: string; category: string; categories?: string[]; outcome?: "issue" | "satisfied"; supersededBy?: string; blocking: boolean; author: string; userId: string; at: string; text: string; attachment?: string; status: "open" | "fixed" | "closed"; fixedBy?: string; replies: { email: string; userId: string; at: string; text: string }[] };
+export type SatisfactoryPart = "lu" | "quiz" | "ebook";
+export const satisfactoryLabels:Record<SatisfactoryPart,string> = {lu:"the learning unit / slides",quiz:"the quiz",ebook:"the e-book"};
+export function satisfactoryParts(values:string[]):SatisfactoryPart[] {
+ if(values.some(v=>!["lu","quiz","ebook"].includes(v)))throw Error("Choose learning unit, quiz or e-book declarations.");
+ return (["lu","quiz","ebook"] as const).filter(v=>values.includes(v));
+}
+export function satisfactionStatement(parts:SatisfactoryPart[]) {
+ return parts.length?`I am happy with ${parts.map(p=>satisfactoryLabels[p]).join(" and ")}.`:"I am happy with this slide, learning unit, quiz or e-book.";
+}
+export const declarationReference = (parts:SatisfactoryPart[]) => parts.map(p=>({lu:"Entire LU",quiz:"Quiz",ebook:"E-book"}[p])).join(" + ");
+export type ReviewFinding = { id: string; unit: string; reference: string; category: string; categories?: string[]; satisfiedParts?: SatisfactoryPart[]; outcome?: "issue" | "satisfied"; supersededBy?: string; blocking: boolean; author: string; userId: string; at: string; text: string; attachment?: string; status: "open" | "fixed" | "closed"; fixedBy?: string; replies: { email: string; userId: string; at: string; text: string }[] };
 
 export const activeFindings = (doc: ReviewDocument) => doc.findings.filter(f => !f.supersededBy);
 

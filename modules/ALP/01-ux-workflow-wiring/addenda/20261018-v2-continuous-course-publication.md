@@ -46,3 +46,10 @@ This file defines the implementation target. Deployment and verification evidenc
 - Submitting a full report displays a feedback acknowledgement. Final principal content approval displays the acknowledgement and continues to the course's commercial wizard. Neither operation bypasses independent review.
 - Reviewer scope can be content only or content plus commercials, recorded at invitation and editable by a principal with a reason during content review. Commercial scope never grants platform administration or substitutes for Johan/Jorrie joint sign-off or company-owner acceptance. Assigned commercial reviewers can comment on the offered public schedule, without seeing private APGI/SRMS terms.
 - Existing real round coverage, findings and approvals are preserved; V1 is excluded from this release.
+
+
+### 19 October 2026 — Combined declarations and evidence retention
+
+The feedback outcome selector is replaced by independent LU/slides, quiz and (where available) e-book satisfaction checkboxes. Several declarations may be saved together. An additional change/suggestion checkbox supports a positive declaration for one part alongside a correction for another. Selecting satisfaction never hides the comment, snapshot or image-upload controls; optional comments and images are retained with the declaration in the saved finding. Existing issue categories, replacement confirmation and audit history remain available. Closing and reopening the feedback panel retains its in-progress fields.
+
+The disabled content-approval checkbox/button is wrapped by a keyboard-focusable hover explanation. It states that all modules/quizzes, full submitted reports, independent endorsements and blocking-finding checks must be complete. Approval rules are unchanged.
