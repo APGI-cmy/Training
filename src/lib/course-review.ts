@@ -1,7 +1,7 @@
 import {commercialPublicationBlockers,type PublicationWorkflow} from "./publication-workflow";
-export type ReviewPerson = { email: string; role: "primary" | "peer" | "partner"; state: "invited" | "active" | "finished" | "declined"; userId?: string; reason?: string; coverage: string[] };
+export type ReviewPerson = { email: string; role: "primary" | "peer" | "partner"; scope?: "content" | "content_and_commercials"; state: "invited" | "active" | "finished" | "declined"; userId?: string; reason?: string; coverage: string[] };
 export type ReviewReport = { id: string; email: string; userId: string; at: string; text: string; coverage: string[]; endorsements: { email: string; userId: string; at: string; decision: "approve" | "changes"; text: string }[] };
-export type ReviewFinding = { id: string; unit: string; reference: string; category: string; blocking: boolean; author: string; userId: string; at: string; text: string; attachment?: string; status: "open" | "fixed" | "closed"; fixedBy?: string; replies: { email: string; userId: string; at: string; text: string }[] };
+export type ReviewFinding = { id: string; unit: string; reference: string; category: string; categories?: string[]; outcome?: "issue" | "satisfied"; supersededBy?: string; blocking: boolean; author: string; userId: string; at: string; text: string; attachment?: string; status: "open" | "fixed" | "closed"; fixedBy?: string; replies: { email: string; userId: string; at: string; text: string }[] };export const activeFindings = (doc: ReviewDocument) => doc.findings.filter(f => !f.supersededBy);export function findingCategories(values: string[]) { const categories = [...new Set(values.map(v => v.trim()).filter(Boolean))]; if (!categories.length || categories.length > 10 || categories.some(c => c.length > 80)) throw Error("Choose between one and ten categories, each up to 80 characters."); return categories;}// New versions preserve the original finding, replies and screenshot in the audit trail.export function recordFinding(doc: ReviewDocument, finding: ReviewFinding, replaceId = "") { const previous = activeFindings(doc).find(f => f.author === finding.author && f.unit === finding.unit && f.reference.toLowerCase() === finding.reference.toLowerCase()); if (previous && replaceId !== previous.id) throw Error("You already reviewed this reference. Confirm replacement, or use a different slide/question reference."); if (replaceId && previous?.id !== replaceId) throw Error("This finding changed. Reload before replacing it."); if (previous?.blocking && previous.status !== "closed") throw Error("An unresolved blocking finding must be fixed and independently verified before replacement. Use its discussion to add details."); if (previous) previous.supersededBy = finding.id; doc.findings.push(finding);}
 export type ReviewDocument = {
   workflow?: PublicationWorkflow;
   title: string; brand: { name: string; revision: number; color: string; logo: string | null }; requester: string; requesterId: string;
@@ -11,11 +11,11 @@ export type ReviewDocument = {
 };
 export type ReviewRound = { id: string; plan_id: string | null; organisation_id: string; course_id: string; fingerprint: string; revision: number; status: "open" | "cancelled" | "published"; created_at: string; document: ReviewDocument };
 export const normalizedEmail = (value: string) => value.trim().toLowerCase();
-export function reviewPeople(emails: string[], roles: string[], requester: string): ReviewPerson[] {
+export function reviewPeople(emails: string[], roles: string[], requester: string, scopes: string[] = []): ReviewPerson[] {
   const clean = emails.map(normalizedEmail);
   if (clean.length < 2 || clean.some(e => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) || e.length > 254) || new Set(clean).size !== clean.length)
     throw Error("Include at least two different valid reviewer email addresses.");
-  const people = clean.map((email, i) => ({ email, role: roles[i] === "peer" ? "peer" as const : "primary" as const, state: "invited" as const, coverage: [] }));
+  const people = clean.map((email, i) => ({ email, role: roles[i] === "peer" ? "peer" as const : "primary" as const, scope: scopes[i] === "content_and_commercials" ? "content_and_commercials" as const : "content" as const, state: "invited" as const, coverage: [] }));
   if (!people.some(p => p.email === normalizedEmail(requester) && p.role === "primary") || people.filter(p => p.role === "primary").length < 2)
     throw Error("Include yourself and at least one other full reviewer. Peer-only checkers are optional.");
   return people;
@@ -35,7 +35,7 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
     else if (!report.endorsements.some(e => e.decision === "approve" && e.userId !== report.userId && e.email !== p.email && d.participants.some(person => person.email === e.email && person.state !== "declined"))) reasons.push(`${p.email}: independent report endorsement outstanding.`);
     if (report?.endorsements.some(e => e.decision === "changes")) reasons.push(`${p.email}: a peer requested changes; submit a revised report.`);
   }
-  if (d.findings.some(f => f.blocking && f.status !== "closed")) reasons.push("Publication-blocking findings remain unresolved.");
+  if (activeFindings(d).some(f => f.blocking && f.status !== "closed")) reasons.push("Publication-blocking findings remain unresolved.");
 
   return reasons;
 }

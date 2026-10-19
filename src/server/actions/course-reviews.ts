@@ -16,7 +16,7 @@ import {getSupabaseRestUrl} from "@/server/auth/session";
 
 import {formText,validId} from "@/lib/company-structure";
 
-import {reviewPeople,currentReport,canWork,normalizedEmail,type ReviewRound} from "@/lib/course-review";
+import {reviewPeople,currentReport,canWork,normalizedEmail,activeFindings,findingCategories,recordFinding,type ReviewRound,type ReviewFinding} from "@/lib/course-review";
 
 import {assertReviewWork,claimReviewer,commitReview,processReviewMail,publishReview,requireReview,reviewEvent,reviewMail,reviewSource,contentSource} from "@/server/services/course-reviews";
 
@@ -60,7 +60,7 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
 
   const owner=(await rows<{id:string;slug:string}>(`/rest/v1/organisations?id=eq.${ownerId}&is_active=eq.true&select=id,slug`))[0];if(!owner)throw Error("Choose the current legal course owner.");
 
-  const people=reviewPeople(form.getAll("review_email").map(String),form.getAll("review_role").map(String),session.user.email!);
+  const people=reviewPeople(form.getAll("review_email").map(String),form.getAll("review_role").map(String),session.user.email!,form.getAll("review_scope").map(String));
 
   const partner=brand.slug!=="apgi"||owner.slug!=="apgi",acceptor=partner?normalizedEmail(text(form,"terms_acceptor",3,254)):"";
 
@@ -78,7 +78,7 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
 
   const prior=(await rows<ReviewRound>(`/rest/v1/course_review_rounds?organisation_id=eq.${brand.id}&course_id=eq.${course.slug}&select=*&order=created_at.desc&limit=1`))[0];
 
-  if(prior){round.document.findings=prior.document.findings.filter(f=>f.status!=="closed").map(f=>({...f,status:"open",fixedBy:undefined,text:`Carried from review ${prior.id}:\n${f.text}`,replies:[...f.replies]}));}
+  if(prior){round.document.findings=activeFindings(prior.document).filter(f=>f.status!=="closed").map(f=>({...f,status:"open",fixedBy:undefined,text:`Carried from review ${prior.id}:\n${f.text}`,replies:[...f.replies]}));}
 
   reviewEvent(round.document,session.user.email!,"review_requested","Course content recorded first. Commercials are prepared after content approval. Daily reminders stop on completion, decline or cutoff. Unfinished work requires an extension.");
 
@@ -123,7 +123,7 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
   }
 
-  if(op==="extend"||op==="team"||op==="resend_invite"){
+  if(op==="extend"||op==="team"||op==="resend_invite"||op==="review_scope"){
 
    if(d.workflow&&d.workflow.stage!=="content_review")throw Error("Content review is already approved. Start a new content round to change its team.");
 
@@ -135,6 +135,12 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
    if(op==="extend")d.cutoff=cutoffValue(form);
 
+   else if(op==="review_scope"){
+    const target=d.participants.find(p=>p.email===normalizedEmail(text(form,"recipient",3,254)));
+    const scope=text(form,"review_scope");
+    if(!target||!["content","content_and_commercials"].includes(scope))throw Error("Choose an assigned reviewer and review scope.");
+    target.scope=scope as "content"|"content_and_commercials";
+   }
    else if(op==="team"){
 
     const remove=normalizedEmail(formText(form,"remove_email"));
@@ -151,7 +157,7 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
     const add=normalizedEmail(formText(form,"add_email"));
 
-    if(add){if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(add)||d.participants.some(p=>p.email===add))throw Error("Enter a different valid reviewer email.");d.participants.push({email:add,role:"primary",state:"invited",coverage:[]});newJoin={email:add,token:randomBytes(32).toString("base64url")};}
+    if(add){if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(add)||d.participants.some(p=>p.email===add))throw Error("Enter a different valid reviewer email.");d.participants.push({email:add,role:"primary",state:"invited",coverage:[],scope:form.get("review_scope")==="content_and_commercials"?"content_and_commercials":"content"});newJoin={email:add,token:randomBytes(32).toString("base64url")};}
 
     if(d.participants.filter(p=>p.role==="primary"&&p.state!=="declined").length<2)throw Error("Add a replacement full reviewer before acknowledging the decline; two are required.");
 
@@ -159,10 +165,17 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
    else{assertReviewWork(round,fresh);const recipient=normalizedEmail(text(form,"recipient",3,254));const target=d.participants.find(p=>p.email===recipient);if(!target||target.state==="declined"||target.state==="finished")throw Error("Only an unfinished, active review invitation can be resent.");newJoin={email:recipient,token:randomBytes(32).toString("base64url")};}
 
-   reviewEvent(d,email,op,reason);mail=reviewMail(round,op,`${op}:${round.revision}`,`${email} updated the review: ${reason}. New cutoff: ${d.cutoff}`,op==="resend_invite"?[newJoin!.email]:undefined);
+   reviewEvent(d,email,op,reason);mail=op==="review_scope"?[]:reviewMail(round,op,`${op}:${round.revision}`,`${email} updated the review: ${reason}. New cutoff: ${d.cutoff}`,op==="resend_invite"?[newJoin!.email]:undefined);
 
    if(newJoin){await write("/rest/v1/course_review_join_tokens",{token_hash:createHash("sha256").update(newJoin.token).digest("hex"),round_id:id,email:newJoin.email,expires_at:d.cutoff});const m=mail.find(m=>m.to===newJoin!.email)!;m.kind="invitation";m.body+=`\nYou are a full course reviewer. Review every LU and quiz and submit a report. Each report needs a different reviewer's endorsement. Findings are shared with the assigned team. Decline in the workspace with a reason if necessary. Reminders stop on completion, decline or cutoff; overdue work requires extension, never automatic approval.\nCreate a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}/join/${newJoin.token}`;}
 
+  }else if(op==="commercial_feedback"){
+   const person=d.participants.find(p=>p.email===email),w=d.workflow,v=w?.commercials?.at(-1);
+   if(!fresh||round.status!=="open"||!person||person.state==="declined"||person.scope!=="content_and_commercials"||!v?.offeredAt||w?.stage!=="partner_offer"||text(form,"version_id")!==v.id)throw Error("Commercial feedback is available only to an assigned commercial reviewer on the current offered version.");
+   const comment=text(form,"comment",5);
+   reviewEvent(d,email,op,`Commercial version ${v.id}: ${comment}`);
+   mail=reviewMail(round,"commercial_reviewer_feedback",`commercial-feedback:${round.revision}`,`${email} commented on offered commercial version ${v.id}: ${comment}`,["johan.ras@apginc.ca","jorrie.jordaan@apginc.ca"]);
+   notice="Commercial feedback saved for APGI. This does not approve or change the agreed terms.";
   }else{
 
    assertReviewWork(round,fresh);const person=claimReviewer(round,email,session.user.id);
@@ -176,6 +189,11 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
     if(!d.units.some(u=>u.slug===unit))throw Error("Choose the LU or assessment being reviewed.");
 
     const findingId=randomUUID();let attachment:string|undefined;
+    const outcome=form.get("outcome")==="satisfied"?"satisfied":"issue";
+    const categories=findingCategories(form.getAll("category").map(String).concat(form.getAll("custom_category").map(String)));
+    const comment=outcome==="satisfied"?"I am happy with this slide, learning unit, quiz or e-book. Nothing to add.":text(form,"comment",3);
+    const finding:ReviewFinding={id:findingId,unit,reference,categories,category:categories.join(", "),outcome,blocking:outcome!=="satisfied"&&form.get("blocking")==="on",author:email,userId:session.user.id,at:now,text:comment,status:outcome==="satisfied"?"closed" as const:"open" as const,replies:[],attachment};
+    recordFinding(d,finding,formText(form,"replace_id"));
 
     const file=form.get("screenshot");
 
@@ -195,11 +213,12 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
     }
 
-    d.findings.push({id:findingId,unit,reference,category:text(form,"category",2,80),blocking:form.get("blocking")==="on",author:email,userId:session.user.id,at:now,text:text(form,"comment",3),attachment,status:"open",replies:[]});
+    finding.attachment=attachment;
+    notice="Review saved. Your feedback is recorded in the shared review and audit trail.";
 
    }else if(op==="reply"||op==="fixed"||op==="close"){
 
-    const f=d.findings.find(f=>f.id===text(form,"finding_id"));if(!f)throw Error("Finding unavailable.");
+    const f=activeFindings(d).find(f=>f.id===text(form,"finding_id"));if(!f)throw Error("Finding unavailable.");
 
     const comment=text(form,"comment",3);
 
@@ -221,7 +240,7 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
     if(!d.units.every(u=>person.coverage.includes(u.slug)))throw Error("Confirm coverage for every LU and assessment before committing your full report.");
 
-    const report={id:randomUUID(),email,userId:session.user.id,at:now,text:text(form,"comment",5)+"\n\nFindings at submission:\n"+d.findings.map(f=>`${f.id} | ${f.unit} | ${f.reference} | ${f.author} | ${f.blocking?"BLOCKING":"Suggestion"} | ${f.status}\n${f.text}`).join("\n\n"),coverage:[...person.coverage],endorsements:[]};
+    const report={id:randomUUID(),email,userId:session.user.id,at:now,text:text(form,"comment",5)+"\n\nFindings at submission:\n"+activeFindings(d).map(f=>`${f.id} | ${f.unit} | ${f.reference} | ${f.author} | ${f.blocking?"BLOCKING":"Suggestion"} | ${f.status}\n${f.text}`).join("\n\n"),coverage:[...person.coverage],endorsements:[]};
 
     d.reports.push(report);person.state="finished";
 
@@ -293,7 +312,7 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
   try{if(mail.length)await processReviewMail();}catch{/* Durable failed/pending delivery remains visible. */}
 
-  revalidatePath(`/course-reviews/${id}`);revalidatePath("/course-reviews");return {success:notice};
+  revalidatePath(`/course-reviews/${id}`,"layout");revalidatePath("/course-reviews");return {success:notice};
 
  }catch(e){if(e instanceof Error&&"digest" in e)throw e;return {error:e instanceof Error?e.message:"Review action could not be saved."};}
 

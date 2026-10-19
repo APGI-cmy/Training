@@ -13,3 +13,9 @@ const content={};for(const [slug,folder] of Object.entries(roots))content[slug]=
 const sources=createHash('sha256');for(const file of ['src/lib/courses.ts','src/data/vpshr-level-0.json','src/components/course/ScormPlayer.tsx','src/components/QuizEngine.tsx','src/components/assessments/ScannexTheoryAssessment.tsx','src/server/assessments/scannex-theory-bank.ts','src/lib/services/courses/get-unit-content.ts'])sources.update(await readFile(file));const source=sources.digest('hex');
 await writeFile('src/data/course-review-manifest.json',JSON.stringify({...content,source}));
 console.log(`Review manifests verified for ${Object.keys(content).length} courses.`);
+
+// Keep resource discovery separate so a review-UI repair does not change content identity.
+const ebooks=[];
+async function books(dir){for(const entry of await readdir(dir,{withFileTypes:true})){const path=join(dir,entry.name);if(entry.isDirectory())await books(path);else if(entry.name==='book.pdf')ebooks.push('/'+relative(join(process.cwd(),'public'),path).replaceAll('\\','/').split('/').map(encodeURIComponent).join('/'));}}
+await books(join(process.cwd(),'public','courses'));
+await writeFile('src/data/course-review-resources.json',JSON.stringify({ebooks:ebooks.sort()}));

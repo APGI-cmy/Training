@@ -32,3 +32,17 @@ Daily reviewer reminders stop on task completion, decline or cutoff. The request
 When a partner owns a course published under APGI branding, that owner's commercial approval remains required. Their owner membership is bound to their own company, not APGI. They can review APGI's publishing brand but cannot edit APGI branding or settings. The publishing company and contracting partner are recorded separately.
 
 This file defines the implementation target. Deployment and verification evidence must be recorded separately; its existence alone does not demonstrate that any gate is live or approved.
+
+
+## 19 October 2026 — Review usability corrections
+
+- Coverage checkboxes reflect saved participant coverage after submission, navigation and reload. A persisted status is shown independently of the temporary save toast.
+- Reviewers may record explicit satisfaction with a slide/LU, quiz or available e-book. These are closed, non-blocking feedback records and do not substitute for complete LU/quiz coverage or full report submission.
+- A finding supports several categories, including e-book issues and additional named categories. Separate slide/question references remain separate findings.
+- Replacing the same author's feedback for an exact unit/reference requires confirmation. The original record, screenshot and discussion remain in history; another reviewer's feedback is never overwritten. Unresolved blocking findings must follow fix and independent verification before replacement.
+- LU pages provide persistent review-summary navigation plus previous/next LU controls and a finish/report link. Complete-unit coverage can be confirmed at the end of each LU.
+- E-book links use build-verified separate PDF resources; a presentation export is never labelled as an e-book. The current VPSHR package contains no separate e-book PDF; Scannex does.
+- The content-approval panel displays the saved feedback summary and actual unmet requirements. Approval controls remain disabled until the existing team, coverage, report, independent endorsement and blocker gates pass.
+- Submitting a full report displays a feedback acknowledgement. Final principal content approval displays the acknowledgement and continues to the course's commercial wizard. Neither operation bypasses independent review.
+- Reviewer scope can be content only or content plus commercials, recorded at invitation and editable by a principal with a reason during content review. Commercial scope never grants platform administration or substitutes for Johan/Jorrie joint sign-off or company-owner acceptance. Assigned commercial reviewers can comment on the offered public schedule, without seeing private APGI/SRMS terms.
+- Existing real round coverage, findings and approvals are preserved; V1 is excluded from this release.
