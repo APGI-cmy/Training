@@ -27,19 +27,25 @@ export async function publicationWorkflowAction(_:ReviewActionState,form:FormDat
  round.document.brand={name:source.brand.name,revision:source.brand.brand_revision,color:source.brand.primary_color,logo:source.brand.logo_path};
  const v=currentCommercial(w);let mail:ReturnType<typeof reviewMail>=[],message="Saved to the publication workflow.";
 
- if(["approve_content","submit_commercials","commercial_decision","send_offer","confirm_brand","reconfirm_partner"].includes(op)&&!principal)throw Error("Only Johan or Jorrie can perform this APGI action.");
+ if(["begin_commercials","approve_content","submit_commercials","commercial_decision","send_offer","confirm_brand","reconfirm_partner"].includes(op)&&!principal)throw Error("Only Johan or Jorrie can perform this APGI action.");
 
- if(op!=="approve_content"&&op!=="confirm_brand"&&op!=="reconfirm_partner"&&(!v||formText(form,"version_id")!==v.id))throw Error("The commercial version changed. Reload before deciding.");
+ if(op!=="begin_commercials"&&op!=="approve_content"&&op!=="confirm_brand"&&op!=="reconfirm_partner"&&(!v||formText(form,"version_id")!==v.id))throw Error("The commercial version changed. Reload before deciding.");
 
- if(op==="approve_content"){
+ if(op==="begin_commercials"){
+  const person=round.document.participants.find(p=>p.email===email);
+  if(round.document.requester!==email||round.document.requesterId!==session.user.id)throw Error("The review requester starts commercial preparation.");
+  if(w.stage!=="content_review"||!person||person.state!=="finished"||!round.document.units.every(u=>person.coverage.includes(u.slug))||!round.document.reports.some(r=>r.email===email))throw Error("Complete your LU/quiz coverage and submit your report before preparing commercials. Unresolved findings do not block commercial preparation.");
+  w.commercialPreparation={at:now,email,userId:session.user.id};w.stage="commercial_draft";
+  message="Commercial preparation opened. Content corrections and independent checks still block final publication.";
+ }else if(op==="approve_content"){
 
-  if(w.stage!=="content_review")throw Error("Content approval is already recorded.");const blockers=contentReviewBlockers(round,source.fingerprint);if(blockers.length)throw Error(blockers.join(" "));
+  if(round.document.requester!==email||round.document.requesterId!==session.user.id)throw Error("Only the review requester may clear the final course content.");if(w.contentApproval)throw Error("Content approval is already recorded.");const blockers=contentReviewBlockers(round,source.fingerprint);if(blockers.length)throw Error(blockers.join(" "));
 
   if(form.get("confirm_content")!=="on")throw Error("Confirm the reviewed course content.");
 
-  w.contentApproval={at:now,userId:session.user.id,email,fingerprint:source.fingerprint};w.stage="commercial_draft";
+  w.contentApproval={at:now,userId:session.user.id,email,fingerprint:source.fingerprint};if(w.stage==="content_review")w.stage="commercial_draft";
 
-  mail=internalWorkflowMail(round,"content_approved",`content:${round.revision}`,"Course content is approved. Prepare commercials next. Content approval does not constitute commercial approval.");
+  mail=internalWorkflowMail(round,"content_approved",`content:${round.revision}`,"Final course content is cleared. Commercial and company approvals remain separate requirements for publication.");
 
  }else if(op==="submit_commercials"){
 
@@ -69,8 +75,6 @@ export async function publicationWorkflowAction(_:ReviewActionState,form:FormDat
 
   mail=reviewMail(round,"partner_offer",v.id,`Welcome to the APGI hosting platform. Your company's jointly approved course offer is ready. No separate subscription fee applies under this schedule.
 
-
-
 Course: ${round.document.title}
 
 Proposed learner fee: ${money(v.proposedPrice)}
@@ -87,13 +91,9 @@ Remaining pool: APGI ${c.apgi_share}%; your company ${c.platform_user_share}%.
 
 Estimated company income at the proposed price: ${money(q.partner)}.
 
-
-
 Review the course, adjust or confirm your company's branding, and accept or decline the commercial offer in the workspace. You can change the overall learner fee above the approved floor; the approved rates remain fixed. A decline requires reasons and proposed alternatives. Up to three APGI counter-offer responses are allowed; unresolved terms prevent publication.
 
 Complete company owner onboarding if needed: ${w.onboardingUrl}
-
-
 
 Publication remains subject to a final APGI principal action. Company learner payments must use an enabled platform-managed route; V2 payments are currently disabled.`,[w.partnerEmail]);
 
@@ -129,7 +129,7 @@ Status: ${w.stage}. Counter-offer responses used: ${w.counterOffers}/3.`);
 
  try{if(mail.length)await processReviewMail();}catch{/* Durable outbox retains pending delivery. */}
 
- revalidatePath(`/course-reviews/${id}`);revalidatePath("/course-reviews");revalidatePath(`/company/${round.organisation_id}`);return {success:message,...(op==="approve_content"?{href:`/admin/courses/${round.course_id}/publish?review=${id}`}:{})};
+ revalidatePath(`/course-reviews/${id}`);revalidatePath("/course-reviews");revalidatePath(`/company/${round.organisation_id}`);return {success:message,...(op==="begin_commercials"?{href:`/admin/courses/${round.course_id}/publish?review=${id}`}:{})};
 
  }catch(e){if(e instanceof Error&&"digest" in e)throw e;return {error:e instanceof Error?e.message:"Publication workflow could not be saved."};}
 

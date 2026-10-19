@@ -1,3 +1,4 @@
+import {SessionActivity} from "@/components/auth/SessionActivity";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { BrandingShell } from "@/components/branding/BrandingShell";
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <SessionActivity/>
         <div role="note" style={{ background: "#ffe8a3", color: "#172b46", padding: "12px 20px", textAlign: "center", fontWeight: 700 }}>
           Version 2 test environment — separate accounts and test data. {stagingEmailEnabled() ? "Invitation and account emails are enabled. Payments and Viewer streaming are disabled." : "Email, payments and Viewer streaming are disabled."}
         </div>

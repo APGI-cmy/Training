@@ -16,7 +16,7 @@ import {getSupabaseRestUrl} from "@/server/auth/session";
 
 import {formText,validId} from "@/lib/company-structure";
 
-import {reviewPeople,currentReport,canWork,normalizedEmail,activeFindings,findingCategories,recordFinding,satisfactoryParts,satisfactionStatement,type ReviewRound,type ReviewFinding} from "@/lib/course-review";
+import {reviewPeople,currentReport,canWork,normalizedEmail,activeFindings,findingCategories,recordFinding,satisfactoryParts,satisfactionStatement,type ReviewRound,type ReviewFinding,type ReviewChangeRequest} from "@/lib/course-review";
 
 import {assertReviewWork,claimReviewer,commitReview,processReviewMail,publishReview,requireReview,reviewEvent,reviewMail,reviewSource,contentSource} from "@/server/services/course-reviews";
 
@@ -74,13 +74,13 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
 
   const id=randomUUID(),cutoff=cutoffValue(form),now=new Date().toISOString();
 
-  const round:ReviewRound={id,plan_id:null,organisation_id:brand.id,course_id:course.slug,fingerprint:source.fingerprint,revision:1,status:"open",created_at:now,document:{workflow:{version:2,stage:"content_review",designerName,designerCompany,ownerId,partner,partnerCompanyId:brand.slug!=="apgi"?brand.id:ownerId,partnerEmail:acceptor,commercials:[],counterOffers:0},title:course.title,brand:{name:brand.name,revision:brand.brand_revision,color:brand.primary_color,logo:brand.logo_path},requester:normalizedEmail(session.user.email!),requesterId:session.user.id,cutoff,units:course.units.map(u=>({slug:u.slug,title:u.title})),participants:people,reports:[],findings:[],events:[],terms:{text:"Commercials follow approved content and require separate joint APGI approval.",partner,acceptor}}};
+  const round:ReviewRound={id,plan_id:null,organisation_id:brand.id,course_id:course.slug,fingerprint:source.fingerprint,revision:1,status:"open",created_at:now,document:{workflow:{version:2,stage:"content_review",designerName,designerCompany,ownerId,partner,partnerCompanyId:brand.slug!=="apgi"?brand.id:ownerId,partnerEmail:acceptor,commercials:[],counterOffers:0},title:course.title,brand:{name:brand.name,revision:brand.brand_revision,color:brand.primary_color,logo:brand.logo_path},requester:normalizedEmail(session.user.email!),requesterId:session.user.id,cutoff,units:course.units.map(u=>({slug:u.slug,title:u.title})),participants:people,reports:[],findings:[],events:[],terms:{text:"Commercial preparation follows the requester report. Final content clearance and joint APGI commercial approvals remain required before publication.",partner,acceptor}}};
 
   const prior=(await rows<ReviewRound>(`/rest/v1/course_review_rounds?organisation_id=eq.${brand.id}&course_id=eq.${course.slug}&select=*&order=created_at.desc&limit=1`))[0];
 
   if(prior){round.document.findings=activeFindings(prior.document).filter(f=>f.status!=="closed").map(f=>({...f,status:"open",fixedBy:undefined,text:`Carried from review ${prior.id}:\n${f.text}`,replies:[...f.replies]}));}
 
-  reviewEvent(round.document,session.user.email!,"review_requested","Course content recorded first. Commercials are prepared after content approval. Daily reminders stop on completion, decline or cutoff. Unfinished work requires an extension.");
+  reviewEvent(round.document,session.user.email!,"review_requested","Course content recorded first. Commercial preparation follows the requester report; final content clearance is required before publication. Daily reminders stop on completion, decline or cutoff. Unfinished work requires an extension.");
 
   const invitations=people.map(p=>({email:p.email,token:randomBytes(32).toString("base64url")}));
 
@@ -110,11 +110,12 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
   if(op==="publish"){
 
-   if(!principal)throw Error("Only Johan or Jorrie may publish.");
+   if(!principal||d.requester!==email||d.requesterId!==session.user.id)throw Error("Only the APGI principal who requested this review may publish it.");
 
    if(form.get("confirm_release")!=="on")throw Error("Confirm the exact reviewed release before publishing.");
 
    await publishReview(round,session.user.id,access.source.fingerprint,access.source.brand.brand_revision);
+
    try{await processReviewMail();}catch{/* Publication and its outbox are committed atomically; delivery can retry. */}
 
    revalidatePath(`/company/${round.organisation_id}`);revalidatePath(`/course-reviews/${id}`);
@@ -123,79 +124,205 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
   }
 
-  if(op==="extend"||op==="team"||op==="resend_invite"||op==="review_scope"){
+  if(op==="acknowledge_decline"){
+   if(!principal||round.status!=="open"||!fresh)throw Error("Only Johan or Jorrie may acknowledge a decline in an open review.");
+   const request=d.requests?.find(r=>r.id===text(form,"request_id"));
+   if(!request||request.status!=="approved"||!["additional","replacement"].includes(request.kind)||!d.participants.some(p=>p.email===request.email))throw Error("Approve the additional or replacement reviewer before acknowledging a declined assignment.");
+   const target=normalizedEmail(text(form,"acknowledge_decline"));
+   if(!d.participants.some(p=>p.email===target&&p.state==="declined"))throw Error("Choose a recorded declined reviewer.");
+   d.participants=d.participants.filter(p=>p.email!==target);
+   if(d.participants.filter(p=>p.role==="primary"&&p.state!=="declined").length<2)throw Error("At least two full reviewers must remain.");
+   if(d.workflow)delete d.workflow.contentApproval;
+   const reason=text(form,"decision_reason",5);reviewEvent(d,email,op,`${target}: ${reason}. Approved assignment ${request.id}.`);
+   mail=reviewMail(round,"review_change_decided",`acknowledge:${request.id}:${target}`,`${email} acknowledged ${target}'s recorded decline after approving ${request.email}'s assignment. ${reason}`,[...new Set([d.requester,request.requestedBy])]);
+  }else if(op==="request_change"||op==="decide_change"){
 
-   if(d.workflow&&d.workflow.stage!=="content_review")throw Error("Content review is already approved. Start a new content round to change its team.");
+   if(round.status!=="open"||!fresh)throw Error("Only an open review of the current course can be managed.");
 
-   if(!principal)throw Error("Only a platform principal can manage the review.");
+   const assigned=d.participants.find(p=>p.email===email);
 
-   if(round.status!=="open")throw Error("This round is closed.");
+   if(!principal&&!assigned)throw Error("Only assigned reviewers may request a change.");
 
-   const reason=op==="resend_invite"?"Requester explicitly resent the pending review invitation.":text(form,"reason",5);let newJoin:{email:string;token:string}|undefined;
+   d.requests??=[];
 
-   if(op==="extend")d.cutoff=cutoffValue(form);
+   let request:ReviewChangeRequest;
 
-   else if(op==="review_scope"){
-    const target=d.participants.find(p=>p.email===normalizedEmail(text(form,"recipient",3,254)));
-    const scope=text(form,"review_scope");
-    if(!target||!["content","content_and_commercials"].includes(scope))throw Error("Choose an assigned reviewer and review scope.");
-    target.scope=scope as "content"|"content_and_commercials";
-   }
-   else if(op==="team"){
+   if(op==="request_change"){
 
-    const remove=normalizedEmail(formText(form,"remove_email"));
+    const kind=text(form,"change_kind");
 
-    if(remove){
+    if(!["extension","additional","replacement","scope"].includes(kind))throw Error("Choose a review change request.");
 
-     const person=d.participants.find(p=>p.email===remove);
+    request={id:randomUUID(),kind:kind as ReviewChangeRequest["kind"],requestedBy:email,requestedById:session.user.id,at:now,reason:text(form,"reason",5),status:"pending"};
 
-     if(!person||person.state!=="declined")throw Error("Only a recorded decline can be acknowledged here.");
+    if(kind==="extension") {request.cutoff=cutoffValue(form);if(Date.parse(request.cutoff)<=Date.parse(d.cutoff))throw Error("Choose a cutoff later than the current deadline.");}
 
-     d.participants=d.participants.filter(p=>p.email!==remove);
+    else {
+
+     const scope=text(form,"review_scope");if(!["content","content_and_commercials"].includes(scope))throw Error("Choose a review scope.");request.scope=scope as ReviewChangeRequest["scope"];
+
+     if(kind==="scope") {request.target=normalizedEmail(text(form,"recipient",3,254));if(!d.participants.some(p=>p.email===request.target))throw Error("Choose an assigned reviewer.");}
+
+     else {
+
+      request.email=normalizedEmail(text(form,"add_email",3,254));
+
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(request.email)||d.participants.some(p=>p.email===request.email))throw Error("Enter a new valid reviewer email.");
+
+      if(kind==="replacement") {request.target=principal?normalizedEmail(formText(form,"recipient")||email):email;if(!d.participants.some(p=>p.email===request.target))throw Error("Choose the reviewer being replaced.");if(request.target===d.requester)throw Error("The review requester remains responsible. Request an additional reviewer instead.");}
+
+     }
 
     }
 
-    const add=normalizedEmail(formText(form,"add_email"));
+    if(d.requests.some(r=>r.status==="pending"&&r.requestedBy===email&&r.kind===kind&&r.email===request.email&&r.target===request.target))throw Error("An equivalent change request is already awaiting approval.");
 
-    if(add){if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(add)||d.participants.some(p=>p.email===add))throw Error("Enter a different valid reviewer email.");d.participants.push({email:add,role:"primary",state:"invited",coverage:[],scope:form.get("review_scope")==="content_and_commercials"?"content_and_commercials":"content"});newJoin={email:add,token:randomBytes(32).toString("base64url")};}
+    d.requests.push(request);
 
-    if(d.participants.filter(p=>p.role==="primary"&&p.state!=="declined").length<2)throw Error("Add a replacement full reviewer before acknowledging the decline; two are required.");
+    if(form.get("approve_now")!=="on"){
+
+     mail=reviewMail(round,"review_change_requested",request.id,`${email} requests ${kind}: ${request.reason}. Proposed cutoff: ${request.cutoff??"unchanged"}. Proposed reviewer: ${request.email??request.target??"unchanged"}. Scope: ${request.scope??"unchanged"}. ${request.target?`Reviewer to replace/change: ${request.target}.`:""} Declined reviewers awaiting acknowledgement: ${d.participants.filter(p=>p.state==="declined").map(p=>p.email).join(", ")||"None"}. Sign in and open Manage the request to approve or reject. No team or deadline change has been made.`,[...new Set([d.requester,"johan.ras@apginc.ca","jorrie.jordaan@apginc.ca"])]);
+
+     notice="Request saved and sent to APGI for approval. The current assignment and cutoff remain in force.";
+
+    }
+
+   }else{
+
+    if(!principal)throw Error("Only Johan or Jorrie may approve review changes.");
+
+    request=d.requests.find(r=>r.id===text(form,"request_id"))!;
+
+    if(!request||request.status!=="pending")throw Error("This change request has already been decided. Reload the workspace.");
 
    }
 
-   else{assertReviewWork(round,fresh);const recipient=normalizedEmail(text(form,"recipient",3,254));const target=d.participants.find(p=>p.email===recipient);if(!target||target.state==="declined"||target.state==="finished")throw Error("Only an unfinished, active review invitation can be resent.");newJoin={email:recipient,token:randomBytes(32).toString("base64url")};}
+   if(op==="decide_change"||form.get("approve_now")==="on"){
 
-   reviewEvent(d,email,op,reason);mail=op==="review_scope"?[]:reviewMail(round,op,`${op}:${round.revision}`,`${email} updated the review: ${reason}. New cutoff: ${d.cutoff}`,op==="resend_invite"?[newJoin!.email]:undefined);
+    if(!principal)throw Error("Only Johan or Jorrie may approve review changes.");
 
-   if(newJoin){await write("/rest/v1/course_review_join_tokens",{token_hash:createHash("sha256").update(newJoin.token).digest("hex"),round_id:id,email:newJoin.email,expires_at:d.cutoff});const m=mail.find(m=>m.to===newJoin!.email)!;m.kind="invitation";m.body+=`\nYou are a full course reviewer. Review every LU and quiz and submit a report. Each report needs a different reviewer's endorsement. Findings are shared with the assigned team. Decline in the workspace with a reason if necessary. Reminders stop on completion, decline or cutoff; overdue work requires extension, never automatic approval.\nCreate a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}/join/${newJoin.token}`;}
+    const decision=op==="request_change"?"approve":text(form,"decision");if(!["approve","reject"].includes(decision))throw Error("Choose approve or reject.");
+
+    const reason=op==="request_change"?request.reason:text(form,"decision_reason",5);
+
+    if(decision==="approve"){
+
+     if(request.kind==="extension") {if(!request.cutoff||Date.parse(request.cutoff)<=Math.max(Date.now(),Date.parse(d.cutoff)))throw Error("The proposed deadline is no longer an extension. Request a later cutoff.");d.cutoff=request.cutoff;}
+
+     else if(request.kind==="scope") {const target=d.participants.find(p=>p.email===request.target);if(!target)throw Error("The assigned reviewer changed. Request an updated scope change.");target.scope=request.scope;}
+
+     else {
+
+      if(Date.parse(d.cutoff)<=Date.now())throw Error("Approve a cutoff extension before inviting a new reviewer to an overdue review.");
+      if(d.participants.some(p=>p.email===request.email))throw Error("This reviewer is already assigned.");
+
+      if(request.kind==="replacement"){
+
+       if(!d.participants.some(p=>p.email===request.target)||request.target===d.requester)throw Error("The reviewer to replace changed. Submit a new request.");
+
+       d.participants=d.participants.filter(p=>p.email!==request.target);
+
+      }
+
+      const acknowledge=normalizedEmail(formText(form,"acknowledge_decline"));
+
+      if(acknowledge){if(!d.participants.some(p=>p.email===acknowledge&&p.state==="declined"))throw Error("Choose a recorded declined reviewer to acknowledge.");d.participants=d.participants.filter(p=>p.email!==acknowledge);}
+
+      d.participants.push({email:request.email!,role:"primary",scope:request.scope,state:"invited",coverage:[]});
+
+      if(d.participants.filter(p=>p.role==="primary"&&p.state!=="declined").length<2)throw Error("At least two full reviewers must remain assigned.");
+
+      const token=randomBytes(32).toString("base64url");
+
+      await write("/rest/v1/course_review_join_tokens",{token_hash:createHash("sha256").update(token).digest("hex"),round_id:id,email:request.email,expires_at:d.cutoff});
+
+      mail=reviewMail(round,"invitation",`change-invite:${request.id}`,`${request.kind==="replacement"?`You are appointed as a replacement reviewer in place of ${request.target}.`:"You are appointed as an additional reviewer."} Review scope: ${request.scope}. Review every LU and quiz, submit a report, and obtain one independent endorsement. You may decline with a reason. Daily reminders stop when you finish, decline or reach the cutoff. Unfinished work requires an approved extension, never automatic approval.
+
+Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}/join/${token}`,[request.email!]);
+
+     }
+
+     if(d.workflow)delete d.workflow.contentApproval;
+
+    }
+
+    request.status=decision==="approve"?"approved":"rejected";request.decisionBy=email;request.decisionAt=now;request.decisionReason=reason;
+
+    mail.push(...reviewMail(round,"review_change_decided",`decision:${request.id}`,`${email} ${request.status} the ${request.kind} request from ${request.requestedBy}: ${reason}. ${decision==="approve"?(request.kind==="extension"?`New cutoff: ${d.cutoff}.`:request.kind==="scope"?`${request.target} now has ${request.scope} scope.`:`A ${request.kind==="replacement"?`replacement reviewer, ${request.email}, has been appointed in place of ${request.target}`:`new reviewer, ${request.email}, has been appointed`}.`):"Existing assignments and cutoff remain unchanged."}`,[...new Set([request.requestedBy,d.requester,...d.participants.filter(p=>p.state!=="declined").map(p=>p.email)])]));
+
+    notice=`Change request ${request.status}. Notifications are queued.`;
+
+   }
+
+   reviewEvent(d,email,op,`${request.kind}: ${request.status}. Requested by ${request.requestedBy}. ${request.reason}`);
+
+  }else if(op==="extend"||op==="team"||op==="review_scope"){
+
+   throw Error("Use a change request so the APGI approval is recorded before changing the assignment or cutoff.");
+
+  }else if(op==="resend_invite"){
+
+   if(!principal)throw Error("Only a platform principal can resend invitations.");
+
+   assertReviewWork(round,fresh);const recipient=normalizedEmail(text(form,"recipient",3,254)),target=d.participants.find(p=>p.email===recipient);
+
+   if(!target||target.state==="declined"||target.state==="finished")throw Error("Only an unfinished, active review invitation can be resent.");
+
+   const token=randomBytes(32).toString("base64url");
+
+   await write("/rest/v1/course_review_join_tokens",{token_hash:createHash("sha256").update(token).digest("hex"),round_id:id,email:recipient,expires_at:d.cutoff});
+
+   mail=reviewMail(round,"invitation",`resend:${round.revision}`,`The review invitation was resent. Review all assigned LUs and quizzes, submit your report and obtain an independent endorsement. You may decline with a reason. Reminders stop on completion, decline or cutoff.
+
+Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}/join/${token}`,[recipient]);
+
+   reviewEvent(d,email,op,`Invitation resent to ${recipient}.`);
 
   }else if(op==="commercial_feedback"){
+
    const person=d.participants.find(p=>p.email===email),w=d.workflow,v=w?.commercials?.at(-1);
+
    if(!fresh||round.status!=="open"||!person||person.state==="declined"||person.scope!=="content_and_commercials"||!v?.offeredAt||w?.stage!=="partner_offer"||text(form,"version_id")!==v.id)throw Error("Commercial feedback is available only to an assigned commercial reviewer on the current offered version.");
+
    const comment=text(form,"comment",5);
+
    reviewEvent(d,email,op,`Commercial version ${v.id}: ${comment}`);
+
    mail=reviewMail(round,"commercial_reviewer_feedback",`commercial-feedback:${round.revision}`,`${email} commented on offered commercial version ${v.id}: ${comment}`,["johan.ras@apginc.ca","jorrie.jordaan@apginc.ca"]);
+
    notice="Commercial feedback saved for APGI. This does not approve or change the agreed terms.";
+
   }else{
 
    assertReviewWork(round,fresh);const person=claimReviewer(round,email,session.user.id);
 
    if(op==="finding"){
 
-    if(person.state==="finished")throw Error("Your report is committed. Add a new report version after recording further findings; use discussion meanwhile.");
+    if(person.state==="finished"){person.state="active";reviewEvent(d,email,"report_reopened","Further feedback requires a new report version and fresh independent endorsement. Earlier reports are preserved.");}
 
     const unit=text(form,"unit"),reference=text(form,"reference",1,200);
 
     if(!d.units.some(u=>u.slug===unit))throw Error("Choose the LU or assessment being reviewed.");
 
     const findingId=randomUUID();let attachment:string|undefined;
+
     const parts=satisfactoryParts(form.getAll("satisfied_part").map(String));
+
     const outcome=form.get("outcome")==="satisfied"&&form.get("has_issue")!=="on"&&form.get("blocking")!=="on"?"satisfied":"issue";
+
     const categories=findingCategories(form.getAll("category").map(String).concat(form.getAll("custom_category").map(String)));
+
     const extra=outcome==="satisfied"?formText(form,"comment",0,5000):text(form,"comment",3);
+
     const comment=outcome==="satisfied"?satisfactionStatement(parts)+(extra?"\n\nReviewer comments:\n"+extra:" Nothing to add."):(parts.length?satisfactionStatement(parts)+"\n\n":"")+extra;
+
     const finding:ReviewFinding={id:findingId,unit,reference,categories,satisfiedParts:parts,category:categories.join(", "),outcome,blocking:outcome!=="satisfied"&&form.get("blocking")==="on",author:email,userId:session.user.id,at:now,text:comment,status:outcome==="satisfied"?"closed" as const:"open" as const,replies:[],attachment};
-    recordFinding(d,finding,formText(form,"replace_id"));
+
+    const replaceId=formText(form,"replace_id"),previous=activeFindings(d).find(f=>f.id===replaceId);
+    if(replaceId&&formText(form,"finding_version")&&previous?.at!==formText(form,"finding_version"))throw Error("This finding was updated in another tab. Reload the saved review before editing it.");
+    finding.comment=extra;
+
+    recordFinding(d,finding,formText(form,"replace_id"),form.get("keep_all")==="yes");
 
     const file=form.get("screenshot");
 
@@ -215,7 +342,8 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
     }
 
-    finding.attachment=attachment;
+    if(attachment)finding.attachment=attachment;
+
     notice="Review saved. Your feedback is recorded in the shared review and audit trail.";
 
    }else if(op==="reply"||op==="fixed"||op==="close"){
@@ -239,12 +367,14 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
    }else if(op==="report"){
 
     if(person.role!=="primary")throw Error("Peer-only checkers endorse reports or finish their peer task.");
+    if(form.get("confirm_review")!=="on")throw Error("Confirm that this report records your completed review.");
 
     if(!d.units.every(u=>person.coverage.includes(u.slug)))throw Error("Confirm coverage for every LU and assessment before committing your full report.");
 
     const report={id:randomUUID(),email,userId:session.user.id,at:now,text:text(form,"comment",5)+"\n\nFindings at submission:\n"+activeFindings(d).map(f=>`${f.id} | ${f.unit} | ${f.reference} | ${f.author} | ${f.blocking?"BLOCKING":"Suggestion"} | ${f.status}\n${f.text}`).join("\n\n"),coverage:[...person.coverage],endorsements:[]};
 
     d.reports.push(report);person.state="finished";
+    if(principal&&d.requester===email&&d.requesterId===session.user.id&&d.workflow?.stage==="content_review"){d.workflow.commercialPreparation={at:now,email,userId:session.user.id};d.workflow.stage="commercial_draft";}
 
     mail=reviewMail(round,"report_submitted",report.id,`${email} committed review report ${report.id}. A new version requires fresh endorsement.\n\n${report.text}`);
 
@@ -310,11 +440,13 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
   }
 
+  if(["finding","reopen_report","team","review_scope"].includes(op)&&d.workflow)delete d.workflow.contentApproval;
+
   await commitReview(round,session.user.id,op,mail);
 
   try{if(mail.length)await processReviewMail();}catch{/* Durable failed/pending delivery remains visible. */}
 
-  revalidatePath(`/course-reviews/${id}`,"layout");revalidatePath("/course-reviews");return {success:notice};
+  revalidatePath(`/course-reviews/${id}`,"layout");revalidatePath("/course-reviews");return {success:notice,...(op==="report"&&principal&&d.requester===email?{href:d.workflow&&["commercial_draft","negotiation"].includes(d.workflow.stage)?`/admin/courses/${round.course_id}/publish?review=${id}`:`/course-reviews/${id}#commercial-preparation`}:{})};
 
  }catch(e){if(e instanceof Error&&"digest" in e)throw e;return {error:e instanceof Error?e.message:"Review action could not be saved."};}
 

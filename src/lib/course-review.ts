@@ -5,38 +5,86 @@ export type ReviewPerson = { email: string; role: "primary" | "peer" | "partner"
 export type ReviewReport = { id: string; email: string; userId: string; at: string; text: string; coverage: string[]; endorsements: { email: string; userId: string; at: string; decision: "approve" | "changes"; text: string }[] };
 
 export type SatisfactoryPart = "lu" | "quiz" | "ebook";
+
 export const satisfactoryLabels:Record<SatisfactoryPart,string> = {lu:"the learning unit / slides",quiz:"the quiz",ebook:"the e-book"};
+
 export function satisfactoryParts(values:string[]):SatisfactoryPart[] {
+
  if(values.some(v=>!["lu","quiz","ebook"].includes(v)))throw Error("Choose learning unit, quiz or e-book declarations.");
+
  return (["lu","quiz","ebook"] as const).filter(v=>values.includes(v));
+
 }
+
 export function satisfactionStatement(parts:SatisfactoryPart[]) {
+
  return parts.length?`I am happy with ${parts.map(p=>satisfactoryLabels[p]).join(" and ")}.`:"I am happy with this slide, learning unit, quiz or e-book.";
+
 }
+
 export const declarationReference = (parts:SatisfactoryPart[]) => parts.map(p=>({lu:"Entire LU",quiz:"Quiz",ebook:"E-book"}[p])).join(" + ");
-export type ReviewFinding = { id: string; unit: string; reference: string; category: string; categories?: string[]; satisfiedParts?: SatisfactoryPart[]; outcome?: "issue" | "satisfied"; supersededBy?: string; blocking: boolean; author: string; userId: string; at: string; text: string; attachment?: string; status: "open" | "fixed" | "closed"; fixedBy?: string; replies: { email: string; userId: string; at: string; text: string }[] };
+
+export type ReviewFinding = { id: string; unit: string; reference: string; category: string; categories?: string[]; satisfiedParts?: SatisfactoryPart[]; outcome?: "issue" | "satisfied"; supersededBy?: string; blocking: boolean; author: string; userId: string; at: string; text: string; comment?: string; previousVersions?: {at:string;text:string;attachment?:string;reference:string;category:string;blocking:boolean;status:string}[]; attachment?: string; status: "open" | "fixed" | "closed"; fixedBy?: string; replies: { email: string; userId: string; at: string; text: string }[] };
 
 export const activeFindings = (doc: ReviewDocument) => doc.findings.filter(f => !f.supersededBy);
 
 export function findingCategories(values: string[]) {
+
  const categories = [...new Set(values.map(v => v.trim()).filter(Boolean))];
+
  if (!categories.length || categories.length > 10 || categories.some(c => c.length > 80)) throw Error("Choose between one and ten categories, each up to 80 characters.");
+
  return categories;
+
 }
 
 // New versions preserve the original finding, replies and screenshot in the audit trail.
-export function recordFinding(doc: ReviewDocument, finding: ReviewFinding, replaceId = "") {
- const previous = activeFindings(doc).find(f => f.author === finding.author && f.unit === finding.unit && f.reference.toLowerCase() === finding.reference.toLowerCase());
- if (previous && replaceId !== previous.id) throw Error("You already reviewed this reference. Confirm replacement, or use a different slide/question reference.");
- if (replaceId && previous?.id !== replaceId) throw Error("This finding changed. Reload before replacing it.");
- if (previous?.blocking && previous.status !== "closed") throw Error("An unresolved blocking finding must be fixed and independently verified before replacement. Use its discussion to add details.");
- if (previous) previous.supersededBy = finding.id;
- doc.findings.push(finding);
+
+export function recordFinding(doc: ReviewDocument, finding: ReviewFinding, replaceId = "", append = false) {
+
+ const own = activeFindings(doc).filter(f => f.author === finding.author && f.unit === finding.unit);
+
+ const previous = replaceId ? own.find(f=>f.id===replaceId) : own.find(f=>f.reference.toLowerCase()===finding.reference.toLowerCase());
+
+ if (replaceId && !previous) throw Error("This finding changed. Reload before editing it.");
+
+ if (previous && !replaceId && !append) throw Error("You already reviewed this reference. Choose to keep all findings or edit your saved finding.");
+
+ if (replaceId && previous) {
+
+  if(previous.blocking && previous.status!=="closed" && (!finding.blocking || finding.outcome==="satisfied")) throw Error("An unresolved blocking finding must remain blocking until it is fixed and independently verified. Add a separate satisfactory declaration if needed.");
+
+  finding.previousVersions=[...(previous.previousVersions??[]),{at:previous.at,text:previous.text,attachment:previous.attachment,reference:previous.reference,category:previous.category,blocking:previous.blocking,status:previous.status}];
+
+  finding.id=previous.id; finding.replies=[...previous.replies]; finding.attachment=previous.attachment;
+
+  // Editing a fix invalidates its verification; an unresolved blocker stays open.
+
+  if(finding.blocking && previous.status!=="closed")finding.status="open";
+
+  doc.findings[doc.findings.indexOf(previous)]=finding;
+
+ } else doc.findings.push(finding);
+
+ return finding;
+
 }
+
+export type ReviewChangeRequest = {
+
+ id:string;kind:"extension"|"additional"|"replacement"|"scope";requestedBy:string;requestedById:string;at:string;reason:string;
+
+ cutoff?:string;email?:string;target?:string;scope?:"content"|"content_and_commercials";
+
+ status:"pending"|"approved"|"rejected";decisionBy?:string;decisionAt?:string;decisionReason?:string;
+
+};
 
 export type ReviewDocument = {
 
   workflow?: PublicationWorkflow;
+
+  requests?: ReviewChangeRequest[];
 
   title: string; brand: { name: string; revision: number; color: string; logo: string | null }; requester: string; requesterId: string;
 
@@ -93,9 +141,13 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
     const report = currentReport(d, p.email);
 
     const coverage = p.state === "finished" && report ? report.coverage : p.coverage;
+
     const missing = d.units.filter(u => !coverage.includes(u.slug));
+
     if (missing.length) reasons.push(`${p.email}: ${missing.length} LU/quiz coverage confirmations outstanding.`);
+
     if (!report || p.state !== "finished") reasons.push(`${p.email}: submit your completed full review report.`);
+
     else if (!report.endorsements.some(e => e.decision === "approve" && e.userId !== report.userId && e.email !== p.email && d.participants.some(person => person.email === e.email && person.state !== "declined"))) reasons.push(`${p.email}: independent report endorsement outstanding.`);
 
     if (report?.endorsements.some(e => e.decision === "changes")) reasons.push(`${p.email}: a peer requested changes; submit a revised report.`);
@@ -103,8 +155,6 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
   }
 
   if (activeFindings(d).some(f => f.blocking && f.status !== "closed")) reasons.push("Publication-blocking findings remain unresolved.");
-
-
 
   return reasons;
 
@@ -122,11 +172,11 @@ export function reviewBlockers(round:ReviewRound,hash:string,brandRevision=round
 
 }
 
-export function canWork(round: ReviewRound, now = Date.now()) { return round.status === "open" && (!round.document.workflow||round.document.workflow.stage==="content_review") && now < Date.parse(round.document.cutoff); }
+export function canWork(round: ReviewRound, now = Date.now()) { return round.status === "open" && now < Date.parse(round.document.cutoff); }
 
 export function needsReminder(round: ReviewRound, person: ReviewPerson, now = Date.now()) {
 
-  return canWork(round, now) && person.state !== "finished" && person.state !== "declined";
+  return person.role!=="partner" && canWork(round, now) && person.state !== "finished" && person.state !== "declined";
 
 }
 
@@ -134,7 +184,7 @@ export function progressText(round: ReviewRound) {
 
   const d = round.document;
 
-  return `${d.title}\nCutoff: ${new Date(d.cutoff).toLocaleString("en-ZA", {timeZone:"Africa/Johannesburg"})} Africa/Johannesburg\n${d.participants.map(p => `${p.email}: ${p.role}, ${p.state}${p.state !== "finished" && p.state !== "declined" && (!d.workflow||d.workflow.stage==="content_review") && !canWork(round) ? " (overdue — extension required)" : ""}`).join("\n")}\nReports submitted: ${d.reports.length}\nOpen blocking findings: ${d.findings.filter(f=>f.blocking&&f.status!=="closed").length}`;
+  return `${d.title}\nCutoff: ${new Date(d.cutoff).toLocaleString("en-ZA", {timeZone:"Africa/Johannesburg"})} Africa/Johannesburg\n${d.participants.map(p => `${p.email}: ${p.role}, ${p.state}${p.state !== "finished" && p.state !== "declined" && !canWork(round) ? " (overdue — extension required)" : ""}`).join("\n")}\nReports submitted: ${d.reports.length}\nOpen blocking findings: ${d.findings.filter(f=>f.blocking&&f.status!=="closed").length}`;
 
 }
 

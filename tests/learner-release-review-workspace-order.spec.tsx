@@ -1,0 +1,18 @@
+import React from "react";
+import {renderToStaticMarkup} from "react-dom/server";
+import {beforeEach,describe,it,expect,vi} from "vitest";
+import type {ReviewRound} from "@/lib/course-review";
+const m=vi.hoisted(()=>({access:vi.fn()}));
+vi.mock("next/link",()=>({default:({href,children}:{href:string;children:React.ReactNode})=><a href={href}>{children}</a>}));
+vi.mock("@/server/services/course-reviews",()=>({requireReview:m.access}));
+vi.mock("@/server/services/company-structure",()=>({rows:async()=>[]}));
+vi.mock("@/components/reviews/ReviewForms",()=>({ReviewForm:({children,label,disabled}:{children:React.ReactNode;label:string;disabled:boolean})=><form>{children}<button disabled={disabled}>{label}</button></form>,CoverageConfirmation:()=> <span>Saved coverage</span>}));
+import Workspace from "../app/(learner)/course-reviews/[id]/page";
+const id="11111111-1111-4111-8111-111111111111";
+function fixture(){return {principal:true,email:"johan.ras@apginc.ca",session:{user:{id:"johan"}},fresh:true,source:{fingerprint:"hash",brand:{name:"APGI",brand_revision:1}},round:{id,plan_id:null,organisation_id:id,course_id:"vpshr-level-0",created_at:"2026-10-19",status:"open",fingerprint:"hash",revision:1,document:{title:"Course",requester:"johan.ras@apginc.ca",requesterId:"johan",brand:{name:"APGI",revision:1,color:"#102b47",logo:null},cutoff:"2099-01-01",units:[{slug:"lu1",title:"First LU"}],participants:[{email:"johan.ras@apginc.ca",userId:"johan",role:"primary",state:"active",coverage:["lu1"]},{email:"jorrie.jordaan@apginc.ca",userId:"jorrie",role:"primary",state:"active",coverage:[]}],findings:[],reports:[],events:[],terms:{text:"",partner:false,acceptor:""},workflow:{version:2,ownerId:id,partner:false,partnerEmail:"",stage:"content_review",designerName:"Designer",designerCompany:"APGI",commercials:[],counterOffers:0}}} as ReviewRound};}
+beforeEach(()=>vi.clearAllMocks());
+describe("Review workspace sequence and requester controls",()=>{
+ it("starts with the team and LUs and presents one summary before report submission and committed reports",async()=>{m.access.mockResolvedValue(fixture());const html=renderToStaticMarkup(await Workspace({params:Promise.resolve({id})}));const headings=["Review team","Review the learning units and quizzes","Shared findings and discussion","Review summary and submission","Submit my completed content review","Committed reports and independent checks","Continuous publication workflow"];const positions=headings.map(h=>html.indexOf(h));expect(positions.every(p=>p>=0)).toBe(true);expect(positions).toEqual([...positions].sort((a,b)=>a-b));expect(html.match(/<h3>Saved feedback summary<\/h3>/g)).toHaveLength(1);expect(html).toContain('name="confirm_review"');});
+ it("keeps final publication and content clearance hidden from the other principal while allowing request approvals",async()=>{const a=fixture();a.email="jorrie.jordaan@apginc.ca";a.session.user.id="jorrie";m.access.mockResolvedValue(a);const html=renderToStaticMarkup(await Workspace({params:Promise.resolve({id})}));expect(html).not.toContain("Final publication for this company");expect(html).not.toContain("Approve final corrected content");expect(html).toContain("Approve this request now");});
+ it("keeps final publication hidden from ordinary assigned reviewers",async()=>{const a=fixture();a.principal=false;m.access.mockResolvedValue(a);const html=renderToStaticMarkup(await Workspace({params:Promise.resolve({id})}));expect(html).not.toContain("Publish reviewed release");expect(html).not.toContain("Approve final corrected content");expect(html).toContain("Request a cutoff extension");});
+});

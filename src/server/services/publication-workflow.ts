@@ -16,7 +16,7 @@ export async function attachCommercialPlan(roundId:string,planId:string,actorId:
 
  const {round,principal,email,fresh,session}=await requireReview(roundId),w=round.document.workflow;
 
- if(!principal||session.user.id!==actorId||!w||!fresh||!w.contentApproval||w.contentApproval.fingerprint!==round.fingerprint)throw Error("Approve this course content before preparing commercials.");
+ if(!principal||session.user.id!==actorId||!w||!fresh||(!w.commercialPreparation&&!w.contentApproval))throw Error("Complete and submit the requester review before preparing commercials.");
 
  if(!["commercial_draft","negotiation"].includes(w.stage))throw Error("This workflow is not accepting a commercial revision. Its approvals are preserved.");
 

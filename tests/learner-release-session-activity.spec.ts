@@ -1,0 +1,25 @@
+import {afterEach,beforeEach,describe,it,expect,vi} from "vitest";
+import {NextRequest} from "next/server";
+import {IDLE_TIMEOUT_MS,ACTIVITY_COOKIE,sessionIsIdle,tokenNeedsRefresh} from "@/lib/session-activity";
+const m=vi.hoisted(()=>({store:new Map<string,string>(),user:vi.fn(),out:vi.fn()}));
+vi.mock("next/headers",()=>({cookies:async()=>({get:(name:string)=>m.store.has(name)?{value:m.store.get(name)}:undefined,set:(name:string,value:string)=>m.store.set(name,value),delete:(name:string)=>m.store.delete(name)})}));
+vi.mock("@/server/auth/session",()=>({getCurrentSession:m.user,signOut:m.out}));
+vi.mock("@/server/environment-isolation",()=>({assertStagingIsolation:vi.fn()}));
+import {POST} from "../app/api/auth/activity/route";
+import {proxy} from "../proxy";
+const origin="https://training-platform-v2-staging.vercel.app";
+const jwt=(exp:number)=>"header."+Buffer.from(JSON.stringify({exp})).toString("base64url")+".signature";
+const request=(body:unknown,site=origin)=>new NextRequest(origin+"/api/auth/activity",{method:"POST",headers:{origin:site,"content-type":"application/json"},body:JSON.stringify(body)});
+beforeEach(()=>{vi.clearAllMocks();m.store.clear();m.user.mockResolvedValue({user:{id:"verified"}});});
+afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs();});
+describe("Activity-based session renewal",()=>{
+ it("expires only at the inactivity boundary and rejects invalid timestamps",()=>{const now=Date.now();expect(sessionIsIdle(String(now-IDLE_TIMEOUT_MS+1),now)).toBe(false);expect(sessionIsIdle(String(now-IDLE_TIMEOUT_MS),now)).toBe(true);expect(sessionIsIdle("not-a-time",now)).toBe(true);});
+ it("refreshes near expiry without treating decoded claims as authentication",()=>{expect(tokenNeedsRefresh(jwt(Date.now()/1000+60))).toBe(true);expect(tokenNeedsRefresh(jwt(Date.now()/1000+3600))).toBe(false);});
+ it("records an authenticated activity pulse and renews cookie lifetime",async()=>{m.store.set("alp_access_token","access");const before=Date.now();const response=await POST(request({active:true}));expect(response.status).toBe(200);expect(Number(m.store.get(ACTIVITY_COOKIE))).toBeGreaterThanOrEqual(before);expect((await response.json()).idleTimeoutMs).toBe(IDLE_TIMEOUT_MS);});
+ it("a background check does not extend inactivity",async()=>{const stamp=String(Date.now()-10000);m.store.set(ACTIVITY_COOKIE,stamp);await POST(request({active:false}));expect(m.store.get(ACTIVITY_COOKIE)).toBe(stamp);});
+ it("rejects cross-site activity before looking up the user",async()=>{expect((await POST(request({active:true},"https://other.example"))).status).toBe(403);expect(m.user).not.toHaveBeenCalled();});
+ it("does not revive an expired or revoked session",async()=>{m.user.mockResolvedValue(null);expect((await POST(request({active:true}))).status).toBe(401);expect(m.out).toHaveBeenCalledOnce();});
+ it("rotates expiring credentials in both the current request and response cookies",async()=>{vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL","https://eaaqgtdpvbxdgjxphjie.supabase.co");vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY","public-test");const fetcher=vi.fn(async()=>Response.json({access_token:"new-access",refresh_token:"new-refresh",user:{id:"verified"}}));vi.stubGlobal("fetch",fetcher);const req=new NextRequest(origin+"/course-reviews",{headers:{cookie:`alp_access_token=${jwt(Date.now()/1000+30)}; alp_refresh_token=old-refresh; alp_user_id=verified; ${ACTIVITY_COOKIE}=${Date.now()}`}});const result=await proxy(req);expect(result.cookies.get("alp_refresh_token")?.value).toBe("new-refresh");expect(result.headers.get("x-middleware-request-cookie")).toContain("new-access");expect(fetcher).toHaveBeenCalledOnce();});
+ it("idle cookies are cleared without calling the refresh provider",async()=>{const fetcher=vi.fn();vi.stubGlobal("fetch",fetcher);const req=new NextRequest(origin+"/course-reviews",{headers:{cookie:`alp_access_token=expired; alp_refresh_token=old; alp_user_id=verified; ${ACTIVITY_COOKIE}=${Date.now()-IDLE_TIMEOUT_MS-1000}`}});const result=await proxy(req);expect(result.cookies.get("alp_refresh_token")?.value).toBe("");expect(fetcher).not.toHaveBeenCalled();});
+ it("does not erase a sign-in during a temporary provider outage",async()=>{vi.stubGlobal("fetch",vi.fn(async()=>new Response("",{status:503})));const req=new NextRequest(origin+"/course-reviews",{headers:{cookie:`alp_access_token=expired; alp_refresh_token=old; alp_user_id=verified; ${ACTIVITY_COOKIE}=${Date.now()}`}});const result=await proxy(req);expect(result.cookies.get("alp_refresh_token")).toBeUndefined();});
+});
