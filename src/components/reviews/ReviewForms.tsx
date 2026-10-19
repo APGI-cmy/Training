@@ -10,7 +10,7 @@ export const reviewThanks="Thank you for your feedback. Your feedback, together 
 export async function submitReviewFeedback(action:(previous:ReviewActionState,form:FormData)=>Promise<ReviewActionState>,previous:ReviewActionState,form:FormData,acknowledge:boolean,notify:(message:string)=>void,navigate:(href:string)=>void){
  const result=await action(previous,form);
  // Run from the submitted action's closure: approval/report completion may unmount its form.
- if(result.success){if(acknowledge||result.href)notify(reviewThanks);if(result.href)navigate(result.href);}
+ if(result.success){if(acknowledge)notify(reviewThanks);if(result.href)navigate(result.href);}
  return result;
 }
 export function ReviewForm({id,operation,children,label="Save",hidden={},disabled=false,workflow=false,acknowledge=false,preserveFields=false,beforeSubmit}:{id:string;operation:string;children?:ReactNode;label?:string;hidden?:Record<string,string>;disabled?:boolean;workflow?:boolean;acknowledge?:boolean;preserveFields?:boolean;beforeSubmit?:(event:FormEvent<HTMLFormElement>)=>void}){

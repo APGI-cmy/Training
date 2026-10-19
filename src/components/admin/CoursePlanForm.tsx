@@ -62,7 +62,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
   });
   const field = (name: string, label: string, help: string, extra: {options?:Choice[]; required?:boolean; placeholder?:string} = {}) => {
     const locked=!!workflowContext&&["course_id","organisation_id","rights_holder","designer_name","designer_company"].includes(name);
-    return <PlanningField name={name} label={label} help={locked?`${help} Recorded during approved content review; start a new content review to change it.`:help} value={values[name]??""} onChange={update(name)} {...extra} readOnly={locked} options={locked&&extra.options?extra.options.filter(o=>o.value===values[name]):extra.options}/>;
+    return <PlanningField name={name} label={label} help={locked?`${help} Recorded for this course review; start a new content review to change it.`:help} value={values[name]??""} onChange={update(name)} {...extra} readOnly={locked} options={locked&&extra.options?extra.options.filter(o=>o.value===values[name]):extra.options}/>;
   };
   const brand = companies.find(c => c.id === values.organisation_id), owner = companies.find(c => c.id === values.rights_holder);
   const ownApgi = brand?.slug === "apgi" && owner?.slug === "apgi";
@@ -108,7 +108,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
       {field("rights_holder","Current legal course owner","Declare the owner now. A planned transfer after development recovery must be recorded separately; this draft cannot transfer ownership.",{required:true,options:[{value:"",label:"Declare the legal owner"},...companies.map(c=>({value:c.id,label:c.name}))]})}
       {field("designer_name","Course designer name","Enter the person responsible for designing this course. This credit is separate from the publisher, reviewer and legal course owner.",{required:true,placeholder:"Full name"})}
       {field("designer_company","Course designer company","Enter the designer’s legal company or organisation name, including an external development company if applicable. This does not transfer course ownership.",{required:true,placeholder:"Company or organisation"})}
-      {workflowContext?<p>The publishing brand is recorded in the approved content review. Start a new content review if a different publishing brand is needed.</p>:<p><Link href={`/admin/companies?returnTo=${encodeURIComponent(returnPath)}`}>Add a new brand</Link><br/><small>This tab remembers the draft for up to 24 hours while you set up the brand.</small></p>}
+      {workflowContext?<p>The publishing brand is recorded for this course review. Start a new content review if a different publishing brand is needed.</p>:<p><Link href={`/admin/companies?returnTo=${encodeURIComponent(returnPath)}`}>Add a new brand</Link><br/><small>This tab remembers the draft for up to 24 hours while you set up the brand.</small></p>}
       {selectedCourse ? <p className="admin-span-two"><Link href={`/admin/courses/${selectedCourse.slug}/preview`}>Review course content</Link></p> : null}
     </fieldset>
     <fieldset data-step="1" className="commercial-step admin-form-grid" hidden={step!==1}><legend>Development funding and recovery</legend>
