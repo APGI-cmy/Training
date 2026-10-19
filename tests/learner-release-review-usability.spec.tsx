@@ -5,7 +5,7 @@ vi.mock("next/navigation",()=>({useRouter:()=>({refresh:vi.fn(),push:vi.fn()})})
 vi.mock("next/link",()=>({default:({href,children}:{href:string;children:React.ReactNode})=><a href={href}>{children}</a>}));
 vi.mock("@/server/actions/course-reviews",()=>({courseReviewAction:vi.fn(),createCourseReview:vi.fn()}));
 vi.mock("@/server/actions/publication-workflow",()=>({publicationWorkflowAction:vi.fn()}));
-import {CoverageConfirmation,RequestReviewForm} from "@/components/reviews/ReviewForms";
+import {CoverageConfirmation,RequestReviewForm,submitReviewFeedback} from "@/components/reviews/ReviewForms";
 import {ReviewPanel} from "@/components/reviews/ReviewPanel";
 import {ReviewSummary} from "@/components/reviews/ReviewSummary";
 import {activeFindings,findingCategories,recordFinding,reviewPeople,type ReviewDocument,type ReviewFinding} from "@/lib/course-review";
@@ -27,4 +27,11 @@ describe("Review persistence, outcomes and safe replacement",()=>{
  it("summarises no-issue reviews separately from findings",()=>{const d=doc();d.findings.push({...finding("ok"),reference:"Quiz",outcome:"satisfied",status:"closed"});const html=renderToStaticMarkup(<ReviewSummary document={d}/>);expect(html).toContain("1 findings");expect(html).toContain("1 “nothing to add” reviews");});
  it("does not claim every presentation is an ebook",()=>{for(const course of getCourses())for(const unit of course.units){const book=reviewEbook(unit);if(course.slug==="vpshr-level-0")expect(book).toBeNull();else expect(book).toMatch(/book.pdf$/);}});
  it("includes the explicit replacement confirmation in the feedback panel",()=>{const html=renderToStaticMarkup(<ReviewPanel id="r" unit="lu1" email="a@example.com" hasEbook canEdit/>);expect(html).toContain("Replace my previous feedback");expect(html).toContain("earlier version");});
+});
+
+describe("Review acknowledgement across workflow transitions",()=>{
+ it("shows thanks before continuing to commercials even after a form is removed",async()=>{const calls:string[]=[];const result={success:"Approved",href:"/admin/courses/course/publish?review=id"};await submitReviewFeedback(async()=>result,{},new FormData(),true,()=>calls.push("thanks"),href=>calls.push(href));expect(calls).toEqual(["thanks",result.href]);});
+ it("acknowledges a committed content-only report without commercial navigation",async()=>{const notify=vi.fn(),navigate=vi.fn();await submitReviewFeedback(async()=>({success:"Report saved"}),{},new FormData(),true,notify,navigate);expect(notify).toHaveBeenCalledOnce();expect(navigate).not.toHaveBeenCalled();});
+ it("does not display thanks or navigate when approval is rejected",async()=>{const notify=vi.fn(),navigate=vi.fn();await submitReviewFeedback(async()=>({error:"Peer endorsement outstanding"}),{},new FormData(),true,notify,navigate);expect(notify).not.toHaveBeenCalled();expect(navigate).not.toHaveBeenCalled();});
+ it("does not interrupt an ordinary finding save with the report acknowledgement",async()=>{const notify=vi.fn(),navigate=vi.fn();await submitReviewFeedback(async()=>({success:"Finding saved"}),{},new FormData(),false,notify,navigate);expect(notify).not.toHaveBeenCalled();expect(navigate).not.toHaveBeenCalled();});
 });

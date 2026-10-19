@@ -1,5 +1,5 @@
 "use client";
-import {useActionState,useId,useState,useEffect,useRef} from "react";
+import {useActionState,useId,useState,useEffect} from "react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import type {FormEvent} from "react";
@@ -7,12 +7,18 @@ import {courseReviewAction,createCourseReview,type ReviewActionState} from "@/se
 import {publicationWorkflowAction} from "@/server/actions/publication-workflow";
 import type {ReactNode} from "react";
 export const reviewThanks="Thank you for your feedback. Your feedback, together with feedback from the other reviewers, will be considered in the final version. You may be requested to review again after the material is updated.";
+export async function submitReviewFeedback(action:(previous:ReviewActionState,form:FormData)=>Promise<ReviewActionState>,previous:ReviewActionState,form:FormData,acknowledge:boolean,notify:(message:string)=>void,navigate:(href:string)=>void){
+ const result=await action(previous,form);
+ // Run from the submitted action's closure: approval/report completion may unmount its form.
+ if(result.success){if(acknowledge||result.href)notify(reviewThanks);if(result.href)navigate(result.href);}
+ return result;
+}
 export function ReviewForm({id,operation,children,label="Save",hidden={},disabled=false,workflow=false,acknowledge=false,beforeSubmit}:{id:string;operation:string;children?:ReactNode;label?:string;hidden?:Record<string,string>;disabled?:boolean;workflow?:boolean;acknowledge?:boolean;beforeSubmit?:(event:FormEvent<HTMLFormElement>)=>void}){
- const [state,action,pending]=useActionState<ReviewActionState,FormData>(workflow?publicationWorkflowAction:courseReviewAction,{});
+ const router=useRouter();
+ const [state,action,pending]=useActionState<ReviewActionState,FormData>((previous,form)=>submitReviewFeedback(workflow?publicationWorkflowAction:courseReviewAction,previous,form,acknowledge,message=>window.alert(message),href=>router.push(href)),{});
  const [toast,setToast]=useState(false);
- const router=useRouter(),dialog=useRef<HTMLDialogElement>(null);
- useEffect(()=>{if(state.success){router.refresh();setToast(true);if(acknowledge||state.href)dialog.current?.showModal();const timer=setTimeout(()=>setToast(false),6000);return ()=>clearTimeout(timer);}},[state,router,acknowledge]);
- return <><form action={action} onSubmit={beforeSubmit} className="review-form"><input type="hidden" name="round_id" value={id}/><input type="hidden" name="operation" value={operation}/>{Object.entries(hidden).map(([name,value])=><input key={name} type="hidden" name={name} value={value}/>)}{children}<button className="primary-button" disabled={pending||disabled}>{pending?"Saving…":label}</button>{state.error?<p className="form-error" role="alert">{state.error}</p>:null}{state.success?<><p className="form-success" role="status">{state.success}</p>{toast?<div className="review-toast" role="status">{state.success}</div>:null}</>:null}</form>{acknowledge||state.href?<dialog className="review-dialog" ref={dialog} aria-label="Review saved"><h2>Review saved</h2><p>{reviewThanks}</p><button className="primary-button" onClick={()=>{dialog.current?.close();if(state.href)router.push(state.href);}}>{state.href?"Continue to commercials":"Return to review summary"}</button></dialog>:null}</>;
+ useEffect(()=>{if(state.success){router.refresh();setToast(true);const timer=setTimeout(()=>setToast(false),6000);return ()=>clearTimeout(timer);}},[state,router]);
+ return <><form action={action} onSubmit={beforeSubmit} className="review-form"><input type="hidden" name="round_id" value={id}/><input type="hidden" name="operation" value={operation}/>{Object.entries(hidden).map(([name,value])=><input key={name} type="hidden" name={name} value={value}/>)}{children}<button className="primary-button" disabled={pending||disabled}>{pending?"Saving…":label}</button>{state.error?<p className="form-error" role="alert">{state.error}</p>:null}{state.success?<><p className="form-success" role="status">{state.success}</p>{toast?<div className="review-toast" role="status">{state.success}</div>:null}</>:null}</form></>;
 }
 export function CoverageConfirmation({id,unit,confirmed,locked=false}:{id:string;unit:string;confirmed:boolean;locked?:boolean}){
  const [checked,setChecked]=useState(false);
