@@ -2,6 +2,7 @@
 
 import {randomUUID,randomBytes,createHash} from "node:crypto";
 
+import {fixFinding,verifyFinding} from "@/lib/review-corrections";
 import {revalidatePath} from "next/cache";
 
 import {redirect} from "next/navigation";
@@ -108,6 +109,22 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
   const op=text(form,"operation"),now=new Date().toISOString();let notice="Saved to the shared review.",mail= [] as ReturnType<typeof reviewMail>;
 
+  if(op==="register_content_revision"){
+   if(!principal||!d.workflow||round.status!=="open")throw Error("Only Johan or Jorrie may register a corrected deployed course in an open workflow.");
+   if(fresh)throw Error("No changed deployment was detected. Deploy the corrected course package first, then reload this page.");
+   if(text(form,"expected_fingerprint",64,64)!==access.source.fingerprint||text(form,"expected_revision")!==String(round.revision))throw Error("The course or review changed. Reload before registering this correction.");
+   if(form.get("confirm_revision")!=="on")throw Error("Confirm that the corrected package is deployed and ready for independent review.");
+   const cutoff=cutoffValue(form);if(Date.parse(cutoff)<Date.parse(d.cutoff))throw Error("Keep the existing deadline or choose a later cutoff.");
+   const notes=text(form,"comment",5),deployment=text(form,"deployment",3,500);
+   const recipients=[...new Set([...d.participants.filter(p=>p.state!=="declined").map(p=>p.email),...(d.workflow.partner&&d.workflow.commercials.at(-1)?.acceptance?[d.workflow.partnerEmail]:[])])];
+   mail=reviewMail(round,"content_revision_registered",`content-revision:${access.source.fingerprint}:${round.revision}`,`${email} registered corrected deployed content ${access.source.fingerprint.slice(0,12)}. ${notes} Deployment reference: ${deployment}. Recheck all learning units and quizzes, submit a report for this version and obtain an independent endorsement. Each blocking correction must be recorded as implemented and verified by a different reviewer. Unchanged commercial sign-offs are retained. Any previous partner acceptance of content must be reconfirmed. Cutoff: ${cutoff}. Reminders stop on completion, decline or cutoff; unfinished work needs an extension.`,recipients);
+   const saved=await adminRest("/rest/v1/rpc/v2_register_course_correction",{method:"POST",body:JSON.stringify({p_id:id,p_revision:round.revision,p_previous:round.fingerprint,p_fingerprint:access.source.fingerprint,p_actor:session.user.id,p_units:access.source.course.units.map(u=>({slug:u.slug,title:u.title})),p_notes:notes,p_deployment:deployment,p_cutoff:cutoff,p_mail:mail})});
+   if(!saved.ok)throw Error("The corrected version could not be registered. Reload and check the current deployment and deadline; earlier evidence is safe.");
+   try{await processReviewMail();}catch{/* Durable outbox retries. */}
+   revalidatePath(`/course-reviews/${id}`,"layout");revalidatePath("/course-reviews");
+   return {success:"Corrected version registered. Earlier evidence and unchanged commercial sign-offs are retained. Record each fix and request independent verification.",href:`/course-reviews/${id}#changes-implemented`};
+  }
+
   if(op==="publish"){
 
    if(!principal||d.requester!==email||d.requesterId!==session.user.id)throw Error("Only the APGI principal who requested this review may publish it.");
@@ -137,7 +154,7 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
    mail=reviewMail(round,"review_change_decided",`acknowledge:${request.id}:${target}`,`${email} acknowledged ${target}'s recorded decline after approving ${request.email}'s assignment. ${reason}`,[...new Set([d.requester,request.requestedBy])]);
   }else if(op==="request_change"||op==="decide_change"){
 
-   if(round.status!=="open"||!fresh)throw Error("Only an open review of the current course can be managed.");
+   if(round.status!=="open")throw Error("Only an open review can be managed.");
 
    const assigned=d.participants.find(p=>p.email===email);
 
@@ -316,7 +333,7 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
     const comment=outcome==="satisfied"?satisfactionStatement(parts)+(extra?"\n\nReviewer comments:\n"+extra:" Nothing to add."):(parts.length?satisfactionStatement(parts)+"\n\n":"")+extra;
 
-    const finding:ReviewFinding={id:findingId,unit,reference,categories,satisfiedParts:parts,category:categories.join(", "),outcome,blocking:outcome!=="satisfied"&&form.get("blocking")==="on",author:email,userId:session.user.id,at:now,text:comment,status:outcome==="satisfied"?"closed" as const:"open" as const,replies:[],attachment};
+    const finding:ReviewFinding={id:findingId,fingerprint:round.fingerprint,unit,reference,categories,satisfiedParts:parts,category:categories.join(", "),outcome,blocking:outcome!=="satisfied"&&form.get("blocking")==="on",author:email,userId:session.user.id,at:now,text:comment,status:outcome==="satisfied"?"closed" as const:"open" as const,replies:[],attachment};
 
     const replaceId=formText(form,"replace_id"),previous=activeFindings(d).find(f=>f.id===replaceId);
     if(replaceId&&formText(form,"finding_version")&&previous?.at!==formText(form,"finding_version"))throw Error("This finding was updated in another tab. Reload the saved review before editing it.");
@@ -352,11 +369,11 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
     const comment=text(form,"comment",3);
 
-    if(op==="fixed"){f.status="fixed";f.fixedBy=session.user.id;}
+    if(op==="fixed"){fixFinding(round,f,session.user.id,now);mail=reviewMail(round,"correction_ready",`fix:${f.id}:${round.revision}`,`${email} recorded changes implemented for ${f.unit} · ${f.reference} in deployed version ${round.fingerprint.slice(0,12)}: ${comment}. A different assigned reviewer must inspect the deployed correction and verify it. Publication remains blocked until verification and final content clearance.`);}
 
-    if(op==="close"){if(f.status!=="fixed"||f.fixedBy===session.user.id)throw Error("A different reviewer must verify a finding marked fixed.");f.status="closed";}
+    if(op==="close"){verifyFinding(round,f,session.user.id,now);mail=reviewMail(round,"correction_verified",`verified:${f.id}:${round.revision}`,`${email} independently verified ${f.unit} · ${f.reference} against deployed version ${round.fingerprint.slice(0,12)}: ${comment}. Final report endorsements and content clearance remain separate publication requirements.`);}
 
-    f.replies.push({email,userId:session.user.id,at:now,text:`${op}: ${comment}`});
+    f.replies.push({email,userId:session.user.id,at:now,text:`${op} · version ${round.fingerprint.slice(0,12)}: ${comment}`});
 
    }else if(op==="coverage"){
 
@@ -371,7 +388,7 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
     if(!d.units.every(u=>person.coverage.includes(u.slug)))throw Error("Confirm coverage for every LU and assessment before committing your full report.");
 
-    const report={id:randomUUID(),email,userId:session.user.id,at:now,text:text(form,"comment",5)+"\n\nFindings at submission:\n"+activeFindings(d).map(f=>`${f.id} | ${f.unit} | ${f.reference} | ${f.author} | ${f.blocking?"BLOCKING":"Suggestion"} | ${f.status}\n${f.text}`).join("\n\n"),coverage:[...person.coverage],endorsements:[]};
+    const report={id:randomUUID(),fingerprint:round.fingerprint,email,userId:session.user.id,at:now,text:text(form,"comment",5)+"\n\nFindings at submission:\n"+activeFindings(d).map(f=>`${f.id} | ${f.unit} | ${f.reference} | ${f.author} | ${f.blocking?"BLOCKING":"Suggestion"} | ${f.status}\n${f.text}`).join("\n\n"),coverage:[...person.coverage],endorsements:[]};
 
     d.reports.push(report);person.state="finished";
     if(principal&&d.requester===email&&d.requesterId===session.user.id&&d.workflow?.stage==="content_review"){d.workflow.commercialPreparation={at:now,email,userId:session.user.id};d.workflow.stage="commercial_draft";}

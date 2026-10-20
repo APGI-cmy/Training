@@ -124,7 +124,7 @@ export function claimReviewer(round:ReviewRound,email:string,userId:string){
 
 export function assertReviewWork(round:ReviewRound,fresh:boolean){
 
- if(!fresh)throw Error("The course content changed. The requester must start a new round; existing evidence remains available.");
+ if(!fresh)throw Error("The course content changed. Johan or Jorrie must register the deployed revision in Changes implemented; existing evidence remains available.");
 
  if(!canWork(round))throw Error("This review is closed or overdue. The requester must extend the cutoff before more work can be submitted.");
 

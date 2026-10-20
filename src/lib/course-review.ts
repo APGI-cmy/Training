@@ -1,8 +1,9 @@
+import {correctionBlockers,type ContentRevision} from "./review-corrections";
 import {commercialPublicationBlockers,type PublicationWorkflow} from "./publication-workflow";
 
 export type ReviewPerson = { email: string; role: "primary" | "peer" | "partner"; scope?: "content" | "content_and_commercials"; state: "invited" | "active" | "finished" | "declined"; userId?: string; reason?: string; coverage: string[] };
 
-export type ReviewReport = { id: string; email: string; userId: string; at: string; text: string; coverage: string[]; endorsements: { email: string; userId: string; at: string; decision: "approve" | "changes"; text: string }[] };
+export type ReviewReport = { id: string; fingerprint?:string; email: string; userId: string; at: string; text: string; coverage: string[]; endorsements: { email: string; userId: string; at: string; decision: "approve" | "changes"; text: string }[] };
 
 export type SatisfactoryPart = "lu" | "quiz" | "ebook";
 
@@ -24,7 +25,7 @@ export function satisfactionStatement(parts:SatisfactoryPart[]) {
 
 export const declarationReference = (parts:SatisfactoryPart[]) => parts.map(p=>({lu:"Entire LU",quiz:"Quiz",ebook:"E-book"}[p])).join(" + ");
 
-export type ReviewFinding = { id: string; unit: string; reference: string; category: string; categories?: string[]; satisfiedParts?: SatisfactoryPart[]; outcome?: "issue" | "satisfied"; supersededBy?: string; blocking: boolean; author: string; userId: string; at: string; text: string; comment?: string; previousVersions?: {at:string;text:string;attachment?:string;reference:string;category:string;blocking:boolean;status:string}[]; attachment?: string; status: "open" | "fixed" | "closed"; fixedBy?: string; replies: { email: string; userId: string; at: string; text: string }[] };
+export type ReviewFinding = { id: string; unit: string; reference: string; category: string; categories?: string[]; satisfiedParts?: SatisfactoryPart[]; outcome?: "issue" | "satisfied"; supersededBy?: string; blocking: boolean; author: string; userId: string; at: string; text: string; comment?: string; previousVersions?: {at:string;text:string;attachment?:string;reference:string;category:string;blocking:boolean;status:string}[]; attachment?: string; status: "open" | "fixed" | "closed"; fixedBy?: string; fingerprint?:string; fixedFingerprint?:string;fixedAt?:string;verifiedBy?:string;verifiedFingerprint?:string;verifiedAt?:string; replies: { email: string; userId: string; at: string; text: string }[] };
 
 export const activeFindings = (doc: ReviewDocument) => doc.findings.filter(f => !f.supersededBy);
 
@@ -83,6 +84,7 @@ export type ReviewChangeRequest = {
 export type ReviewDocument = {
 
   workflow?: PublicationWorkflow;
+  contentRevisions?:ContentRevision[];
 
   requests?: ReviewChangeRequest[];
 
@@ -118,7 +120,7 @@ export function reviewPeople(emails: string[], roles: string[], requester: strin
 
 }
 
-export function currentReport(doc: ReviewDocument, email: string) { return doc.reports.filter(r => r.email === email).at(-1); }
+export function currentReport(doc: ReviewDocument, email: string) { return doc.reports.filter(r => r.email === email && (!doc.contentRevisions?.length || r.fingerprint === doc.contentRevisions.at(-1)?.fingerprint)).at(-1); }
 
 export function contentReviewBlockers(round: ReviewRound, currentFingerprint: string) {
 
@@ -126,7 +128,7 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
 
   if (round.status !== "open") reasons.push("This round is no longer open.");
 
-  if (round.fingerprint !== currentFingerprint) reasons.push("Course content changed. Start a new content review.");
+  if (round.fingerprint !== currentFingerprint) reasons.push("Course content changed. Register the deployed correction in Changes implemented before continuing.");
 
   const primaries = d.participants.filter(p => p.role === "primary" && p.state !== "declined");
 
@@ -156,6 +158,7 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
 
   if (activeFindings(d).some(f => f.blocking && f.status !== "closed")) reasons.push("Publication-blocking findings remain unresolved.");
 
+  reasons.push(...correctionBlockers(round));
   return reasons;
 
 }
