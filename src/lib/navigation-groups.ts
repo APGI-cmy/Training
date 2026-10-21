@@ -4,7 +4,7 @@ export function navigationGroups(items:NavigationItem[]) {
   {id:"learning",label:"My learning",paths:["/catalogue","/catalogue?view=my-learning"]},
   {id:"publication",label:"Course publication",paths:["/admin/courses","/course-reviews","/admin/agreements","/admin/service-costs"]},
   {id:"companies",label:"Companies and branding",paths:["/company","/admin/companies","/admin/certificates"]},
-  {id:"enrolment",label:"Learners and payments",paths:["/admin/learners","/admin/invitations","/admin/enrolments","/admin/assessments","/admin/payments"]},
+  {id:"enrolment",label:"Learners and payments",paths:["/admin/learners","/admin/invitations","/admin/enrolments","/admin/assessments","/admin/payments/stripe","/admin/payments"]},
   {id:"governance",label:"Policies and administration",paths:["/admin","/policies","/admin/policies"]},
   {id:"messages",label:"Messages and support",paths:["/admin/notifications","/admin/test-messages","/admin/email-templates"]}
  ];

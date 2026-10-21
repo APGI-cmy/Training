@@ -107,3 +107,8 @@ Registered review participants and authorised APGI principals receive durable re
 The sender can view recent platform inbox delivery, read and acknowledgement receipts for their own updates. These are platform receipts, not email delivery/read claims. Existing email workflows remain separate.
 
 Notification data remains in private server-managed storage. The server supplies the verified account identity for every count, listing and receipt; clients cannot select another recipient. Required task state is derived from current workflow evidence. The legacy administrator notifications address redirects to the personal inbox. V1 and course content fingerprints remain unchanged.
+
+
+## 21 October 2026 — Stripe partner payment preparation
+
+The [Stripe partner payment design](20261021-v2-stripe-partner-payments.md) records the shared payment portal, Jorrie-only APGI setup, private company-owner banking onboarding, payment-purpose notice, approved commercial snapshots, cross-border eligibility holds, capped cost sharing and sandbox-only settlement wiring. Live payment activation remains a separate reviewed release.
