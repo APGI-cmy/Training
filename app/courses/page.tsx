@@ -7,7 +7,7 @@ export const metadata = {
 };
 
 export default function CoursesPage() {
-  const courses = getCourses();
+  const courses = getCourses().filter(course => course.catalogueVisibility !== "client_specific");
 
   return (
     <main>

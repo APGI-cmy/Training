@@ -111,5 +111,6 @@ export interface Course {
   integrationNotes: string[];
   publicationIssues?: string[];
   pricing?: "company_agreement";
+  catalogueVisibility?: "client_specific";
   units: LearningUnit[];
 }

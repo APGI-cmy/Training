@@ -200,5 +200,6 @@
       "scormPath": "/courses/Tiger%20kidnapping_telecommunications/LU8/res/index.html"
     }
   ],
-  "pricing": "company_agreement"
+  "pricing": "company_agreement",
+  "catalogueVisibility": "client_specific"
 }
