@@ -7,6 +7,7 @@ import {ReviewForm} from "./ReviewForms";
 import Link from "next/link";
 
 import {declarationReference,satisfactoryParts,satisfactionStatement,type ReviewFinding,type SatisfactoryPart} from "@/lib/course-review";
+import {declarationChoices} from "@/lib/review-declarations";
 
 const options=["Content","Quiz or scoring","Navigation","Accessibility","Design","E-book issue","Other"];
 
@@ -33,6 +34,7 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
  const own=findings.filter(f=>f.author===email).sort((a,b)=>a.at.localeCompare(b.at)), latest=own.at(-1), selected=own.find(f=>f.id===editId);
 
  const isIssue=hasIssue||parts.length===0;
+ const choices=declarationChoices(parts,hasIssue,hasEbook),hasDeclaration=hasIssue||parts.length>0;
 
  const upload=useRef<HTMLInputElement>(null),replacement=useRef<HTMLDialogElement>(null),reopen=useRef<HTMLDialogElement>(null),pendingForm=useRef<HTMLFormElement|null>(null),replacementId=useRef("");
 
@@ -84,7 +86,7 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
 
  {own.length?<label>Saved finding to edit<select value={editId} onChange={e=>load(own.find(f=>f.id===e.target.value))}><option value="">Add another finding — keep all saved responses</option>{own.map(f=><option key={f.id} value={f.id}>{f.reference} · {f.category} · {f.text.slice(0,65)}</option>)}</select></label>:null}
 
- <ReviewForm preserveFields key={editId||"new"} id={id} operation="finding" hidden={{unit,outcome:isIssue?"issue":"satisfied"}} label={editId?"Save changes to this finding":"Save review feedback"} beforeSubmit={event=>{
+ <ReviewForm preserveFields key={editId||"new"} id={id} operation="finding" disabled={!hasDeclaration||choices.conflict} hidden={{unit,outcome:isIssue?"issue":"satisfied"}} label={editId?"Save changes to this finding":"Save review feedback"} beforeSubmit={event=>{
 
   const data=new FormData(event.currentTarget),ref=String(data.get("reference")??"").trim().toLowerCase();
 
@@ -98,21 +100,23 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
 
  {selected?<p>Editing your saved finding. Earlier versions, discussion and attachments remain in the audit trail. Further feedback reopens a submitted report for a new version.</p>:null}
 
- <fieldset><legend>Review declarations — you can tick both</legend>
+ <fieldset><legend>Review declarations — choose the combination that applies</legend>
 
- {(["lu","quiz",...(hasEbook?["ebook"]:[])] as SatisfactoryPart[]).map(part=><label key={part}><input name="satisfied_part" type="checkbox" value={part} checked={parts.includes(part)} onChange={e=>declare(part,e.target.checked)}/> I am happy with {part==="lu"?"the learning unit / slides":part==="quiz"?"the quiz":"the e-book"}</label>)}
+ {(["lu","quiz",...(hasEbook?["ebook"]:[])] as SatisfactoryPart[]).map(part=><label key={part}><input name="satisfied_part" type="checkbox" value={part} checked={parts.includes(part)} disabled={choices.partDisabled(part)} onChange={e=>declare(part,e.target.checked)}/> I am happy with {part==="lu"?"the learning unit / slides":part==="quiz"?"the quiz":"the e-book"}</label>)}
 
- <label><input name="has_issue" type="checkbox" checked={hasIssue} onChange={e=>{setHasIssue(e.target.checked);if(!e.target.checked&&!selected?.blocking)setBlocking(false);}}/> Something needs changing / I have a suggestion</label>
+ <label><input name="has_issue" type="checkbox" checked={hasIssue} disabled={choices.issueDisabled} onChange={e=>{setHasIssue(e.target.checked);if(!e.target.checked)setBlocking(false);}}/> Something needs changing / I have a suggestion</label>
 
- <p>Declare the LU and quiz independently, or tick both. Comments, snapshots and uploads are available for every outcome.</p></fieldset>
+ <p>{hasEbook?"Leave the item needing a change unticked in the happy declarations.":"Select both happy declarations, one happy declaration plus something needs changing, or something needs changing on its own. With two selected, the third is disabled. Untick a choice to change the combination."}</p>
+ <p role="status">{choices.conflict?"These saved choices conflict. Untick a happy declaration or untick something needs changing before saving.":!hasDeclaration?"Choose a declaration before saving.":isIssue?"Saving records an open finding. It does not mark a correction fixed or verified.":"Saving records Nothing to add · closed for your selected declarations. This is a no-issue declaration, not verification of a correction."}</p>
+ <p>Your choices determine the status. Comments only explain your choices and do not change the status.</p></fieldset>
 
  <label>Slide / quiz / question / e-book page reference<input name="reference" value={reference} onChange={e=>setReference(e.target.value)} required maxLength={200}/></label>
 
  <fieldset><legend>Categories — select all that apply</legend>{categories.map((category,index)=><div key={index}><label>Category {index+1}<select name="category" value={category} onChange={e=>setCategories(current=>current.map((v,i)=>i===index?e.target.value:v))}>{[...new Set([...options,category])].map(o=><option key={o}>{o}</option>)}</select></label>{category==="Other"?<label>Another category<input name="custom_category" required maxLength={80}/></label>:null}{index>0?<button type="button" className="secondary-button" onClick={()=>setCategories(current=>current.filter((_,i)=>i!==index))}>Remove category {index+1}</button>:null}</div>)}<button type="button" className="secondary-button" disabled={categories.length>=10} onClick={()=>setCategories(current=>[...current,"Content"])}>Add another category</button></fieldset>
 
- <label><input name="blocking" type="checkbox" checked={blocking} onChange={e=>{setBlocking(e.target.checked);if(e.target.checked)setHasIssue(true);}}/> Blocks publication until fixed and verified</label>
+ <label><input name="blocking" type="checkbox" checked={blocking} disabled={choices.issueDisabled&&!blocking} onChange={e=>{setBlocking(e.target.checked);if(e.target.checked)setHasIssue(true);}}/> Blocks publication until fixed and verified</label>
 
- <label>Comments / requested changes{!isIssue?" (optional)":""}<textarea name="comment" value={comment} onChange={e=>setComment(e.target.value)} required={isIssue} minLength={isIssue?3:undefined} maxLength={5000}/></label>
+ <label>Comments / requested changes (optional explanation)<textarea name="comment" value={comment} onChange={e=>setComment(e.target.value)} maxLength={5000}/></label>
 
  {selected?.attachment?<p><a href={`/course-reviews/${id}/evidence/${selected.id}`} target="_blank" rel="noreferrer">View saved screenshot</a>. It is retained unless you upload a new image; earlier images remain in the audit trail.</p>:null}
 

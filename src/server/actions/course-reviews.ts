@@ -5,6 +5,8 @@ import {randomUUID,randomBytes,createHash} from "node:crypto";
 import {hasReviewTask,selectedTasks,taskDecision,outstandingAssignedTasks,type ReviewTask} from "@/lib/review-tasks";
 import {requirePartnerOwner} from "@/server/services/publication-workflow";
 import {fixFinding,verifyFinding} from "@/lib/review-corrections";
+import {declarationChoices,requestedChangeStatement,findingUpdateStatements} from "@/lib/review-declarations";
+import {reviewEbook} from "@/server/services/review-resources";
 import {revalidatePath} from "next/cache";
 
 import {redirect} from "next/navigation";
@@ -353,11 +355,15 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
     const outcome=form.get("outcome")==="satisfied"&&form.get("has_issue")!=="on"&&form.get("blocking")!=="on"?"satisfied":"issue";
 
+    const reviewedUnit=access.source.course?.units.find(u=>u.slug===unit),hasEbook=!!reviewedUnit&&!!reviewEbook(reviewedUnit);
+    if(parts.includes("ebook")&&!hasEbook)throw Error("No e-book available for this course.");
+    if(declarationChoices(parts,outcome==="issue",hasEbook).conflict)throw Error("Choose both happy declarations or leave the item needing a change unticked. All happy declarations cannot be combined with something needs changing.");
+
     const categories=findingCategories(form.getAll("category").map(String).concat(form.getAll("custom_category").map(String)));
 
-    const extra=outcome==="satisfied"?formText(form,"comment",0,5000):text(form,"comment",3);
+    const extra=formText(form,"comment",0,5000);
 
-    const comment=outcome==="satisfied"?satisfactionStatement(parts)+(extra?"\n\nReviewer comments:\n"+extra:" Nothing to add."):(parts.length?satisfactionStatement(parts)+"\n\n":"")+extra;
+    const comment=outcome==="satisfied"?satisfactionStatement(parts)+(extra?"\n\nReviewer comments:\n"+extra:" Nothing to add."):(parts.length?satisfactionStatement(parts)+"\n\n":"")+requestedChangeStatement(parts,hasEbook)+` Category: ${categories.join(", ")}.`+(extra?"\n\nReviewer comments:\n"+extra:"");
 
     const finding:ReviewFinding={id:findingId,fingerprint:round.fingerprint,unit,reference,categories,satisfiedParts:parts,category:categories.join(", "),outcome,blocking:outcome!=="satisfied"&&form.get("blocking")==="on",author:email,userId:session.user.id,at:now,text:comment,status:outcome==="satisfied"?"closed" as const:"open" as const,replies:[],attachment};
 
@@ -393,7 +399,7 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
     const f=activeFindings(d).find(f=>f.id===text(form,"finding_id"));if(!f)throw Error("Finding unavailable.");
 
-    const comment=text(form,"comment",3);
+    const explanation=formText(form,"comment",0,5000),comment=findingUpdateStatements[op]+(explanation?" Explanation: "+explanation:"");
 
     if(op==="fixed"){fixFinding(round,f,session.user.id,now);mail=reviewMail(round,"correction_ready",`fix:${f.id}:${round.revision}`,`${email} recorded changes implemented for ${f.unit} · ${f.reference} in deployed version ${round.fingerprint.slice(0,12)}: ${comment}. A different assigned reviewer must inspect the deployed correction and verify it. Publication remains blocked until verification and final content clearance.`);}
 
@@ -414,7 +420,12 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
     if(!d.units.every(u=>person.coverage.includes(u.slug)))throw Error("Confirm coverage for every LU and assessment before committing your full report.");
 
-    const report={id:randomUUID(),fingerprint:round.fingerprint,email,userId:session.user.id,at:now,text:text(form,"comment",5)+"\n\nFindings at submission:\n"+activeFindings(d).map(f=>`${f.id} | ${f.unit} | ${f.reference} | ${f.author} | ${f.blocking?"BLOCKING":"Suggestion"} | ${f.status}\n${f.text}`).join("\n\n"),coverage:[...person.coverage],endorsements:[]};
+    const conclusion=formText(form,"report_conclusion");
+    if(conclusion&&!["findings_recorded","no_issues"].includes(conclusion))throw Error("Choose an overall review conclusion.");
+    if(conclusion==="no_issues"&&activeFindings(d).some(f=>f.author===email&&f.outcome!=="satisfied"&&f.status!=="closed"))throw Error("Your review has unresolved findings. Choose findings recorded, or update those findings first.");
+    const reportStatement=conclusion==="no_issues"?"Review completed — no issues found.":"Review completed — see the saved findings and their statuses below.";
+    const explanation=formText(form,"comment",0,5000);
+    const report={id:randomUUID(),fingerprint:round.fingerprint,email,userId:session.user.id,at:now,text:reportStatement+(explanation?"\n\nReviewer explanation:\n"+explanation:"")+"\n\nFindings at submission:\n"+activeFindings(d).map(f=>`${f.id} | ${f.unit} | ${f.reference} | ${f.author} | ${f.blocking?"BLOCKING":f.outcome==="satisfied"?"Nothing to add":"Suggestion"} | ${f.status}\n${f.text}`).join("\n\n"),coverage:[...person.coverage],endorsements:[]};
 
     d.reports.push(report);person.state="finished";
     if(principal&&d.requester===email&&d.requesterId===session.user.id&&d.workflow?.stage==="content_review"){d.workflow.commercialPreparation={at:now,email,userId:session.user.id};d.workflow.stage="commercial_draft";}
@@ -443,7 +454,7 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
     const decision=text(form,"decision");if(decision!=="approve"&&decision!=="changes")throw Error("Choose an endorsement decision.");
 
-    const comment=text(form,"comment",3);
+    const explanation=formText(form,"comment",0,5000),comment=(decision==="approve"?"I endorse this submitted report.":"I request a revised report.")+(explanation?" Explanation: "+explanation:"");
 
     report.endorsements.push({email,userId:session.user.id,at:now,decision,text:comment});
 
