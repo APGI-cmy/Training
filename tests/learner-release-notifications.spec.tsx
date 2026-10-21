@@ -1,0 +1,21 @@
+import React from "react";
+import {renderToStaticMarkup} from "react-dom/server";
+import {describe,it,expect,vi} from "vitest";
+vi.mock("next/navigation",()=>({usePathname:()=>"/notifications",useRouter:()=>({refresh:vi.fn()})}));
+vi.mock("next/link",()=>({default:({href,children,...props}:{href:string;children:React.ReactNode})=><a href={href} {...props}>{children}</a>}));
+vi.mock("@/server/actions/notifications",()=>({notificationAction:vi.fn()}));
+import {SidebarNotifications} from "@/components/notifications/SidebarNotifications";
+import {NotificationControls} from "@/components/notifications/NotificationControls";
+import {notificationTarget,notificationStatus,countNotifications,type PersonalNotification} from "@/lib/notifications";
+const notice=(values:Partial<PersonalNotification>={}):PersonalNotification=>({id:"a",message:"Update",kind:"platform_event",created_at:"now",read_at:null,acknowledged_at:null,target_path:"/notifications",response_type:"read",pending:false,actor_user_id:null,...values});
+describe("Personal notification prompt and receipt meaning",()=>{
+ it("counts an unread pending task once and retains read tasks needing action",()=>{expect(countNotifications([notice({response_type:"action",pending:true}),notice({read_at:"today",response_type:"action",pending:true}),notice({read_at:"today"})])).toEqual({unread:1,responses:2,attention:2});});
+ it("shows the badge and both counts with the current inbox highlighted",()=>{const html=renderToStaticMarkup(<SidebarNotifications initial={{unread:2,responses:3,attention:4}}/>);expect(html).toContain('aria-current="page"');expect(html).toContain('class="notification-badge">4');expect(html).toContain("2 unread, 3 requiring a response");});
+ it("caps the visual badge without losing the accessible full count",()=>{const html=renderToStaticMarkup(<SidebarNotifications initial={{unread:200,responses:3,attention:202}}/>);expect(html).toContain("99+");expect(html).toContain("200 unread");});
+ it("does not pretend an unavailable count is zero",()=>{const html=renderToStaticMarkup(<SidebarNotifications initial={null}/>);expect(html).toContain("Unable to check updates");expect(html).not.toContain("0 unread");});
+ it("keeps an acknowledgement pending after reading",()=>{expect(notificationStatus(notice({read_at:"today",response_type:"acknowledge",pending:true}))).toBe("Acknowledgement requested");});
+ it("does not offer an acknowledgement shortcut for a required approval",()=>{const html=renderToStaticMarkup(<NotificationControls item={notice({read_at:"today",response_type:"action",pending:true})}/>);expect(html).toContain("Open required action");expect(html).not.toContain("Acknowledge receipt");});
+ it("offers an explicit receipt for acknowledgement requests",()=>{expect(renderToStaticMarkup(<NotificationControls item={notice({response_type:"acknowledge",pending:true})}/>)).toContain("Acknowledge receipt");});
+ it.each(["https://evil.example","//evil.example","javascript:alert(1)","/admin/payments","/company/../admin","/notifications?next=https://evil.example"])("blocks unsafe or unrelated notification target %s",path=>{expect(notificationTarget(path)).toBe("/notifications");});
+ it("preserves safe workflow links and older stored review messages",()=>{const path="/course-reviews/11111111-1111-4111-8111-111111111111";expect(notificationTarget(path+"#manage-request")).toBe(path+"#manage-request");expect(notificationTarget(null,`Review workspace ${path}`)).toBe(path);});
+});

@@ -1,3 +1,6 @@
+import {SidebarNotifications} from "@/components/notifications/SidebarNotifications";
+import {notificationInbox} from "@/server/services/notifications";
+import type {NotificationCounts} from "@/lib/notifications";
 import { SidebarNavigation } from "@/components/navigation/SidebarNavigation";
 import { SignOutControl } from "@/components/auth/sign-out-control";
 import { BrandingName } from "@/components/branding/BrandingName";
@@ -9,6 +12,9 @@ export async function LearnerSidebar() {
   const roles = session ? await getUserRoles(session.accessToken) : [];
   const isAdmin = roles.includes("admin");
   const principal = isAdmin && session ? await isPlatformPrincipal(session) : false;
+
+  let noticeCounts:NotificationCounts|null=null;
+  if(session?.user.email_confirmed_at){try{const {unread,responses,attention}=await notificationInbox(session,"all",0,true);noticeCounts={unread,responses,attention};}catch{/* The workspace remains usable during notification outages. */}}
 
   return (
     <aside className="learner-sidebar" aria-label="Learner navigation">
@@ -22,6 +28,7 @@ export async function LearnerSidebar() {
         </p>
       </div>
 
+      {session?<SidebarNotifications initial={noticeCounts}/>:null}
       <SidebarNavigation items={[
         { href: "/dashboard", label: "Dashboard" },
         { href: "/catalogue", label: "Course catalogue" },
@@ -36,7 +43,6 @@ export async function LearnerSidebar() {
           { href: "/admin", label: "Administration" },
           { href: "/admin/learners", label: "Learners" },
           { href: "/admin/invitations", label: "Invitations" },
-          { href: "/admin/notifications", label: "Notifications" },
           { href: "/admin/test-messages", label: "Test messages" },
           { href: "/admin/certificates", label: "Certificate designs" },
           { href: "/admin/enrolments", label: "Manage enrolments" },

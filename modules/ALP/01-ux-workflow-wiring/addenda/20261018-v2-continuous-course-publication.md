@@ -94,3 +94,16 @@ Assigned branding decisions record the exact current branding revision, verified
 An actual approval of the current financial version by the assigned principal, or current owner acceptance, fulfils that same person's commercial-review assignment. An explicit changes request remains pending. Assigned commercial review does not substitute for both Johan and Jorrie's independent financial signatures or the company owner's acceptance.
 
 Private publication checks enforce all explicit assignments and the owner's current branding approval alongside existing content fingerprints, correction verification, independent endorsements, verified identities and financial gates. Daily reminders track unfinished assigned tasks and stop at the cutoff. Correction registration resets content review evidence while retaining unrelated commercial/branding decisions. These changes apply to V2 only and do not publish any course.
+
+
+## 21 October 2026 — personal notification prompt and receipts
+
+Every signed-in, verified account has a prominent Notifications link above its grouped sidebar menus. The count includes each unread update or pending response once. The prompt separately shows unread and response counts, refreshes every 30 seconds while visible and on focus, and does not refresh the inactivity timestamp. An outage is shown as unavailable rather than a zero count.
+
+The personal inbox distinguishes ordinary updates, explicit acknowledgement requests and actions requiring their original workflow. Opening an update records its first read timestamp and opens a validated internal destination. Acknowledge receipt records a separate timestamp. Mark all as read changes only read state. None of these operations can approve a course, policy, branding, financial terms or publication. An action remains counted after reading until the underlying saved task is completed or no longer applicable; an overdue task does not become approved.
+
+Registered review participants and authorised APGI principals receive durable review updates, including findings, discussions, report submission, decisions and changes. Current task notices are seeded idempotently for existing reviews, policy assignments and company requests, including accounts that join after invitation. Additional event hooks cover company responses, policy decisions, owner invitation acceptance and issued certificates. Ordinary learner/admin invitation acceptances retain their existing notifications.
+
+The sender can view recent platform inbox delivery, read and acknowledgement receipts for their own updates. These are platform receipts, not email delivery/read claims. Existing email workflows remain separate.
+
+Notification data remains in private server-managed storage. The server supplies the verified account identity for every count, listing and receipt; clients cannot select another recipient. Required task state is derived from current workflow evidence. The legacy administrator notifications address redirects to the personal inbox. V1 and course content fingerprints remain unchanged.
