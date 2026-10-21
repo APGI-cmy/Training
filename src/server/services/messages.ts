@@ -8,6 +8,8 @@ import type {MessageWorkspace,MessageThread,SavedMessage} from "@/lib/messages";
 export async function messageRpc<T>(name:string,args:object):Promise<T>{
  const response=await adminRest(`/rest/v1/rpc/${name}`,{method:"POST",body:JSON.stringify(args)});
  if(!response.ok){const detail=await response.json().catch(()=>({}));throw Error(detail.code==='P0001'?detail.message:"Messages are temporarily unavailable. Please try again.");}
+ // Void RPCs return 204 after a successful commit; there is no JSON to parse.
+ if(response.status===204)return undefined as T;
  return response.json();
 }
 export async function messageWorkspace(){const session=await notificationSession();return {session,workspace:await messageRpc<MessageWorkspace>("v2_message_workspace",{p_actor:session.user.id})};}
