@@ -77,17 +77,21 @@ export async function getAvailableCourseIds(userId: string, courseIds: string[])
       getLearnerOrganisation(userId),
       adminRest(`/rest/v1/course_catalogue_settings?course_id=in.(${encodeURIComponent(courseFilter)})&select=course_id,visibility`),
     ]);
-    if (!settingsResponse.ok) return new Set(courseIds);
+    if (!settingsResponse.ok) return new Set();
     const settings = (await settingsResponse.json()) as Array<{ course_id: string; visibility: "public" | "client_specific" }>;
     const publicIds = new Set(settings.filter((setting) => setting.visibility === "public").map((setting) => setting.course_id));
     const configured = new Set(settings.map((setting) => setting.course_id));
     for (const courseId of courseIds) if (!configured.has(courseId)) publicIds.add(courseId);
     if (!organisation) return publicIds;
-    const availabilityResponse = await adminRest(`/rest/v1/organisation_course_availability?organisation_id=eq.${encodeURIComponent(organisation.id)}&course_id=in.(${encodeURIComponent(courseFilter)})&select=course_id`);
-    if (!availabilityResponse.ok) return publicIds;
-    for (const row of (await availabilityResponse.json()) as Array<{ course_id: string }>) publicIds.add(row.course_id);
+    const [availabilityResponse,offeringsResponse] = await Promise.all([
+      adminRest(`/rest/v1/organisation_course_availability?organisation_id=eq.${encodeURIComponent(organisation.id)}&course_id=in.(${encodeURIComponent(courseFilter)})&select=course_id`),
+      adminRest(`/rest/v1/organisation_offerings?organisation_id=eq.${encodeURIComponent(organisation.id)}&course_id=in.(${encodeURIComponent(courseFilter)})&status=eq.published&reviewed_release_id=not.is.null&select=course_id`)
+    ]);
+    for (const response of [availabilityResponse,offeringsResponse]) if(response.ok) {
+      for (const row of (await response.json()) as Array<{ course_id: string }>) if(courseIds.includes(row.course_id)) publicIds.add(row.course_id);
+    }
     return publicIds;
   } catch {
-    return new Set(courseIds);
+    return new Set();
   }
 }

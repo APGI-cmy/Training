@@ -88,7 +88,7 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
               <p className="eyebrow">{course.level}</p>
               <h2>{course.title}</h2>
               <p>{course.description}</p>
-              <div className="course-card-status"><p className="course-price"><strong>{formatCoursePrice(payableCoursePriceCents(pricing), pricing.currency)}</strong></p><p><strong>Status:</strong> {state}</p></div>
+              <div className="course-card-status"><p className="course-price"><strong>{course.pricing === "company_agreement" ? "Price set in your company agreement" : formatCoursePrice(payableCoursePriceCents(pricing), pricing.currency)}</strong></p><p><strong>Status:</strong> {state}</p></div>
 
               {decision.status === "enrolled" ? (
                 <Link className="button-link" href={`/learn/${course.slug}`}>Continue course</Link>

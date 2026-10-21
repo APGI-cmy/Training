@@ -111,7 +111,7 @@
       "id": "tiger-telecom-lu-5",
       "slug": "lu5",
       "order": 5,
-      "title": "Unit 5 \u2014 Package Correction Required",
+      "title": "Unit 5 — Package Correction Required",
       "subtitle": "Uploaded package identifies itself as Unit 4; correction required.",
       "duration": "Self-paced",
       "assetBase": "/courses/Tiger%20kidnapping_telecommunications/LU5",
@@ -120,7 +120,7 @@
       "media": [
         {
           "kind": "embed",
-          "title": "Unit 5 \u2014 Package Correction Required",
+          "title": "Unit 5 — Package Correction Required",
           "src": "/courses/Tiger%20kidnapping_telecommunications/LU5/res/index.html"
         }
       ],
@@ -199,5 +199,6 @@
       "summary": [],
       "scormPath": "/courses/Tiger%20kidnapping_telecommunications/LU8/res/index.html"
     }
-  ]
+  ],
+  "pricing": "company_agreement"
 }

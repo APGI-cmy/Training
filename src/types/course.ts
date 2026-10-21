@@ -110,5 +110,6 @@ export interface Course {
   sourceRoot: string;
   integrationNotes: string[];
   publicationIssues?: string[];
+  pricing?: "company_agreement";
   units: LearningUnit[];
 }
