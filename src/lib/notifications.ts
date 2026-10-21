@@ -10,7 +10,7 @@ export function notificationTarget(path:string|null,message="") {
  if(/^\/messages(?:\/[0-9a-f-]{36})?$/i.test(target))return target;
  return /^(?:\/notifications|\/payments|\/payments\/reports\?scope=(?:all|self|[0-9a-f-]{36})&table=[a-z_]+|\/admin\/learners|\/admin\/invitations|\/admin\/payments\/stripe(?:\/private)?|\/catalogue(?:\?view=my-learning)?|\/(?:course-reviews|policies)\/[0-9a-f-]{36}|\/company\/[0-9a-f-]{36}(?:\/payments)?)(?:#[a-z0-9_-]+)?$/i.test(target)?target:"/notifications";
 }
-export const notificationStatus=(n:PersonalNotification)=>n.response_type==="acknowledge"?(n.acknowledged_at?"Acknowledged":"Acknowledgement requested"):n.response_type==="action"?(n.pending?"Action required":"Action completed or no longer required"):n.read_at?"Read":"Unread";
+export const notificationStatus=(n:PersonalNotification)=>n.target_path==="/notifications#archived-company-request"?"No response required — company inactive or unavailable":n.response_type==="acknowledge"?(n.acknowledged_at?"Acknowledged":"Acknowledgement requested"):n.response_type==="action"?(n.pending?"Action required":"Action completed or no longer required"):n.read_at?"Read":"Unread";
 export function countNotifications(items:PersonalNotification[]):NotificationCounts {
  return {unread:items.filter(n=>!n.read_at).length,responses:items.filter(n=>n.pending).length,attention:items.filter(n=>!n.read_at||n.pending).length};
 }

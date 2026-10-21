@@ -149,7 +149,7 @@ export default async function CompanyPage({
       {owner ? (
         <>
           <CompanyBrandForm company={company} returnTo={returnTo} />
-          <section className="admin-form-card">
+          <section className="admin-form-card" id="company-requests">
             <h2>Request a course or platform change</h2>
             <StructureForm
               action={companyStructureAction}

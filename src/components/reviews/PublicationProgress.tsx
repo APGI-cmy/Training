@@ -2,6 +2,8 @@ import {hasReviewTask,companyBrandApproved} from "@/lib/review-tasks";
 import Link from "next/link";
 
 import {ReviewForm} from "./ReviewForms";
+import {WorkflowSectionHeading,WorkflowSectionStatus} from "./WorkflowSectionStatus";
+import {findWorkflowStep,type WorkflowStep} from "@/lib/publication-guide";
 
 import {PartnerOfferForm} from "./PartnerOfferForm";
 
@@ -9,7 +11,7 @@ import {contentReviewBlockers,type ReviewRound} from "@/lib/course-review";
 
 import {currentCommercial,bothCommercialApprovals,quoteCommercial,commercialPrincipals} from "@/lib/publication-workflow";
 
-export function PublicationProgress({round,principal,email,hash,brandRevision}:{round:ReviewRound;principal:boolean;email:string;hash:string;brandRevision:number}){
+export function PublicationProgress({round,principal,email,hash,brandRevision,guide}:{round:ReviewRound;principal:boolean;email:string;hash:string;brandRevision:number;guide?:WorkflowStep[]}){
 
  const w=round.document.workflow;if(!w)return <section className="review-box"><h2>Earlier workflow</h2><p>This record is preserved. Start a content-first workflow to complete the current publication process.</p>{principal?<Link href={`/course-reviews/new?course=${round.course_id}&brand=${round.organisation_id}`}>Start current workflow</Link>:null}</section>;
 
@@ -27,11 +29,11 @@ export function PublicationProgress({round,principal,email,hash,brandRevision}:{
 
 
 
- return <section className="review-box" id="commercial-preparation" aria-label="Publication workflow"><h2>Continuous publication workflow</h2><p><strong>Current step: {round.status==="published"?"Published":w.stage.replaceAll("_"," ")}</strong></p><p>Course designer: {w.designerName} · {w.designerCompany}</p>{w.contentApproval?<p>Content approved by {w.contentApproval.email} · {w.contentApproval.at}. Commercial and branding decisions remain separate.</p>:<p>Commercial preparation can continue while findings are addressed. All content, peer checks, commercial and branding approvals remain required before publication.</p>}
+ return <section className="review-box" id="commercial-preparation" aria-label="Publication workflow"><WorkflowSectionHeading title="Continuous publication workflow" step={findWorkflowStep(guide,"commercials")}/><p><strong>Current step: {round.status==="published"?"Published":w.stage.replaceAll("_"," ")}</strong></p><p>Course designer: {w.designerName} · {w.designerCompany}</p>{w.contentApproval?<p>Content approved by {w.contentApproval.email} · {w.contentApproval.at}. Commercial and branding decisions remain separate.</p>:<p>Commercial preparation can continue while findings are addressed. All content, peer checks, commercial and branding approvals remain required before publication.</p>}
 
  {requester&&w.stage==="content_review"?<><p>{preparationReady?"Your review is submitted. You can prepare commercials while the team resolves findings and completes independent checks.":"Complete all your LU/quiz coverage confirmations and submit your report to open commercial preparation."}</p><ReviewForm workflow id={round.id} operation="begin_commercials" label="Continue to commercials" disabled={!preparationReady}/></>:null}
 
- {requester&&!w.contentApproval?<details><summary>Final content clearance — requester only</summary><p>This final clearance remains separate from preparing and reviewing commercials.</p>{contentBlocks.length?<ul>{contentBlocks.map(b=><li key={b}>{b}</li>)}</ul>:null}<div className="review-approval-hint" role="group" aria-label="Content approval availability" data-disabled={!!contentBlocks.length} tabIndex={contentBlocks.length?0:undefined} aria-describedby={contentBlocks.length?hintId:undefined}><ReviewForm workflow id={round.id} operation="approve_content" label="Approve final corrected content" disabled={!!contentBlocks.length}><label><input name="confirm_content" type="checkbox" required disabled={!!contentBlocks.length}/> I approve this exact reviewed course content. This does not approve any commercials.</label></ReviewForm>{contentBlocks.length?<span role="tooltip" id={hintId} className="review-approval-tooltip">{approvalHint}</span>:null}</div></details>:null}
+ {requester&&!w.contentApproval?<details id="final-content-clearance"><summary className="workflow-section-heading"><span>Final content clearance — requester only</span><WorkflowSectionStatus step={findWorkflowStep(guide,"clearance")}/></summary><p>This final clearance remains separate from preparing and reviewing commercials.</p>{contentBlocks.length?<ul>{contentBlocks.map(b=><li key={b}>{b}</li>)}</ul>:null}<div className="review-approval-hint" role="group" aria-label="Content approval availability" data-disabled={!!contentBlocks.length} tabIndex={contentBlocks.length?0:undefined} aria-describedby={contentBlocks.length?hintId:undefined}><ReviewForm workflow id={round.id} operation="approve_content" label="Approve final corrected content" disabled={!!contentBlocks.length}><label><input name="confirm_content" type="checkbox" required disabled={!!contentBlocks.length}/> I approve this exact reviewed course content. This does not approve any commercials.</label></ReviewForm>{contentBlocks.length?<span role="tooltip" id={hintId} className="review-approval-tooltip">{approvalHint}</span>:null}</div></details>:null}
 
  {principal&&["commercial_draft","negotiation"].includes(w.stage)?<><Link className="primary-button" href={`/admin/courses/${round.course_id}/publish?review=${round.id}`}>{w.stage==="negotiation"?"Prepare APGI counter-offer response":"Prepare or revise commercials"}</Link><p>Both Johan and Jorrie must independently approve the saved commercial version. No partner offer is sent by saving.</p></>:null}
 

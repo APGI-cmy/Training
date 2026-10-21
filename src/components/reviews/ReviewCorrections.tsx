@@ -1,11 +1,13 @@
 import {activeFindings,canWork,type ReviewRound} from "@/lib/course-review";
 import {ReviewForm} from "./ReviewForms";
+import {WorkflowSectionHeading} from "./WorkflowSectionStatus";
+import type {WorkflowStep} from "@/lib/publication-guide";
 
-export function ReviewCorrections({round,hash,principal}:{round:ReviewRound;hash:string;principal:boolean}) {
+export function ReviewCorrections({round,hash,principal,step}:{round:ReviewRound;hash:string;principal:boolean;step?:WorkflowStep}) {
  const d=round.document,changed=hash!==round.fingerprint,revisions=d.contentRevisions??[];
  const issues=activeFindings(d).filter(f=>f.outcome!=="satisfied"&&f.blocking);
  const cutoff=new Date(Math.max(Date.parse(d.cutoff),Date.now()+7*86400000)+7200000).toISOString().slice(0,16);
- return <section className="review-box" id="changes-implemented" aria-label="Course corrections"><h2>Changes implemented</h2>
+ return <section className="review-box" id="changes-implemented" aria-label="Course corrections"><WorkflowSectionHeading title="Changes implemented" step={step}/>
  <ol><li>Apply the corrections in iSpring, export the course package, update GitHub and deploy to V2.</li><li>Johan or Jorrie registers the changed deployment here.</li><li>Under each finding, describe the correction and mark it implemented. A different reviewer checks the deployed correction and verifies it.</li><li>Reviewers recheck every LU and quiz, submit new reports and obtain independent endorsements. The requester then clears final content before publication.</li></ol>
  <p>Earlier reports, comments and screenshots remain in the audit trail. Unchanged commercial sign-offs and the negotiation limit are retained. Previous company acceptance of changed content must be reconfirmed.</p>
  {round.status!=="open"?<p>This review is closed. Its correction history is retained.</p>:changed?<><p className="form-error">A changed deployment was detected. Review submissions and publication remain blocked until it is registered.</p><p>Reviewed version: {round.fingerprint.slice(0,12)} · Deployed version: {hash.slice(0,12)}</p>{principal&&d.workflow?<ReviewForm id={round.id} operation="register_content_revision" preserveFields label="Register corrected version and notify reviewers" hidden={{expected_fingerprint:hash,expected_revision:String(round.revision)}}><label>GitHub commit or deployment reference<input name="deployment" required minLength={3} maxLength={500}/></label><label>Corrections included in this release<textarea name="comment" required minLength={5} maxLength={5000}/></label><label>Review cutoff — South African time<input name="cutoff" type="datetime-local" required defaultValue={cutoff}/></label><label><input name="confirm_revision" type="checkbox" required/> The corrected package is deployed and ready for independent review. This registers evidence; it does not approve or publish the course.</label></ReviewForm>:<p>Johan or Jorrie must register the corrected deployment.</p>}</>:<p>No unregistered content change detected. Refresh this page after deploying the corrected package. You can record an implemented correction below against the current version.</p>}

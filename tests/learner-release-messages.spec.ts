@@ -5,7 +5,7 @@ vi.mock('@/server/services/messages',()=>({messageRpc:m.rpc,messageAttachment:m.
 vi.mock('next/cache',()=>({revalidatePath:m.revalidate}));
 import {messageAction} from '@/server/actions/messages';
 import {parseRecipients,sastInput} from '@/lib/messages';
-import {notificationTarget} from '@/lib/notifications';
+import {notificationTarget,notificationStatus,type PersonalNotification} from '@/lib/notifications';
 const actor='11111111-1111-4111-8111-111111111111',id='22222222-2222-4222-8222-222222222222';
 function form(op='send'){const f=new FormData();Object.entries({operation:op,user_id:'forged',message_id:id,organisation_id:id,subject:'Subject',body:'Message',to:'JORRIE@EXAMPLE.COM'}).forEach(([k,v])=>f.set(k,v));return f;}
 beforeEach(()=>{vi.clearAllMocks();m.session.mockResolvedValue({user:{id:actor,email_confirmed_at:'today'}});m.rpc.mockResolvedValue(id);m.attachment.mockResolvedValue(null);m.flush.mockResolvedValue({accepted:1});});
@@ -22,5 +22,6 @@ describe('Messages authorization and durable delivery',()=>{
  it('rejects unknown operations without mutation',async()=>{expect((await messageAction({},form('publish'))).error).toContain('valid message action');expect(m.rpc).not.toHaveBeenCalled();});
  it('deduplicates recipients and rejects header injection',()=>{expect(parseRecipients('A@example.com\na@example.com')).toEqual(['a@example.com']);expect(()=>parseRecipients('bad\r\nBcc: other@example.com')).toThrow();expect(()=>parseRecipients('')).toThrow();});
  it('allows only internal message notification targets',()=>{expect(notificationTarget(`/messages/${id}`)).toBe(`/messages/${id}`);expect(notificationTarget('//evil.test/messages')).toBe('/notifications');expect(notificationTarget('/messages/../../admin')).toBe('/notifications');});
+ it('keeps an archived company update in history with a safe explanatory target',()=>{const target='/notifications#archived-company-request';expect(notificationTarget(target)).toBe(target);expect(notificationStatus({target_path:target,response_type:'action',pending:false} as PersonalNotification)).toContain('No response required');});
  it('rejects ambiguous timezone input',()=>{expect(()=>sastInput('tomorrow')).toThrow();});
 });
