@@ -39,6 +39,7 @@ export async function LearnerSidebar() {
         { href: "/profile", label: "Profile" },
         ...(paymentEligible?[{href:"/payments",label:"My payment portal"}]:[]),
         ...(session ? [
+          { href: "/messages", label: "Messages and support" },
           { href: "/company", label: "Company workspaces" },
           { href: "/policies", label: "Policies and reviews" },
           { href: "/course-reviews", label: "Course reviews" },

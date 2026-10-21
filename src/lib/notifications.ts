@@ -7,6 +7,7 @@ export type NotificationCounts={unread:number;responses:number;attention:number}
 export type NotificationInbox=NotificationCounts&{total:number;items:PersonalNotification[];receipts:(PersonalNotification&{recipient_email:string})[]};
 export function notificationTarget(path:string|null,message="") {
  const target=path??message.match(/\/course-reviews\/[0-9a-f-]{36}/i)?.[0]??"/notifications";
+ if(/^\/messages(?:\/[0-9a-f-]{36})?$/i.test(target))return target;
  return /^(?:\/notifications|\/payments|\/payments\/reports\?scope=(?:all|self|[0-9a-f-]{36})&table=[a-z_]+|\/admin\/learners|\/admin\/invitations|\/admin\/payments\/stripe(?:\/private)?|\/catalogue(?:\?view=my-learning)?|\/(?:course-reviews|policies)\/[0-9a-f-]{36}|\/company\/[0-9a-f-]{36}(?:\/payments)?)(?:#[a-z0-9_-]+)?$/i.test(target)?target:"/notifications";
 }
 export const notificationStatus=(n:PersonalNotification)=>n.response_type==="acknowledge"?(n.acknowledged_at?"Acknowledged":"Acknowledgement requested"):n.response_type==="action"?(n.pending?"Action required":"Action completed or no longer required"):n.read_at?"Read":"Unread";
