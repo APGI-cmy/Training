@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest identifier="k2O4Qj2ohMmML" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:imsss="http://www.imsglobal.org/xsd/imsss" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3" xmlns:adlseq="http://www.adlnet.org/xsd/adlseq_v1p3" xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3" xmlns:lom="http://ltsc.ieee.org/xsd/LOM" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://www.imsglobal.org/xsd/imsss imsss_v1p0.xsd http://www.adlnet.org/xsd/adlcp_v1p3 adlcp_v1p3.xsd http://www.adlnet.org/xsd/adlseq_v1p3 adlseq_v1p3.xsd http://www.adlnet.org/xsd/adlnav_v1p3 adlnav_v1p3.xsd http://ltsc.ieee.org/xsd/LOM lom.xsd">
+<manifest identifier="mlGExr87YddQ7" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:imsss="http://www.imsglobal.org/xsd/imsss" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3" xmlns:adlseq="http://www.adlnet.org/xsd/adlseq_v1p3" xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3" xmlns:lom="http://ltsc.ieee.org/xsd/LOM" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://www.imsglobal.org/xsd/imsss imsss_v1p0.xsd http://www.adlnet.org/xsd/adlcp_v1p3 adlcp_v1p3.xsd http://www.adlnet.org/xsd/adlseq_v1p3 adlseq_v1p3.xsd http://www.adlnet.org/xsd/adlnav_v1p3 adlnav_v1p3.xsd http://ltsc.ieee.org/xsd/LOM lom.xsd">
 <metadata>
 <schema>ADL SCORM</schema>
 <schemaversion>2004 4th Edition</schemaversion>
 <lom:lom>
 <lom:general>
 <lom:title>
-<lom:string>NKS_Capital_Unit_04_Course_Label_Slide</lom:string>
+<lom:string>Tiger_Kidnapping_Telecommunications_Unit_05</lom:string>
 </lom:title>
 </lom:general>
 <lom:educational>
@@ -16,9 +16,9 @@
 </lom:educational>
 </lom:lom>
 </metadata>
-<organizations default="nks_capital_unit_04_course_label_slide_organization">
-<organization identifier="nks_capital_unit_04_course_label_slide_organization">
-<title>NKS_Capital_Unit_04_Course_Label_Slide</title>
+<organizations default="tiger_kidnapping_telecommunications_unit_05_organization">
+<organization identifier="tiger_kidnapping_telecommunications_unit_05_organization">
+<title>Tiger_Kidnapping_Telecommunications_Unit_05</title>
 <item identifier="D0EF1798-E954-4249-990D-6E08673FFE77" identifierref="resource">
 <title>NKS_Capital_Unit_04_Course_Label_Slide</title>
 <imsss:sequencing>
