@@ -309,7 +309,7 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
    if(owner)await requirePartnerOwner(w!.partnerCompanyId??round.organisation_id,session.user.id);
    if(!owner&&(!person||person.state==="declined"||!hasReviewTask(person,task)))throw Error("This review task is not assigned to you.");
    if(person&&person.state!=="declined")claimReviewer(round,email,session.user.id);
-   if(task==="commercials"&&(!v||(!principal&&(!v.offeredAt||w?.stage!=="partner_offer"))))throw Error("The current commercial offer is not available for review.");
+   if(task==="commercials"&&(!v||(!principal&&(!v.offeredAt||!["partner_offer","ready_to_publish"].includes(w?.stage??"")))))throw Error("The current commercial offer is not available for review.");
    const target=task==="branding"?String(access.source.brand.brand_revision):v!.id;
    if(text(form,"task_target")!==target)throw Error("The branding or commercial version changed. Reload before deciding.");
    if(form.get("confirm_task")!=="on")throw Error("Confirm you reviewed this exact version.");

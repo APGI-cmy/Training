@@ -7,7 +7,7 @@ export function publicationGuide(round:ReviewRound,hash:string,brandRevision:num
  const primary=d.participants.filter(p=>p.role==="primary"&&p.state!=="declined"&&hasReviewTask(p,"content"));
  const own=primary.find(p=>p.email===email),covered=(slug:string)=>own?own.coverage.includes(slug):primary.length>=2&&primary.every(p=>p.coverage.includes(slug));
  const reportDone=(email:string)=>{const p=primary.find(p=>p.email===email);return p?.state==="finished"&&!!currentReport(d,email);};
- const endorsed=(email:string)=>{const r=currentReport(d,email);return !!r&&!r.endorsements.some(e=>e.decision==="changes")&&r.endorsements.some(e=>e.decision==="approve"&&e.userId!==r.userId&&e.email!==r.email&&d.participants.some(p=>p.email===e.email&&p.state!=="declined"));};
+ const endorsed=(email:string)=>{const r=currentReport(d,email);return !!r&&!r.endorsements.some(e=>e.decision==="changes")&&r.endorsements.some(e=>e.decision==="approve"&&e.userId!==r.userId&&e.email!==r.email&&d.participants.some(p=>p.email===e.email&&p.state!=="declined"&&hasReviewTask(p,"content")));};
  const contentDone=fresh&&(round.status==="published"||contentReviewBlockers(round,hash).filter(r=>!r.toLowerCase().includes("blocking")&&!r.toLowerCase().includes("correction")).length===0);
  const issues=activeFindings(d).filter(f=>f.blocking),tasks=reviewTaskBlockers(round,brandRevision);
  const branding=tasks.filter(x=>x.includes("branding"));
