@@ -45,6 +45,7 @@ export async function requestStripeSetup(_previous:PaymentState,_form:FormData):
    `Open your private setup page: ${privateUrl}`,
    "In your existing Canadian APGI Stripe account, switch to a sandbox/test environment and enable Connect. Create a restricted sandbox key (rk_test_) with the permissions listed on the private setup page. Add the test webhook endpoint and copy its signing secret there.",
    "Enter or check APGI’s bank account directly in Stripe Dashboard. The platform never collects bank account numbers. Do not email bank details, passwords or API keys to anyone. Johan cannot open your private platform setup page or retrieve the saved keys.",
+   `Your personal recipient portal is ${STAGING_ORIGIN}/payments. You and Johan can each set up your own private receiving account. Both APGI principals can view all financial records and distributions, while partners see their own company’s records. Financial oversight never reveals another user’s bank details or credentials.`,
    "Stripe must approve each cross-border route and connected account. Unsupported destinations remain on hold until APGI arranges an approved alternative provider.",
    "Once you sign in, your sidebar Notifications will show this setup request. Opening it records a read receipt; completion is recorded only after the sandbox connection is verified. Hosting and database administrators remain a separate privileged access boundary."
   ];

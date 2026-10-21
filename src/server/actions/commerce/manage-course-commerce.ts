@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { getCourseBySlug } from "@/lib/courses";
 import type { PayoutRule, TaxTreatment } from "@/lib/commerce";
-import { requireAdmin } from "@/lib/auth/require-admin";
+import { requirePlatformPrincipal } from "@/server/services/platform-principals";
 import { adminRest } from "@/server/supabase/admin-rest";
+import {validId} from "@/lib/company-structure";
+import {rows} from "@/server/services/company-structure";
 
 export type CommerceFormState = { error?: string; success?: string };
 const currencies = new Set(["USD", "CAD", "EUR", "GBP", "ZAR"]);
@@ -19,7 +21,7 @@ function revalidateCommerce(courseId: string) {
 }
 
 export async function saveCourseCommerceSettings(_previous: CommerceFormState, formData: FormData): Promise<CommerceFormState> {
-  const { session } = await requireAdmin();
+  const { session } = await requirePlatformPrincipal();
   const courseId = value(formData, "course_id");
   if (!getCourseBySlug(courseId)) return { error: "Choose a valid course." };
   const priceCents = Math.round(Number(value(formData, "price")) * 100);
@@ -41,11 +43,12 @@ export async function saveCourseCommerceSettings(_previous: CommerceFormState, f
 }
 
 export async function saveCoursePaymentRecipient(_previous: CommerceFormState, formData: FormData): Promise<CommerceFormState> {
-  await requireAdmin();
+  await requirePlatformPrincipal();
   const courseId = value(formData, "course_id");
   const recipientId = value(formData, "recipient_id");
   const displayName = value(formData, "display_name");
   const recipientEmail = value(formData, "recipient_email").toLowerCase() || null;
+  const company=value(formData,"organisation_id");if(company){try{validId(company);if(!(await rows<{id:string}>(`/rest/v1/organisations?id=eq.${company}&is_active=eq.true&select=id`)).length)return {error:"Choose an active recipient company."};}catch{return {error:"Choose a valid recipient company."};}}
   const countryCode = value(formData, "country_code").toUpperCase() || null;
   const shareBps = Math.round(Number(value(formData, "revenue_share_percent")) * 100);
   const payoutRule = value(formData, "payout_rule") as PayoutRule;
@@ -60,7 +63,7 @@ export async function saveCoursePaymentRecipient(_previous: CommerceFormState, f
   if (!payoutRules.has(payoutRule)) return { error: "Choose a valid payout rule." };
   if (payoutRule === "transaction_threshold" && !validTransactionThreshold) return { error: "Choose a transaction threshold from 2 to 250." };
 
-  const body = { course_id: courseId, display_name: displayName, recipient_email: recipientEmail, country_code: countryCode, revenue_share_bps: shareBps, payout_rule: payoutRule, transaction_threshold: transactionThreshold, is_active: true, updated_at: new Date().toISOString() };
+  const body = { course_id: courseId, display_name: displayName, recipient_email: recipientEmail,organisation_id:company||null, country_code: countryCode, revenue_share_bps: shareBps, payout_rule: payoutRule, transaction_threshold: transactionThreshold, is_active: true, updated_at: new Date().toISOString() };
   const response = await adminRest(recipientId ? `/rest/v1/course_payment_recipients?id=eq.${encodeURIComponent(recipientId)}` : "/rest/v1/course_payment_recipients", {
     method: recipientId ? "PATCH" : "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify(body),
   });
@@ -70,7 +73,7 @@ export async function saveCoursePaymentRecipient(_previous: CommerceFormState, f
 }
 
 export async function deactivateCoursePaymentRecipient(input: { courseId: string; recipientId: string }): Promise<CommerceFormState> {
-  await requireAdmin();
+  await requirePlatformPrincipal();
   if (!getCourseBySlug(input.courseId)) return { error: "Choose a valid course." };
   const response = await adminRest(`/rest/v1/course_payment_recipients?id=eq.${encodeURIComponent(input.recipientId)}&course_id=eq.${encodeURIComponent(input.courseId)}`, {
     method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ is_active: false, updated_at: new Date().toISOString() }),

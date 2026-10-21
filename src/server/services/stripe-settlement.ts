@@ -20,7 +20,11 @@ export async function publishedPaymentSchedule(release:string,company:string){
  if(!w.partner&&round.organisation_id!==company)throw Error("The published company does not match.");
  const amount=w.partner?v.acceptance!.price:v.proposedPrice,{input}=quoteCommercial(v.configuration,amount),currency=(v.configuration.currency??"").toLowerCase();
  if(!["cad","usd","zar"].includes(currency))throw Error("The approved payment currency is unsupported.");
- return {round,amount,currency,snapshot:{...input,commercialId:v.id,fingerprint:round.fingerprint,ownerId:w.ownerId,partnerId:company,development:moneyCents(v.configuration.development_cost??"","development cost"),initialPaid:moneyCents(v.configuration.already_paid??"","development paid")}};
+ // The legal course owner and the development funder can be different entities.
+ // Never guess that recovery is payable to the legal owner or to a principal personally.
+ const funder=v.configuration.development_funder,slug=funder==="APGI platform"?"apgi":funder==="SRMS"?"srms":null;
+ const recipient=slug?(await rows<{id:string}>(`/rest/v1/organisations?slug=eq.${slug}&is_active=eq.true&select=id&limit=1`))[0]?.id:null;
+ return {round,amount,currency,snapshot:{...input,commercialId:v.id,fingerprint:round.fingerprint,ownerId:w.ownerId,partnerId:company,recoveryRecipientId:recipient??null,developmentFunder:funder??null,development:moneyCents(v.configuration.development_cost??"","development cost"),initialPaid:moneyCents(v.configuration.already_paid??"","development paid")}};
 }
 
 export async function transferAllocations(order:StripeOrder){
@@ -85,6 +89,7 @@ export async function processStripeEvent(event:{id:string;type:string;livemode:b
  }else if(event.type==="account.updated"&&typeof obj.id==="string"&&/^acct_[a-zA-Z0-9]+$/.test(obj.id)){
   const capabilities=obj.capabilities as {transfers?:string}|undefined;
   await write(`/rest/v1/v2_stripe_partner_accounts?account_id=eq.${obj.id}&country=eq.${encodeURIComponent(String(obj.country))}`,{state:obj.payouts_enabled&&capabilities?.transfers==="active"?"ready":"restricted",updated_at:new Date().toISOString()},"PATCH");
+  await write(`/rest/v1/v2_stripe_personal_accounts?account_id=eq.${obj.id}&country=eq.${encodeURIComponent(String(obj.country))}`,{state:obj.payouts_enabled&&capabilities?.transfers==="active"?"ready":"restricted",updated_at:new Date().toISOString()},"PATCH");
  }else if(["charge.refunded","charge.dispute.created","charge.dispute.updated"].includes(event.type)){
   const intent=obj.payment_intent;
   if(typeof intent==="string"&&/^pi_[a-zA-Z0-9]+$/.test(intent)){

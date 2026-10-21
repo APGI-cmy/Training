@@ -6,12 +6,15 @@ import { SignOutControl } from "@/components/auth/sign-out-control";
 import { BrandingName } from "@/components/branding/BrandingName";
 import { getCurrentSession, getUserRoles } from "@/server/auth/session";
 import { isPlatformPrincipal } from "@/server/services/platform-principals";
+import {ownMemberships} from "@/server/services/company-structure";
+import {paymentPortalEligible} from "@/lib/payment-reports";
 
 export async function LearnerSidebar() {
   const session = await getCurrentSession();
   const roles = session ? await getUserRoles(session.accessToken) : [];
   const isAdmin = roles.includes("admin");
   const principal = isAdmin && session ? await isPlatformPrincipal(session) : false;
+  const paymentEligible=!!session?.user.email_confirmed_at&&paymentPortalEligible(roles,roles.some(r=>["admin","reviewer","course_publisher"].includes(r))?false:(await ownMemberships(session!,true)).length>0);
 
   let noticeCounts:NotificationCounts|null=null;
   if(session?.user.email_confirmed_at){try{const {unread,responses,attention}=await notificationInbox(session,"all",0,true);noticeCounts={unread,responses,attention};}catch{/* The workspace remains usable during notification outages. */}}
@@ -34,6 +37,7 @@ export async function LearnerSidebar() {
         { href: "/catalogue", label: "Course catalogue" },
         { href: "/catalogue?view=my-learning", label: "Enrolled courses" },
         { href: "/profile", label: "Profile" },
+        ...(paymentEligible?[{href:"/payments",label:"My payment portal"}]:[]),
         ...(session ? [
           { href: "/company", label: "Company workspaces" },
           { href: "/policies", label: "Policies and reviews" },
@@ -49,7 +53,7 @@ export async function LearnerSidebar() {
           { href: "/admin/assessments", label: "Scannex assessments" },
           { href: "/admin/courses", label: "Course preview" },
           ...(principal ? [{ href: "/admin/payments/stripe", label: "Stripe payment portal" }] : []),
-          { href: "/admin/payments", label: "Payment planning" },
+          ...(principal ? [{ href: "/admin/payments", label: "Payment planning" }] : []),
           { href: "/admin/companies", label: "Companies and branding" },
           { href: "/admin/policies", label: "Platform policies" },
           ...(principal ? [{ href: "/admin/agreements", label: "Commercial drafts" }, { href: "/admin/service-costs", label: "Service cost register" }] : []),
