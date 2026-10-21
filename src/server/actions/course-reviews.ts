@@ -2,6 +2,8 @@
 
 import {randomUUID,randomBytes,createHash} from "node:crypto";
 
+import {hasReviewTask,selectedTasks,taskDecision,outstandingAssignedTasks,type ReviewTask} from "@/lib/review-tasks";
+import {requirePartnerOwner} from "@/server/services/publication-workflow";
 import {fixFinding,verifyFinding} from "@/lib/review-corrections";
 import {revalidatePath} from "next/cache";
 
@@ -61,7 +63,10 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
 
   const owner=(await rows<{id:string;slug:string}>(`/rest/v1/organisations?id=eq.${ownerId}&is_active=eq.true&select=id,slug`))[0];if(!owner)throw Error("Choose the current legal course owner.");
 
-  const people=reviewPeople(form.getAll("review_email").map(String),form.getAll("review_role").map(String),session.user.email!,form.getAll("review_scope").map(String));
+  const rawTasks=form.getAll("review_tasks").map(String);
+  const tasks=rawTasks.length?rawTasks.map(raw=>{const parsed=JSON.parse(raw);if(!Array.isArray(parsed)||parsed.some(x=>typeof x!=="string"))throw Error("Choose valid reviewer assignments.");return selectedTasks(parsed);}):undefined;
+  if(tasks&&tasks.length!==form.getAll("review_email").length)throw Error("Choose assignments for every reviewer.");
+  const people=reviewPeople(form.getAll("review_email").map(String),form.getAll("review_role").map(String),session.user.email!,form.getAll("review_scope").map(String),tasks);
 
   const partner=brand.slug!=="apgi"||owner.slug!=="apgi",acceptor=partner?normalizedEmail(text(form,"terms_acceptor",3,254)):"";
 
@@ -87,7 +92,7 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
 
   const messages=reviewMail(round,"invitation","invite",`You are invited to a collaborative course review by ${session.user.email}. Full reviewers examine every LU and quiz, mark coverage and submit a report, even when no issues are found. Every full report needs one different reviewer's endorsement. Peer-only checkers may read and endorse reports directly. Findings, screenshots and comments are shared with the assigned team. You may decline with a reason. Daily reminders stop when you finish, decline or reach the cutoff. Overdue work requires an extension and never counts as approval. Sign in with the invited email. Review access does not enrol you or grant administrator rights.`);
 
-  for(const m of messages){const invite=invitations.find(i=>i.email===m.to)!;m.body+=`\n\nFirst time on V2? Create your separate review account here: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}/join/${invite.token}`;}
+  for(const m of messages){const invite=invitations.find(i=>i.email===m.to)!;const person=people.find(p=>p.email===m.to)!;m.body+=`\n\nYour assignments: ${(person.tasks??["content"]).join(", ")}. ${hasReviewTask(person,"content")?"Complete your assigned content review and report.":"No learning-unit coverage or full content report is required for your assignment."}`;m.body+=`\n\nFirst time on V2? Create your separate review account here: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}/join/${invite.token}`;}
 
   const saved=await adminRest("/rest/v1/rpc/v2_create_course_review",{method:"POST",body:JSON.stringify({p_round:round,p_actor:session.user.id,p_mail:messages,p_invites:invitations.map(i=>({email:i.email,hash:createHash("sha256").update(i.token).digest("hex"),expires:cutoff}))})});
 
@@ -148,7 +153,7 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
    const target=normalizedEmail(text(form,"acknowledge_decline"));
    if(!d.participants.some(p=>p.email===target&&p.state==="declined"))throw Error("Choose a recorded declined reviewer.");
    d.participants=d.participants.filter(p=>p.email!==target);
-   if(d.participants.filter(p=>p.role==="primary"&&p.state!=="declined").length<2)throw Error("At least two full reviewers must remain.");
+   if(d.participants.filter(p=>p.role==="primary"&&p.state!=="declined"&&hasReviewTask(p,"content")).length<2)throw Error("At least two full reviewers must remain.");
    if(d.workflow)delete d.workflow.contentApproval;
    const reason=text(form,"decision_reason",5);reviewEvent(d,email,op,`${target}: ${reason}. Approved assignment ${request.id}.`);
    mail=reviewMail(round,"review_change_decided",`acknowledge:${request.id}:${target}`,`${email} acknowledged ${target}'s recorded decline after approving ${request.email}'s assignment. ${reason}`,[...new Set([d.requester,request.requestedBy])]);
@@ -176,7 +181,8 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
     else {
 
-     const scope=text(form,"review_scope");if(!["content","content_and_commercials"].includes(scope))throw Error("Choose a review scope.");request.scope=scope as ReviewChangeRequest["scope"];
+     const taskValues=form.getAll("review_task").map(String);if(taskValues.length||form.get("explicit_tasks")==="yes")request.tasks=selectedTasks(taskValues);
+     const scope=request.tasks?(request.tasks.includes("commercials")?"content_and_commercials":"content"):text(form,"review_scope");if(!["content","content_and_commercials"].includes(scope))throw Error("Choose a review scope.");request.scope=scope as ReviewChangeRequest["scope"];
 
      if(kind==="scope") {request.target=normalizedEmail(text(form,"recipient",3,254));if(!d.participants.some(p=>p.email===request.target))throw Error("Choose an assigned reviewer.");}
 
@@ -198,7 +204,7 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
     if(form.get("approve_now")!=="on"){
 
-     mail=reviewMail(round,"review_change_requested",request.id,`${email} requests ${kind}: ${request.reason}. Proposed cutoff: ${request.cutoff??"unchanged"}. Proposed reviewer: ${request.email??request.target??"unchanged"}. Scope: ${request.scope??"unchanged"}. ${request.target?`Reviewer to replace/change: ${request.target}.`:""} Declined reviewers awaiting acknowledgement: ${d.participants.filter(p=>p.state==="declined").map(p=>p.email).join(", ")||"None"}. Sign in and open Manage the request to approve or reject. No team or deadline change has been made.`,[...new Set([d.requester,"johan.ras@apginc.ca","jorrie.jordaan@apginc.ca"])]);
+     mail=reviewMail(round,"review_change_requested",request.id,`${email} requests ${kind}: ${request.reason}. Proposed cutoff: ${request.cutoff??"unchanged"}. Proposed reviewer: ${request.email??request.target??"unchanged"}. Scope: ${request.tasks?.join(", ")??request.scope??"unchanged"}. ${request.target?`Reviewer to replace/change: ${request.target}.`:""} Declined reviewers awaiting acknowledgement: ${d.participants.filter(p=>p.state==="declined").map(p=>p.email).join(", ")||"None"}. Sign in and open Manage the request to approve or reject. No team or deadline change has been made.`,[...new Set([d.requester,"johan.ras@apginc.ca","jorrie.jordaan@apginc.ca"])]);
 
      notice="Request saved and sent to APGI for approval. The current assignment and cutoff remain in force.";
 
@@ -226,7 +232,7 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
      if(request.kind==="extension") {if(!request.cutoff||Date.parse(request.cutoff)<=Math.max(Date.now(),Date.parse(d.cutoff)))throw Error("The proposed deadline is no longer an extension. Request a later cutoff.");d.cutoff=request.cutoff;}
 
-     else if(request.kind==="scope") {const target=d.participants.find(p=>p.email===request.target);if(!target)throw Error("The assigned reviewer changed. Request an updated scope change.");target.scope=request.scope;}
+     else if(request.kind==="scope") {const target=d.participants.find(p=>p.email===request.target);if(!target)throw Error("The assigned reviewer changed. Request an updated scope change.");target.scope=request.scope;target.tasks=request.tasks;if(target.email===d.requester&&!hasReviewTask(target,"content"))throw Error("The review requester must retain the content review assignment.");if(d.participants.filter(p=>p.role==="primary"&&p.state!=="declined"&&hasReviewTask(p,"content")).length<2)throw Error("At least two full content reviewers must remain assigned.");}
 
      else {
 
@@ -245,15 +251,15 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
       if(acknowledge){if(!d.participants.some(p=>p.email===acknowledge&&p.state==="declined"))throw Error("Choose a recorded declined reviewer to acknowledge.");d.participants=d.participants.filter(p=>p.email!==acknowledge);}
 
-      d.participants.push({email:request.email!,role:"primary",scope:request.scope,state:"invited",coverage:[]});
+      d.participants.push({email:request.email!,role:"primary",scope:request.scope,tasks:request.tasks,state:"invited",coverage:[]});
 
-      if(d.participants.filter(p=>p.role==="primary"&&p.state!=="declined").length<2)throw Error("At least two full reviewers must remain assigned.");
+      if(d.participants.filter(p=>p.role==="primary"&&p.state!=="declined"&&hasReviewTask(p,"content")).length<2)throw Error("At least two full reviewers must remain assigned.");
 
       const token=randomBytes(32).toString("base64url");
 
       await write("/rest/v1/course_review_join_tokens",{token_hash:createHash("sha256").update(token).digest("hex"),round_id:id,email:request.email,expires_at:d.cutoff});
 
-      mail=reviewMail(round,"invitation",`change-invite:${request.id}`,`${request.kind==="replacement"?`You are appointed as a replacement reviewer in place of ${request.target}.`:"You are appointed as an additional reviewer."} Review scope: ${request.scope}. Review every LU and quiz, submit a report, and obtain one independent endorsement. You may decline with a reason. Daily reminders stop when you finish, decline or reach the cutoff. Unfinished work requires an approved extension, never automatic approval.
+      mail=reviewMail(round,"invitation",`change-invite:${request.id}`,`${request.kind==="replacement"?`You are appointed as a replacement reviewer in place of ${request.target}.`:"You are appointed as an additional reviewer."} Assignments: ${request.tasks?.join(", ")??request.scope}. ${!request.tasks||request.tasks.includes("content")?"Complete the assigned content review; full reviewers cover every LU and quiz, submit a report and obtain independent endorsement.":"Review only the assigned commercial and/or branding tasks; no content report or LU coverage is required."} You may decline with a reason. Daily reminders stop when you finish, decline or reach the cutoff. Unfinished work requires an approved extension, never automatic approval.
 
 Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}/join/${token}`,[request.email!]);
 
@@ -265,7 +271,7 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
     request.status=decision==="approve"?"approved":"rejected";request.decisionBy=email;request.decisionAt=now;request.decisionReason=reason;
 
-    mail.push(...reviewMail(round,"review_change_decided",`decision:${request.id}`,`${email} ${request.status} the ${request.kind} request from ${request.requestedBy}: ${reason}. ${decision==="approve"?(request.kind==="extension"?`New cutoff: ${d.cutoff}.`:request.kind==="scope"?`${request.target} now has ${request.scope} scope.`:`A ${request.kind==="replacement"?`replacement reviewer, ${request.email}, has been appointed in place of ${request.target}`:`new reviewer, ${request.email}, has been appointed`}.`):"Existing assignments and cutoff remain unchanged."}`,[...new Set([request.requestedBy,d.requester,...d.participants.filter(p=>p.state!=="declined").map(p=>p.email)])]));
+    mail.push(...reviewMail(round,"review_change_decided",`decision:${request.id}`,`${email} ${request.status} the ${request.kind} request from ${request.requestedBy}: ${reason}. ${decision==="approve"?(request.kind==="extension"?`New cutoff: ${d.cutoff}.`:request.kind==="scope"?`${request.target} now has ${request.tasks?.join(", ")??request.scope} assignments.`:`A ${request.kind==="replacement"?`replacement reviewer, ${request.email}, has been appointed in place of ${request.target}`:`new reviewer, ${request.email}, has been appointed`}.`):"Existing assignments and cutoff remain unchanged."}`,[...new Set([request.requestedBy,d.requester,...d.participants.filter(p=>p.state!=="declined").map(p=>p.email)])]));
 
     notice=`Change request ${request.status}. Notifications are queued.`;
 
@@ -295,11 +301,29 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
    reviewEvent(d,email,op,`Invitation resent to ${recipient}.`);
 
+  }else if(op==="task_decision"){
+   assertReviewWork(round,fresh);
+   const task=text(form,"task");if(task!=="branding"&&task!=="commercials")throw Error("Choose branding or commercial review.");
+   const person=d.participants.find(p=>p.email===email),w=d.workflow,v=w?.commercials.at(-1);
+   const owner=task==="branding"&&!!w?.partner&&w.partnerEmail===email;
+   if(owner)await requirePartnerOwner(w!.partnerCompanyId??round.organisation_id,session.user.id);
+   if(!owner&&(!person||person.state==="declined"||!hasReviewTask(person,task)))throw Error("This review task is not assigned to you.");
+   if(person&&person.state!=="declined")claimReviewer(round,email,session.user.id);
+   if(task==="commercials"&&(!v||(!principal&&(!v.offeredAt||w?.stage!=="partner_offer"))))throw Error("The current commercial offer is not available for review.");
+   const target=task==="branding"?String(access.source.brand.brand_revision):v!.id;
+   if(text(form,"task_target")!==target)throw Error("The branding or commercial version changed. Reload before deciding.");
+   if(form.get("confirm_task")!=="on")throw Error("Confirm you reviewed this exact version.");
+   const decision=text(form,"decision");if(decision!=="approve"&&decision!=="changes")throw Error("Choose approve or changes requested.");
+   d.taskDecisions??=[];d.taskDecisions.push({id:randomUUID(),task,target,email,userId:session.user.id,at:now,decision,comment:text(form,"comment",5)});
+   if(person&&!hasReviewTask(person,"content"))person.state=outstandingAssignedTasks(round,person,access.source.brand.brand_revision).length?"active":"finished";
+   reviewEvent(d,email,op,`${task} revision ${target}: ${decision}. ${formText(form,"comment")}`);
+   mail=reviewMail(round,`${task}_review_decision`,`${task}:${round.revision}:${email}`,`${email} recorded ${decision} for ${task} revision ${target}: ${formText(form,"comment")}. This task decision does not replace joint APGI commercial signatures, company-owner acceptance or final publication.`);
+   notice=`${task==="branding"?"Branding":"Commercial"} review decision saved for this exact version.`;
   }else if(op==="commercial_feedback"){
 
    const person=d.participants.find(p=>p.email===email),w=d.workflow,v=w?.commercials?.at(-1);
 
-   if(!fresh||round.status!=="open"||!person||person.state==="declined"||person.scope!=="content_and_commercials"||!v?.offeredAt||w?.stage!=="partner_offer"||text(form,"version_id")!==v.id)throw Error("Commercial feedback is available only to an assigned commercial reviewer on the current offered version.");
+   if(!fresh||round.status!=="open"||!person||person.state==="declined"||!hasReviewTask(person,"commercials")||!v?.offeredAt||w?.stage!=="partner_offer"||text(form,"version_id")!==v.id)throw Error("Commercial feedback is available only to an assigned commercial reviewer on the current offered version.");
 
    const comment=text(form,"comment",5);
 
@@ -312,6 +336,8 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
   }else{
 
    assertReviewWork(round,fresh);const person=claimReviewer(round,email,session.user.id);
+
+   if(["finding","fixed","close","coverage","report","reopen_report","endorse","finish_peer"].includes(op)&&!hasReviewTask(person,"content"))throw Error("Content review is not assigned to you.");
 
    if(op==="finding"){
 
@@ -408,6 +434,8 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
     const report=d.reports.find(r=>r.id===text(form,"report_id"));
 
     if(!report||currentReport(d,report.email)?.id!==report.id)throw Error("Choose the latest committed report.");
+
+    if(!d.participants.some(p=>p.email===report.email&&hasReviewTask(p,"content")))throw Error("This report is no longer assigned for content review.");
 
     if(report.userId===session.user.id||report.email===email)throw Error("You cannot endorse your own report.");
 

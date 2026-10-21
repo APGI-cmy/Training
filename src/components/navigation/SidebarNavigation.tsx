@@ -1,14 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense,useEffect,useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
-type NavigationItem = { href: string; label: string };
+import {navigationGroups,currentNavigation,type NavigationItem} from "@/lib/navigation-groups";
+
+function NavigationGroup({label,items,currentHref}:{label:string;items:NavigationItem[];currentHref?:string}) {
+ const active=items.some(i=>i.href===currentHref),[open,setOpen]=useState(active);
+ useEffect(()=>{if(active)setOpen(true);},[active,currentHref]);
+ return <details className="sidebar-group" open={open} onToggle={e=>setOpen(e.currentTarget.open)}><summary data-active={active}>{label}</summary><div className="sidebar-submenu">{items.map(i=><Link key={i.href} href={i.href} aria-current={i.href===currentHref?"page":undefined}>{i.label}</Link>)}</div></details>;
+}
 
 function NavigationLinks({ items, currentHref }: { items: NavigationItem[]; currentHref?: string }) {
   return <nav className="sidebar-links" aria-label="Learner route navigation">
-    {items.map(({ href, label }) => <Link key={href} href={href} aria-current={href === currentHref ? "page" : undefined}>{label}</Link>)}
+    {items.filter(i=>i.href==="/dashboard").map(i=><Link key={i.href} href={i.href} aria-current={i.href===currentHref?"page":undefined}>{i.label}</Link>)}
+    {navigationGroups(items).map(g=><NavigationGroup key={g.id} label={g.label} items={g.items} currentHref={currentHref}/>)}
+    {items.filter(i=>i.href==="/profile").map(i=><Link key={i.href} href={i.href} aria-current={i.href===currentHref?"page":undefined}>{i.label}</Link>)}
   </nav>;
 }
 
@@ -16,11 +24,7 @@ function CurrentNavigation({ items }: { items: NavigationItem[] }) {
   const pathname = usePathname();
   const search = useSearchParams();
   // The catalogue has two navigation entries distinguished by the view filter.
-  const currentHref = pathname === "/catalogue"
-    ? search.get("view") === "my-learning" ? "/catalogue?view=my-learning" : "/catalogue"
-    : items.filter(({ href }) => !href.includes("?") &&
-        (pathname === href || (href !== "/admin" && pathname.startsWith(`${href}/`))))
-      .sort((a, b) => b.href.length - a.href.length)[0]?.href;
+  const currentHref=currentNavigation(items,pathname,search.get("view"));
   return <NavigationLinks items={items} currentHref={currentHref} />;
 }
 

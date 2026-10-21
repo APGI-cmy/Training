@@ -6,11 +6,12 @@ import {formText,validId} from "@/lib/company-structure";
 
 import {moneyCents} from "@/lib/commercial-planning";
 
+import {companyBrandApproved,hasReviewTask,outstandingAssignedTasks} from "@/lib/review-tasks";
 import {contentReviewBlockers} from "@/lib/course-review";
 
 import {approveCommercial,acceptPartner,declinePartner,bothCommercialApprovals,currentCommercial,commercialPrincipals,quoteCommercial} from "@/lib/publication-workflow";
 
-import {requireReview,commitReview,reviewEvent,reviewMail,processReviewMail} from "@/server/services/course-reviews";
+import {requireReview,claimReviewer,commitReview,reviewEvent,reviewMail,processReviewMail} from "@/server/services/course-reviews";
 
 import {internalWorkflowMail,preparePartnerOnboarding,requirePartnerOwner} from "@/server/services/publication-workflow";
 
@@ -61,6 +62,9 @@ export async function publicationWorkflowAction(_:ReviewActionState,form:FormDat
 
   approveCommercial(w,{email,userId:session.user.id,at:now,decision,reason:formText(form,"reason",5,5000)},source.brand.brand_revision);
 
+  const assigned=round.document.participants.find(p=>p.email===email&&p.state!=="declined");
+  if(assigned){claimReviewer(round,email,session.user.id);if(assigned.tasks&&!hasReviewTask(assigned,"content"))assigned.state=outstandingAssignedTasks(round,assigned,source.brand.brand_revision).length?"active":"finished";}
+
   mail=internalWorkflowMail(round,"commercial_decision",`${v!.id}:${email}`,`${email} recorded ${decision} for commercial version ${v!.id}. ${bothCommercialApprovals(v)?(w.partner?"Both approvals are complete. The partner offer may now be sent.":"The APGI course is awaiting explicit final publication."):"The other principal's independent decision remains required, unless a revision is needed."}`);
 
  }else if(op==="send_offer"){
@@ -101,6 +105,7 @@ Publication remains subject to a final APGI principal action. Company learner pa
 
   if(!w.partner||email!==w.partnerEmail)throw Error("Only the nominated company owner may decide this offer.");await requirePartnerOwner(w.partnerCompanyId??round.organisation_id,session.user.id);
 
+  if(op==="partner_accept"&&!companyBrandApproved(round,source.brand.brand_revision))throw Error("Approve the current branding in Branding review before accepting the commercial offer.");
   if(op==="partner_accept")acceptPartner(w,{email,userId:session.user.id,at:now,price:moneyCents(formText(form,"overall_price",1,30),"overall learner fee"),brandRevision:source.brand.brand_revision,contentFingerprint:source.fingerprint,confirmContent:form.get("confirm_content")==="on",confirmBrand:form.get("confirm_brand")==="on",confirmTerms:form.get("confirm_terms")==="on"});
 
   else declinePartner(w,{email,userId:session.user.id,at:now,reasons:form.getAll("rejection_reason").map(String),explanation:formText(form,"explanation",5,5000),...(formText(form,"alternative_price")?{price:formText(form,"alternative_price")}:{}),...(formText(form,"alternative_apgi_share")?{apgiShare:formText(form,"alternative_apgi_share")}:{}),...(formText(form,"alternative_recovery_rate")?{recoveryRate:formText(form,"alternative_recovery_rate")}:{} )});
@@ -121,7 +126,7 @@ Status: ${w.stage}. Counter-offer responses used: ${w.counterOffers}/3.`);
 
   if(!w.partner||w.stage!=="ready_to_publish"||!v?.acceptance||v.acceptance.brandRevision===source.brand.brand_revision)throw Error("No branding reconfirmation is required.");
 
-  delete v.acceptance;w.stage="partner_offer";mail=reviewMail(round,"brand_reconfirmation",`${v.id}:brand:${source.brand.brand_revision}`,"Your company branding changed after acceptance. Confirm the current branding and unchanged commercial offer before publication.",[w.partnerEmail]);
+  v.previousAcceptances??=[];v.previousAcceptances.push(v.acceptance);delete v.acceptance;w.stage="partner_offer";mail=reviewMail(round,"brand_reconfirmation",`${v.id}:brand:${source.brand.brand_revision}`,"Your company branding changed after acceptance. Confirm the current branding and unchanged commercial offer before publication.",[w.partnerEmail]);
 
  }else throw Error("Choose a valid publication workflow action.");
 

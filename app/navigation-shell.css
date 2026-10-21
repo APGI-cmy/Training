@@ -75,6 +75,13 @@
   margin-top: auto;
 }
 
+.sidebar-group{border:1px solid var(--line);border-radius:8px;overflow:clip}
+.sidebar-group>summary{padding:12px;cursor:pointer;font-weight:750;line-height:1.4}
+.sidebar-group>summary[data-active=true]{background:var(--surface-strong);border-left:4px solid var(--accent)}
+.sidebar-group>summary:focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
+.sidebar-submenu{display:grid;padding:4px 8px 8px 16px;gap:3px}
+.sidebar-submenu a{font-size:.9rem;padding:9px 10px;font-weight:600}
+
 .sidebar-actions form,
 .sidebar-actions button {
   width: 100%;

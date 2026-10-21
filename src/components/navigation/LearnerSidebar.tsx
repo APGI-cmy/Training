@@ -13,12 +13,12 @@ export async function LearnerSidebar() {
   return (
     <aside className="learner-sidebar" aria-label="Learner navigation">
       <div>
-        <p className="sidebar-eyebrow">Learner navigation</p>
+        <p className="sidebar-eyebrow">Workspace navigation</p>
         <h2>
           <BrandingName />
         </h2>
         <p className="sidebar-guidance">
-          Browse your learning, discover courses, and manage your profile.
+          Open a group, then choose the page you need.
         </p>
       </div>
 

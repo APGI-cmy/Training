@@ -79,3 +79,18 @@ The current manifest identifies the whole course, so every nondeclined full revi
 All active publication-blocking findings reopen conservatively on each registered correction release. Each fix is recorded under **Comment or update finding → Changes implemented — request verification**, with the deployed fingerprint, fixer and date. A different assigned verified reviewer inspects the deployed material and selects **Verify and close finding**, recording their identity, date and fingerprint. Implementation and verification notify the team. A later revision invalidates this proof. UI, server actions and the final locked database publication transaction require current-version reports and independently verified blocking corrections; a bare closed flag is insufficient. Final requester content clearance, exact financial sign-offs, current company/brand acceptance and explicit final publication remain separate mandatory decisions. No real review is approved by this implementation work.
 
 V1, disabled V2 payment activation, course source packages and native Scannex assessments are unchanged.
+
+
+## 21 October 2026 — navigation and three review assignments
+
+The global sidebar groups existing authorised links into expandable workflow menus. The selected page remains highlighted. Sidebar groups do not carry progress indicators or grant additional permissions.
+
+Course publication has a separate, expandable guide beside the main content: course and review team; content review; corrections and independent verification; commercial preparation and joint APGI sign-off; branding review; final clearance and publication. Nested tasks link directly to their page or section. Saved evidence controls green ticks and red crosses; navigation cannot imply approval. On narrow screens the same guide sits above the content.
+
+Review assignments are independent checkboxes: Content, Commercials and Branding. A reviewer may hold any nonempty combination. At least two full content reviewers remain required, including the requester. A branding-only or commercial-only reviewer is not required to confirm learning-unit coverage or submit a content report. Existing legacy scope retains its prior meaning.
+
+Assigned branding decisions record the exact current branding revision, verified actor, decision and comments. The preview shows the current company identity, colours, footer and sample certificate. A platform-sharing company owner must explicitly approve the current branding before accepting its commercial offer. Another reviewer's branding approval cannot substitute for the owner. APGI's existing branding requires no additional reviewer unless assigned; final APGI branding confirmation remains in force. Branding changes invalidate approval for the earlier revision and require reconfirmation without losing the previous commercial acceptance or chosen fee in the audit history.
+
+An actual approval of the current financial version by the assigned principal, or current owner acceptance, fulfils that same person's commercial-review assignment. An explicit changes request remains pending. Assigned commercial review does not substitute for both Johan and Jorrie's independent financial signatures or the company owner's acceptance.
+
+Private publication checks enforce all explicit assignments and the owner's current branding approval alongside existing content fingerprints, correction verification, independent endorsements, verified identities and financial gates. Daily reminders track unfinished assigned tasks and stop at the cutoff. Correction registration resets content review evidence while retaining unrelated commercial/branding decisions. These changes apply to V2 only and do not publish any course.

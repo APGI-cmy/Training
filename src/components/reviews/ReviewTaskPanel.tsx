@@ -1,0 +1,25 @@
+import {ReviewForm} from "./ReviewForms";
+import {canWork,type ReviewRound} from "@/lib/course-review";
+import {assignedTasks,taskDecision,companyBrandApproved,commercialReviewApproved,type TaskDecision} from "@/lib/review-tasks";
+import type {CompanyRecord} from "@/lib/company-structure";
+import {CertificatePreview} from "@/components/certificates/CertificatePreview";
+import {isDesign} from "@/lib/certificates/designs";
+
+function TaskForm({round,task,target,completed}:{round:ReviewRound;task:TaskDecision["task"];target:string;completed:boolean}){
+ return <details open={!completed}><summary>{completed?"Update my saved decision":"Record my review decision"}</summary><ReviewForm id={round.id} operation="task_decision" preserveFields hidden={{task,task_target:target}} label={`Save ${task} review decision`}><label><input name="confirm_task" type="checkbox" required/> I reviewed this exact {task==="branding"?"branding revision, including the logo, colours and certificate":"commercial version"}.</label><label>Decision<select name="decision"><option value="approve">Approve this version</option><option value="changes">Changes requested</option></select></label><label>Review comments<textarea name="comment" required minLength={5} maxLength={5000}/></label></ReviewForm></details>;
+}
+export function ReviewTaskPanel({round,brand,email,principal,hash}:{round:ReviewRound;brand:CompanyRecord;email:string;principal:boolean;hash:string}){
+ const d=round.document,w=d.workflow,p=d.participants.find(p=>p.email===email),tasks=p?assignedTasks(p):[],v=w?.commercials.at(-1);
+ const owner=!!w?.partner&&email===w.partnerEmail,brandingAssigned=tasks.includes("branding"),editable=canWork(round)&&hash===round.fingerprint&&(owner||p?.state!=="declined");
+ const branding=taskDecision(d,email,"branding",String(brand.brand_revision));
+ const logoUrl=brand.logo_path&&process.env.NEXT_PUBLIC_SUPABASE_URL?`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/alp-branding-assets/${brand.logo_path}`:null;
+ return <><section className="review-box" id="branding-review"><h2>Branding review</h2><p>{brand.name} · Branding revision {brand.brand_revision}</p><p>{w?.partner?"The company owner must explicitly sign off the current branding before accepting the offer. Assigned branding reviewers also record their own decisions.":"APGI branding is already set up. No additional branding review is required unless a branding reviewer has been assigned."}</p>
+ <div className="review-brand-preview"><div style={{borderTop:`8px solid ${brand.primary_color}`}}>{logoUrl?<img src={logoUrl} alt={`${brand.name} logo`} width={180}/>:<p>Logo: {brand.logo_path?"Configured":"Not configured"}</p>}<h3>{brand.name}</h3><dl>{[["Primary colour",brand.primary_color],["Secondary colour",brand.secondary_color],["Accent colour",brand.accent_color],["Footer",brand.footer_text]].map(([label,value])=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></div><CertificatePreview snapshot={{name:"Sample learner",course:d.title,organisation:brand.name,templateId:isDesign(brand.certificate_template_id)?brand.certificate_template_id:"classic",primary:brand.primary_color,secondary:brand.secondary_color,accent:brand.accent_color,logoPath:brand.logo_path,test:true,statement:"Branding review preview"}} logoUrl={logoUrl} date="Branding preview"/></div>
+ {(principal||(owner&&(!w?.partnerCompanyId||w.partnerCompanyId===round.organisation_id)))?<p><a className="secondary-button" href={`/company/${round.organisation_id}?returnTo=${encodeURIComponent(`/course-reviews/${round.id}`)}`}>Open company branding and return to this review</a></p>:null}
+ {w?.partner?<p><strong>Company-owner branding sign-off: {companyBrandApproved(round,brand.brand_revision)?"Approved for this revision":"Outstanding"}</strong></p>:null}
+ <ul>{d.participants.filter(p=>p.tasks?.includes("branding")&&p.state!=="declined").map(p=>{const decision=taskDecision(d,p.email,"branding",String(brand.brand_revision));return <li key={p.email}>{p.email}: {decision?.decision==="approve"?"Approved":decision?.decision==="changes"?"Changes requested":"Awaiting review"}{decision?` · ${decision.comment}`:""}</li>;})}</ul>
+ {editable&&(brandingAssigned||owner)?<TaskForm round={round} task="branding" target={String(brand.brand_revision)} completed={branding?.decision==="approve"}/>:null}
+ </section>
+ {tasks.includes("commercials")&&v&&(principal||(v.offeredAt&&w?.stage==="partner_offer"))?<section className="review-box" id="assigned-commercial-review"><h2>My commercial review assignment</h2><p>Commercial version {w!.commercials.length} · Proposed fee: {v.configuration.currency} {(v.proposedPrice/100).toFixed(2)}. APGI share: {v.configuration.apgi_share}%; partner share: {v.configuration.platform_user_share}%.</p><p>This review records your assessment. Johan and Jorrie still sign the exact financial version independently, and the company owner accepts the offer.</p>{editable?<TaskForm round={round} task="commercials" target={v.id} completed={commercialReviewApproved(d,email,p?.userId)}/>:null}</section>:null}
+ </>;
+}

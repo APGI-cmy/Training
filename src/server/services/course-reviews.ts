@@ -16,6 +16,7 @@ import {getCourseBySlug} from "@/lib/courses";
 
 import {validId,type DraftRecord,type CompanyRecord} from "@/lib/company-structure";
 
+import {outstandingAssignedTasks} from "@/lib/review-tasks";
 import {canWork,currentReport,needsReminder,normalizedEmail,progressText,reviewBlockers,type ReviewRound,type ReviewDocument} from "@/lib/course-review";
 
 import manifest from "@/data/course-review-manifest.json";
@@ -141,18 +142,21 @@ export async function processReviewMail(){
  if(!claimed.ok)throw Error("Review email queue unavailable.");
 
  const batch=await claimed.json() as MailRow[];let sent=0;
+ const brandRevisions=new Map<string,number>();
 
  for(const m of batch){
 
   const round=(await rows<ReviewRound>(`/rest/v1/course_review_rounds?id=eq.${m.round_id}&select=*&limit=1`))[0];
 
   const person=round?.document.participants.find(p=>p.email===m.recipient);
+  if(round&&person?.tasks?.includes("branding")&&!brandRevisions.has(round.organisation_id)){const brand=(await rows<{brand_revision:number}>(`/rest/v1/organisations?id=eq.${round.organisation_id}&select=brand_revision&limit=1`))[0];if(brand)brandRevisions.set(round.organisation_id,brand.brand_revision);}
+  const brandRevision=round?brandRevisions.get(round.organisation_id)??round.document.brand.revision:0;
   const currentOffer=round?.document.workflow?.commercials.at(-1);
   const staleOffer=m.kind==="partner_offer"&&(!currentOffer||!m.notification_key.includes(currentOffer.id)||round?.document.workflow?.stage!=="partner_offer");
 
   // Re-evaluate at send time: queued reminders cannot outlive their task/cutoff.
 
-  if(!round||staleOffer||round.status==="cancelled"||((m.kind==="reminder"||m.kind==="invitation")&&(!person||!needsReminder(round,person)))||(m.kind==="progress_digest"&&round.status!=="open")){
+  if(!round||staleOffer||round.status==="cancelled"||((m.kind==="reminder"||m.kind==="invitation")&&(!person||!needsReminder(round,person,Date.now(),brandRevision)))||(m.kind==="progress_digest"&&round.status!=="open")){
 
    await write(`/rest/v1/course_review_mail?id=eq.${m.id}`,{state:"skipped"},"PATCH");continue;
 
@@ -189,13 +193,15 @@ export async function dailyReviewMail(){
 
  for(const round of rounds){
 
-  const d=round.document,overdue=!canWork(round)&&d.participants.some(p=>p.state!=="finished"&&p.state!=="declined");
+  const d=round.document;
+  const liveBrand=d.participants.some(p=>p.tasks?.includes("branding"))?(await rows<{brand_revision:number}>(`/rest/v1/organisations?id=eq.${round.organisation_id}&select=brand_revision&limit=1`))[0]?.brand_revision:d.brand.revision;
+  const overdue=!canWork(round)&&d.participants.some(p=>p.state!=="declined"&&(p.tasks?outstandingAssignedTasks(round,p,liveBrand).length>0:p.state!=="finished"));
 
   const mail:ReviewMail[]=[];
 
   if(hour>=9||overdue){
 
-   for(const p of d.participants)if(needsReminder(round,p))mail.push(...reviewMail(round,"reminder",`reminder:${day}`,"Your course-review task is outstanding. Submit your report or record a decline. Opening this message is not approval.",[p.email]));
+   for(const p of d.participants)if(needsReminder(round,p,Date.now(),liveBrand))mail.push(...reviewMail(round,"reminder",`reminder:${day}`,"Your assigned course-review tasks are outstanding. Complete the content report, commercial review and/or branding review assigned to you, or request an assignment change. Opening this message is not approval.",[p.email]));
 
    mail.push(...reviewMail(round,"progress_digest",`digest:${day}`,overdue?"Unfinished work is OVERDUE. An explicit extension is required; nothing was approved automatically.":"Daily course-review progress summary.",[d.requester]));
 

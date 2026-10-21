@@ -1,7 +1,8 @@
+import {hasReviewTask,reviewTaskBlockers,outstandingAssignedTasks,type ReviewTask,type TaskDecision} from "./review-tasks";
 import {correctionBlockers,type ContentRevision} from "./review-corrections";
 import {commercialPublicationBlockers,type PublicationWorkflow} from "./publication-workflow";
 
-export type ReviewPerson = { email: string; role: "primary" | "peer" | "partner"; scope?: "content" | "content_and_commercials"; state: "invited" | "active" | "finished" | "declined"; userId?: string; reason?: string; coverage: string[] };
+export type ReviewPerson = { email: string; role: "primary" | "peer" | "partner"; scope?: "content" | "content_and_commercials"; tasks?:ReviewTask[]; state: "invited" | "active" | "finished" | "declined"; userId?: string; reason?: string; coverage: string[] };
 
 export type ReviewReport = { id: string; fingerprint?:string; email: string; userId: string; at: string; text: string; coverage: string[]; endorsements: { email: string; userId: string; at: string; decision: "approve" | "changes"; text: string }[] };
 
@@ -77,7 +78,7 @@ export type ReviewChangeRequest = {
 
  cutoff?:string;email?:string;target?:string;scope?:"content"|"content_and_commercials";
 
- status:"pending"|"approved"|"rejected";decisionBy?:string;decisionAt?:string;decisionReason?:string;
+ tasks?:ReviewTask[]; status:"pending"|"approved"|"rejected";decisionBy?:string;decisionAt?:string;decisionReason?:string;
 
 };
 
@@ -87,6 +88,7 @@ export type ReviewDocument = {
   contentRevisions?:ContentRevision[];
 
   requests?: ReviewChangeRequest[];
+  taskDecisions?:TaskDecision[];
 
   title: string; brand: { name: string; revision: number; color: string; logo: string | null }; requester: string; requesterId: string;
 
@@ -102,7 +104,7 @@ export type ReviewRound = { id: string; plan_id: string | null; organisation_id:
 
 export const normalizedEmail = (value: string) => value.trim().toLowerCase();
 
-export function reviewPeople(emails: string[], roles: string[], requester: string, scopes: string[] = []): ReviewPerson[] {
+export function reviewPeople(emails: string[], roles: string[], requester: string, scopes: string[] = [], tasks?:ReviewTask[][]): ReviewPerson[] {
 
   const clean = emails.map(normalizedEmail);
 
@@ -110,9 +112,9 @@ export function reviewPeople(emails: string[], roles: string[], requester: strin
 
     throw Error("Include at least two different valid reviewer email addresses.");
 
-  const people = clean.map((email, i) => ({ email, role: roles[i] === "peer" ? "peer" as const : "primary" as const, scope: scopes[i] === "content_and_commercials" ? "content_and_commercials" as const : "content" as const, state: "invited" as const, coverage: [] }));
+  const people = clean.map((email, i) => ({ email, role: roles[i] === "peer" ? "peer" as const : "primary" as const, scope: scopes[i] === "content_and_commercials" ? "content_and_commercials" as const : "content" as const, ...(tasks?{tasks:tasks[i]}:{}), state: "invited" as const, coverage: [] }));
 
-  if (!people.some(p => p.email === normalizedEmail(requester) && p.role === "primary") || people.filter(p => p.role === "primary").length < 2)
+  if (!people.some(p => p.email === normalizedEmail(requester) && p.role === "primary" && hasReviewTask(p,"content")) || people.filter(p => p.role === "primary" && hasReviewTask(p,"content")).length < 2)
 
     throw Error("Include yourself and at least one other full reviewer. Peer-only checkers are optional.");
 
@@ -130,7 +132,7 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
 
   if (round.fingerprint !== currentFingerprint) reasons.push("Course content changed. Register the deployed correction in Changes implemented before continuing.");
 
-  const primaries = d.participants.filter(p => p.role === "primary" && p.state !== "declined");
+  const primaries = d.participants.filter(p => p.role === "primary" && hasReviewTask(p,"content") && p.state !== "declined");
 
   if (primaries.length < 2) reasons.push("At least two full reviewers are required.");
 
@@ -150,7 +152,7 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
 
     if (!report || p.state !== "finished") reasons.push(`${p.email}: submit your completed full review report.`);
 
-    else if (!report.endorsements.some(e => e.decision === "approve" && e.userId !== report.userId && e.email !== p.email && d.participants.some(person => person.email === e.email && person.state !== "declined"))) reasons.push(`${p.email}: independent report endorsement outstanding.`);
+    else if (!report.endorsements.some(e => e.decision === "approve" && e.userId !== report.userId && e.email !== p.email && d.participants.some(person => person.email === e.email && person.state !== "declined" && hasReviewTask(person,"content")))) reasons.push(`${p.email}: independent report endorsement outstanding.`);
 
     if (report?.endorsements.some(e => e.decision === "changes")) reasons.push(`${p.email}: a peer requested changes; submit a revised report.`);
 
@@ -165,7 +167,7 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
 
 export function reviewBlockers(round:ReviewRound,hash:string,brandRevision=round.document.brand.revision){
 
- const reasons=contentReviewBlockers(round,hash);const w=round.document.workflow;
+ const reasons=contentReviewBlockers(round,hash);reasons.push(...reviewTaskBlockers(round,brandRevision));const w=round.document.workflow;
 
  if(w)reasons.push(...commercialPublicationBlockers(w,hash,brandRevision));
 
@@ -177,9 +179,9 @@ export function reviewBlockers(round:ReviewRound,hash:string,brandRevision=round
 
 export function canWork(round: ReviewRound, now = Date.now()) { return round.status === "open" && now < Date.parse(round.document.cutoff); }
 
-export function needsReminder(round: ReviewRound, person: ReviewPerson, now = Date.now()) {
+export function needsReminder(round: ReviewRound, person: ReviewPerson, now = Date.now(),brandRevision=round.document.brand?.revision??0) {
 
-  return person.role!=="partner" && canWork(round, now) && person.state !== "finished" && person.state !== "declined";
+  return person.role!=="partner" && canWork(round, now) && person.state !== "declined" && (person.tasks?outstandingAssignedTasks(round,person,brandRevision).length>0:person.state!=="finished");
 
 }
 
