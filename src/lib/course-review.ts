@@ -1,6 +1,7 @@
 import {hasReviewTask,reviewTaskBlockers,outstandingAssignedTasks,type ReviewTask,type TaskDecision} from "./review-tasks";
 import {correctionBlockers,type ContentRevision} from "./review-corrections";
 import {commercialPublicationBlockers,type PublicationWorkflow} from "./publication-workflow";
+import {getCourseBySlug} from "./courses";
 
 export type ReviewPerson = { email: string; role: "primary" | "peer" | "partner"; scope?: "content" | "content_and_commercials"; tasks?:ReviewTask[]; state: "invited" | "active" | "finished" | "declined"; userId?: string; reason?: string; coverage: string[] };
 
@@ -167,7 +168,7 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
 
 export function reviewBlockers(round:ReviewRound,hash:string,brandRevision=round.document.brand.revision){
 
- const reasons=contentReviewBlockers(round,hash);reasons.push(...reviewTaskBlockers(round,brandRevision));const w=round.document.workflow;
+ const reasons=contentReviewBlockers(round,hash);reasons.push(...(getCourseBySlug(round.course_id)?.publicationIssues??[]),...reviewTaskBlockers(round,brandRevision));const w=round.document.workflow;
 
  if(w)reasons.push(...commercialPublicationBlockers(w,hash,brandRevision));
 

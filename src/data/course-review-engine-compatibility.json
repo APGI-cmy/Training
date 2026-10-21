@@ -1,0 +1,5 @@
+{
+  "engine": "1460d3aeb871b9ceb03ccc53d9e0ce924ac9174d2d35cd837b7b8567cad6b720",
+  "legacySource": "9e54cc09ee0ea1f3c500a62899ac7f29635d09532555b9a08e479c0fe0af8815",
+  "note": "Registry-only split. Individual course objects and delivered packages remain fingerprinted. Shared playback engine changes invalidate review normally."
+}

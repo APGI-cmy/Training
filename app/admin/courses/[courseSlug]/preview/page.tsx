@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { getCourseShell } from "@/lib/services/courses/get-course-shell";
+import {CoursePackageNotice} from "@/components/course/CoursePackageNotice";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,8 @@ export default async function AdminCoursePreviewPage({ params }: PageProps) {
         </p>
       <Link className="primary-button" href={`/course-reviews/new?course=${course.slug}`}>Start content review and publication workflow</Link>
       </header>
+
+      <CoursePackageNotice course={course}/>
 
       {course.slug === "scannex-training-programme" ? (
         <section className="admin-alert" aria-label="Scannex Viewer administration">

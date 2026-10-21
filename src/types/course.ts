@@ -109,5 +109,6 @@ export interface Course {
   duration: string;
   sourceRoot: string;
   integrationNotes: string[];
+  publicationIssues?: string[];
   units: LearningUnit[];
 }

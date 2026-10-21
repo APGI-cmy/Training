@@ -1,0 +1,203 @@
+{
+  "id": "tiger-kidnapping-telecommunications",
+  "slug": "tiger-kidnapping-telecommunications",
+  "title": "Tiger Kidnapping in Telecommunications",
+  "level": "Executive and family awareness",
+  "description": "An eight-unit awareness programme covering telecommunications-related kidnapping threats, exposure, warning signs, protective controls, reporting, response under duress, and recovery.",
+  "audience": "Telecommunications executives, employees and their families",
+  "duration": "8 self-paced learning units",
+  "sourceRoot": "/courses/Tiger%20kidnapping_telecommunications",
+  "integrationNotes": [
+    "Published iSpring content includes its own quizzes. No duplicate platform quizzes are added.",
+    "Available for company content, commercial and branding review. Learner publication requires the normal independent approvals and package corrections."
+  ],
+  "publicationIssues": [
+    "LU5 currently contains a package labelled Unit 4: Corporate Protective Controls. Supply and verify the correct Unit 5 before learner release."
+  ],
+  "units": [
+    {
+      "id": "tiger-telecom-lu-1",
+      "slug": "lu1",
+      "order": 1,
+      "title": "The Threat in a Telecommunications Context",
+      "subtitle": "Review the published presentation and its included quiz.",
+      "duration": "Self-paced",
+      "assetBase": "/courses/Tiger%20kidnapping_telecommunications/LU1",
+      "publishedPath": "/courses/Tiger%20kidnapping_telecommunications/LU1/res/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "The Threat in a Telecommunications Context",
+          "src": "/courses/Tiger%20kidnapping_telecommunications/LU1/res/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": [],
+      "scormPath": "/courses/Tiger%20kidnapping_telecommunications/LU1/res/index.html"
+    },
+    {
+      "id": "tiger-telecom-lu-2",
+      "slug": "lu2",
+      "order": 2,
+      "title": "Personal, Family and Digital Exposure",
+      "subtitle": "Review the published presentation and its included quiz.",
+      "duration": "Self-paced",
+      "assetBase": "/courses/Tiger%20kidnapping_telecommunications/LU2",
+      "publishedPath": "/courses/Tiger%20kidnapping_telecommunications/LU2/res/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Personal, Family and Digital Exposure",
+          "src": "/courses/Tiger%20kidnapping_telecommunications/LU2/res/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": [],
+      "scormPath": "/courses/Tiger%20kidnapping_telecommunications/LU2/res/index.html"
+    },
+    {
+      "id": "tiger-telecom-lu-3",
+      "slug": "lu3",
+      "order": 3,
+      "title": "Early Warning Signs",
+      "subtitle": "Review the published presentation and its included quiz.",
+      "duration": "Self-paced",
+      "assetBase": "/courses/Tiger%20kidnapping_telecommunications/LU3",
+      "publishedPath": "/courses/Tiger%20kidnapping_telecommunications/LU3/res/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Early Warning Signs",
+          "src": "/courses/Tiger%20kidnapping_telecommunications/LU3/res/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": [],
+      "scormPath": "/courses/Tiger%20kidnapping_telecommunications/LU3/res/index.html"
+    },
+    {
+      "id": "tiger-telecom-lu-4",
+      "slug": "lu4",
+      "order": 4,
+      "title": "Corporate Protective Controls",
+      "subtitle": "Review the published presentation and its included quiz.",
+      "duration": "Self-paced",
+      "assetBase": "/courses/Tiger%20kidnapping_telecommunications/LU4",
+      "publishedPath": "/courses/Tiger%20kidnapping_telecommunications/LU4/res/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Corporate Protective Controls",
+          "src": "/courses/Tiger%20kidnapping_telecommunications/LU4/res/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": [],
+      "scormPath": "/courses/Tiger%20kidnapping_telecommunications/LU4/res/index.html"
+    },
+    {
+      "id": "tiger-telecom-lu-5",
+      "slug": "lu5",
+      "order": 5,
+      "title": "Unit 5 \u2014 Package Correction Required",
+      "subtitle": "Uploaded package identifies itself as Unit 4; correction required.",
+      "duration": "Self-paced",
+      "assetBase": "/courses/Tiger%20kidnapping_telecommunications/LU5",
+      "publishedPath": "/courses/Tiger%20kidnapping_telecommunications/LU5/res/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Unit 5 \u2014 Package Correction Required",
+          "src": "/courses/Tiger%20kidnapping_telecommunications/LU5/res/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": [],
+      "scormPath": "/courses/Tiger%20kidnapping_telecommunications/LU5/res/index.html"
+    },
+    {
+      "id": "tiger-telecom-lu-6",
+      "slug": "lu6",
+      "order": 6,
+      "title": "Suspicion and Reporting",
+      "subtitle": "Review the published presentation and its included quiz.",
+      "duration": "Self-paced",
+      "assetBase": "/courses/Tiger%20kidnapping_telecommunications/LU6",
+      "publishedPath": "/courses/Tiger%20kidnapping_telecommunications/LU6/res/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Suspicion and Reporting",
+          "src": "/courses/Tiger%20kidnapping_telecommunications/LU6/res/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": [],
+      "scormPath": "/courses/Tiger%20kidnapping_telecommunications/LU6/res/index.html"
+    },
+    {
+      "id": "tiger-telecom-lu-7",
+      "slug": "lu7",
+      "order": 7,
+      "title": "Response under Duress",
+      "subtitle": "Review the published presentation and its included quiz.",
+      "duration": "Self-paced",
+      "assetBase": "/courses/Tiger%20kidnapping_telecommunications/LU7",
+      "publishedPath": "/courses/Tiger%20kidnapping_telecommunications/LU7/res/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Response under Duress",
+          "src": "/courses/Tiger%20kidnapping_telecommunications/LU7/res/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": [],
+      "scormPath": "/courses/Tiger%20kidnapping_telecommunications/LU7/res/index.html"
+    },
+    {
+      "id": "tiger-telecom-lu-8",
+      "slug": "lu8",
+      "order": 8,
+      "title": "Recovery, Care and Assurance",
+      "subtitle": "Review the published presentation and its included quiz.",
+      "duration": "Self-paced",
+      "assetBase": "/courses/Tiger%20kidnapping_telecommunications/LU8",
+      "publishedPath": "/courses/Tiger%20kidnapping_telecommunications/LU8/res/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Recovery, Care and Assurance",
+          "src": "/courses/Tiger%20kidnapping_telecommunications/LU8/res/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": [],
+      "scormPath": "/courses/Tiger%20kidnapping_telecommunications/LU8/res/index.html"
+    }
+  ]
+}

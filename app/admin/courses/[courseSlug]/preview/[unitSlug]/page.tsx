@@ -63,7 +63,7 @@ export default async function AdminCourseUnitPreviewPage({ params }: PageProps) 
           ) : (
             <figure className="media-item">
               <iframe title={`${unit.title} administrator preview`} src={embeddedSrc} loading="lazy" allow="fullscreen" allowFullScreen />
-              <figcaption>Published e-book is embedded inside the governed administrator preview. The learning activity will replace this view once its SCORM package is verified.</figcaption>
+              <figcaption>{course.slug === "scannex-training-programme" ? "Published e-book is embedded inside the governed administrator preview. The learning activity will replace this view once its SCORM package is verified." : "Published learning presentation. This web export does not report SCORM completion or quiz results."}</figcaption>
             </figure>
           )}
 

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest identifier="tcdE7rIMJyXCX" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:imsss="http://www.imsglobal.org/xsd/imsss" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3" xmlns:adlseq="http://www.adlnet.org/xsd/adlseq_v1p3" xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3" xmlns:lom="http://ltsc.ieee.org/xsd/LOM" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://www.imsglobal.org/xsd/imsss imsss_v1p0.xsd http://www.adlnet.org/xsd/adlcp_v1p3 adlcp_v1p3.xsd http://www.adlnet.org/xsd/adlseq_v1p3 adlseq_v1p3.xsd http://www.adlnet.org/xsd/adlnav_v1p3 adlnav_v1p3.xsd http://ltsc.ieee.org/xsd/LOM lom.xsd">
+<metadata>
+<schema>ADL SCORM</schema>
+<schemaversion>2004 4th Edition</schemaversion>
+<lom:lom>
+<lom:general>
+<lom:title>
+<lom:string>Tiger_Kidnapping_Telecommunications_Unit_06_Prototype</lom:string>
+</lom:title>
+</lom:general>
+<lom:educational>
+<lom:typicalLearningTime>
+<lom:duration>PT1H0M0S</lom:duration>
+</lom:typicalLearningTime>
+</lom:educational>
+</lom:lom>
+</metadata>
+<organizations default="tiger_kidnapping_telecommunications_unit_06_prototype_organization">
+<organization identifier="tiger_kidnapping_telecommunications_unit_06_prototype_organization">
+<title>Tiger_Kidnapping_Telecommunications_Unit_06_Prototype</title>
+<item identifier="AA097851-1FC3-4524-BFFB-F23D1586A7D1" identifierref="resource">
+<title>Tiger_Kidnapping_Telecommunications_Unit_06_Prototype</title>
+<imsss:sequencing>
+<imsss:deliveryControls completionSetByContent="true" objectiveSetByContent="true"/>
+</imsss:sequencing>
+</item>
+<imsss:sequencing>
+<imsss:controlMode flow="true"/>
+</imsss:sequencing>
+</organization>
+</organizations>
+<resources>
+<resource identifier="resource" type="webcontent" adlcp:scormType="sco" href="res/index.html">
+<file href="res/index.html"/>
+<file href="res/lms.js"/>
+<file href="res/data/thmb1.jpg"/>
+<file href="res/data/slide1.js"/>
+<file href="res/data/slide1.css"/>
+<file href="res/data/video1.mp4"/>
+<file href="res/data/thmb2.jpg"/>
+<file href="res/data/slide2.js"/>
+<file href="res/data/slide2.css"/>
+<file href="res/data/wo1/index.html"/>
+<file href="res/data/thmb3.jpg"/>
+<file href="res/data/slide3.js"/>
+<file href="res/data/slide3.css"/>
+<file href="res/data/wo2/index.html"/>
+<file href="res/data/thmb4.jpg"/>
+<file href="res/data/slide4.js"/>
+<file href="res/data/slide4.css"/>
+<file href="res/data/wo3/index.html"/>
+<file href="res/data/thmb5.jpg"/>
+<file href="res/data/slide5.js"/>
+<file href="res/data/slide5.css"/>
+<file href="res/data/quiz1.js"/>
+<file href="res/data/quiz1/audios/snd-087b92bd897857c334e14a82d668c272453d6ac1.mp3"/>
+<file href="res/data/quiz1/audios/snd-0ba4790967aea70d02422658bfb8a0b324fefa20.mp3"/>
+<file href="res/data/quiz1/audios/snd-0c31afd98b5dd8450ef57154a33bf5d6bb05229d.mp3"/>
+<file href="res/data/quiz1/audios/snd-2fdb5b4d06360b028abe73c1d13ec7cf76df6495.mp3"/>
+<file href="res/data/quiz1/audios/snd-37ad68346f5f0f538d52cae50577810f9a423c61.mp3"/>
+<file href="res/data/quiz1/audios/snd-3c337b36df5ae5175b5d99ffcf7b6a11da82a6d4.mp3"/>
+<file href="res/data/quiz1/audios/snd-4377fbc7688b6cd059e3d9d7fa1775b33a92d4cf.mp3"/>
+<file href="res/data/quiz1/audios/snd-48211fa2b4f9ddcceb6469e83a67b1e143b4523c.mp3"/>
+<file href="res/data/quiz1/audios/snd-4c852a09270935551e9a4c7e184bbde000c37def.mp3"/>
+<file href="res/data/quiz1/audios/snd-4dabfa195d6946a694ce0820afc238ea85af8374.mp3"/>
+<file href="res/data/quiz1/audios/snd-580146b95c71badd2e131fe71eff72139c791ed4.mp3"/>
+<file href="res/data/quiz1/audios/snd-5c830e3f2b6f2ec15d2364f05a9be7a12801dc0b.mp3"/>
+<file href="res/data/quiz1/audios/snd-6512a29603e02d70c7271577a62dd254f830bd9f.mp3"/>
+<file href="res/data/quiz1/audios/snd-659a72887aa574ba77598bc152b22dde28b9161e.mp3"/>
+<file href="res/data/quiz1/audios/snd-6dba939a33f7bdc8f8fe32e4ea3b62e9e100b1ad.mp3"/>
+<file href="res/data/quiz1/audios/snd-736525337a0a0e1f1f8d8f8df786ec82d9272cd0.mp3"/>
+<file href="res/data/quiz1/audios/snd-7595a7f3d1a68ea2e8349a96c52195970ac4f8a5.mp3"/>
+<file href="res/data/quiz1/audios/snd-75d1c7c4d5e93653a65322e15adfc2094dc4a37b.mp3"/>
+<file href="res/data/quiz1/audios/snd-79a459b5db9233346d73ec9dac845c5e5be20767.mp3"/>
+<file href="res/data/quiz1/audios/snd-7de9ff436fdebd1c622a8d9e244360c664177e87.mp3"/>
+<file href="res/data/quiz1/audios/snd-7f148b3d1ab7941d17967212bad7ae338c77a32f.mp3"/>
+<file href="res/data/quiz1/audios/snd-8b1f0a2b7c2ade7faae468818074e91c4d11b474.mp3"/>
+<file href="res/data/quiz1/audios/snd-8bd3ff20b964604d7944ec89aba47db2e2a5439b.mp3"/>
+<file href="res/data/quiz1/audios/snd-98d6acbdfde288a799f02320ca55848d49c0c0c2.mp3"/>
+<file href="res/data/quiz1/audios/snd-9ae6661895dab97720860d09ece9ba86d4297a18.mp3"/>
+<file href="res/data/quiz1/audios/snd-9dfe9253fa203b536a7401b89980d6bbd72d8e84.mp3"/>
+<file href="res/data/quiz1/audios/snd-a13e390f20c4170e84c7be79ec22bf1a989dc31d.mp3"/>
+<file href="res/data/quiz1/audios/snd-a774800aa7f809af02c2733979bc58856cccbecc.mp3"/>
+<file href="res/data/quiz1/audios/snd-a843cdcc3f0ae50af3cb8dbc6fd2d3d0006adaf6.mp3"/>
+<file href="res/data/quiz1/audios/snd-a89d732a5026703930fa6662e497148285aaccc9.mp3"/>
+<file href="res/data/quiz1/audios/snd-ab94ee35ff600934f4d797eec23c0f2fc478c669.mp3"/>
+<file href="res/data/quiz1/audios/snd-aceb9d8e25dc1e89730b928a1a624ea7c99db8e4.mp3"/>
+<file href="res/data/quiz1/audios/snd-be135e36d3f7b49afba17b4ac81ede4ca12ff47f.mp3"/>
+<file href="res/data/quiz1/audios/snd-bf98cf1eb5b05d57252d818cf1adc029c3a6668d.mp3"/>
+<file href="res/data/quiz1/audios/snd-c28f8983b44bee35ce20a92080e9f20d3aa62a63.mp3"/>
+<file href="res/data/quiz1/audios/snd-c3a86f36c24b30187bae0d9219d3cf8c25794f54.mp3"/>
+<file href="res/data/quiz1/audios/snd-cdae149ba99a371e394d6682f63ac1efd25e559c.mp3"/>
+<file href="res/data/quiz1/audios/snd-d5d96b96a2670f4cc166cdd814e7025d707b3930.mp3"/>
+<file href="res/data/quiz1/audios/snd-ebaf2b38330b76c599c67851aee4352301b333c6.mp3"/>
+<file href="res/data/quiz1/fonts/fnt0.woff"/>
+<file href="res/data/quiz1/fonts/fnt1.woff"/>
+<file href="res/data/quiz1/fonts/fnt2.woff"/>
+<file href="res/data/quiz1/fonts/fnt3.woff"/>
+<file href="res/data/quiz1/fonts/fnt4.woff"/>
+<file href="res/data/quiz1/fonts/fnt5.woff"/>
+<file href="res/data/quiz1/fonts/fnt6.woff"/>
+<file href="res/data/quiz1/fonts/fnt7.woff"/>
+<file href="res/data/quiz1/fonts/fnt8.woff"/>
+<file href="res/data/quiz1/images/img-ef5daeb0beb9320604288bb2f6df4e5abf9e89b4.png"/>
+<file href="res/data/quiz1/images/quiz_bg_0.png"/>
+<file href="res/data/thmb6.jpg"/>
+<file href="res/data/quizplayer.js"/>
+<file href="res/index.html"/>
+<file href="res/data/player.js"/>
+<file href="res/data/eraser.cur"/>
+<file href="res/data/highlighter.cur"/>
+<file href="res/data/marker.cur"/>
+<file href="res/data/lock.cur"/>
+<file href="res/data/browsersupport.js"/>
+<file href="res/data/apple-touch-icon.png"/>
+<file href="res/data/favicon.ico"/>
+<file href="res/data/fnt0.woff"/>
+<file href="res/data/fnt4.woff"/>
+<file href="res/data/fnt6.woff"/>
+<file href="res/data/fnt7.woff"/>
+<file href="res/data/fnt8.woff"/>
+<file href="res/data/fnt9.woff"/>
+<file href="res/data/html5-unsupported.html"/>
+<file href="res/data/img0.png"/>
+<file href="res/data/img1.png"/>
+<file href="res/data/img10.png"/>
+<file href="res/data/img11.png"/>
+<file href="res/data/img12.png"/>
+<file href="res/data/img13.png"/>
+<file href="res/data/img14.png"/>
+<file href="res/data/img15.png"/>
+<file href="res/data/img2.png"/>
+<file href="res/data/img3.png"/>
+<file href="res/data/img4.png"/>
+<file href="res/data/img5.svg"/>
+<file href="res/data/img6.png"/>
+<file href="res/data/img7.png"/>
+<file href="res/data/img8.png"/>
+<file href="res/data/img9.png"/>
+<file href="res/data/goodbye.html"/>
+</resource>
+</resources>
+</manifest>
