@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest identifier="mlGExr87YddQ7" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:imsss="http://www.imsglobal.org/xsd/imsss" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3" xmlns:adlseq="http://www.adlnet.org/xsd/adlseq_v1p3" xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3" xmlns:lom="http://ltsc.ieee.org/xsd/LOM" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://www.imsglobal.org/xsd/imsss imsss_v1p0.xsd http://www.adlnet.org/xsd/adlcp_v1p3 adlcp_v1p3.xsd http://www.adlnet.org/xsd/adlseq_v1p3 adlseq_v1p3.xsd http://www.adlnet.org/xsd/adlnav_v1p3 adlnav_v1p3.xsd http://ltsc.ieee.org/xsd/LOM lom.xsd">
+<manifest identifier="vydwxCJWJ1Ive" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:imsss="http://www.imsglobal.org/xsd/imsss" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3" xmlns:adlseq="http://www.adlnet.org/xsd/adlseq_v1p3" xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3" xmlns:lom="http://ltsc.ieee.org/xsd/LOM" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://www.imsglobal.org/xsd/imsss imsss_v1p0.xsd http://www.adlnet.org/xsd/adlcp_v1p3 adlcp_v1p3.xsd http://www.adlnet.org/xsd/adlseq_v1p3 adlseq_v1p3.xsd http://www.adlnet.org/xsd/adlnav_v1p3 adlnav_v1p3.xsd http://ltsc.ieee.org/xsd/LOM lom.xsd">
 <metadata>
 <schema>ADL SCORM</schema>
 <schemaversion>2004 4th Edition</schemaversion>
 <lom:lom>
 <lom:general>
 <lom:title>
-<lom:string>Tiger_Kidnapping_Telecommunications_Unit_05</lom:string>
+<lom:string>Unit 5 - Personal and Family Readiness</lom:string>
 </lom:title>
 </lom:general>
 <lom:educational>
@@ -16,11 +16,11 @@
 </lom:educational>
 </lom:lom>
 </metadata>
-<organizations default="tiger_kidnapping_telecommunications_unit_05_organization">
-<organization identifier="tiger_kidnapping_telecommunications_unit_05_organization">
-<title>Tiger_Kidnapping_Telecommunications_Unit_05</title>
-<item identifier="D0EF1798-E954-4249-990D-6E08673FFE77" identifierref="resource">
-<title>NKS_Capital_Unit_04_Course_Label_Slide</title>
+<organizations default="unit_5_-_personal_and_family_readiness_organization">
+<organization identifier="unit_5_-_personal_and_family_readiness_organization">
+<title>Unit 5 - Personal and Family Readiness</title>
+<item identifier="D352D933-B5FE-4489-B763-76F65C66C5B2" identifierref="resource">
+<title>Unit 5 - Personal and Family Readiness</title>
 <imsss:sequencing>
 <imsss:deliveryControls completionSetByContent="true" objectiveSetByContent="true"/>
 </imsss:sequencing>
@@ -41,56 +41,134 @@
 <file href="res/data/thmb2.jpg"/>
 <file href="res/data/slide2.js"/>
 <file href="res/data/slide2.css"/>
+<file href="res/data/wo1/audio/01-introduction.mp3"/>
+<file href="res/data/wo1/audio/02-agree-a-shared-principle.mp3"/>
+<file href="res/data/wo1/audio/03-keep-information-bounded.mp3"/>
+<file href="res/data/wo1/audio/04-identify-trusted-support.mp3"/>
+<file href="res/data/wo1/audio/05-confirm-normal-changes.mp3"/>
+<file href="res/data/wo1/audio/06-summary.mp3"/>
+<file href="res/data/wo1/images/optimized/u4_la01_01_intro_conversation.jpg"/>
+<file href="res/data/wo1/images/optimized/u4_la01_02_shared_principle.jpg"/>
+<file href="res/data/wo1/images/optimized/u4_la01_03_information_boundaries.jpg"/>
+<file href="res/data/wo1/images/optimized/u4_la01_04_trusted_support.jpg"/>
+<file href="res/data/wo1/images/optimized/u4_la01_05_normal_changes.jpg"/>
+<file href="res/data/wo1/images/optimized/u4_la01_06_summary_together.jpg"/>
+<file href="res/data/wo1/images/optimized/u5_la01_01_intro_conversation.jpg"/>
+<file href="res/data/wo1/images/optimized/u5_la01_02_shared_principle.jpg"/>
+<file href="res/data/wo1/images/optimized/u5_la01_03_information_boundaries.jpg"/>
+<file href="res/data/wo1/images/optimized/u5_la01_04_trusted_support.jpg"/>
+<file href="res/data/wo1/images/optimized/u5_la01_05_normal_changes.jpg"/>
+<file href="res/data/wo1/images/optimized/u5_la01_06_summary_together.jpg"/>
+<file href="res/data/wo1/images/u5_la01_01_intro_conversation.png"/>
+<file href="res/data/wo1/images/u5_la01_02_shared_principle.png"/>
+<file href="res/data/wo1/images/u5_la01_03_information_boundaries.png"/>
+<file href="res/data/wo1/images/u5_la01_04_trusted_support.png"/>
+<file href="res/data/wo1/images/u5_la01_05_normal_changes.png"/>
+<file href="res/data/wo1/images/u5_la01_06_summary_together.png"/>
 <file href="res/data/wo1/index.html"/>
+<file href="res/data/wo1/index.source.html"/>
+<file href="res/data/wo1/narration.md"/>
+<file href="res/data/wo1/README.txt"/>
+<file href="res/data/wo1/visual_production_brief.md"/>
 <file href="res/data/thmb3.jpg"/>
 <file href="res/data/slide3.js"/>
 <file href="res/data/slide3.css"/>
+<file href="res/data/wo2/audio/01-introduction.mp3"/>
+<file href="res/data/wo2/audio/02-choose-reliable-contacts.mp3"/>
+<file href="res/data/wo2/audio/03-keep-channels-private.mp3"/>
+<file href="res/data/wo2/audio/04-confirm-an-unexpected-change.mp3"/>
+<file href="res/data/wo2/audio/05-use-calm-factual-language.mp3"/>
+<file href="res/data/wo2/audio/06-summary.mp3"/>
+<file href="res/data/wo2/images/optimized/u4_la02_01_intro_network.jpg"/>
+<file href="res/data/wo2/images/optimized/u4_la02_02_reliable_contacts.jpg"/>
+<file href="res/data/wo2/images/optimized/u4_la02_03_private_channels.jpg"/>
+<file href="res/data/wo2/images/optimized/u4_la02_04_confirm_change.jpg"/>
+<file href="res/data/wo2/images/optimized/u4_la02_05_calm_language.jpg"/>
+<file href="res/data/wo2/images/optimized/u4_la02_06_summary_support.jpg"/>
+<file href="res/data/wo2/images/optimized/u5_la02_01_intro_network.jpg"/>
+<file href="res/data/wo2/images/optimized/u5_la02_02_reliable_contacts.jpg"/>
+<file href="res/data/wo2/images/optimized/u5_la02_03_private_channels.jpg"/>
+<file href="res/data/wo2/images/optimized/u5_la02_04_confirm_change.jpg"/>
+<file href="res/data/wo2/images/optimized/u5_la02_05_calm_language.jpg"/>
+<file href="res/data/wo2/images/optimized/u5_la02_06_summary_support.jpg"/>
+<file href="res/data/wo2/images/u5_la02_01_intro_network.png"/>
+<file href="res/data/wo2/images/u5_la02_02_reliable_contacts.png"/>
+<file href="res/data/wo2/images/u5_la02_03_private_channels.png"/>
+<file href="res/data/wo2/images/u5_la02_04_confirm_change.png"/>
+<file href="res/data/wo2/images/u5_la02_05_calm_language.png"/>
+<file href="res/data/wo2/images/u5_la02_06_summary_support.png"/>
 <file href="res/data/wo2/index.html"/>
+<file href="res/data/wo2/index.source.html"/>
+<file href="res/data/wo2/narration.md"/>
+<file href="res/data/wo2/README.txt"/>
+<file href="res/data/wo2/visual_production_brief.md"/>
 <file href="res/data/thmb4.jpg"/>
 <file href="res/data/slide4.js"/>
 <file href="res/data/slide4.css"/>
+<file href="res/data/wo3/audio/01-introduction.mp3"/>
+<file href="res/data/wo3/audio/02-prepare-an-expected-visit.mp3"/>
+<file href="res/data/wo3/audio/03-verify-a-change-respectfully.mp3"/>
+<file href="res/data/wo3/audio/04-brief-household-support-fairly.mp3"/>
+<file href="res/data/wo3/audio/05-protect-material-and-routines.mp3"/>
+<file href="res/data/wo3/audio/06-summary.mp3"/>
+<file href="res/data/wo3/images/optimized/u4_la03_01_intro_visitors.jpg"/>
+<file href="res/data/wo3/images/optimized/u4_la03_02_expected_visit.jpg"/>
+<file href="res/data/wo3/images/optimized/u4_la03_03_verify_change.jpg"/>
+<file href="res/data/wo3/images/optimized/u4_la03_04_respectful_briefing.jpg"/>
+<file href="res/data/wo3/images/optimized/u4_la03_05_private_materials.jpg"/>
+<file href="res/data/wo3/images/optimized/u4_la03_06_summary_welcome.jpg"/>
+<file href="res/data/wo3/images/optimized/u5_la03_01_intro_visitors.jpg"/>
+<file href="res/data/wo3/images/optimized/u5_la03_02_expected_visit.jpg"/>
+<file href="res/data/wo3/images/optimized/u5_la03_03_verify_change.jpg"/>
+<file href="res/data/wo3/images/optimized/u5_la03_04_respectful_briefing.jpg"/>
+<file href="res/data/wo3/images/optimized/u5_la03_05_private_materials.jpg"/>
+<file href="res/data/wo3/images/optimized/u5_la03_06_summary_welcome.jpg"/>
+<file href="res/data/wo3/images/u5_la03_01_intro_visitors.png"/>
+<file href="res/data/wo3/images/u5_la03_02_expected_visit.png"/>
+<file href="res/data/wo3/images/u5_la03_03_verify_change.png"/>
+<file href="res/data/wo3/images/u5_la03_04_respectful_briefing.png"/>
+<file href="res/data/wo3/images/u5_la03_05_private_materials.png"/>
+<file href="res/data/wo3/images/u5_la03_06_summary_welcome.png"/>
 <file href="res/data/wo3/index.html"/>
+<file href="res/data/wo3/index.source.html"/>
+<file href="res/data/wo3/narration.md"/>
+<file href="res/data/wo3/README.txt"/>
+<file href="res/data/wo3/visual_production_brief.md"/>
 <file href="res/data/thmb5.jpg"/>
 <file href="res/data/slide5.js"/>
 <file href="res/data/slide5.css"/>
 <file href="res/data/quiz1.js"/>
-<file href="res/data/quiz1/audios/snd-094c43504c09d2b5dffdd7f6860ec08ac2a93b3e.mp3"/>
-<file href="res/data/quiz1/audios/snd-1ed0b4c27e595e3ed4a2b57a9f92739de7a70fad.mp3"/>
-<file href="res/data/quiz1/audios/snd-1fc490bdf8e124faf997236637bf52f910ea6651.mp3"/>
-<file href="res/data/quiz1/audios/snd-21b7dc6d0316c805a7770a0bb57b1c50ae29a524.mp3"/>
-<file href="res/data/quiz1/audios/snd-220b268ae266e4263a9971471a702e117b7ef3fe.mp3"/>
-<file href="res/data/quiz1/audios/snd-23dc455506cdcee31fdaef4c6490527c060669b9.mp3"/>
-<file href="res/data/quiz1/audios/snd-3fe6d238aff71d3b59f038b8da46cecb5c882976.mp3"/>
-<file href="res/data/quiz1/audios/snd-4d1bb5f6d7f340b8d450949491a5543731f4a98c.mp3"/>
-<file href="res/data/quiz1/audios/snd-5cd7af52ae08f6eb7bed369d861355f10af7e504.mp3"/>
-<file href="res/data/quiz1/audios/snd-5ed026542a89559d18959f0a672881602c3d8433.mp3"/>
-<file href="res/data/quiz1/audios/snd-69e9d86f5f520ddfd24dd2d121fa4616401f4193.mp3"/>
-<file href="res/data/quiz1/audios/snd-77e7e513e639ee4ae5900c31d5a9f5282877f913.mp3"/>
-<file href="res/data/quiz1/audios/snd-80c74c6f5d46964553773f826b56ff0965b88748.mp3"/>
-<file href="res/data/quiz1/audios/snd-811b0c2c84d71f7f8a7d5667501342ed8dcdaa98.mp3"/>
-<file href="res/data/quiz1/audios/snd-8370d0dfd0db0dc7f676d709430e087a33c396ca.mp3"/>
-<file href="res/data/quiz1/audios/snd-8e152f4549fe2949ff6da7c4fa909443b020c54e.mp3"/>
-<file href="res/data/quiz1/audios/snd-97b08ec4c259b0b67eef06d4a2e4170963717bad.mp3"/>
-<file href="res/data/quiz1/audios/snd-9a719e4f4e5bf8ba4a33dd83694710e511070a23.mp3"/>
-<file href="res/data/quiz1/audios/snd-9a8a47018c4d44b15dff42ba063d29ca2f2cca41.mp3"/>
-<file href="res/data/quiz1/audios/snd-9abb36528615aa5675fa21324c0b6370a5ea5ae9.mp3"/>
-<file href="res/data/quiz1/audios/snd-9f16b9e208f8100e456a9921802725f361f8452f.mp3"/>
-<file href="res/data/quiz1/audios/snd-a9a1deff1dedcbb0bafe344b8a598f3bb18ff828.mp3"/>
-<file href="res/data/quiz1/audios/snd-a9c6c88e606c9ff7934e7d27a8daa6bb471f3cbb.mp3"/>
-<file href="res/data/quiz1/audios/snd-ad570b4addee1538ac75357349edbbec24edbfd5.mp3"/>
-<file href="res/data/quiz1/audios/snd-ad5b088172522085d7b7f5c7a62cb18eb7d50cdb.mp3"/>
-<file href="res/data/quiz1/audios/snd-b876a7677a30761aa02862a829fcf865f202f3da.mp3"/>
-<file href="res/data/quiz1/audios/snd-bc8e1ae18becc5b7bc9d7f41ceb5c32d9987c7ab.mp3"/>
-<file href="res/data/quiz1/audios/snd-bd8ab8441f5ad4c3691bea0fd048195e334aa188.mp3"/>
-<file href="res/data/quiz1/audios/snd-c7a62b7ff81d2fc969ba2b4f98d1a887069edf07.mp3"/>
-<file href="res/data/quiz1/audios/snd-cd89fb771fbcab21d85045eb04396e11280e2bc0.mp3"/>
-<file href="res/data/quiz1/audios/snd-cea2f12a46cf583df28bd4168c1e73601b61d65b.mp3"/>
-<file href="res/data/quiz1/audios/snd-d5ed0838f6356fc278cf0690f79a68d61868d095.mp3"/>
-<file href="res/data/quiz1/audios/snd-d66f5350e9d08de48a223865b50b943a99333c72.mp3"/>
-<file href="res/data/quiz1/audios/snd-db51284f8ea65038878b057cbb651199da2adc61.mp3"/>
-<file href="res/data/quiz1/audios/snd-dd4bbc68b73fa5a1542103ac09cae5f846c9ba38.mp3"/>
-<file href="res/data/quiz1/audios/snd-f368f769b0e874ca7dabcb4654983a2894f94ab1.mp3"/>
-<file href="res/data/quiz1/audios/snd-fbb3e09c559e3cd5b506ad40d388c11d72bb5aae.mp3"/>
+<file href="res/data/quiz1/audios/snd-0d38281ab34839b580c2d34a1e94a7f0d77c1e88.mp3"/>
+<file href="res/data/quiz1/audios/snd-10eac342e9f7440667564441ea125fd7c321b7cf.mp3"/>
+<file href="res/data/quiz1/audios/snd-124e2523c38d5225c76259a8d9e7d4ebd8dcb3b0.mp3"/>
+<file href="res/data/quiz1/audios/snd-16fd8bc06449baf9119a8b5bd7b4e188d3e6f09a.mp3"/>
+<file href="res/data/quiz1/audios/snd-279d8ec7ab369061232afcf8a791964e69f1ca87.mp3"/>
+<file href="res/data/quiz1/audios/snd-290a39552e464d5bb08edd64e7b34934599dfe26.mp3"/>
+<file href="res/data/quiz1/audios/snd-2cab24f45f3f5e79321369eebca5101ca4553331.mp3"/>
+<file href="res/data/quiz1/audios/snd-417e8699f6fb0f9b50d9bdab810611418ba7d3d2.mp3"/>
+<file href="res/data/quiz1/audios/snd-42993d650d3ab41f0db2c9dafb2e08d73f1682e7.mp3"/>
+<file href="res/data/quiz1/audios/snd-47ed18983d2d7841631a5315751b80a7311944a6.mp3"/>
+<file href="res/data/quiz1/audios/snd-48f8aff8e191eb61f608ba6d5959c72e2248dbcd.mp3"/>
+<file href="res/data/quiz1/audios/snd-4d76eb527f0e82d87a4fb2511ab1438c7e1ffa53.mp3"/>
+<file href="res/data/quiz1/audios/snd-77bfc2e564fc471e362672172c2c9d175065fd0d.mp3"/>
+<file href="res/data/quiz1/audios/snd-7cbbc4ad54925ce57ebb94d8eab315d53173ec61.mp3"/>
+<file href="res/data/quiz1/audios/snd-7d2da2e5aff530c34f94a1ab990e936e1cc0268a.mp3"/>
+<file href="res/data/quiz1/audios/snd-7ebf112e48b82605289ebc7718f766f4919d586d.mp3"/>
+<file href="res/data/quiz1/audios/snd-83cb31b7ddc8d0c81feea2b08acdb0939a0d83bf.mp3"/>
+<file href="res/data/quiz1/audios/snd-845eb1fdf9bbd5fcd20c3c95a4f0fec627bb8562.mp3"/>
+<file href="res/data/quiz1/audios/snd-8810fc9f278d447a6264f96e62eee73207e5a1e8.mp3"/>
+<file href="res/data/quiz1/audios/snd-8fe6840a0626f712ea1ad67d7e16331b67c45ea8.mp3"/>
+<file href="res/data/quiz1/audios/snd-a2e4d448f53a7b46274c96c3e399c8b46288a4c2.mp3"/>
+<file href="res/data/quiz1/audios/snd-a8674867b4326cb4b3277cd37b75d8f6b52bb1b3.mp3"/>
+<file href="res/data/quiz1/audios/snd-b58c926ef1ba35ba01f317bffa2cd7a15c9c6aa8.mp3"/>
+<file href="res/data/quiz1/audios/snd-b975f96e5b6d415e9db5d4f4f7025954f8521e6b.mp3"/>
+<file href="res/data/quiz1/audios/snd-c8d2cdf5f763bff5d751f33e2432434b0372bfb4.mp3"/>
+<file href="res/data/quiz1/audios/snd-ce74af614f0fac43fe7dfaf99e175fcc9f54fbde.mp3"/>
+<file href="res/data/quiz1/audios/snd-d2d0d73ae73be74ed863b37aa16d462cd8bccec0.mp3"/>
+<file href="res/data/quiz1/audios/snd-e3c184d2a751714c191536b90ac9b11749b8fba0.mp3"/>
+<file href="res/data/quiz1/audios/snd-eeb5e424be243ed6e8fba58171c79ef3538a6220.mp3"/>
+<file href="res/data/quiz1/audios/snd-f34dde35225bca0fc35386aca876c3303a25b362.mp3"/>
+<file href="res/data/quiz1/audios/snd-f893b2364f717620a7969d057e5c61683093114a.mp3"/>
 <file href="res/data/quiz1/fonts/fnt0.woff"/>
 <file href="res/data/quiz1/fonts/fnt1.woff"/>
 <file href="res/data/quiz1/fonts/fnt2.woff"/>
@@ -125,11 +203,9 @@
 <file href="res/data/img10.png"/>
 <file href="res/data/img11.png"/>
 <file href="res/data/img12.png"/>
-<file href="res/data/img13.png"/>
-<file href="res/data/img14.png"/>
 <file href="res/data/img2.png"/>
 <file href="res/data/img3.png"/>
-<file href="res/data/img4.svg"/>
+<file href="res/data/img4.png"/>
 <file href="res/data/img5.png"/>
 <file href="res/data/img6.png"/>
 <file href="res/data/img7.png"/>

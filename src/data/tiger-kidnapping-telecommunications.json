@@ -11,9 +11,7 @@
     "Published iSpring content includes its own quizzes. No duplicate platform quizzes are added.",
     "Available for company content, commercial and branding review. Learner publication requires the normal independent approvals and package corrections."
   ],
-  "publicationIssues": [
-    "LU5 currently contains a package labelled Unit 4: Corporate Protective Controls. Supply and verify the correct Unit 5 before learner release."
-  ],
+  "publicationIssues": [],
   "units": [
     {
       "id": "tiger-telecom-lu-1",
@@ -111,8 +109,8 @@
       "id": "tiger-telecom-lu-5",
       "slug": "lu5",
       "order": 5,
-      "title": "Unit 5 — Package Correction Required",
-      "subtitle": "Uploaded package identifies itself as Unit 4; correction required.",
+      "title": "Personal and Family Readiness",
+      "subtitle": "A calm plan for normal life",
       "duration": "Self-paced",
       "assetBase": "/courses/Tiger%20kidnapping_telecommunications/LU5",
       "publishedPath": "/courses/Tiger%20kidnapping_telecommunications/LU5/res/index.html",
@@ -120,7 +118,7 @@
       "media": [
         {
           "kind": "embed",
-          "title": "Unit 5 — Package Correction Required",
+          "title": "Personal and Family Readiness",
           "src": "/courses/Tiger%20kidnapping_telecommunications/LU5/res/index.html"
         }
       ],

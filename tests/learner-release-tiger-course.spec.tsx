@@ -24,9 +24,19 @@ describe("Tiger Kidnapping course registration and delivery",()=>{
  it("leaves the two existing course identities unchanged",()=>{
   for(const [slug,hash] of Object.entries(priorIdentities))expect(createHash("sha256").update(JSON.stringify(getCourseBySlug(slug))).digest("hex")).toBe(hash);
  });
- it("does not treat an unresolved wrong-unit upload as publication-ready",()=>{
-  const html=renderToStaticMarkup(<CoursePackageNotice course={tiger}/>);expect(html).toContain("package corrections required");expect(html).toContain("LU5");
+ it("uses the restored LU5 while keeping review and publication approval gates",()=>{
+  expect(tiger.publicationIssues).toEqual([]);
+  expect(tiger.units[4].title).toBe("Personal and Family Readiness");
+  const lu5=join(process.cwd(),"public",decodeURIComponent(tiger.units[4].assetBase));
+  expect(readFileSync(join(lu5,"imsmanifest.xml"),"utf8")).toContain("Unit 5 - Personal and Family Readiness");
+  expect(readFileSync(join(lu5,"res/data/slide1.js"),"utf8")).not.toContain("Unit 4");
+  for(let n=1;n<=3;n++)expect(readFileSync(join(lu5,`res/data/wo${n}/index.html`),"utf8")).toContain(`TK-LU05-LA0${n}`);
+  expect(renderToStaticMarkup(<CoursePackageNotice course={tiger}/>)).toBe("");
   const round={course_id:tiger.id,fingerprint:"hash",status:"open",document:{participants:[],findings:[],reports:[],units:[],brand:{revision:1},terms:{partner:false}}} as unknown as ReviewRound;
-  expect(reviewBlockers(round,"hash")).toEqual(expect.arrayContaining(tiger.publicationIssues!));
+  expect(reviewBlockers(round,"hash").length).toBeGreaterThan(0);
+ });
+ it("still shows package issues when a course has unresolved upload corrections",()=>{
+  const html=renderToStaticMarkup(<CoursePackageNotice course={{...tiger,publicationIssues:["LU5 correction required"]}}/>);
+  expect(html).toContain("package corrections required");expect(html).toContain("LU5 correction required");
  });
 });
