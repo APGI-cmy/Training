@@ -167,7 +167,7 @@ review-request dropdown, the company-library graphic label, the standalone image
 library link under Messages and support, and the persisted uploaded image. Course
 filtering showed the Tiger image under Tiger and hid it under VPSHR; both course
 and email use filters included the image tagged for both. See
-`docs/v2/qa/email-image-library-20261023.png` for the captured live interface.
+`docs/v2/qa/email-image-library-20261023.jpg` for the captured live interface.
 
 Security advisors report intentional service-only RLS tables without public
 policies, plus existing signed-in role helper warnings and disabled leaked-password
