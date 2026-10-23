@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({ rest: vi.fn(), email: vi.fn(), fetch: vi.fn(), signOut: vi.fn(), cookieGet: vi.fn(), cookieSet: vi.fn(), cookieDelete: vi.fn() }));
+const mocks = vi.hoisted(() => ({ rest: vi.fn(), email: vi.fn(), invitation: vi.fn(), fetch: vi.fn(), signOut: vi.fn(), cookieGet: vi.fn(), cookieSet: vi.fn(), cookieDelete: vi.fn() }));
 vi.mock("next/headers", () => ({ cookies: async () => ({ get: mocks.cookieGet, set: mocks.cookieSet, delete: mocks.cookieDelete }) }));
 vi.mock("next/navigation", () => ({ redirect: (url: string) => { throw new Error(`REDIRECT:${url}`); } }));
 vi.mock("@/server/auth/session", () => ({ getSupabaseRestUrl: (path: string) => `https://auth.example.invalid${path}`, signOut: mocks.signOut }));
 vi.mock("@/server/supabase/admin-rest", () => ({ adminRest: mocks.rest }));
 vi.mock("@/server/services/email/send-password-recovery", () => ({ sendPasswordRecoveryEmail: mocks.email }));
+vi.mock("@/server/services/invitations/recover-invited-account", () => ({ recoverInvitedAccount: mocks.invitation }));
 import { requestPasswordRecovery, beginPasswordReset, updateRecoveredPassword } from "@/server/actions/auth/password-recovery";
 import { safeRecoveryNext } from "@/lib/auth/safe-recovery-next";
 
@@ -18,6 +19,7 @@ describe("Password recovery safeguards", () => {
     vi.resetAllMocks(); vi.stubGlobal("fetch", mocks.fetch);
     vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "server-key-only"); vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "public-key");
     mocks.email.mockResolvedValue(true);
+    mocks.invitation.mockResolvedValue(undefined);
     mocks.rest.mockImplementation(async (path: string) => path.includes("claim_password") ? Response.json(true) : Response.json({ hashed_token: "single-use-secret" }));
   });
 
@@ -34,12 +36,29 @@ describe("Password recovery safeguards", () => {
     const unknown = await requestPasswordRecovery({}, form({ email: "unknown@example.invalid" }));
     expect(unknown).toEqual(known);
     expect(mocks.email).toHaveBeenCalledOnce();
+    expect(mocks.invitation).toHaveBeenCalledWith("unknown@example.invalid");
+  });
+
+  it("recovers an active invitation when the V2 account was never created, without returning its link", async () => {
+    mocks.rest.mockImplementation(async (path: string) => path.includes("claim_password") ? Response.json(true) : new Response(null, { status: 404 }));
+    const result = await requestPasswordRecovery({}, form({email:"Invited@Example.invalid"}));
+    expect(result.message).toContain("account-setup invitation");
+    expect(mocks.invitation).toHaveBeenCalledWith("invited@example.invalid");
+    expect(mocks.email).not.toHaveBeenCalled();
+    expect(result).not.toHaveProperty("invitationUrl");
+  });
+
+  it("reports failed invitation delivery instead of claiming success", async () => {
+    mocks.rest.mockImplementation(async (path: string) => path.includes("claim_password") ? Response.json(true) : new Response(null, { status: 404 }));
+    mocks.invitation.mockRejectedValue(new Error("EMAIL_FAILED"));
+    expect(await requestPasswordRecovery({}, form({email:"invited@example.invalid"}))).toHaveProperty("error");
   });
 
   it("does not generate or email a link after a shared rate limit is reached", async () => {
     mocks.rest.mockResolvedValue(Response.json(false));
-    expect(await requestPasswordRecovery({}, form({ email: "learner@example.invalid" }))).toHaveProperty("message");
+    expect((await requestPasswordRecovery({}, form({ email: "learner@example.invalid" }))).error).toContain("wait up to one hour");
     expect(mocks.rest).toHaveBeenCalledOnce(); expect(mocks.email).not.toHaveBeenCalled();
+    expect(mocks.invitation).not.toHaveBeenCalled();
   });
 
   it("fails closed if the rate-limit store is unavailable", async () => {
@@ -59,6 +78,12 @@ describe("Password recovery safeguards", () => {
     await expect(beginPasswordReset(form({ token_hash: "valid-link", next: "/learn/scannex-training-programme" }))).rejects.toThrow("REDIRECT:/reset-password");
     expect(JSON.parse(mocks.fetch.mock.calls[0][1].body)).toEqual({ token_hash: "valid-link", type: "recovery" });
     expect(mocks.cookieSet).toHaveBeenCalledWith("alp_recovery_token", "recovery-token", expect.objectContaining({ httpOnly: true, sameSite: "strict", maxAge: 900 }));
+  });
+
+  it("preserves the intended course review when an expired link needs replacing", async () => {
+    mocks.fetch.mockResolvedValue(Response.json({msg:"expired"},{status:403}));
+    await expect(beginPasswordReset(form({token_hash:"expired",next:"/course-reviews/round"}))).rejects.toThrow("&next=%2Fcourse-reviews%2Fround");
+    expect(mocks.cookieSet).not.toHaveBeenCalled();
   });
 
   it("rejects password changes without a verified recovery cookie", async () => {
@@ -84,6 +109,9 @@ describe("Password recovery safeguards", () => {
   });
 
   it.each(["//evil.invalid", "/\\evil.invalid", "https://evil.invalid", "/path\nignored"])("blocks an unsafe return path: %s", value => {
+    expect(safeRecoveryNext(value)).toBe("/dashboard");
+  });
+  it.each(["/alp-sign-in?next=%2Falp-sign-in", "/forgot-password", "/reset-password?token_hash=old", "/confirm-account/"])("does not return to a sign-in or recovery loop: %s",value=>{
     expect(safeRecoveryNext(value)).toBe("/dashboard");
   });
 });

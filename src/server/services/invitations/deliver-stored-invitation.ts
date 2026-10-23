@@ -11,7 +11,7 @@ export async function deliverStoredInvitation(input: {
   courseTitle: string;
   token: string;
   expiresAt: string;
-  actorId: string;
+  actorId: string | null;
 }): Promise<CreateInvitationState> {
   if (usesStagingMailCapture())
     return {

@@ -13,18 +13,18 @@ export function ForgotPasswordForm({ next }: { next: string }) {
     <label>Email<input type="email" name="email" autoComplete="email" required maxLength={254} /></label>
     {state.error ? <p className="form-error" role="alert">{state.error}</p> : null}
     {state.message ? <p className="form-success" role="status">{state.message}</p> : null}
-    <button className="primary-button" type="submit" disabled={pending}>{pending ? "Requesting email…" : "Send password-reset email"}</button>
+    <button className="primary-button" type="submit" disabled={pending}>{pending ? "Requesting email…" : "Send recovery or setup email"}</button>
     <Link href={`/alp-sign-in?next=${encodeURIComponent(next)}`}>Back to sign in</Link>
   </form>;
 }
 
-export function ResetPasswordForm() {
+export function ResetPasswordForm({requestUrl = "/forgot-password"}: {requestUrl?: string}) {
   const [state, action, pending] = useActionState(updateRecoveredPassword, initialState);
   return <form className="alp-form" action={action}>
     <label>New password<input type="password" name="password" autoComplete="new-password" minLength={12} maxLength={256} required /></label>
     <label>Confirm new password<input type="password" name="confirmation" autoComplete="new-password" minLength={12} maxLength={256} required /></label>
     {state.error ? <p className="form-error" role="alert">{state.error}</p> : null}
     <button className="primary-button" type="submit" disabled={pending}>{pending ? "Saving password…" : "Save new password"}</button>
-    <Link href="/forgot-password">Request a new reset email</Link>
+    <Link href={requestUrl}>Request a new recovery or setup email</Link>
   </form>;
 }
