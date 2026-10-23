@@ -1,0 +1,9 @@
+'use client';
+import {useState} from 'react';
+import {emailImageCategories,emailImageStyles,emailImages,libraryImage,libraryImagePath,type EmailImageCategory,type EmailImageStyle} from '@/lib/email-image-library';
+export function EmailImagePicker({value,onChange}:{value:string;onChange:(value:string)=>void}){
+ const selected=libraryImage(value),[category,setCategory]=useState<EmailImageCategory>(selected?.[0]??'welcome'),[style,setStyle]=useState<EmailImageStyle>(selected?.[3]??'photo');
+ return <fieldset className="email-image-library"><legend>Choose a shared image</legend><p>Friendly, neutral course images for any company. Choose realistic photographs or illustrations, with three choices per category in each style.</p><label>Image style<select value={style} onChange={event=>setStyle(event.target.value as EmailImageStyle)}>{Object.entries(emailImageStyles).map(([id,label])=><option value={id} key={id}>{label}</option>)}</select></label><label>Image category<select value={category} onChange={event=>setCategory(event.target.value as EmailImageCategory)}>{Object.entries(emailImageCategories).map(([id,label])=><option value={id} key={id}>{label}</option>)}</select></label>
+ <div className="email-image-choices">{emailImages.filter(image=>image[0]===category&&image[3]===style).map(([group,number,label])=>{const id=`library:${group}-${number}`;return <label key={id} className={value===id?'email-image-choice selected':'email-image-choice'}><input type="radio" name="shared_image_choice" value={id} checked={value===id} onChange={()=>onChange(id)}/><img src={libraryImagePath(id,true)!} alt={`${label} — ${emailImageStyles[style]}`} loading="lazy" width={320} height={213}/><span>{label}</span>{value===id?<strong>✓ Selected</strong>:null}</label>;})}</div>
+ {selected?<p>Selected image: <strong>{selected[2]}</strong> · {emailImageCategories[selected[0]]} · {emailImageStyles[selected[3]]}</p>:null}</fieldset>;
+}

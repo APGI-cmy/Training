@@ -1,0 +1,17 @@
+import {beforeEach,describe,expect,it,vi} from 'vitest';
+import {emailStarters} from '@/lib/email-sets';
+import type {ReviewRound} from '@/lib/course-review';
+const rpc=vi.hoisted(()=>vi.fn());
+vi.mock('@/server/services/messages',()=>({messageRpc:rpc}));
+vi.mock('@/server/auth/session',()=>({getSupabaseRestUrl:(path:string)=>`https://eaaqgtdpvbxdgjxphjie.supabase.co${path}`}));
+import {renderConfiguredInvitation,type InvitationSnapshot} from '@/server/services/email/review-invitation-template';
+const id='11111111-1111-4111-8111-111111111111';
+const round:ReviewRound={id,plan_id:null,organisation_id:'company',course_id:'tiger-kidnapping-telecommunications',fingerprint:'fixture',revision:1,status:'open',created_at:'2026-10-23T00:00:00Z',document:{title:'Tiger course',brand:{name:'Partner & Company',revision:1,color:'#123456',logo:null},requester:'admin@example.invalid',requesterId:'admin',cutoff:'2027-01-01T10:00:00Z',units:[],participants:[{email:'reviewer@example.invalid',role:'primary',state:'invited',tasks:['branding'],coverage:[]}],reports:[],findings:[],events:[],terms:{text:'',partner:false,acceptor:''}}};
+const mail={id:'mail',kind:'invitation',recipient:'reviewer@example.invalid',subject:'Native invitation',body:`Your assigned branding review. First-time joining: https://training-platform-v2-staging.vercel.app/course-reviews/${id}/join/private-fixture`};
+beforeEach(()=>{vi.clearAllMocks();rpc.mockImplementation(async(name:string,args:{p_snapshot?:unknown})=>name==='v2_email_review_design'?emailStarters.find(s=>s.rule.trigger==='review_request')!.design:args.p_snapshot);});
+describe('Company review invitation templates',()=>{
+ it('uses the actual review company and assignments and keeps mandatory joining instructions',async()=>{const result=await renderConfiguredInvitation(round,mail);expect(result.subject).toBe('Please review Tiger course');expect(result.html).toContain('Partner &amp; Company');expect(result.html).toContain('Your assigned tasks: Branding.');expect(result.html).toContain(`/course-reviews/${id}/join/private-fixture`);expect(result.html).toContain('/images/email-library/reviews-photo-01.jpg');expect(rpc.mock.calls[0][1]).toEqual({p_org:'company',p_course:'tiger-kidnapping-telecommunications'});expect(rpc.mock.calls[1][0]).toBe('v2_email_invitation_snapshot');});
+ it('reuses an immutable invitation snapshot without consulting a newly edited template',async()=>{const snapshot:InvitationSnapshot={mode:'native',subject:'Original frozen subject',body:'Original frozen joining instructions'};const result=await renderConfiguredInvitation(round,{...mail,email_snapshot:snapshot});expect(result.subject).toBe(snapshot.subject);expect(result.text).toBe(snapshot.body);expect(rpc).not.toHaveBeenCalled();});
+ it('freezes the standard invitation too, when no company template is active',async()=>{rpc.mockImplementation(async(name:string,args:{p_snapshot?:unknown})=>name==='v2_email_review_design'?null:args.p_snapshot);expect((await renderConfiguredInvitation(round,mail)).subject).toBe(mail.subject);expect(rpc.mock.calls[1][1].p_snapshot).toMatchObject({mode:'native',body:mail.body});});
+ it('does not change an invitation when snapshot persistence fails',async()=>{rpc.mockResolvedValueOnce(emailStarters[0].design).mockRejectedValueOnce(Error('snapshot unavailable'));await expect(renderConfiguredInvitation(round,mail)).rejects.toThrow('snapshot');});
+});

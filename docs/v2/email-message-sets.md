@@ -1,5 +1,51 @@
 # Company email message sets
 
+## Company starter library and review requests (23 October 2026)
+
+The first visit provisions nine independent, inactive drafts for an authorised
+company that has no message sets. Existing edited drafts are preserved. The
+prepared-message dropdown now includes **Review request and invitation**. A blank
+course is allowed while drafting; course-specific event messages require a course
+before activation. Company administrators cannot edit another company's templates.
+
+For review requests, save and preview the design, then activate it in the company
+whose review is being requested. Course-specific designs take precedence over that
+company's general design. Use **Course reviews → Request a review**, or resend an
+existing invitation, to send actual assigned invitations. Activating the design
+does not create assignments or send invitations. APGI and NKS have separate copies;
+an APGI design does not silently replace another company's template.
+
+The native review delivery queue preserves the actual assigned tasks, cutoff,
+review instructions and private first-time joining link. It freezes the rendered
+design before the first delivery attempt so retries retain the original content.
+Saved-invitation previews remove private joining tokens.
+
+The graphic chooser contains 36 shared assets: three per category in each of two
+styles (realistic photographs and illustrations), across six categories. New
+prepared drafts default to photographs. Existing choices are preserved. Originals
+remain in the generation output folder; web banners and thumbnails live in
+`public/images/email-library/`, with reproducible prompts in
+`docs/v2/email-image-prompts.json`.
+
+Administrators can also import PNG, JPEG or WebP images up to 2 MB directly in the
+editor. The server checks company authority, decodes and re-encodes the image,
+removes metadata and stores the JPEG under a random path in that company's folder
+in the public `email-message-images` bucket. No client write policy is granted.
+The editor shows the selected graphic before the complete HTML preview. Imported
+email graphics must be suitable for public sharing. Uploading, saving and
+previewing never sends an email.
+
+**Select / add image** opens the reusable Image library without leaving an unsaved
+email. The same library has its own Messages and support sidebar page. Filter by
+course and intended use (course, email, or both); each upload has a descriptive
+title, optional course and intended-use tag. Only authorised company administrators
+can list or add company images. Shared neutral assets remain available through an
+explicit checkbox. Image creation is labelled as a future Version 3 capability.
+
+The prepared APGI/NKS Tiger review draft describes the intended transfer to NKS
+after the agreed recovery fee is fully recovered. This is message wording only;
+it does not transfer ownership, approve terms, or change payment and release gates.
+
 Open **Messages and support → Email message sets**. The old `/admin/email-templates`
 address redirects here. Verified APGI principals can administer all companies;
 company owners administer only their own active company workspace. Company

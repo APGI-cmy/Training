@@ -1,0 +1,258 @@
+{
+  "generatedWith": "Built-in image generation",
+  "purpose": "Neutral adult-learning images, three per category in photographic and illustrated styles",
+  "assets": [
+    {
+      "id": "welcome-01",
+      "category": "Welcome and learning",
+      "file": "/images/email-library/welcome-01.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: A welcoming bright adult learning studio, a diverse small group of adult colleagues arriving with notebooks, an open doorway and soft morning light. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Welcome and learning.",
+      "style": "illustration"
+    },
+    {
+      "id": "welcome-02",
+      "category": "Welcome and learning",
+      "file": "/images/email-library/welcome-02.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: A calm welcoming study desk with open notebook, a laptop showing only simple abstract shapes, indoor plant and sunlight, no people. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Welcome and learning.",
+      "style": "illustration"
+    },
+    {
+      "id": "welcome-03",
+      "category": "Welcome and learning",
+      "file": "/images/email-library/welcome-03.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: A friendly mentor greeting two adult learners at a modern training room, relaxed confident body language, inclusive professional setting. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Welcome and learning.",
+      "style": "illustration"
+    },
+    {
+      "id": "progress-01",
+      "category": "Progress and reminders",
+      "file": "/images/email-library/progress-01.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: An adult learner calmly continuing an online course at a tidy desk, simple abstract progress shapes on laptop, an unobtrusive desk clock. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Progress and reminders.",
+      "style": "illustration"
+    },
+    {
+      "id": "progress-02",
+      "category": "Progress and reminders",
+      "file": "/images/email-library/progress-02.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: A clear stepping-stone path through a bright garden toward an open learning pavilion, hopeful steady progress, warm natural light, no people. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Progress and reminders.",
+      "style": "illustration"
+    },
+    {
+      "id": "progress-03",
+      "category": "Progress and reminders",
+      "file": "/images/email-library/progress-03.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: An adult learner planning the next study session with a blank calendar, notebook and simple clock, encouraging calm mood, no urgency or stress. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Progress and reminders.",
+      "style": "illustration"
+    },
+    {
+      "id": "completion-01",
+      "category": "Success and completion",
+      "file": "/images/email-library/completion-01.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: Three diverse adult colleagues celebrating a learning milestone with modest smiles and a friendly high five in a bright training space. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Success and completion.",
+      "style": "illustration"
+    },
+    {
+      "id": "completion-02",
+      "category": "Success and completion",
+      "file": "/images/email-library/completion-02.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: An elegant blank certificate folder with a simple gold ribbon beside a notebook and green plant on a warmly lit desk, no writing or seals. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Success and completion.",
+      "style": "illustration"
+    },
+    {
+      "id": "completion-03",
+      "category": "Success and completion",
+      "file": "/images/email-library/completion-03.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: A confident adult learner standing beside an open learning-space doorway, sunlight beyond, a subtle upward path motif suggesting accomplishment. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Success and completion.",
+      "style": "illustration"
+    },
+    {
+      "id": "feedback-01",
+      "category": "Feedback and support",
+      "file": "/images/email-library/feedback-01.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: Two adult colleagues listening attentively across a small table in a comfortable professional setting, notebook open and no writing visible. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Feedback and support.",
+      "style": "illustration"
+    },
+    {
+      "id": "feedback-02",
+      "category": "Feedback and support",
+      "file": "/images/email-library/feedback-02.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: A friendly adult support adviser at a desk wearing a headset, laptop and small plant, warm approachable expression, no visible screen words. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Feedback and support.",
+      "style": "illustration"
+    },
+    {
+      "id": "feedback-03",
+      "category": "Feedback and support",
+      "file": "/images/email-library/feedback-03.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: A small diverse adult workshop group sharing ideas around a table, blank speech-bubble motifs subtly integrated in the background. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Feedback and support.",
+      "style": "illustration"
+    },
+    {
+      "id": "announcements-01",
+      "category": "Course announcements",
+      "file": "/images/email-library/announcements-01.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: A bright modern learning library with several beautiful blank course folders and an inviting open notebook, lighthearted discovery mood. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Course announcements.",
+      "style": "illustration"
+    },
+    {
+      "id": "announcements-02",
+      "category": "Course announcements",
+      "file": "/images/email-library/announcements-02.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: A tasteful new-learning opportunity concept: open doorway with abstract colourful learning cards floating gently beyond, no text, welcoming and credible. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Course announcements.",
+      "style": "illustration"
+    },
+    {
+      "id": "announcements-03",
+      "category": "Course announcements",
+      "file": "/images/email-library/announcements-03.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: Adult colleagues exploring a new learning display in a modern workspace, screen contains abstract illustration panels only, positive curiosity. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Course announcements.",
+      "style": "illustration"
+    },
+    {
+      "id": "reviews-01",
+      "category": "Reviews and collaboration",
+      "file": "/images/email-library/reviews-01.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: A diverse small professional adult review team collaborating around a table, a laptop, blank paper checklist and thoughtful friendly discussion. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Reviews and collaboration.",
+      "style": "illustration"
+    },
+    {
+      "id": "reviews-02",
+      "category": "Reviews and collaboration",
+      "file": "/images/email-library/reviews-02.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: Two adult colleagues examining training materials side by side, one pointing gently at an abstract laptop screen, constructive peer-review mood. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Reviews and collaboration.",
+      "style": "illustration"
+    },
+    {
+      "id": "reviews-03",
+      "category": "Reviews and collaboration",
+      "file": "/images/email-library/reviews-03.jpg",
+      "prompt": "Use case: ads-marketing. Asset type: one standalone wide landscape email banner, 3:2 composition, for an adult online-training platform. Primary request: A neutral editorial still life of a blank checklist, simple magnifying glass, open course notebook and warm desk light, thoughtful collaborative quality assurance. Style: refined contemporary editorial illustration, softly dimensional paper-and-paint aesthetic, friendly and professional for adult learners, credible human proportions, subtle natural texture. Palette: muted teal, soft blue, warm cream, restrained coral accents, generous clean composition. Must be culturally neutral and suitable for many different companies and countries. NO text, letters, numerals, typography, branding, logos, watermarks, national flags, weapons, badges or collage panels. Create one finished illustration only, edge-to-edge landscape. Category: Reviews and collaboration.",
+      "style": "illustration"
+    },
+    {
+      "id": "welcome-photo-01",
+      "category": "Welcome and learning",
+      "style": "photo",
+      "file": "/images/email-library/welcome-photo-01.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: A diverse small group of adult professionals arriving at a bright modern training centre, greeting each other with relaxed smiles and carrying plain notebooks. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Welcome and learning."
+    },
+    {
+      "id": "welcome-photo-02",
+      "category": "Welcome and learning",
+      "style": "photo",
+      "file": "/images/email-library/welcome-photo-02.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: A welcoming real study desk with open blank notebook, unbranded laptop with screen turned away, ceramic mug, green indoor plant and soft morning window light. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Welcome and learning."
+    },
+    {
+      "id": "welcome-photo-03",
+      "category": "Welcome and learning",
+      "style": "photo",
+      "file": "/images/email-library/welcome-photo-03.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: An approachable adult facilitator welcoming two adult learners around a table in a contemporary professional classroom, natural candid gestures. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Welcome and learning."
+    },
+    {
+      "id": "progress-photo-01",
+      "category": "Progress and reminders",
+      "style": "photo",
+      "file": "/images/email-library/progress-photo-01.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: An adult professional concentrating calmly on online learning at a tidy home-office desk, laptop screen facing away, notebook and small desk clock nearby. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Progress and reminders."
+    },
+    {
+      "id": "progress-photo-02",
+      "category": "Progress and reminders",
+      "style": "photo",
+      "file": "/images/email-library/progress-photo-02.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: A real sunlit stepping-stone garden path leading toward a quiet modern learning pavilion, hopeful steady progress metaphor, natural landscape photography. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Progress and reminders."
+    },
+    {
+      "id": "progress-photo-03",
+      "category": "Progress and reminders",
+      "style": "photo",
+      "file": "/images/email-library/progress-photo-03.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: An adult learner planning a study session with a blank paper calendar, notebook and unbranded watch on a bright desk, calm focused expression. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Progress and reminders."
+    },
+    {
+      "id": "completion-photo-01",
+      "category": "Success and completion",
+      "style": "photo",
+      "file": "/images/email-library/completion-photo-01.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: Three diverse adult colleagues sharing a modest high five after completing a workshop, genuine smiles in a bright training room, candid professional photograph. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Success and completion."
+    },
+    {
+      "id": "completion-photo-02",
+      "category": "Success and completion",
+      "style": "photo",
+      "file": "/images/email-library/completion-photo-02.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: An elegant real blank certificate folder tied with a gold ribbon beside a notebook and small green plant on a clean wooden desk, tasteful achievement still life. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Success and completion."
+    },
+    {
+      "id": "completion-photo-03",
+      "category": "Success and completion",
+      "style": "photo",
+      "file": "/images/email-library/completion-photo-03.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: A confident adult professional holding a plain folder beside the open doorway of a bright training venue, warm afternoon sunlight, understated achievement. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Success and completion."
+    },
+    {
+      "id": "feedback-photo-01",
+      "category": "Feedback and support",
+      "style": "photo",
+      "file": "/images/email-library/feedback-photo-01.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: Two adult professional colleagues listening attentively across a small meeting table, an open blank notebook between them, warm candid expressions. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Feedback and support."
+    },
+    {
+      "id": "feedback-photo-02",
+      "category": "Feedback and support",
+      "style": "photo",
+      "file": "/images/email-library/feedback-photo-02.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: A friendly adult support adviser wearing a simple headset at a modern desk, laptop facing away and a small plant, approachable natural expression. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Feedback and support."
+    },
+    {
+      "id": "feedback-photo-03",
+      "category": "Feedback and support",
+      "style": "photo",
+      "file": "/images/email-library/feedback-photo-03.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: A diverse small group of adult workshop participants sharing constructive ideas around a real table, attentive listening and natural gestures. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Feedback and support."
+    },
+    {
+      "id": "announcements-photo-01",
+      "category": "Course announcements",
+      "style": "photo",
+      "file": "/images/email-library/announcements-photo-01.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: A bright modern professional learning library with plain unbranded course folders, an inviting open notebook and soft green plants, editorial still life. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Course announcements."
+    },
+    {
+      "id": "announcements-photo-02",
+      "category": "Course announcements",
+      "style": "photo",
+      "file": "/images/email-library/announcements-photo-02.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: An open doorway into a beautiful contemporary adult training classroom with warm sunlight, welcoming new opportunity, realistic architectural photograph. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Course announcements."
+    },
+    {
+      "id": "announcements-photo-03",
+      "category": "Course announcements",
+      "style": "photo",
+      "file": "/images/email-library/announcements-photo-03.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: Adult colleagues exploring new learning materials together at a modern workplace desk, blank folders and a laptop with screen turned away, positive curiosity. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Course announcements."
+    },
+    {
+      "id": "reviews-photo-01",
+      "category": "Reviews and collaboration",
+      "style": "photo",
+      "file": "/images/email-library/reviews-photo-01.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: A diverse professional adult review team discussing training materials around a table, laptop facing away, plain printed papers with no readable text. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Reviews and collaboration."
+    },
+    {
+      "id": "reviews-photo-02",
+      "category": "Reviews and collaboration",
+      "style": "photo",
+      "file": "/images/email-library/reviews-photo-02.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: Two adult professional colleagues examining training materials side by side, one indicating a blank paper section, thoughtful constructive peer-review mood. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Reviews and collaboration."
+    },
+    {
+      "id": "reviews-photo-03",
+      "category": "Reviews and collaboration",
+      "style": "photo",
+      "file": "/images/email-library/reviews-photo-03.jpg",
+      "prompt": "Use case: photorealistic-natural. Asset type: one finished wide landscape 3:2 photographic email banner for an adult professional learning platform. Scene: A real close-up still life of a blank checklist sheet, a pen, simple magnifying glass and open unbranded course notebook on a warmly lit desk. Style: realistic premium editorial stock photography, natural human faces and hands, credible proportions, genuine physical materials, soft natural daylight, contemporary professional setting, culturally inclusive and company-neutral. Palette: natural warm neutrals with subtle teal/navy accents that suit APGI course photography. Compose a polished candid photograph with a clear focal subject and enough environmental context. NO illustration, cartoon, painterly texture, 3D render, fantasy elements, floating cards, graphic overlays, text, words, letters, logos, branding, watermarks or flags. Screens should be angled away, blank or have no discernible content. Category: Reviews and collaboration."
+    }
+  ]
+}

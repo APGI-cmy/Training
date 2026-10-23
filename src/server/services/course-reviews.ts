@@ -24,6 +24,7 @@ import manifest from "@/data/course-review-manifest.json";
 
 import {deliverTransactionalEmail} from "./email/transactional-delivery";
 import {renderReviewMessage} from './email/review-message';
+import {renderConfiguredInvitation,type InvitationSnapshot} from './email/review-invitation-template';
 
 export const reviewHash=(value:unknown)=>createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
@@ -131,7 +132,7 @@ export function assertReviewWork(round:ReviewRound,fresh:boolean){
 
 }
 
-type MailRow={id:string;round_id:string;notification_key:string;recipient:string;kind:string;subject:string;body:string};
+type MailRow={id:string;round_id:string;notification_key:string;recipient:string;kind:string;subject:string;body:string;email_snapshot?:InvitationSnapshot|null};
 
 export async function processReviewMail(){
 
@@ -160,7 +161,8 @@ export async function processReviewMail(){
 
   }
 
-  const result=await deliverTransactionalEmail({to:m.recipient,subject:m.subject,...renderReviewMessage(round,m),idempotencyKey:reviewHash(m.notification_key)});
+  const rendered=m.kind==='invitation'?await renderConfiguredInvitation(round,m):{subject:m.subject,...renderReviewMessage(round,m)};
+  const result=await deliverTransactionalEmail({to:m.recipient,...rendered,idempotencyKey:reviewHash(m.notification_key)});
 
   await write(`/rest/v1/course_review_mail?id=eq.${m.id}`,result.ok?{state:"sent",provider_id:result.providerMessageId,last_error:null}:{state:"failed",last_error:result.error},"PATCH");
 

@@ -4,7 +4,7 @@ do $$
 declare principal uuid;owner uuid=gen_random_uuid();learner uuid=gen_random_uuid();other_user uuid=gen_random_uuid();
  org uuid=gen_random_uuid();other_org uuid=gen_random_uuid();sid uuid;eid uuid;cid text='vpshr-level-0';
  design jsonb='{"subject":"Hello {{recipient_name}}","heading":"Course update","body":"Thank you for learning with us.","button":"Open course","destination":"course","image":"course"}';
- rule jsonb;counted integer;claimed jsonb;foreign_blocked boolean=false;review_id uuid=gen_random_uuid();review_email uuid;published_email uuid;promotion_email uuid;group_email uuid;fixture_group uuid=gen_random_uuid();owner_email text;learner_email text;before_events integer;
+ rule jsonb;counted integer;claimed jsonb;foreign_blocked boolean=false;review_id uuid=gen_random_uuid();review_email uuid;published_email uuid;promotion_email uuid;group_email uuid;fixture_group uuid=gen_random_uuid();owner_email text;learner_email text;before_events integer;invitation_id uuid;first_snapshot jsonb;
 begin
  select u.id into principal from auth.users u join public.platform_principals p on lower(p.email)=lower(u.email) where u.email_confirmed_at is not null limit 1;
  if principal is null then raise exception 'A verified V2 principal is required for this test';end if;
@@ -16,6 +16,12 @@ begin
  begin perform public.v2_email_set_save(owner,null,other_org,1,'Forbidden','');exception when others then foreign_blocked=true;end;
  if not foreign_blocked then raise exception 'Cross-company authoring was allowed';end if;
  if jsonb_array_length(public.v2_email_workspace(owner)->'companies')<>1 then raise exception 'Company isolation failed';end if;
+ -- Library metadata is scoped even though the actual email graphics are public.
+ insert into public.v2_image_library(organisation_id,title,course_id,purpose,object_path,created_by) values(org,'Course artwork',cid,'both',org||'/'||gen_random_uuid()||'.jpg',owner),(other_org,'Other company artwork',cid,'email',other_org||'/'||gen_random_uuid()||'.jpg',other_user);
+ if jsonb_array_length(public.v2_image_library_list(owner))<>1 or public.v2_image_library_list(owner)->0->>'title'<>'Course artwork' or jsonb_array_length(public.v2_image_library_list(other_user))<>0 then raise exception 'Image library company isolation failed';end if;
+ foreign_blocked=false;begin perform public.v2_image_library_add(owner,other_org,'Forbidden',cid,'email',other_org||'/'||gen_random_uuid()||'.jpg');exception when others then foreign_blocked=true;end;
+ if not foreign_blocked then raise exception 'Cross-company image registration was allowed';end if;
+ if has_table_privilege('authenticated','public.v2_image_library','select') or has_table_privilege('anon','public.v2_image_library','insert') or has_function_privilege('authenticated','public.v2_image_library_list(uuid)','execute') then raise exception 'Private library metadata was exposed';end if;
  rule=jsonb_build_object('trigger','completion','cadence','once','audience','enrolled','course_id',cid,'group_id','','recipients','[]'::jsonb,'start_at','','end_at','','deadline_at','','days_before',14,'first_time_only',false,'marketing',false,'policy_confirmed',true);
  eid=public.v2_email_entry_save(owner,null,sid,1,'Congratulations',design,rule);
  perform public.v2_email_queue();if exists(select 1 from public.v2_email_outbox where entry_id=eid) then raise exception 'Draft sent unexpectedly';end if;
@@ -80,6 +86,22 @@ begin
  rule=rule||jsonb_build_object('trigger','group_complete','audience','admins','marketing',false,'group_id',fixture_group);
  group_email=public.v2_email_entry_save(owner,null,sid,1,'Group feedback',design,rule);perform public.v2_email_entry_state(owner,group_email,1,'active');perform public.v2_email_queue();
  if not exists(select 1 from public.v2_email_outbox where entry_id=group_email and recipient=owner_email) then raise exception 'Completed group follow-up missing';end if;
+ -- Blank course is permitted for drafts; actual event emails still require it.
+ rule=rule||jsonb_build_object('trigger','completion','audience','enrolled','course_id','','group_id','');
+ eid=public.v2_email_entry_save(owner,null,sid,1,'Unconfigured starter',design,rule);
+ foreign_blocked=false;begin perform public.v2_email_entry_state(owner,eid,1,'active');exception when others then foreign_blocked=true;end;
+ if not foreign_blocked then raise exception 'An unconfigured event message was activated';end if;
+ -- A company-wide invitation design is used only by the real review queue.
+ rule=rule||jsonb_build_object('trigger','review_request','audience','reviewers');
+ design=jsonb_set(design,'{image}','"library:reviews-01"');
+ eid=public.v2_email_entry_save(owner,null,sid,1,'Review request',design,rule);perform public.v2_email_entry_state(owner,eid,1,'active');
+ if public.v2_email_review_design(org,cid) is null or public.v2_email_review_design(other_org,cid) is not null then raise exception 'Review template company isolation failed';end if;
+ select count(*) into counted from public.v2_email_outbox;perform public.v2_email_queue();
+ if exists(select 1 from public.v2_email_outbox where entry_id=eid) then raise exception 'Activating a request template sent arbitrary invitations';end if;
+ insert into public.course_review_mail(round_id,notification_key,recipient,kind,subject,body,state) values(review_id,'qa-invitation:'||gen_random_uuid(),learner_email,'invitation','Original','Private joining instructions','sending') returning id into invitation_id;
+ first_snapshot=public.v2_email_invitation_snapshot(invitation_id,'{"mode":"native","subject":"Frozen","body":"First version"}');
+ if public.v2_email_invitation_snapshot(invitation_id,'{"mode":"native","subject":"Changed","body":"Second version"}')<>first_snapshot then raise exception 'Invitation retry changed its frozen content';end if;
+ if has_function_privilege('authenticated','public.v2_email_review_design(uuid,text)','execute') or has_function_privilege('anon','public.v2_email_invitation_snapshot(uuid,jsonb)','execute') then raise exception 'Private invitation functions are publicly executable';end if;
 end $$;
 select 'PASS: company isolation, draft safety, completion, deduplication, consent, opt-out, deadline stop, yearly cadence, stale edits, report/branding/commercial events, publication announcements and group follow-up' result;
 rollback;
