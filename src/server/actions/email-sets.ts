@@ -11,6 +11,10 @@ import {getCourses} from '@/lib/courses';
 import {previewTransactionalEmail} from '@/server/services/email/transactional-delivery';
 import {reviewInvitationNarrative,renderReviewMessage} from '@/server/services/email/review-message';
 import {adminRest} from '@/server/supabase/admin-rest';
+import {brandedEmail} from '@/server/services/email/send-course-invitation';
+import {getCourseCover} from '@/lib/course-covers';
+import {getSupabaseRestUrl} from '@/server/auth/session';
+import {STAGING_ORIGIN} from '@/server/environment-isolation';
 import type {ReviewRound} from '@/lib/course-review';
 const field=(form:FormData,key:string)=>String(form.get(key)??'').trim();
 const rev=(form:FormData)=>{const r=Number(field(form,'revision'));if(!Number.isSafeInteger(r)||r<1)throw Error('Reload before saving.');return r;};
@@ -53,9 +57,14 @@ export async function emailSetAction(_:EmailActionState,form:FormData):Promise<E
    const rendered=renderEmailSet({design:designFrom(form),brand:company.name,color:company.primary_color,logo_path:company.logo_path,marketing:rule.marketing,organisation_id:company.id,context:{recipient_name:'Example reviewer / learner',company_name:company.name,course_id:course.id,course_title:course.title,review_id:review?.id??'',review_scope:'content, commercials and branding',deadline:rule.deadline_at||new Date(Date.now()+14*86400000).toISOString(),days_left:String(rule.days_before),progress_percent:'75',group_name:workspace.groups.find(g=>g.id===rule.group_id)?.name??'Example enrolled group',enrolled_count:'20',completed_count:'18'}});
    return {...previewTransactionalEmail(rendered),success:'Preview only — no email sent. Example personalisation is shown.'};
   }
-  if(op==='review-preview'){
+  if(op==='review-preview'||op==='enrolment-preview'){
    const {workspace}=await emailSetWorkspace(),company=workspace.companies.find(c=>c.id===field(form,'organisation_id'));if(!company)throw Error('Administrator access required for this company.');
    const course=getCourses().find(c=>c.id===field(form,'course_id'));if(!course)throw Error('Choose a course.');
+   if(op==='enrolment-preview'){
+    const cover=getCourseCover(course.id),subject=`Your ${company.name} course invitation: ${course.title}`;
+    const html=brandedEmail({brand:company.name,logo:company.logo_path?getSupabaseRestUrl(`/storage/v1/object/public/alp-branding-assets/${company.logo_path}`):null,color:company.primary_color,title:course.title,description:`You have been invited to enrol in ${course.title}. ${course.description} Use the invited email, verify your account and save Profile to see your course.`,image:cover?new URL(cover.src,STAGING_ORIGIN).toString():null,link:new URL('/invitations/PREVIEW-ONLY',STAGING_ORIGIN).toString(),button:'Open your course invitation',footer:'Example only. Real invitations contain a private joining link, expiry and the matching company identity. Hosted by APGI.'});
+    return {...previewTransactionalEmail({subject,html,text:subject}),success:'Example of the existing branded enrolment invitation. No invitation is created or sent.'};
+   }
    const saved=workspace.review_requests.find(r=>r.organisation_id===company.id&&r.course_id===course.id);
    let round:ReviewRound,subject:string,body:string;
    if(saved){

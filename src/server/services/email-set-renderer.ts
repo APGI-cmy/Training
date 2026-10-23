@@ -7,7 +7,8 @@ import {interpolateEmail,validateEmailDesign,type EmailDesign} from '@/lib/email
 
 export type EmailSnapshot={design:EmailDesign;context:Record<string,string>;brand:string;logo_path:string|null;color:string;marketing:boolean;organisation_id:string};
 export function renderEmailSet(snapshot:EmailSnapshot){
- const {design,context}=snapshot;validateEmailDesign(design);
+ const {design}=snapshot;validateEmailDesign(design);
+ const context:Record<string,string>=Object.fromEntries(Object.entries(snapshot.context).map(([key,value])=>[key,Array.isArray(value)?value.join(', '):String(value??'')]));
  const values={...context,deadline:context.deadline?new Date(context.deadline).toLocaleString('en-ZA',{timeZone:'Africa/Johannesburg',dateStyle:'long',timeStyle:'short'})+' SAST':''};
  const subject=interpolateEmail(design.subject,values).replace(/[\r\n]/g,' ').slice(0,200);
  const heading=interpolateEmail(design.heading,values),body=interpolateEmail(design.body,values),button=interpolateEmail(design.button,values);
