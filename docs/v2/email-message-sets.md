@@ -145,3 +145,25 @@ email rules and zero deliveries from this feature. No Tiger Kidnapping review
 request had been submitted yet; its invitation view therefore showed an example,
 while the existing VPSHR request displayed its saved invitations and acceptance
 records. These are dated verification observations, not permanent course states.
+
+### Company library and invitation follow-up verification
+
+The follow-up passed all 626 release tests, TypeScript and the production build.
+The rolled-back SQL checks also covered company image-list isolation, rejected
+cross-company registration, blocked public metadata access, invitation design
+selection, inactive-draft safety and immutable invitation retry snapshots.
+
+Live V2 browser checks imported a real JPEG into the APGI library, assigned it to
+Tiger Kidnapping with the “Courses and emails” tag, used it in the review-request
+draft, and saved/reopened that draft as version 2. The NKS workspace retained its
+independent review-request draft and did not display APGI's uploaded library item.
+Both workspaces have nine inactive drafts; no invitations or new email-set
+deliveries were sent by these checks. The message body records the intended NKS
+ownership condition as draft wording only.
+
+Security advisors report intentional service-only RLS tables without public
+policies, plus existing signed-in role helper warnings and disabled leaked-password
+protection. This feature adds no authenticated definer function. See the
+[Supabase advisor explanation](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable)
+and [password protection guidance](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection)
+for those existing platform settings.

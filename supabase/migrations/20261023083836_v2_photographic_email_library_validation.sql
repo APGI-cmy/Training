@@ -31,4 +31,3 @@ begin
  update public.v2_email_outbox set state='suppressed',last_error='Message edited; preview and activate the new version.' where entry_id=result and state in('queued','failed');end if;
  insert into public.v2_message_events(actor_id,action) values(p_actor,'email_draft_saved:'||result);return result;
 end $$;
-

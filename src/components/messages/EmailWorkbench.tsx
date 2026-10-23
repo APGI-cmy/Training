@@ -3,7 +3,7 @@ import {startTransition,useActionState,useEffect,useState,type FormEvent} from '
 import {useRouter} from 'next/navigation';
 import {emailSetAction} from '@/server/actions/email-sets';
 import {EmailLibraryDialog} from './EmailMediaLibrary';
-import {defaultEmailImage,libraryImagePath} from '@/lib/email-image-library';
+import {libraryImagePath} from '@/lib/email-image-library';
 import {getCourseCover} from '@/lib/course-covers';
 import {blankRule,emailCadences,emailStarters,emailTokens,emailTriggers,nextEmailOccurrence,type EmailActionState,type EmailEntry,type EmailRule,type EmailDesign,type EmailSet,type EmailWorkspace} from '@/lib/email-sets';
 type CourseOption={id:string;title:string};
@@ -37,13 +37,14 @@ function utcTime(value:string){return value?new Date(value+':00+02:00').toISOStr
 const audiences={selected:'Selected company contacts',enrolled:'Learners enrolled on this course',group:'Learners in an enrolled group',reviewers:'Assigned course reviewers',members:'Company members and learners',admins:'Company administrators'};
 function EmailEditor({company,set,entry,workspace,courses,onSaved}:{company:string;set:EmailSet;entry?:EmailEntry;workspace:EmailWorkspace;courses:CourseOption[];onSaved:(id:string)=>void}){
  const [design,setDesign]=useState<EmailDesign>(entry?.design??emailStarters[0].design),[rule,setRule]=useState<EmailRule>(entry?.rule??{...blankRule(),...emailStarters[0].rule,course_id:courses[0]?.id??''});
- const [name,setName]=useState(entry?.name??emailStarters[0].name),[dirty,setDirty]=useState(!entry),[starter,setStarter]=useState('0'),[libraryOpen,setLibraryOpen]=useState(false);
+ const [name,setName]=useState(entry?.name??emailStarters[0].name),[dirty,setDirty]=useState(!entry),[starter,setStarter]=useState(String(Math.max(0,emailStarters.findIndex(s=>s.name===entry?.name)))),[libraryOpen,setLibraryOpen]=useState(false);
  const {state,onSubmit,pending}=useEmailForm(),router=useRouter();
  useEffect(()=>{if(state.entryId){onSaved(state.entryId);router.refresh();}else if(state.success&&!state.html)router.refresh();},[state,onSaved,router]);
  const updateDesign=(key:keyof EmailDesign,value:string)=>{setDesign(d=>({...d,[key]:value}));setDirty(true);};
  const updateRule=(patch:Partial<EmailRule>)=>{setRule(r=>({...r,...patch}));setDirty(true);};
  const event=rule.trigger!=='schedule'&&rule.trigger!=='deadline';
  const graphicPreview=design.image==='none'?null:design.image==='course'?getCourseCover(rule.course_id)?.src:libraryImagePath(design.image)??(/^https:\/\//.test(design.image)&&design.image!=='https://'?design.image:null);
+ const companyImage=workspace.images?.find(image=>image.organisation_id===company&&image.url===design.image);
  const allowedAudience=rule.trigger.startsWith('review_')?['reviewers']:['enrolment','completion','deadline'].includes(rule.trigger)?['enrolled','group']:rule.trigger==='group_complete'?['admins','selected']:Object.keys(audiences);
  return <><form onSubmit={onSubmit}>
   <input type="hidden" name="id" value={entry?.id??''}/><input type="hidden" name="revision" value={entry?.revision??1}/><input type="hidden" name="set_id" value={set.id}/><input type="hidden" name="organisation_id" value={company}/><input type="hidden" name="rule" value={JSON.stringify(rule)}/><input type="hidden" name="previewed_revision" value={state.html&&!dirty?entry?.revision??'':''}/>
@@ -56,9 +57,9 @@ function EmailEditor({company,set,entry,workspace,courses,onSaved}:{company:stri
    <label>Message<textarea name="body" required rows={10} maxLength={20000} value={design.body} onChange={e=>updateDesign('body',e.target.value)}/><small>Paragraphs are preserved in the branded HTML email. Personal fields: {emailTokens.map(t=>`{{${t}}}`).join(' · ')}</small></label>
    <label>Button text<input name="button" required maxLength={80} value={design.button} onChange={e=>updateDesign('button',e.target.value)}/></label>
    <label>Button opens<select name="destination" value={design.destination} onChange={e=>updateDesign('destination',e.target.value)}><option value="course">Learner course</option><option value="review">Course review</option><option value="messages">Messages and support</option><option value="catalogue">Course catalogue</option></select></label>
-   <label>Graphic<select value={design.image.startsWith('library:')?'library':['course','none'].includes(design.image)?design.image:'custom'} onChange={e=>updateDesign('image',e.target.value==='custom'?'https://':e.target.value==='library'?defaultEmailImage[rule.trigger]:e.target.value)}><option value="library">Shared neutral image library</option><option value="course">Course cover image</option><option value="none">No cover image</option><option value="custom">Public HTTPS image</option></select></label>
+   <label>Graphic<select value={companyImage?'company':design.image.startsWith('library:')?'library':['course','none'].includes(design.image)?design.image:'custom'} onChange={e=>{if(['company','library'].includes(e.target.value))setLibraryOpen(true);else updateDesign('image',e.target.value==='custom'?'https://':e.target.value);}}><option value="library">Shared neutral image library</option><option value="company">My company image library</option><option value="course">Course cover image</option><option value="none">No cover image</option><option value="custom">Image from a web address</option></select></label>
    <button type="button" onClick={()=>setLibraryOpen(true)}>Select / add image — open image library</button>
-   {!['course','none'].includes(design.image)&&!design.image.startsWith('library:')?<label>Image URL<input type="url" value={design.image} onChange={e=>updateDesign('image',e.target.value)} placeholder="https://…"/></label>:null}<input type="hidden" name="image" value={design.image}/>
+   {!companyImage&&!['course','none'].includes(design.image)&&!design.image.startsWith('library:')?<label>Image web address<input type="url" value={design.image} onChange={e=>updateDesign('image',e.target.value)} placeholder="https://…"/></label>:null}<input type="hidden" name="image" value={design.image}/>{companyImage?<p>From your company library: <strong>{companyImage.title}</strong></p>:null}
    {graphicPreview?<figure className="email-selected-graphic"><img src={graphicPreview} alt="Selected graphic for this email" loading="lazy"/><figcaption>Selected graphic — use Preview email to see it with the message.</figcaption></figure>:null}
   </div><div>
    <h2>When and to whom</h2>
