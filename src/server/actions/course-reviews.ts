@@ -1,6 +1,7 @@
 "use server";
 
 import {randomUUID,randomBytes,createHash} from "node:crypto";
+import {reviewInvitationNarrative} from '@/server/services/email/review-message';
 
 import {hasReviewTask,selectedTasks,taskDecision,outstandingAssignedTasks,type ReviewTask} from "@/lib/review-tasks";
 import {requirePartnerOwner} from "@/server/services/publication-workflow";
@@ -92,7 +93,7 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
 
   const invitations=people.map(p=>({email:p.email,token:randomBytes(32).toString("base64url")}));
 
-  const messages=reviewMail(round,"invitation","invite",`You are invited to a collaborative course review by ${session.user.email}. Full reviewers examine every LU and quiz, mark coverage and submit a report, even when no issues are found. Every full report needs one different reviewer's endorsement. Peer-only checkers may read and endorse reports directly. Findings, screenshots and comments are shared with the assigned team. You may decline with a reason. Daily reminders stop when you finish, decline or reach the cutoff. Overdue work requires an extension and never counts as approval. Sign in with the invited email. Review access does not enrol you or grant administrator rights.`);
+  const messages=reviewMail(round,"invitation","invite",reviewInvitationNarrative(session.user.email!));
 
   for(const m of messages){const invite=invitations.find(i=>i.email===m.to)!;const person=people.find(p=>p.email===m.to)!;m.body+=`\n\nYour assignments: ${(person.tasks??["content"]).join(", ")}. ${hasReviewTask(person,"content")?"Complete your assigned content review and report.":"No learning-unit coverage or full content report is required for your assignment."}`;m.body+=`\n\nFirst time on V2? Create your separate review account here: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}/join/${invite.token}`;}
 

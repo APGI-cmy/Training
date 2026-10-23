@@ -1,0 +1,83 @@
+'use server';
+import {revalidatePath} from 'next/cache';
+import {notificationSession} from '@/server/services/notifications';
+import {messageRpc} from '@/server/services/messages';
+import {emailSetWorkspace} from '@/server/services/email-sets';
+import {renderEmailSet} from '@/server/services/email-set-renderer';
+import {validId} from '@/lib/company-structure';
+import {parseRecipients} from '@/lib/messages';
+import {emailTriggers,emailCadences,emailStarters,validateEmailDesign,type EmailRule,type EmailDesign,type EmailActionState} from '@/lib/email-sets';
+import {getCourses} from '@/lib/courses';
+import {previewTransactionalEmail} from '@/server/services/email/transactional-delivery';
+import {reviewInvitationNarrative,renderReviewMessage} from '@/server/services/email/review-message';
+import {adminRest} from '@/server/supabase/admin-rest';
+import type {ReviewRound} from '@/lib/course-review';
+const field=(form:FormData,key:string)=>String(form.get(key)??'').trim();
+const rev=(form:FormData)=>{const r=Number(field(form,'revision'));if(!Number.isSafeInteger(r)||r<1)throw Error('Reload before saving.');return r;};
+function designFrom(form:FormData):EmailDesign{const design={subject:field(form,'subject'),heading:field(form,'heading'),body:field(form,'body'),button:field(form,'button'),destination:field(form,'destination') as EmailDesign['destination'],image:field(form,'image')};validateEmailDesign(design);return design;}
+function ruleFrom(form:FormData):EmailRule{
+ const raw=JSON.parse(field(form,'rule')) as EmailRule;
+ if(!Object.hasOwn(emailTriggers,raw.trigger)||!Object.hasOwn(emailCadences,raw.cadence)||!['selected','enrolled','group','reviewers','members','admins'].includes(raw.audience))throw Error('Choose a valid trigger, repeat cycle and audience.');
+ const rule:EmailRule={...raw,recipients:raw.recipients.length?parseRecipients(raw.recipients.join('\n')):[]};
+ for(const key of ['start_at','end_at','deadline_at'] as const){if(rule[key]&&(!/^\d{4}-\d{2}-\d{2}T/.test(rule[key])||!Number.isFinite(Date.parse(rule[key]))))throw Error('Choose valid dates and times.');}
+ if(!Number.isInteger(rule.days_before)||rule.days_before<1||rule.days_before>365)throw Error('Choose 1–365 days notice.');
+ if(rule.course_id&&!getCourses().some(c=>c.id===rule.course_id))throw Error('Choose an available course.');
+ if(rule.group_id)validId(rule.group_id);
+ return rule;
+}
+export async function emailSetAction(_:EmailActionState,form:FormData):Promise<EmailActionState>{
+ try{
+  const session=await notificationSession(),actor=session.user.id,op=field(form,'operation');
+  if(op==='starters'){
+   const courseId=field(form,'course_id');if(!getCourses().some(c=>c.id===courseId))throw Error('Choose an available course.');
+   const setId=await messageRpc<string>('v2_email_seed',{p_actor:actor,p_org:validId(field(form,'organisation_id')),p_course:courseId,p_starters:emailStarters});
+   revalidatePath('/messages/email-sets');return {setId,success:'Prepared email set saved as drafts. Choose a saved email to review its wording, graphic and trigger.'};
+  }
+  if(op==='set'){
+   const setId=await messageRpc<string>('v2_email_set_save',{p_actor:actor,p_id:field(form,'id')?validId(field(form,'id')):null,p_org:validId(field(form,'organisation_id')),p_revision:rev(form),p_name:field(form,'name'),p_policy:field(form,'policy_notes')});
+   revalidatePath('/messages/email-sets');return {success:'Message set saved. You can add emails to this set.',setId};
+  }
+  if(op==='save'){
+   const entryId=await messageRpc<string>('v2_email_entry_save',{p_actor:actor,p_id:field(form,'id')?validId(field(form,'id')):null,p_set:validId(field(form,'set_id')),p_revision:rev(form),p_name:field(form,'name'),p_design:designFrom(form),p_rule:ruleFrom(form)});
+   revalidatePath('/messages/email-sets');return {success:'Draft saved. Preview this version before activating it.',entryId};
+  }
+  if(op==='active'||op==='paused'){
+   if(op==='active'&&field(form,'previewed_revision')!==field(form,'revision'))throw Error('Preview this saved version before activating it.');
+   await messageRpc('v2_email_entry_state',{p_actor:actor,p_id:validId(field(form,'id')),p_revision:rev(form),p_state:op});
+   revalidatePath('/messages/email-sets');return {success:op==='active'?'Message activated. The scheduler checks for matching recipients about every ten minutes.':'Message paused.'};
+  }
+  if(op==='preview'){
+   const {workspace}=await emailSetWorkspace(),company=workspace.companies.find(c=>c.id===field(form,'organisation_id'));if(!company)throw Error('Administrator access required for this company.');
+   const rule=ruleFrom(form),course=getCourses().find(c=>c.id===rule.course_id)??getCourses()[0];
+   const review=workspace.review_requests.find(r=>r.organisation_id===company.id&&r.course_id===course.id);
+   const rendered=renderEmailSet({design:designFrom(form),brand:company.name,color:company.primary_color,logo_path:company.logo_path,marketing:rule.marketing,organisation_id:company.id,context:{recipient_name:'Example reviewer / learner',company_name:company.name,course_id:course.id,course_title:course.title,review_id:review?.id??'',review_scope:'content, commercials and branding',deadline:rule.deadline_at||new Date(Date.now()+14*86400000).toISOString(),days_left:String(rule.days_before),progress_percent:'75',group_name:workspace.groups.find(g=>g.id===rule.group_id)?.name??'Example enrolled group',enrolled_count:'20',completed_count:'18'}});
+   return {...previewTransactionalEmail(rendered),success:'Preview only — no email sent. Example personalisation is shown.'};
+  }
+  if(op==='review-preview'){
+   const {workspace}=await emailSetWorkspace(),company=workspace.companies.find(c=>c.id===field(form,'organisation_id'));if(!company)throw Error('Administrator access required for this company.');
+   const course=getCourses().find(c=>c.id===field(form,'course_id'));if(!course)throw Error('Choose a course.');
+   const saved=workspace.review_requests.find(r=>r.organisation_id===company.id&&r.course_id===course.id);
+   let round:ReviewRound,subject:string,body:string;
+   if(saved){
+    const response=await adminRest(`/rest/v1/course_review_rounds?id=eq.${saved.id}&select=*&limit=1`);if(!response.ok)throw Error('Review unavailable.');round=(await response.json())[0];
+    const recipient=round.document.participants.find(p=>p.email===field(form,'recipient'))??round.document.participants[0];
+    const mail=await adminRest(`/rest/v1/course_review_mail?round_id=eq.${saved.id}&kind=eq.invitation&recipient=eq.${encodeURIComponent(recipient.email)}&select=subject,body&order=created_at.desc&limit=1`);if(!mail.ok)throw Error('Invitation unavailable.');const row=(await mail.json())[0];
+    if(!row)throw Error('No saved invitation was found for this reviewer.');subject=row.subject;body=row.body.replace(/\/join\/[A-Za-z0-9_-]+/g,'/join/PREVIEW-LINK-REMOVED');
+   }else{
+    round={id:'00000000-0000-4000-8000-000000000000',course_id:course.id,document:{title:course.title,brand:{name:company.name,color:company.primary_color,logo:company.logo_path}}} as ReviewRound;
+    subject=`${company.name} — ${course.title}: invitation`;body=`${reviewInvitationNarrative(session.user.email!)}\n\nYour assignments: content, commercials and branding (example).\nCut-off: the date selected when requesting review.\n\nSign in with the invited email address. Your real invitation includes your assigned tasks and a private first-time registration link.`;
+   }
+   const rendered=renderReviewMessage(round,{subject,body});
+   return {...previewTransactionalEmail({subject,html:rendered.html,text:body}),success:saved?'Saved review invitation preview. Private registration tokens have been removed.':'Example review invitation. No saved review request exists for this course and company yet.'};
+  }
+  if(op==='receipt-preview'){
+   const id=validId(field(form,'id')),{workspace}=await emailSetWorkspace();const receipt=workspace.activity.find(a=>a.id===id);if(!receipt)throw Error('Delivery unavailable.');
+   const r=await adminRest(`/rest/v1/v2_email_outbox?id=eq.${id}&select=snapshot&limit=1`);if(!r.ok)throw Error('Delivery unavailable.');const snapshot=(await r.json())[0]?.snapshot;if(!snapshot)throw Error('Delivery unavailable.');
+   return {...previewTransactionalEmail(renderEmailSet(snapshot)),success:'Stored version for this delivery. Acceptance does not prove inbox delivery.'};
+  }
+  if(op==='preference'){
+   await messageRpc('v2_email_preference',{p_actor:actor,p_org:validId(field(form,'organisation_id')),p_opt:field(form,'announcements')==='on'});revalidatePath('/messages/email-preferences');return {success:'Your email preferences are saved.'};
+  }
+  throw Error('Choose a valid email action.');
+ }catch(error){return {error:error instanceof Error?error.message:'The email change could not be saved. Please try again.'};}
+}

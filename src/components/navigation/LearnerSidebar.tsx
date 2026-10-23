@@ -14,6 +14,7 @@ export async function LearnerSidebar() {
   const roles = session ? await getUserRoles(session.accessToken) : [];
   const isAdmin = roles.includes("admin");
   const principal = isAdmin && session ? await isPlatformPrincipal(session) : false;
+  const emailAdmin=isAdmin||!!session?.user.email_confirmed_at&&(await ownMemberships(session,true)).length>0;
   const paymentEligible=!!session?.user.email_confirmed_at&&paymentPortalEligible(roles,roles.some(r=>["admin","reviewer","course_publisher"].includes(r))?false:(await ownMemberships(session!,true)).length>0);
 
   let noticeCounts:NotificationCounts|null=null;
@@ -40,6 +41,7 @@ export async function LearnerSidebar() {
         ...(paymentEligible?[{href:"/payments",label:"My payment portal"}]:[]),
         ...(session ? [
           { href: "/messages", label: "Messages and support" },
+          ...(emailAdmin?[{href:'/messages/email-sets',label:'Email message sets'}]:[]),
           { href: "/company", label: "Company workspaces" },
           { href: "/policies", label: "Policies and reviews" },
           { href: "/course-reviews", label: "Course reviews" },
@@ -58,7 +60,6 @@ export async function LearnerSidebar() {
           { href: "/admin/companies", label: "Companies and branding" },
           { href: "/admin/policies", label: "Platform policies" },
           ...(principal ? [{ href: "/admin/agreements", label: "Commercial drafts" }, { href: "/admin/service-costs", label: "Service cost register" }] : []),
-          { href: "/admin/email-templates", label: "Email previews" },
         ] : []),
       ]} />
 

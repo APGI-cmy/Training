@@ -17,13 +17,17 @@ export function emailConfiguration() {
   } catch {return null;}
 }
 
+export function previewTransactionalEmail(input:{subject:string;html:string;text:string}){
+ const staging=process.env.ALP_ENVIRONMENT==='v2-staging';
+ const notice='VERSION 2 TEST ENVIRONMENT. This message concerns the separate Version 2 platform. It does not change your Version 1 account or course access. Use a separate Version 2 account with this email address.';
+ return {subject:(staging?'[APGI V2 TEST] ':'')+input.subject,html:(staging?`<p><strong>${notice}</strong></p>`:'')+input.html,text:(staging?notice+'\n\n':'')+input.text};
+}
 export async function deliverTransactionalEmail(input:{to:string;subject:string;html:string;text:string;idempotencyKey:string}) {
   const config=emailConfiguration();
   if(!config)return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.to) || (config.staging && /\.invalid$/i.test(input.to)))return {ok:false as const,error:'EMAIL_DELIVERY_FAILED' as const};
-  const notice='VERSION 2 TEST ENVIRONMENT. This message concerns the separate Version 2 platform. It does not change your Version 1 account or course access. Use a separate Version 2 account with this email address.';
   try {
-    const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{authorization:`Bearer ${config.apiKey}`,'content-type':'application/json','idempotency-key':input.idempotencyKey},body:JSON.stringify({from:config.from,to:[input.to],subject:(config.staging?'[APGI V2 TEST] ':'')+input.subject,html:(config.staging?`<p><strong>${notice}</strong></p>`:'')+input.html,text:(config.staging?notice+'\n\n':'')+input.text,tags:config.staging?[{name:'environment',value:'v2-staging'}]:undefined}),cache:'no-store',signal:AbortSignal.timeout(15000)});
+    const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{authorization:`Bearer ${config.apiKey}`,'content-type':'application/json','idempotency-key':input.idempotencyKey},body:JSON.stringify({from:config.from,to:[input.to],...previewTransactionalEmail(input),tags:config.staging?[{name:'environment',value:'v2-staging'}]:undefined}),cache:'no-store',signal:AbortSignal.timeout(15000)});
     if(!response.ok)return {ok:false as const,error:'EMAIL_DELIVERY_FAILED' as const};
     const payload=await response.json() as {id?:string};
     // A successful HTTP response without a provider ID is not delivery evidence.

@@ -4,7 +4,7 @@ import {createHash,randomUUID} from "node:crypto";
 
 import {redirect} from "next/navigation";
 
-import {getCurrentSession,getSupabaseRestUrl} from "@/server/auth/session";
+import {getCurrentSession} from "@/server/auth/session";
 
 import {adminRest} from "@/server/supabase/admin-rest";
 
@@ -21,9 +21,9 @@ import {canWork,currentReport,needsReminder,normalizedEmail,progressText,reviewB
 
 import manifest from "@/data/course-review-manifest.json";
 
-import {getCourseCover} from "@/lib/course-covers";
 
 import {deliverTransactionalEmail} from "./email/transactional-delivery";
+import {renderReviewMessage} from './email/review-message';
 
 export const reviewHash=(value:unknown)=>createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
@@ -133,8 +133,6 @@ export function assertReviewWork(round:ReviewRound,fresh:boolean){
 
 type MailRow={id:string;round_id:string;notification_key:string;recipient:string;kind:string;subject:string;body:string};
 
-const escape=(s:string)=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]!));
-
 export async function processReviewMail(){
 
  const claimed=await adminRest("/rest/v1/rpc/v2_claim_review_mail",{method:"POST",body:"{}"});
@@ -162,18 +160,7 @@ export async function processReviewMail(){
 
   }
 
-  const d=round.document;
-
-  const image=getCourseCover(round.course_id)?.src;
-
-  const logo=d.brand.logo?getSupabaseRestUrl(`/storage/v1/object/public/alp-branding-assets/${d.brand.logo}`):`${process.env.NEXT_PUBLIC_APP_URL}/branding/apgi-logo.png`;
-
-  const join=m.body.split(/\s+/).find(s=>s.startsWith(`${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${round.id}/join/`));
-
-  const reviewAnchor=["review_change_requested","review_change_decided"].includes(m.kind)?"#manage-request":"";
-  const body=m.body.length>100000?m.body.slice(0,100000)+"\nFull committed report is available in the secure review workspace.":m.body;
-
-  const result=await deliverTransactionalEmail({to:m.recipient,subject:m.subject,text:body,html:`<div style="max-width:640px;margin:auto;font:16px Arial;color:#102b47">${logo?`<img alt="${escape(d.brand.name)}" width="150" src="${escape(logo)}"/>`:""}<h2>${escape(d.brand.name)}</h2>${image?`<img alt="Course" style="width:100%;max-height:180px;object-fit:cover" src="${process.env.NEXT_PUBLIC_APP_URL}${image}"/>`:""}<h3>${escape(d.title)}</h3><div style="white-space:pre-line">${escape(body)}</div><p><a style="display:inline-block;padding:14px;background:${/^#[a-f0-9]{6}$/i.test(d.brand.color)?d.brand.color:"#102b47"};color:white" href="${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${round.id}${reviewAnchor}">Open course review</a></p>${join?`<p><a href="${escape(join)}">First time on V2? Create your review account</a></p>`:""}<small>Hosted by APGI</small></div>`,idempotencyKey:reviewHash(m.notification_key)});
+  const result=await deliverTransactionalEmail({to:m.recipient,subject:m.subject,...renderReviewMessage(round,m),idempotencyKey:reviewHash(m.notification_key)});
 
   await write(`/rest/v1/course_review_mail?id=eq.${m.id}`,result.ok?{state:"sent",provider_id:result.providerMessageId,last_error:null}:{state:"failed",last_error:result.error},"PATCH");
 
