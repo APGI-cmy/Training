@@ -1,3 +1,4 @@
+vi.mock('@/server/services/email/review-invitation-readiness',()=>({assertReviewInvitationReady:vi.fn(async()=>({state:{status:'standard'},design:null})),reviewInvitationEmail:vi.fn(async()=>({state:{status:'standard',organisation_id:'11111111-1111-4111-8111-111111111111',course_id:'vpshr-level-0'},design:null}))}));
 import {getCourseBySlug} from "@/lib/courses";
 import React from "react";
 import {renderToStaticMarkup} from "react-dom/server";

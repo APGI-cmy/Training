@@ -2,6 +2,7 @@
 
 import {randomUUID,randomBytes,createHash} from "node:crypto";
 import {reviewInvitationNarrative} from '@/server/services/email/review-message';
+import {assertReviewInvitationReady} from '@/server/services/email/review-invitation-readiness';
 
 import {hasReviewTask,selectedTasks,taskDecision,outstandingAssignedTasks,type ReviewTask} from "@/lib/review-tasks";
 import {requirePartnerOwner} from "@/server/services/publication-workflow";
@@ -80,6 +81,8 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
   const previous=await rows<ReviewRound>(`/rest/v1/course_review_rounds?course_id=eq.${course.slug}&organisation_id=eq.${brand.id}&fingerprint=eq.${source.fingerprint}&status=eq.open&select=*&order=created_at.desc&limit=1`);
 
   if(previous.length)return {success:"This plan already has an active review. Open it to continue.",href:`/course-reviews/${previous[0].id}`};
+
+  await assertReviewInvitationReady(brand.id,course.slug);
 
   const id=randomUUID(),cutoff=cutoffValue(form),now=new Date().toISOString();
 
@@ -241,6 +244,7 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
       if(Date.parse(d.cutoff)<=Date.now())throw Error("Approve a cutoff extension before inviting a new reviewer to an overdue review.");
       if(d.participants.some(p=>p.email===request.email))throw Error("This reviewer is already assigned.");
+      await assertReviewInvitationReady(round.organisation_id,round.course_id);
 
       if(request.kind==="replacement"){
 
@@ -289,6 +293,7 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
   }else if(op==="resend_invite"){
 
    if(!principal)throw Error("Only a platform principal can resend invitations.");
+   await assertReviewInvitationReady(round.organisation_id,round.course_id);
 
    assertReviewWork(round,fresh);const recipient=normalizedEmail(text(form,"recipient",3,254)),target=d.participants.find(p=>p.email===recipient);
 

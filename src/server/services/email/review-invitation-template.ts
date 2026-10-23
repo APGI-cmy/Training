@@ -4,14 +4,14 @@ import {assignedTasks,reviewTaskLabels} from '@/lib/review-tasks';
 import {messageRpc} from '@/server/services/messages';
 import {renderEmailSet,type EmailSnapshot} from '@/server/services/email-set-renderer';
 import {renderReviewMessage} from './review-message';
-import type {EmailDesign} from '@/lib/email-sets';
 import {STAGING_ORIGIN} from '@/server/environment-isolation';
+import {assertReviewInvitationReady} from './review-invitation-readiness';
 export type InvitationSnapshot={mode:'native';subject:string;body:string}|{mode:'configured';subject:string;email:EmailSnapshot};
 export type ReviewInvitationMail={id:string;recipient:string;subject:string;body:string;kind:string;email_snapshot?:InvitationSnapshot|null};
 export async function renderConfiguredInvitation(round:ReviewRound,mail:ReviewInvitationMail){
  let snapshot=mail.email_snapshot;
  if(!snapshot){
-  const design=await messageRpc<EmailDesign|null>('v2_email_review_design',{p_org:round.organisation_id,p_course:round.course_id});
+  const {design}=await assertReviewInvitationReady(round.organisation_id,round.course_id);
   if(design){
    const person=round.document.participants.find(p=>p.email===mail.recipient)!;
    const scope=assignedTasks(person).map(task=>reviewTaskLabels[task]).join(', ')||'Independent report check';

@@ -1,5 +1,29 @@
 # Company email message sets
 
+## Preventing standard-email substitution (23 October 2026)
+
+The NKS Tiger invitations sent at 09:43 UTC used the standard design because the
+company's saved review-request email was still a draft. Previewing and saving did
+not enable it. The five delivery snapshots correctly retained the native message
+actually sent; they must not be rewritten as though a custom email was delivered.
+
+The request and resend flows now display the saved email, its version and whether
+it is enabled. A matching draft, paused or unavailable template blocks invitation
+creation/delivery instead of silently substituting the standard email. The review
+page links directly to that company's saved design. The separate activation
+button for this trigger is labelled **Use this design for review invitations**.
+Only a company/course with no matching saved design may use the standard default.
+The worker also records a blocked invitation without sending it or stopping other
+queued messages. Already-frozen delivery snapshots remain immutable.
+
+Template availability dates are labelled separately from the review cutoff. A
+preview for an existing review uses its actual saved cutoff. At investigation the
+NKS review cutoff was 20 November 2026, while its template availability ended on
+13 November; neither date was changed. No template was activated and no invitation
+was resent during this investigation. All 636 release checks passed, including
+draft/paused/date-ineligible guards, course/company matching, immutable retries,
+queue isolation and the actual review cutoff in previews.
+
 ## Company starter library and review requests (23 October 2026)
 
 The first visit provisions nine independent, inactive drafts for an authorised

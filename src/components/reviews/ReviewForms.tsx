@@ -1,5 +1,7 @@
 "use client";
 import {ReviewerTasks} from "./ReviewerTasks";
+import {ReviewInvitationSummary} from './ReviewInvitationSummary';
+import type {ReviewInvitationEmailState} from '@/lib/review-invitation-email';
 import {assignedTasks,type ReviewTask} from "@/lib/review-tasks";
 import {useActionState,useId,useState,useEffect} from "react";
 import Link from "next/link";
@@ -26,7 +28,7 @@ export function CoverageConfirmation({id,unit,confirmed,locked=false}:{id:string
  const [checked,setChecked]=useState(false);
  return <ReviewForm id={id} operation="coverage" label={confirmed?"Coverage saved":"Confirm coverage"} disabled={confirmed||locked} hidden={{unit}}><label><input key={confirmed?"saved":"draft"} type="checkbox" name="confirm_coverage" required checked={confirmed||checked} disabled={confirmed||locked} onChange={e=>setChecked(e.target.checked)}/> I reviewed this entire LU, including its quizzes and tests.</label>{confirmed?<p className="form-success">Confirmed and saved. This remains recorded when you return.</p>:null}</ReviewForm>;
 }
-export function RequestReviewForm({courseId,email,companies,initialBrand="",initialCredits={}}:{courseId:string;email:string;companies:{id:string;name:string;slug:string}[];initialBrand?:string;initialCredits?:Record<string,string>}){
+export function RequestReviewForm({courseId,email,companies,initialBrand="",initialCredits={},invitationEmails=[]}:{courseId:string;email:string;companies:{id:string;name:string;slug:string}[];initialBrand?:string;initialCredits?:Record<string,string>;invitationEmails?:ReviewInvitationEmailState[]}){
  const [brandId,setBrandId]=useState(initialBrand||companies.find(c=>c.slug==="apgi")?.id||"");const brandIsApgi=companies.find(c=>c.id===brandId)?.slug==="apgi";
  const [state,action,pending]=useActionState<ReviewActionState,FormData>(createCourseReview,{}),prefix=useId();
  const [people,setPeople]=useState(()=>[{id:0,email,role:"primary",scope:"content_and_commercials",tasks:["content","commercials"] as ReviewTask[]},{id:1,email:brandIsApgi?(email==="johan.ras@apginc.ca"?"jorrie.jordaan@apginc.ca":"johan.ras@apginc.ca"):"",role:"primary",scope:brandIsApgi?"content_and_commercials":"content",tasks:(brandIsApgi?["content","commercials"]:["content"]) as ReviewTask[]}]);
@@ -35,6 +37,7 @@ export function RequestReviewForm({courseId,email,companies,initialBrand="",init
  const [metadata,setMetadata]=useState({rights_holder:initialCredits.rights_holder||brandId,designer_name:initialCredits.designer_name||"",designer_company:initialCredits.designer_company||"",terms_acceptor:""});
  const apgi=brandIsApgi&&companies.find(c=>c.id===metadata.rights_holder)?.slug==="apgi";
  const [cutoff,setCutoff]=useState(new Date(Date.now()+7*86400000+7200000).toISOString().slice(0,16));
+ const invitationEmail=invitationEmails.find(choice=>choice.organisation_id===brandId);
  useEffect(()=>{try{const raw=sessionStorage.getItem(setupKey);if(raw){const saved=JSON.parse(raw);if(Date.now()-Number(saved.time)<86400000){if(saved.metadata)setMetadata(current=>({...current,...saved.metadata}));if(Array.isArray(saved.people)&&saved.people.length>=2){setPeople(saved.people.map((p:{scope?:string})=>({...p,scope:p.scope||"content",tasks:(p as {tasks?:ReviewTask[]}).tasks??assignedTasks({role:"primary",scope:(p.scope||"content") as "content"|"content_and_commercials"})})));setNext(Math.max(...saved.people.map((p:{id:number})=>p.id))+1);}if(typeof saved.cutoff==="string")setCutoff(saved.cutoff);if(!initialBrand&&companies.some(c=>c.id===saved.brandId))setBrandId(saved.brandId);}}}catch{/* Setup remains usable without tab storage. */}setRestored(true);
  // Restore once for this principal/course. The returned brand query takes precedence.
  // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,5 +50,5 @@ export function RequestReviewForm({courseId,email,companies,initialBrand="",init
  <label>Cutoff — South African time (Africa/Johannesburg)<input name="cutoff" type="datetime-local" required value={cutoff} onChange={e=>setCutoff(e.target.value)}/></label>
  {!apgi?<label>Company owner's email for commercial acceptance<input type="email" name="terms_acceptor" value={metadata.terms_acceptor} onChange={e=>setMetadata(current=>({...current,terms_acceptor:e.target.value}))} required/><small>This person will receive a company-scoped onboarding offer only after both APGI principals approve commercials. They may also be a content reviewer, but are not required in this initial team.</small></label>:null}
  <p>Daily reminders are scheduled for 09:00 South African time. They stop when a reviewer finishes, declines or reaches the cutoff. Unfinished work becomes overdue and requires an extension. The requester receives a progress digest.</p>
- <button className="primary-button" disabled={pending||!!state.href}>{pending?"Requesting…":"Request review and email the team"}</button>{state.error?<p role="alert" className="form-error">{state.error}</p>:null}{state.success?<p role="status">{state.success}</p>:null}{state.href?<Link className="primary-button" href={state.href}>Continue to team review</Link>:null}</form>;
+ {invitationEmail?<ReviewInvitationSummary state={invitationEmail}/>:null}<button className="primary-button" disabled={pending||!!state.href||invitationEmail?.status==='blocked'}>{pending?"Requesting…":"Request review and email the team"}</button>{state.error?<p role="alert" className="form-error">{state.error}</p>:null}{state.success?<p role="status">{state.success}</p>:null}{state.href?<Link className="primary-button" href={state.href}>Continue to team review</Link>:null}</form>;
 }

@@ -1,5 +1,6 @@
 import {beforeEach,describe,expect,it,vi} from "vitest";
-const m=vi.hoisted(()=>({rest:vi.fn(),rows:vi.fn(),write:vi.fn(async(_path:string,_body:unknown,_method?:string)=>[]),deliver:vi.fn()}));
+const m=vi.hoisted(()=>({rest:vi.fn(),rows:vi.fn(),write:vi.fn(async(_path:string,_body:unknown,_method?:string)=>[]),deliver:vi.fn(),render:vi.fn()}));
+vi.mock('@/server/services/email/review-invitation-template',()=>({renderConfiguredInvitation:m.render}));
 vi.mock("@/server/supabase/admin-rest",()=>({adminRest:m.rest}));
 vi.mock("@/server/services/company-structure",()=>({rows:m.rows,write:m.write}));
 vi.mock("@/server/auth/session",()=>({getCurrentSession:vi.fn(),getSupabaseRestUrl:(p:string)=>`https://eaaqgtdpvbxdgjxphjie.supabase.co${p}`}));
@@ -9,6 +10,7 @@ import {processReviewMail} from "@/server/services/course-reviews";
 const round=()=>({id:"round",course_id:"vpshr-level-0",status:"open",document:{title:"Course <script>",brand:{name:"Brand & Company",color:"#102b47",logo:null},requester:"requester@example.com",cutoff:"2099-01-01T00:00:00Z",participants:[{email:"reviewer@example.com",state:"active",role:"primary"}],reports:[],findings:[]}});
 const mail=(kind="reminder")=>({id:"mail",round_id:"round",notification_key:`round:${kind}:reviewer`,recipient:"reviewer@example.com",kind,subject:"Review reminder",body:"Please review"});
 describe("Durable course-review email delivery",()=>{
+ it('records a blocked invitation without sending it and continues the other queued messages',async()=>{m.rest.mockResolvedValueOnce(new Response(JSON.stringify([mail('invitation'),{...mail(),id:'reminder'}])));m.render.mockRejectedValueOnce(Error('Saved email is not enabled'));expect(await processReviewMail()).toEqual({processed:2,sent:1});expect(m.write).toHaveBeenCalledWith('/rest/v1/course_review_mail?id=eq.mail',{state:'failed',last_error:'Saved email is not enabled'},'PATCH');expect(m.deliver).toHaveBeenCalledTimes(1);});
  beforeEach(()=>{vi.clearAllMocks();m.rest.mockResolvedValue(new Response(JSON.stringify([mail()]),{status:200}));m.rows.mockResolvedValue([round()]);m.deliver.mockResolvedValue({ok:true,providerMessageId:"provider-id"});});
  it("records provider acceptance and a stable idempotency key",async()=>{expect(await processReviewMail()).toEqual({processed:1,sent:1});expect(m.write).toHaveBeenCalledWith("/rest/v1/course_review_mail?id=eq.mail",{state:"sent",provider_id:"provider-id",last_error:null},"PATCH");expect(m.deliver.mock.calls[0][0].idempotencyKey).toMatch(/^[a-f0-9]{64}$/);expect(m.deliver.mock.calls[0][0].html).toContain("Brand &amp; Company");expect(m.deliver.mock.calls[0][0].html).not.toContain("<script>");});
  it.each(["finished","declined"])("skips a queued reminder if the reviewer is now %s",async state=>{const r=round();r.document.participants[0].state=state;m.rows.mockResolvedValue([r]);await processReviewMail();expect(m.deliver).not.toHaveBeenCalled();expect(m.write.mock.calls[0][1]).toMatchObject({state:"skipped"});});

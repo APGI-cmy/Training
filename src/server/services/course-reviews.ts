@@ -25,6 +25,7 @@ import manifest from "@/data/course-review-manifest.json";
 import {deliverTransactionalEmail} from "./email/transactional-delivery";
 import {renderReviewMessage} from './email/review-message';
 import {renderConfiguredInvitation,type InvitationSnapshot} from './email/review-invitation-template';
+import {assertReviewInvitationReady} from './email/review-invitation-readiness';
 
 export const reviewHash=(value:unknown)=>createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
@@ -100,6 +101,8 @@ export function reviewMail(round:ReviewRound,kind:string,key:string,body:string,
 
 export async function commitReview(round:ReviewRound,actorId:string|null,action:string,mail:ReviewMail[]=[]){
 
+ if(mail.some(message=>message.kind==='invitation'))await assertReviewInvitationReady(round.organisation_id,round.course_id);
+
  const r=await adminRest("/rest/v1/rpc/v2_commit_course_review",{method:"POST",body:JSON.stringify({p_id:round.id,p_revision:round.revision,p_document:round.document,p_actor:actorId,p_action:action,p_mail:mail})});
 
  if(!r.ok)throw Error("Another reviewer saved a change. Reload this page before submitting again; your earlier saved evidence is safe.");
@@ -161,7 +164,9 @@ export async function processReviewMail(){
 
   }
 
-  const rendered=m.kind==='invitation'?await renderConfiguredInvitation(round,m):{subject:m.subject,...renderReviewMessage(round,m)};
+  let rendered:{subject:string;html:string;text:string};
+  try{rendered=m.kind==='invitation'?await renderConfiguredInvitation(round,m):{subject:m.subject,...renderReviewMessage(round,m)};}
+  catch(error){await write(`/rest/v1/course_review_mail?id=eq.${m.id}`,{state:'failed',last_error:error instanceof Error?error.message:'Review email could not be prepared.'},'PATCH');continue;}
   const result=await deliverTransactionalEmail({to:m.recipient,...rendered,idempotencyKey:reviewHash(m.notification_key)});
 
   await write(`/rest/v1/course_review_mail?id=eq.${m.id}`,result.ok?{state:"sent",provider_id:result.providerMessageId,last_error:null}:{state:"failed",last_error:result.error},"PATCH");
