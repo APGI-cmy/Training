@@ -84,3 +84,18 @@ company records and queued messages are rolled back. No real email is sent by
 these checks. Live browser checks use draft saves and previews.
 
 AI-assisted authoring and detailed course-report generation remain V3 work.
+
+### V2 verification on 23 October 2026
+
+Functional release `daaecd9` was built and promoted in the V2 staging project
+(`dpl_D2ALo2AVLdVfVjp6ZDT7CamWtmL9`). All 613 release tests passed. The rolled-back
+database exercise passed the actual event and tenant-isolation checks above.
+Live browser checks confirmed draft saving, preview rendering, preserved dropdown
+selections after preview, and removal of private tokens from saved review invites.
+The original enrolment preview remains available under Review invitations.
+
+At verification, APGI had eight prepared Tiger Kidnapping drafts, zero active new
+email rules and zero deliveries from this feature. No Tiger Kidnapping review
+request had been submitted yet; its invitation view therefore showed an example,
+while the existing VPSHR request displayed its saved invitations and acceptance
+records. These are dated verification observations, not permanent course states.
