@@ -161,6 +161,14 @@ Both workspaces have nine inactive drafts; no invitations or new email-set
 deliveries were sent by these checks. The message body records the intended NKS
 ownership condition as draft wording only.
 
+Final functional commit `4871f72` is live on the canonical V2 staging address via
+deployment `dpl_DnzD8UWz1kDJMS5AhxRm3pGxyYtu`. The final browser pass confirmed the
+review-request dropdown, the company-library graphic label, the standalone image
+library link under Messages and support, and the persisted uploaded image. Course
+filtering showed the Tiger image under Tiger and hid it under VPSHR; both course
+and email use filters included the image tagged for both. See
+`docs/v2/qa/email-image-library-20261023.png` for the captured live interface.
+
 Security advisors report intentional service-only RLS tables without public
 policies, plus existing signed-in role helper warnings and disabled leaked-password
 protection. This feature adds no authenticated definer function. See the
