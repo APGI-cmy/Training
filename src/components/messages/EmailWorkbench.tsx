@@ -1,21 +1,33 @@
 'use client';
-import {useActionState,useEffect,useState} from 'react';
+import {startTransition,useActionState,useEffect,useState,type FormEvent} from 'react';
 import {useRouter} from 'next/navigation';
 import {emailSetAction} from '@/server/actions/email-sets';
 import {blankRule,emailCadences,emailStarters,emailTokens,emailTriggers,nextEmailOccurrence,type EmailActionState,type EmailEntry,type EmailRule,type EmailDesign,type EmailSet,type EmailWorkspace} from '@/lib/email-sets';
 type CourseOption={id:string;title:string};
 const initial:EmailActionState={};
+// Server Action forms reset native selects after a successful preview. Dispatch
+// explicitly so reviewing an email cannot change the visible timing/destination.
+function useEmailForm(){
+ const [state,action,pending]=useActionState(emailSetAction,initial);
+ function onSubmit(event:FormEvent<HTMLFormElement>){
+  event.preventDefault();
+  const data=new FormData(event.currentTarget),submitter=(event.nativeEvent as SubmitEvent).submitter;
+  if(submitter instanceof HTMLButtonElement&&submitter.name)data.set(submitter.name,submitter.value);
+  startTransition(()=>action(data));
+ }
+ return {state,onSubmit,pending};
+}
 function Result({state}:{state:EmailActionState}){return <>{state.error?<p role="alert" className="message-error">{state.error}</p>:null}{state.success?<p role="status" className="message-success">{state.success}</p>:null}</>;}
 function Preview({state}:{state:EmailActionState}){return state.html?<section className="email-preview"><h2>Email preview</h2><p><strong>Subject:</strong> {state.subject}</p><p>Example values are used for personal fields. Previewing never sends an email.</p><iframe title="Branded HTML email preview" sandbox="" srcDoc={state.html}/><a className="message-link" download="email-preview.html" href={`data:text/html;charset=utf-8,${encodeURIComponent(state.html)}`}>Download HTML preview</a></section>:null;}
 function SetForm({company,set,onSaved}:{company:string;set?:EmailSet;onSaved:(id:string)=>void}){
- const [state,action,pending]=useActionState(emailSetAction,initial),router=useRouter();
+ const {state,onSubmit,pending}=useEmailForm(),router=useRouter();
  useEffect(()=>{if(state.setId){onSaved(state.setId);router.refresh();}},[state,onSaved,router]);
- return <form action={action}><input type="hidden" name="operation" value="set"/><input type="hidden" name="id" value={set?.id??''}/><input type="hidden" name="revision" value={set?.revision??1}/><input type="hidden" name="organisation_id" value={company}/><label>Message set name<input name="name" required maxLength={100} defaultValue={set?.name??''} placeholder="For example: Learner welcome and follow-up"/></label><label>Company policy / purpose (optional)<textarea name="policy_notes" rows={3} maxLength={4000} defaultValue={set?.policy_notes??''} placeholder="Record your company’s message policy, audience or promotion terms."/></label><button disabled={pending}>{pending?'Saving…':set?'Save set details':'Create message set'}</button><Result state={state}/></form>;
+ return <form onSubmit={onSubmit}><input type="hidden" name="operation" value="set"/><input type="hidden" name="id" value={set?.id??''}/><input type="hidden" name="revision" value={set?.revision??1}/><input type="hidden" name="organisation_id" value={company}/><label>Message set name<input name="name" required maxLength={100} defaultValue={set?.name??''} placeholder="For example: Learner welcome and follow-up"/></label><label>Company policy / purpose (optional)<textarea name="policy_notes" rows={3} maxLength={4000} defaultValue={set?.policy_notes??''} placeholder="Record your company’s message policy, audience or promotion terms."/></label><button disabled={pending}>{pending?'Saving…':set?'Save set details':'Create message set'}</button><Result state={state}/></form>;
 }
 function StarterSet({company,courses,onSaved}:{company:string;courses:CourseOption[];onSaved:(id:string)=>void}){
- const [state,action,pending]=useActionState(emailSetAction,initial),router=useRouter();
+ const {state,onSubmit,pending}=useEmailForm(),router=useRouter();
  useEffect(()=>{if(state.setId){onSaved(state.setId);router.refresh();}},[state,onSaved,router]);
- return <form action={action}><input name="operation" type="hidden" value="starters"/><input name="organisation_id" type="hidden" value={company}/><label>Course for a prepared message set<select name="course_id" defaultValue={courses.find(c=>c.id.includes('tiger'))?.id??courses[0]?.id}>{courses.map(c=><option key={c.id} value={c.id}>{c.title}</option>)}</select></label><button disabled={pending}>Create or open prepared email set</button><Result state={state}/></form>;
+ return <form onSubmit={onSubmit}><input name="operation" type="hidden" value="starters"/><input name="organisation_id" type="hidden" value={company}/><label>Course for a prepared message set<select name="course_id" defaultValue={courses.find(c=>c.id.includes('tiger'))?.id??courses[0]?.id}>{courses.map(c=><option key={c.id} value={c.id}>{c.title}</option>)}</select></label><button disabled={pending}>Create or open prepared email set</button><Result state={state}/></form>;
 }
 function localTime(value:string){return value?new Date(Date.parse(value)+2*3600000).toISOString().slice(0,16):'';}
 function utcTime(value:string){return value?new Date(value+':00+02:00').toISOString():'';}
@@ -23,13 +35,13 @@ const audiences={selected:'Selected company contacts',enrolled:'Learners enrolle
 function EmailEditor({company,set,entry,workspace,courses,onSaved}:{company:string;set:EmailSet;entry?:EmailEntry;workspace:EmailWorkspace;courses:CourseOption[];onSaved:(id:string)=>void}){
  const [design,setDesign]=useState<EmailDesign>(entry?.design??emailStarters[0].design),[rule,setRule]=useState<EmailRule>(entry?.rule??{...blankRule(),...emailStarters[0].rule,course_id:courses[0]?.id??''});
  const [name,setName]=useState(entry?.name??emailStarters[0].name),[dirty,setDirty]=useState(!entry),[starter,setStarter]=useState('0');
- const [state,action,pending]=useActionState(emailSetAction,initial),router=useRouter();
+ const {state,onSubmit,pending}=useEmailForm(),router=useRouter();
  useEffect(()=>{if(state.entryId){onSaved(state.entryId);router.refresh();}else if(state.success&&!state.html)router.refresh();},[state,onSaved,router]);
  const updateDesign=(key:keyof EmailDesign,value:string)=>{setDesign(d=>({...d,[key]:value}));setDirty(true);};
  const updateRule=(patch:Partial<EmailRule>)=>{setRule(r=>({...r,...patch}));setDirty(true);};
  const event=rule.trigger!=='schedule'&&rule.trigger!=='deadline';
  const allowedAudience=rule.trigger.startsWith('review_')?['reviewers']:['enrolment','completion','deadline'].includes(rule.trigger)?['enrolled','group']:rule.trigger==='group_complete'?['admins','selected']:Object.keys(audiences);
- return <><form action={action}>
+ return <><form onSubmit={onSubmit}>
   <input type="hidden" name="id" value={entry?.id??''}/><input type="hidden" name="revision" value={entry?.revision??1}/><input type="hidden" name="set_id" value={set.id}/><input type="hidden" name="organisation_id" value={company}/><input type="hidden" name="rule" value={JSON.stringify(rule)}/><input type="hidden" name="previewed_revision" value={state.html&&!dirty?entry?.revision??'':''}/>
   <div className="email-editor-grid"><div>
    <h2>{entry?'Edit saved email':'Add another email to this set'}</h2><p>Set: <strong>{set.name}</strong> · {entry?`${entry.state} · version ${entry.revision}`:'New draft'}</p>
@@ -65,8 +77,8 @@ function EmailEditor({company,set,entry,workspace,courses,onSaved}:{company:stri
 }
 function InvitationReview({company,workspace,courses}:{company:string;workspace:EmailWorkspace;courses:CourseOption[]}){
  const [course,setCourse]=useState(courses.find(c=>c.id.includes('tiger'))?.id??courses[0]?.id??''),[recipient,setRecipient]=useState(''),[kind,setKind]=useState('review');
- const [state,action,pending]=useActionState(emailSetAction,initial),request=workspace.review_requests.find(r=>r.organisation_id===company&&r.course_id===course);
- return <><h2>Invitation templates and saved review requests</h2><form action={action}>
+ const {state,onSubmit,pending}=useEmailForm(),request=workspace.review_requests.find(r=>r.organisation_id===company&&r.course_id===course);
+ return <><h2>Invitation templates and saved review requests</h2><form onSubmit={onSubmit}>
   <input type="hidden" name="operation" value={kind==='review'?'review-preview':'enrolment-preview'}/><input type="hidden" name="organisation_id" value={company}/>
   <label>Invitation type<select value={kind} onChange={e=>setKind(e.target.value)}><option value="review">Course review request</option><option value="enrolment">Course enrolment invitation (example)</option></select></label>
   <label>Course<select name="course_id" value={course} onChange={e=>{setCourse(e.target.value);setRecipient('');}}>{courses.map(c=><option key={c.id} value={c.id}>{c.title}</option>)}</select></label>
@@ -75,9 +87,9 @@ function InvitationReview({company,workspace,courses}:{company:string;workspace:
   <button disabled={pending}>Preview {kind==='review'?'review':'enrolment'} invitation</button><Result state={state}/></form><Preview state={state}/></>;
 }
 function Activity({company,workspace}:{company:string;workspace:EmailWorkspace}){
- const [state,action,pending]=useActionState(emailSetAction,initial),setIds=new Set(workspace.sets.filter(s=>s.organisation_id===company).map(s=>s.id)),entries=workspace.entries.filter(e=>setIds.has(e.set_id)),ids=new Set(entries.map(e=>e.id));
+ const {state,onSubmit,pending}=useEmailForm(),setIds=new Set(workspace.sets.filter(s=>s.organisation_id===company).map(s=>s.id)),entries=workspace.entries.filter(e=>setIds.has(e.set_id)),ids=new Set(entries.map(e=>e.id));
  const rows=workspace.activity.filter(a=>ids.has(a.entry_id));
- return <><h2>Delivery history</h2><p>Shows the most recent 100 company-scoped message deliveries. “Accepted” means the email provider accepted the message; it does not prove inbox delivery or reading.</p>{rows.length?<div className="email-table-wrap"><table><thead><tr><th>Email / recipient</th><th>Status</th><th>Created (SAST)</th><th>Stored version</th></tr></thead><tbody>{rows.map(r=><tr key={r.id}><td>{entries.find(e=>e.id===r.entry_id)?.name}<br/>{r.recipient}</td><td>{r.state}{r.last_error?<p>{r.last_error}</p>:null}</td><td>{new Date(r.created_at).toLocaleString('en-ZA',{timeZone:'Africa/Johannesburg'})}</td><td><form action={action}><input type="hidden" name="operation" value="receipt-preview"/><input type="hidden" name="id" value={r.id}/><button disabled={pending}>Preview</button></form></td></tr>)}</tbody></table></div>:<p>No deliveries yet. Saved drafts do not send messages.</p>}<Result state={state}/><Preview state={state}/></>;
+ return <><h2>Delivery history</h2><p>Shows the most recent 100 company-scoped message deliveries. “Accepted” means the email provider accepted the message; it does not prove inbox delivery or reading.</p>{rows.length?<div className="email-table-wrap"><table><thead><tr><th>Email / recipient</th><th>Status</th><th>Created (SAST)</th><th>Stored version</th></tr></thead><tbody>{rows.map(r=><tr key={r.id}><td>{entries.find(e=>e.id===r.entry_id)?.name}<br/>{r.recipient}</td><td>{r.state}{r.last_error?<p>{r.last_error}</p>:null}</td><td>{new Date(r.created_at).toLocaleString('en-ZA',{timeZone:'Africa/Johannesburg'})}</td><td><form onSubmit={onSubmit}><input type="hidden" name="operation" value="receipt-preview"/><input type="hidden" name="id" value={r.id}/><button disabled={pending}>Preview</button></form></td></tr>)}</tbody></table></div>:<p>No deliveries yet. Saved drafts do not send messages.</p>}<Result state={state}/><Preview state={state}/></>;
 }
 export function EmailWorkbench({workspace,courses}:{workspace:EmailWorkspace;courses:CourseOption[]}){
  const [company,setCompany]=useState(workspace.companies[0]?.id??''),[tab,setTab]=useState('library'),[setId,setSetId]=useState(''),[entryId,setEntryId]=useState(''),[newSet,setNewSet]=useState(false);
@@ -94,4 +106,4 @@ export function EmailWorkbench({workspace,courses}:{workspace:EmailWorkspace;cou
  {tab==='edit'&&set?<section><EmailEditor key={`${company}:${set.id}:${entry?.id??'new'}:${entry?.revision??0}`} company={company} set={set} entry={entry} workspace={workspace} courses={courses} onSaved={setEntryId}/></section>:null}</>}
  <p className="email-note">Emails use this company’s logo and colours, with the verified APGI sender. AI-assisted authoring is planned for V3. You can edit every prepared message and preview its HTML now.</p></main>;
 }
-export function EmailPreferenceForm({company}:{company:{id:string;name:string;announcements:boolean}}){const [state,action,pending]=useActionState(emailSetAction,initial);return <form action={action}><input type="hidden" name="operation" value="preference"/><input type="hidden" name="organisation_id" value={company.id}/><h2>{company.name}</h2><label className="email-check"><input name="announcements" type="checkbox" defaultChecked={company.announcements}/> Send me course announcements and promotions from {company.name}.</label><p>Service messages about your account, course or assigned reviews are handled separately.</p><button disabled={pending}>Save my preference</button><Result state={state}/></form>;}
+export function EmailPreferenceForm({company}:{company:{id:string;name:string;announcements:boolean}}){const {state,onSubmit,pending}=useEmailForm();return <form onSubmit={onSubmit}><input type="hidden" name="operation" value="preference"/><input type="hidden" name="organisation_id" value={company.id}/><h2>{company.name}</h2><label className="email-check"><input name="announcements" type="checkbox" defaultChecked={company.announcements}/> Send me course announcements and promotions from {company.name}.</label><p>Service messages about your account, course or assigned reviews are handled separately.</p><button disabled={pending}>Save my preference</button><Result state={state}/></form>;}
