@@ -1,5 +1,5 @@
 'use client';
-import {startTransition,useActionState,useEffect,useState,type FormEvent} from 'react';
+import {startTransition,useActionState,useCallback,useEffect,useState,type FormEvent} from 'react';
 import {useRouter} from 'next/navigation';
 import {emailSetAction} from '@/server/actions/email-sets';
 import {EmailLibraryDialog} from './EmailMediaLibrary';
@@ -10,8 +10,8 @@ type CourseOption={id:string;title:string};
 const initial:EmailActionState={};
 // Server Action forms reset native selects after a successful preview. Dispatch
 // explicitly so reviewing an email cannot change the visible timing/destination.
-function useEmailForm(){
- const [state,action,pending]=useActionState(emailSetAction,initial);
+function useEmailForm(onResult?:(result:EmailActionState)=>void){
+ const [state,action,pending]=useActionState(async(previous:EmailActionState,form:FormData)=>{const result=await emailSetAction(previous,form);onResult?.(result);return result;},initial);
  function onSubmit(event:FormEvent<HTMLFormElement>){
   event.preventDefault();
   const data=new FormData(event.currentTarget),submitter=(event.nativeEvent as SubmitEvent).submitter;
@@ -21,7 +21,7 @@ function useEmailForm(){
  return {state,onSubmit,pending};
 }
 function Result({state}:{state:EmailActionState}){return <>{state.error?<p role="alert" className="message-error">{state.error}</p>:null}{state.success?<p role="status" className="message-success">{state.success}</p>:null}</>;}
-function Preview({state}:{state:EmailActionState}){return state.html?<section className="email-preview"><h2>Email preview</h2><p><strong>Subject:</strong> {state.subject}</p><p>Example values are used for personal fields. Previewing never sends an email.</p><iframe title="Branded HTML email preview" sandbox="" srcDoc={state.html}/><a className="message-link" download="email-preview.html" href={`data:text/html;charset=utf-8,${encodeURIComponent(state.html)}`}>Download HTML preview</a></section>:null;}
+function Preview({state,onAccept,accepted,pending}:{state:EmailActionState;onAccept?:()=>void;accepted?:boolean;pending?:boolean}){return state.html?<section className="email-preview"><h2>Email preview</h2><p><strong>Subject:</strong> {state.subject}</p><p>Example values are used for personal fields. Previewing never sends an email.</p><iframe title="Branded HTML email preview" sandbox="" srcDoc={state.html}/><a className="message-link" download="email-preview.html" href={`data:text/html;charset=utf-8,${encodeURIComponent(state.html)}`}>Download HTML preview</a>{onAccept?<><p>By accepting, I confirm the message, image, audience, timing and recipient permissions follow this company’s policies. This does not send or enable the email.</p><button type="button" disabled={pending||accepted} onClick={onAccept}>{accepted?'Preview accepted':'Accept preview'}</button></>:null}</section>:null;}
 function SetForm({company,set,onSaved}:{company:string;set?:EmailSet;onSaved:(id:string)=>void}){
  const {state,onSubmit,pending}=useEmailForm(),router=useRouter();
  useEffect(()=>{if(state.setId){onSaved(state.setId);router.refresh();}},[state,onSaved,router]);
@@ -35,23 +35,32 @@ function StarterSet({company,courses,onSaved}:{company:string;courses:CourseOpti
 function localTime(value:string){return value?new Date(Date.parse(value)+2*3600000).toISOString().slice(0,16):'';}
 function utcTime(value:string){return value?new Date(value+':00+02:00').toISOString():'';}
 const audiences={selected:'Selected company contacts',enrolled:'Learners enrolled on this course',group:'Learners in an enrolled group',reviewers:'Assigned course reviewers',members:'Company members and learners',admins:'Company administrators'};
-function EmailEditor({company,set,entry,workspace,courses,onSaved}:{company:string;set:EmailSet;entry?:EmailEntry;workspace:EmailWorkspace;courses:CourseOption[];onSaved:(id:string)=>void}){
+type SavedPreview={receipt:string;revision:number;html:string;subject:string};
+function EmailEditor({company,set,entry,workspace,courses,onSaved,savedPreview}:{company:string;set:EmailSet;entry?:EmailEntry;workspace:EmailWorkspace;courses:CourseOption[];onSaved:(id:string,preview:SavedPreview)=>void;savedPreview?:SavedPreview}){
  const [design,setDesign]=useState<EmailDesign>(entry?.design??emailStarters[0].design),[rule,setRule]=useState<EmailRule>(entry?.rule??{...blankRule(),...emailStarters[0].rule,course_id:courses[0]?.id??''});
  const [name,setName]=useState(entry?.name??emailStarters[0].name),[dirty,setDirty]=useState(!entry),[starter,setStarter]=useState(String(Math.max(0,emailStarters.findIndex(s=>s.name===entry?.name)))),[libraryOpen,setLibraryOpen]=useState(false);
- const {state,onSubmit,pending}=useEmailForm(),router=useRouter();
- useEffect(()=>{if(state.entryId){onSaved(state.entryId);router.refresh();}else if(state.success&&!state.html)router.refresh();},[state,onSaved,router]);
- const updateDesign=(key:keyof EmailDesign,value:string)=>{setDesign(d=>({...d,[key]:value}));setDirty(true);};
- const updateRule=(patch:Partial<EmailRule>)=>{setRule(r=>({...r,...patch}));setDirty(true);};
+ const savedCurrent=savedPreview?.revision===entry?.revision?savedPreview:undefined;
+ const [preview,setPreview]=useState<EmailActionState>(savedCurrent?{html:savedCurrent.html,subject:savedCurrent.subject}:{}),[accepted,setAccepted]=useState(!!savedCurrent);
+ const router=useRouter();
+ // Save approval in the parent before the action refresh remounts this version.
+ const {state,onSubmit,pending}=useEmailForm(result=>{
+  if(result.previewReceipt){setPreview(result);setAccepted(false);}
+  else if(result.entryId&&result.savedReceipt&&result.savedRevision){onSaved(result.entryId,{receipt:result.savedReceipt,revision:result.savedRevision,html:preview.html??'',subject:preview.subject??''});router.refresh();}
+  else if(result.success&&!result.html)router.refresh();
+ });
+ const changed=()=>{setDirty(true);setAccepted(false);setPreview({});};
+ const updateDesign=(key:keyof EmailDesign,value:string)=>{setDesign(d=>({...d,[key]:value}));changed();};
+ const updateRule=(patch:Partial<EmailRule>)=>{setRule(r=>({...r,...patch}));changed();};
  const event=rule.trigger!=='schedule'&&rule.trigger!=='deadline';
  const graphicPreview=design.image==='none'?null:design.image==='course'?getCourseCover(rule.course_id)?.src:libraryImagePath(design.image)??(/^https:\/\//.test(design.image)&&design.image!=='https://'?design.image:null);
  const companyImage=workspace.images?.find(image=>image.organisation_id===company&&image.url===design.image);
  const allowedAudience=rule.trigger.startsWith('review_')?['reviewers']:['enrolment','completion','deadline'].includes(rule.trigger)?['enrolled','group']:rule.trigger==='group_complete'?['admins','selected']:Object.keys(audiences);
  return <><form onSubmit={onSubmit}>
-  <input type="hidden" name="id" value={entry?.id??''}/><input type="hidden" name="revision" value={entry?.revision??1}/><input type="hidden" name="set_id" value={set.id}/><input type="hidden" name="organisation_id" value={company}/><input type="hidden" name="rule" value={JSON.stringify(rule)}/><input type="hidden" name="previewed_revision" value={state.html&&!dirty?entry?.revision??'':''}/>
-  <div className="email-editor-grid"><div>
+  <input type="hidden" name="id" value={entry?.id??''}/><input type="hidden" name="revision" value={entry?.revision??1}/><input type="hidden" name="set_id" value={set.id}/><input type="hidden" name="organisation_id" value={company}/><input type="hidden" name="rule" value={JSON.stringify(rule)}/><input type="hidden" name="preview_receipt" value={preview.previewReceipt??''}/><input type="hidden" name="accept_preview" value={accepted?'yes':''}/><input type="hidden" name="saved_receipt" value={!dirty?savedCurrent?.receipt??'':''}/>
+  <fieldset disabled={pending} className="email-editor-fields"><legend>Message design and delivery settings</legend><div className="email-editor-grid"><div>
    <h2>{entry?'Edit saved email':'Add another email to this set'}</h2><p>Set: <strong>{set.name}</strong> · {entry?`${entry.state} · version ${entry.revision}`:'New draft'}</p>
-   <label>Start from a prepared message<select value={starter} onChange={e=>setStarter(e.target.value)}>{emailStarters.map((s,i)=><option value={i} key={s.name}>{s.name}</option>)}</select></label><button type="button" onClick={()=>{const s=emailStarters[Number(starter)];setDesign({...s.design});setRule({...blankRule(),...s.rule,course_id:rule.course_id||courses[0]?.id||''});setName(s.name);setDirty(true);}}>Use this starter</button>
-   <label>Email name<input name="name" required maxLength={100} value={name} onChange={e=>{setName(e.target.value);setDirty(true);}}/></label>
+   <label>Start from a prepared message<select value={starter} onChange={e=>setStarter(e.target.value)}>{emailStarters.map((s,i)=><option value={i} key={s.name}>{s.name}</option>)}</select></label><button type="button" onClick={()=>{const s=emailStarters[Number(starter)];setDesign({...s.design});setRule({...blankRule(),...s.rule,course_id:rule.course_id||courses[0]?.id||''});setName(s.name);changed();}}>Use this starter</button>
+   <label>Email name<input name="name" required maxLength={100} value={name} onChange={e=>{setName(e.target.value);changed();}}/></label>
    <label>Subject<input name="subject" required maxLength={200} value={design.subject} onChange={e=>updateDesign('subject',e.target.value)}/></label>
    <label>Heading<input name="heading" required maxLength={200} value={design.heading} onChange={e=>updateDesign('heading',e.target.value)}/></label>
    <label>Message<textarea name="body" required rows={10} maxLength={20000} value={design.body} onChange={e=>updateDesign('body',e.target.value)}/><small>Paragraphs are preserved in the branded HTML email. Personal fields: {emailTokens.map(t=>`{{${t}}}`).join(' · ')}</small></label>
@@ -77,11 +86,11 @@ function EmailEditor({company,set,entry,workspace,courses,onSaved}:{company:stri
    {rule.trigger==='group_complete'?<p>Sent when all currently enrolled group members complete this course. Includes enrolled and completed totals. Detailed course reports remain a V3 feature.</p>:null}
    {rule.trigger==='new_course'?<label className="email-check"><input type="checkbox" checked={rule.first_time_only} onChange={e=>updateRule({first_time_only:e.target.checked})}/> First-time enrollers only (no previous company course enrolment)</label>:null}
    <label className="email-check"><input type="checkbox" checked={rule.marketing} disabled={rule.trigger==='new_course'} onChange={e=>updateRule({marketing:e.target.checked})}/> Promotional / marketing message</label>{rule.marketing?<p>Only recipients who opted in to this company’s course announcements are eligible. Each message includes a preferences link.</p>:null}
-   <label className="email-check"><input type="checkbox" checked={rule.policy_confirmed} onChange={e=>updateRule({policy_confirmed:e.target.checked})}/> I confirm the content, audience, timing and recipient permissions follow this company’s policies.</label>
-  </div></div>
-  <div className="message-actions"><button name="operation" value="preview" disabled={pending}>Preview email</button><button name="operation" value="save" disabled={pending}>Save draft</button>{entry&&entry.state!=='complete'?<button name="operation" value={entry.state==='active'?'paused':'active'} disabled={pending||(entry.state!=='active'&&(dirty||!state.html||!rule.policy_confirmed))}>{entry.state==='active'?'Pause sending':rule.trigger==='review_request'?'Use this design for review invitations':'Activate saved email'}</button>:null}</div>
-  <p>Save edits as a draft, then preview the saved version and activate it. Editing an active email pauses its sending until you activate the new version.</p><Result state={state}/>
- </form><Preview state={state}/>{libraryOpen?<EmailLibraryDialog company={company} images={workspace.images??[]} courses={courses} course={rule.course_id} value={design.image} onClose={()=>setLibraryOpen(false)} onUse={value=>{updateDesign('image',value);setLibraryOpen(false);}}/>:null}</>;
+  </div></div></fieldset>
+  <p role="status">{!preview.html?'1. Preview this email to continue.':!accepted?'2. Review the preview below and select Accept preview.':dirty||!savedCurrent||preview.previewReceipt?'3. Preview accepted. Save the draft to continue.':entry?.state==='active'?'This saved design is enabled.':'4. Draft saved. You can now use this design.'}</p>
+  <div className="message-actions"><button name="operation" value="preview" disabled={pending}>Preview email</button><button name="operation" value="save" disabled={pending||!accepted||!preview.previewReceipt}>Save draft</button>{entry&&entry.state!=='complete'?<button name="operation" value={entry.state==='active'?'paused':'active'} disabled={pending||(entry.state!=='active'&&(dirty||!savedCurrent||!accepted||!!preview.previewReceipt))}>{entry.state==='active'?'Pause sending':rule.trigger==='review_request'?'Use this design for review invitations':'Activate saved email'}</button>:null}</div>
+  <p>Preview → Accept preview → Save draft → {rule.trigger==='review_request'?'Use this design for review invitations':'Activate saved email'}. Any edit requires a fresh preview and acceptance. Saving an active email pauses it until you enable the new version.</p><Result state={state}/>
+ </form><Preview state={preview} accepted={accepted} pending={pending} onAccept={preview.previewReceipt?()=>{setAccepted(true);setRule(r=>({...r,policy_confirmed:true}));}:undefined}/>{libraryOpen?<EmailLibraryDialog company={company} images={workspace.images??[]} courses={courses} course={rule.course_id} value={design.image} onClose={()=>setLibraryOpen(false)} onUse={value=>{updateDesign('image',value);setLibraryOpen(false);}}/>:null}</>;
 }
 function InvitationReview({company,workspace,courses}:{company:string;workspace:EmailWorkspace;courses:CourseOption[]}){
  const [course,setCourse]=useState(courses.find(c=>c.id.includes('tiger'))?.id??courses[0]?.id??''),[recipient,setRecipient]=useState(''),[kind,setKind]=useState('review');
@@ -103,6 +112,8 @@ export function EmailWorkbench({workspace,courses,initialCompany,initialEmail}:{
  const targetCompany=workspace.companies.find(company=>company.id===initialCompany)?.id??workspace.companies[0]?.id??'';
  const targetEmail=workspace.entries.find(entry=>entry.id===initialEmail&&workspace.sets.some(set=>set.id===entry.set_id&&set.organisation_id===targetCompany));
  const [company,setCompany]=useState(targetCompany),[tab,setTab]=useState(targetEmail?'edit':'library'),[setId,setSetId]=useState(targetEmail?.set_id??''),[entryId,setEntryId]=useState(targetEmail?.id??''),[newSet,setNewSet]=useState(false);
+ const [savedPreviews,setSavedPreviews]=useState<Record<string,SavedPreview>>({});
+ const onEmailSaved=useCallback((id:string,preview:SavedPreview)=>{setSavedPreviews(current=>({...current,[id]:preview}));setEntryId(id);},[]);
  const sets=workspace.sets.filter(s=>s.organisation_id===company),set=sets.find(s=>s.id===setId)??sets[0],entries=workspace.entries.filter(e=>e.set_id===set?.id),entry=entries.find(e=>e.id===entryId);
  return <main className="message-page email-workbench"><p className="email-eyebrow">Messages and support</p><h1>Branded emails and message sets</h1><p>Create company message sets, review their branded HTML, and choose when they send. APGI and company administrators use the same tools within their own company scope.</p>
  <label>Company workspace<select value={company} onChange={e=>{setCompany(e.target.value);setSetId('');setEntryId('');setNewSet(false);}}>{workspace.companies.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
@@ -113,7 +124,7 @@ export function EmailWorkbench({workspace,courses,initialCompany,initialEmail}:{
  <details><summary>Prepared messages for this company</summary><p>Create nine editable drafts, including review requests, welcome, completion, deadline, group follow-up, promotions and reviewer thanks. Every company gets its own copies and can apply its own policies. Creating them never sends emails.</p><StarterSet key={company} company={company} courses={courses} onSaved={setSetId}/></details>
  {tab==='library'&&set?<><p>{set.policy_notes||'No company policy notes added.'}</p><div className="email-cards">{entries.map(e=><article key={e.id}><span className={`email-state email-state-${e.state}`}>{e.state}</span><h3>{e.name}</h3><p>{emailTriggers[e.rule.trigger]}</p><p>{emailCadences[e.rule.cadence]} · {audiences[e.rule.audience]}</p>{e.next_at&&e.state==='active'?<p>Next check: {new Date(e.next_at).toLocaleString('en-ZA',{timeZone:'Africa/Johannesburg'})} SAST</p>:null}{e.last_error?<p role="alert">{e.last_error}</p>:null}<button onClick={()=>{setEntryId(e.id);setTab('edit');}}>Review email and settings</button></article>)}</div>{entries.length===0?<p>This set is empty. Choose “Add another email message” and select a prepared starter.</p>:null}</>:null}
  </section>
- {tab==='edit'&&set?<section><EmailEditor key={`${company}:${set.id}:${entry?.id??'new'}:${entry?.revision??0}`} company={company} set={set} entry={entry} workspace={workspace} courses={courses} onSaved={setEntryId}/></section>:null}</>}
+ {tab==='edit'&&set?<section><EmailEditor key={`${company}:${set.id}:${entry?.id??'new'}:${entry?.revision??0}`} company={company} set={set} entry={entry} workspace={workspace} courses={courses} onSaved={onEmailSaved} savedPreview={entry?savedPreviews[entry.id]:undefined}/></section>:null}</>}
  <p className="email-note">Emails use this company’s logo and colours, with the verified APGI sender. AI-assisted authoring is planned for V3. You can edit every prepared message and preview its HTML now.</p></main>;
 }
 export function EmailPreferenceForm({company}:{company:{id:string;name:string;announcements:boolean}}){const {state,onSubmit,pending}=useEmailForm();return <form onSubmit={onSubmit}><input type="hidden" name="operation" value="preference"/><input type="hidden" name="organisation_id" value={company.id}/><h2>{company.name}</h2><label className="email-check"><input name="announcements" type="checkbox" defaultChecked={company.announcements}/> Send me course announcements and promotions from {company.name}.</label><p>Service messages about your account, course or assigned reviews are handled separately.</p><button disabled={pending}>Save my preference</button><Result state={state}/></form>;}

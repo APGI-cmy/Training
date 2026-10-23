@@ -18,6 +18,7 @@ import {getSupabaseRestUrl} from '@/server/auth/session';
 import {STAGING_ORIGIN} from '@/server/environment-isolation';
 import type {ReviewRound} from '@/lib/course-review';
 import type {InvitationSnapshot} from '@/server/services/email/review-invitation-template';
+import {requireEmailApproval,signEmailApproval,type EmailApproval} from '@/server/services/email-preview-approval';
 const field=(form:FormData,key:string)=>String(form.get(key)??'').trim();
 const rev=(form:FormData)=>{const r=Number(field(form,'revision'));if(!Number.isSafeInteger(r)||r<1)throw Error('Reload before saving.');return r;};
 function designFrom(form:FormData):EmailDesign{const design={subject:field(form,'subject'),heading:field(form,'heading'),body:field(form,'body'),button:field(form,'button'),destination:field(form,'destination') as EmailDesign['destination'],image:field(form,'image')};validateEmailDesign(design);return design;}
@@ -31,6 +32,7 @@ function ruleFrom(form:FormData):EmailRule{
  if(rule.group_id)validId(rule.group_id);
  return rule;
 }
+function approvalFrom(form:FormData,actor:string):EmailApproval{return {actor,organisation:validId(field(form,'organisation_id')),set:validId(field(form,'set_id')),id:field(form,'id')?validId(field(form,'id')):'',revision:rev(form),name:field(form,'name'),design:designFrom(form),rule:{...ruleFrom(form),policy_confirmed:true}};}
 export async function emailSetAction(_:EmailActionState,form:FormData):Promise<EmailActionState>{
  try{
   const session=await notificationSession(),actor=session.user.id,op=field(form,'operation');
@@ -56,20 +58,26 @@ export async function emailSetAction(_:EmailActionState,form:FormData):Promise<E
    revalidatePath('/messages/email-sets');return {success:'Message set saved. You can add emails to this set.',setId};
   }
   if(op==='save'){
-   const entryId=await messageRpc<string>('v2_email_entry_save',{p_actor:actor,p_id:field(form,'id')?validId(field(form,'id')):null,p_set:validId(field(form,'set_id')),p_revision:rev(form),p_name:field(form,'name'),p_design:designFrom(form),p_rule:ruleFrom(form)});
-   revalidatePath('/messages/email-sets');return {success:'Draft saved. Preview this version before activating it.',entryId};
+   const approved=approvalFrom(form,actor);requireEmailApproval(field(form,'preview_receipt'),'preview',approved);
+   if(field(form,'accept_preview')!=='yes')throw Error('Accept the preview before saving this draft.');
+   const entryId=await messageRpc<string>('v2_email_entry_save',{p_actor:actor,p_id:approved.id||null,p_set:approved.set,p_revision:approved.revision,p_name:approved.name,p_design:approved.design,p_rule:approved.rule});
+   const savedRevision=approved.id?approved.revision+1:1,savedReceipt=signEmailApproval('saved',{...approved,id:entryId,revision:savedRevision});
+   revalidatePath('/messages/email-sets');return {success:'Accepted preview saved as a draft. You can now enable this design.',entryId,savedRevision,savedReceipt};
   }
   if(op==='active'||op==='paused'){
-   if(op==='active'&&field(form,'previewed_revision')!==field(form,'revision'))throw Error('Preview this saved version before activating it.');
+   if(op==='active')requireEmailApproval(field(form,'saved_receipt'),'saved',approvalFrom(form,actor));
    await messageRpc('v2_email_entry_state',{p_actor:actor,p_id:validId(field(form,'id')),p_revision:rev(form),p_state:op});
    revalidatePath('/messages/email-sets');return {success:op==='active'?'Message enabled. Review-request designs apply to new invitations and explicit resends; enabling a design does not resend previous emails. Other message rules are checked about every ten minutes.':'Message paused.'};
   }
   if(op==='preview'){
    const {workspace}=await emailSetWorkspace(),company=workspace.companies.find(c=>c.id===field(form,'organisation_id'));if(!company)throw Error('Administrator access required for this company.');
+   const approved=approvalFrom(form,actor);
+   if(!workspace.sets.some(set=>set.id===approved.set&&set.organisation_id===company.id))throw Error('Choose a message set in this company.');
+   if(approved.id&&!workspace.entries.some(entry=>entry.id===approved.id&&entry.set_id===approved.set&&entry.revision===approved.revision))throw Error('This email changed. Reload before previewing.');
    const rule=ruleFrom(form),course=getCourses().find(c=>c.id===rule.course_id)??getCourses()[0];
    const review=workspace.review_requests.find(r=>r.organisation_id===company.id&&r.course_id===course.id);
    const rendered=renderEmailSet({design:designFrom(form),brand:company.name,color:company.primary_color,logo_path:company.logo_path,marketing:rule.marketing,organisation_id:company.id,instructions:rule.trigger==='review_request'?`${reviewInvitationNarrative(session.user.email!)}\n\nYour actual invitation adds the assigned tasks, cutoff and a private first-time joining link.`:undefined,context:{recipient_name:'Example reviewer / learner',company_name:company.name,course_id:course.id,course_title:course.title,review_id:review?.id??'',review_scope:'content, commercials and branding',deadline:review?.cutoff||rule.deadline_at||new Date(Date.now()+14*86400000).toISOString(),days_left:String(rule.days_before),progress_percent:'75',group_name:workspace.groups.find(g=>g.id===rule.group_id)?.name??'Example enrolled group',enrolled_count:'20',completed_count:'18'}});
-   return {...previewTransactionalEmail(rendered),success:'Preview only — no email sent. Example personalisation is shown.'};
+   return {...previewTransactionalEmail(rendered),previewReceipt:signEmailApproval('preview',approved),success:'Preview ready. Review the email and settings, then select Accept preview. No email has been sent.'};
   }
   if(op==='review-preview'||op==='enrolment-preview'){
    const {workspace}=await emailSetWorkspace(),company=workspace.companies.find(c=>c.id===field(form,'organisation_id'));if(!company)throw Error('Administrator access required for this company.');

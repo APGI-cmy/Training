@@ -18,7 +18,7 @@ export async function reviewInvitationEmail(organisation:string,course:string):P
  const exact=(entries:Candidate[])=>entries.find(entry=>entry.rule.course_id===course)??entries[0];
  const selected=(design?candidates.find(entry=>entry.state==='active'&&entry.design&&(Object.keys(design) as (keyof EmailDesign)[]).every(key=>entry.design![key]===design[key])):undefined)??exact(candidates.filter(entry=>entry.state==='active'))??exact(candidates);
  const state:ReviewInvitationEmailState={organisation_id:organisation,course_id:course,status:design?'ready':selected?'blocked':'standard',...(selected?{id:selected.id,name:selected.name,revision:selected.revision}:{})};
- if(state.status==='blocked')state.reason='A saved review email exists but is not enabled for this course and date. Open it, save your changes, preview the saved version, confirm its settings and select “Use this design for review invitations”. The standard email will not be substituted.';
+ if(state.status==='blocked')state.reason='A saved review email exists but is not enabled for this course and date. Open it, preview the email, accept the preview, save the draft and select “Use this design for review invitations”. The standard email will not be substituted.';
  return {state,design};
 }
 export async function assertReviewInvitationReady(organisation:string,course:string){const result=await reviewInvitationEmail(organisation,course);if(result.state.status==='blocked')throw Error(result.state.reason);return result;}

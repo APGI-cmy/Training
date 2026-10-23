@@ -290,12 +290,16 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
    throw Error("Use a change request so the APGI approval is recorded before changing the assignment or cutoff.");
 
-  }else if(op==="resend_invite"){
+  }else if(op==="resend_invite"||op==="resend_all_invites"){
 
    if(!principal)throw Error("Only a platform principal can resend invitations.");
    await assertReviewInvitationReady(round.organisation_id,round.course_id);
 
-   assertReviewWork(round,fresh);const recipient=normalizedEmail(text(form,"recipient",3,254)),target=d.participants.find(p=>p.email===recipient);
+   assertReviewWork(round,fresh);
+   const recipients=op==="resend_all_invites"?d.participants.filter(p=>p.state!=="declined"&&p.state!=="finished").map(p=>p.email):[normalizedEmail(text(form,"recipient",3,254))];
+   if(!recipients.length)throw Error("There are no pending reviewers to email.");
+   for(const recipient of recipients){
+   const target=d.participants.find(p=>p.email===recipient);
 
    if(!target||target.state==="declined"||target.state==="finished")throw Error("Only an unfinished, active review invitation can be resent.");
 
@@ -303,11 +307,13 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
    await write("/rest/v1/course_review_join_tokens",{token_hash:createHash("sha256").update(token).digest("hex"),round_id:id,email:recipient,expires_at:d.cutoff});
 
-   mail=reviewMail(round,"invitation",`resend:${round.revision}`,`The review invitation was resent. Review all assigned LUs and quizzes, submit your report and obtain an independent endorsement. You may decline with a reason. Reminders stop on completion, decline or cutoff.
+   mail.push(...reviewMail(round,"invitation",`resend:${round.revision}`,`The review invitation was resent. Complete your assigned tasks shown below. If assigned a full content review, review all LUs and quizzes, submit your report and obtain an independent endorsement. You may decline with a reason. Reminders stop on completion, decline or cutoff.
 
-Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}/join/${token}`,[recipient]);
+Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}/join/${token}`,[recipient]));
+   }
 
-   reviewEvent(d,email,op,`Invitation resent to ${recipient}.`);
+   reviewEvent(d,email,op,`Invitation resend requested for ${recipients.join(', ')}.`);
+   notice=`${recipients.length} review invitation${recipients.length===1?'':'s'} queued using the current enabled email design. Check email delivery status for each recipient.`;
 
   }else if(op==="task_decision"){
    assertReviewWork(round,fresh);
