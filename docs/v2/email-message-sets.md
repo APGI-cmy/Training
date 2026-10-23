@@ -24,6 +24,14 @@ was resent during this investigation. All 636 release checks passed, including
 draft/paused/date-ineligible guards, course/company matching, immutable retries,
 queue isolation and the actual review cutoff in previews.
 
+Functional commit `7f055c2` was promoted on V2 as deployment
+`dpl_6hEXdf8eX55ydGfBsbiswoySxtRw`. The live browser showed the blocked-design
+notice, all five disabled resend buttons, and a direct link opening the exact NKS
+Capital draft at revision 2. The renamed enable button stayed disabled until a
+preview was generated. The five original sent native snapshots and the draft's
+revision/activation state were unchanged. The live guard is captured in
+`docs/v2/qa/review-email-guard-20261023.jpg`.
+
 ## Company starter library and review requests (23 October 2026)
 
 The first visit provisions nine independent, inactive drafts for an authorised
