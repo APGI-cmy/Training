@@ -62,3 +62,29 @@ The post-promotion error-log query returned zero error records for this deployme
 in its first ten-minute query window. This is a narrow release check, not evidence
 of an authenticated editor/save or actual resend delivery: browser authentication
 was unavailable, and no external recipients were contacted.
+
+## Live browser check — 24 October 2026
+
+The user's signed-in session was in Edge; the Codex in-app browser remained
+signed out. Using Edge confirmed the complete preview/accept/save sequence:
+
+- Before preview: Save draft and Use this design were disabled.
+- Preview displayed the selected NKS graphic and message, with the actual review
+  cutoff of 20 November 2026 at 08:34 SAST.
+- Accept preview enabled Save draft while Use this design stayed disabled.
+- Saving the unchanged message created draft version 5 and enabled Use this
+  design without another preview. The template was not activated.
+- A second temporary tab confirmed that editing the heading after acceptance
+  disabled both Save draft and Use this design and removed the accepted preview.
+  That unsaved test edit was discarded by closing the tab.
+- Review team displayed the bulk resend button for all five pending reviewers
+  and individual resend buttons for those same five addresses. All were disabled
+  because the saved design was still a draft; standard substitution remained
+  blocked.
+- A database read confirmed draft version 5, the original selected image, and
+  the same five historical sent invitations. No new invitations were sent.
+
+The accepted draft was left open in Edge with Use this design enabled for the
+user's next action. Evidence: `qa/email-preview-accepted-20261024.jpg` and
+`qa/review-team-resend-20261024.jpg`. Actual activation and email delivery remain
+untested by this browser pass because no invitations were sent.
