@@ -34,9 +34,11 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
 
  const [scope,setScope]=useState<'current'|'course'>('current'),[categories,setCategories]=useState(["Content"]),[comment,setComment]=useState(""),[editId,setEditId]=useState(""),[loadedAt,setLoadedAt]=useState("");
  const [draftVersion,setDraftVersion]=useState(0);
- const slide=useReviewSlide();
+ const slide=useReviewSlide(unit);
 
- const own=findings.filter(f=>f.author===email).sort((a,b)=>a.at.localeCompare(b.at)), latest=own.at(-1), selected=own.find(f=>f.id===editId);
+ const localFindings=findings.filter(f=>f.scope!=='course'&&f.unit===unit),sharedFindings=findings.filter(f=>f.scope==='course');
+ const own=localFindings.filter(f=>f.author===email).sort((a,b)=>a.at.localeCompare(b.at)),latest=own.at(-1);
+ const editableFindings=[...own,...sharedFindings.filter(f=>f.author===email)],selected=editableFindings.find(f=>f.id===editId);
  const keepsReference=!!selected&&selected.scope!=='course'&&scope==='current';
  const reference=scope==='course'?courseWideReference:keepsReference?selected.reference:(slide?slideReference(slide):'Waiting for the current slide…');
 
@@ -74,24 +76,26 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
 
  <p>Save a separate finding for each issue. The current slide is recorded automatically. Choose all slides when the same finding applies throughout this course.</p>
 
- {findings.length?<details><summary>Saved feedback for this LU ({findings.length})</summary>{findings.map(f=><article key={f.id}><strong>{f.reference} · {f.outcome==="satisfied"?"Nothing to add":f.status}</strong><p>{f.text}</p>{canEdit&&f.author===email?<button type="button" className="secondary-button" onClick={()=>load(f)}>Edit this saved finding</button>:null}<Link href={`/course-reviews/${id}#finding-${f.id}`}>Read discussion or verify this finding</Link></article>)}</details>:null}
+ <details><summary>Saved feedback for {unit.toUpperCase()} only ({localFindings.length})</summary>{localFindings.length?localFindings.map(f=><article key={f.id}><strong>{unit.toUpperCase()} · {f.reference} · {f.outcome==="satisfied"?"Nothing to add":f.status}</strong><p>{f.text}</p>{canEdit&&f.author===email?<button type="button" className="secondary-button" onClick={()=>load(f)}>Edit this saved finding</button>:null}<Link href={`/course-reviews/${id}#finding-${f.id}`}>Read discussion or verify this finding</Link></article>):<p>No feedback saved specifically for {unit.toUpperCase()} yet.</p>}</details>
+ {sharedFindings.length?<details><summary>Course-wide findings — all LUs ({sharedFindings.length})</summary><p>These were explicitly marked applicable to all slides. They are separate from this LU’s own feedback.</p>{sharedFindings.map(f=><article key={f.id}><strong>All LUs · {f.outcome==='satisfied'?'Nothing to add':f.status}</strong><p>{f.text}</p>{canEdit&&f.author===email?<button type="button" className="secondary-button" onClick={()=>load(f)}>Edit this course-wide finding</button>:null}<Link href={`/course-reviews/${id}#finding-${f.id}`}>Read shared discussion or verify this finding</Link></article>)}</details>:null}
 
  {canEdit?<>
 
- {own.length?<label>Saved finding to edit<select value={editId} onChange={e=>load(own.find(f=>f.id===e.target.value))}><option value="">Add another finding — keep all saved responses</option>{own.map(f=><option key={f.id} value={f.id}>{f.reference} · {f.category} · {f.text.slice(0,65)}</option>)}</select></label>:null}
+ {own.length?<label>Saved {unit.toUpperCase()} finding to edit<select value={selected?.scope==='course'?'':editId} onChange={e=>load(own.find(f=>f.id===e.target.value))}><option value="">Add another finding — keep all saved responses</option>{own.map(f=><option key={f.id} value={f.id}>{f.reference} · {f.category} · {f.text.slice(0,65)}</option>)}</select></label>:null}
+ {selected?.scope==='course'?<p>Editing a course-wide finding. Changes apply to all LUs. <button type="button" className="secondary-button" onClick={()=>load()}>Add a new finding for {unit.toUpperCase()} instead</button></p>:null}
 
- <ReviewForm preserveFields key={`${editId||"new"}:${loadedAt}:${draftVersion}`} id={id} operation="finding" disabled={!hasDeclaration||choices.conflict||(scope==='current'&&!keepsReference&&!slide)} hidden={{unit:selected?.unit??unit,outcome:isIssue?"issue":"satisfied"}} label={editId?"Save changes to this finding":"Save review feedback"} beforeSubmit={event=>{
+ <ReviewForm preserveFields key={`${id}:${unit}:${editId||"new"}:${loadedAt}:${draftVersion}`} id={id} operation="finding" disabled={!hasDeclaration||choices.conflict||(scope==='current'&&!keepsReference&&!slide)} hidden={{unit:selected?.scope==='course'?selected.unit:unit,outcome:isIssue?"issue":"satisfied"}} label={editId?"Save changes to this finding":"Save review feedback"} beforeSubmit={event=>{
 
   const data=new FormData(event.currentTarget),ref=String(data.get("reference")??"").trim().toLowerCase();
 
-  const existing=own.find(f=>f.reference.toLowerCase()===ref);
+  const existing=editableFindings.find(f=>f.reference.toLowerCase()===ref);
 
   if(!data.get("replace_id")&&existing&&data.get("keep_all")!=="yes"){event.preventDefault();pendingForm.current=event.currentTarget;replacementId.current=existing.id;replacement.current?.showModal();}
 
  }}>
 
  <input type="hidden" name="replace_id" defaultValue={editId}/><input type="hidden" name="finding_version" value={loadedAt}/><input type="hidden" name="keep_all" defaultValue=""/>
- <input type="hidden" name="reference" value={reference}/><input type="hidden" name="slide_number" value={slide?.number??''}/><input type="hidden" name="slide_title" value={slide?.title??''}/>
+ <input type="hidden" name="reference" value={reference}/><input type="hidden" name="slide_unit" value={unit}/><input type="hidden" name="slide_number" value={slide?.number??''}/><input type="hidden" name="slide_title" value={slide?.title??''}/>
 
  {selected?<p>Editing your saved finding. Earlier versions, discussion and attachments remain in the audit trail. Further feedback reopens a submitted report for a new version.</p>:null}
 
@@ -105,8 +109,8 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
  <p role="status">{choices.conflict?"These saved choices conflict. Untick a happy declaration or untick something needs changing before saving.":!hasDeclaration?"Choose a declaration before saving.":isIssue?"Saving records an open finding. It does not mark a correction fixed or verified.":"Saving records Nothing to add · closed for your selected declarations. This is a no-issue declaration, not verification of a correction."}</p>
  <p>Your choices determine the status. Comments only explain your choices and do not change the status.</p></fieldset>
 
- <label>This finding applies to<select name="finding_scope" value={scope} onChange={e=>setScope(e.target.value as 'current'|'course')}><option value="current">Current slide</option><option value="course">Applicable to all slides</option></select></label>
- <p aria-live="polite"><strong>Reference: {reference}</strong></p>
+ <label>This finding applies to<select name="finding_scope" value={scope} onChange={e=>setScope(e.target.value as 'current'|'course')}><option value="current" disabled={selected?.scope==='course'}>Current slide</option><option value="course">Applicable to all slides</option></select></label>
+ <p aria-live="polite"><strong>Reference: {scope==='current'?`${unit.toUpperCase()} · `:''}{reference}</strong></p>
  {scope==='course'?<p>This finding is shared automatically with every learning unit in this course review. Its discussion, screenshot and correction status are kept together.</p>:keepsReference?<p>Editing keeps this finding’s saved slide reference. To comment on the slide currently open, add another finding.</p>:<p>The reference follows the slide currently open in the presentation, including slides containing activities and quizzes.</p>}
 
  <fieldset><legend>Categories — select all that apply</legend>{categories.map((category,index)=><div key={index}><label>Category {index+1}<select name="category" value={category} onChange={e=>setCategories(current=>current.map((v,i)=>i===index?e.target.value:v))}>{[...new Set([...options,category])].map(o=><option key={o}>{o}</option>)}</select></label>{category==="Other"?<label>Another category<input name="custom_category" required maxLength={80}/></label>:null}{index>0?<button type="button" className="secondary-button" onClick={()=>setCategories(current=>current.filter((_,i)=>i!==index))}>Remove category {index+1}</button>:null}</div>)}<button type="button" className="secondary-button" disabled={categories.length>=10} onClick={()=>setCategories(current=>[...current,"Content"])}>Add another category</button></fieldset>
@@ -131,7 +135,7 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
 
  <button className="primary-button" onClick={()=>{const form=pendingForm.current,input=form?.elements.namedItem("keep_all") as HTMLInputElement|null;if(input&&form){input.value="yes";replacement.current?.close();form.requestSubmit();}}}>Keep all review findings — save this as another</button>
 
- <button className="secondary-button" onClick={()=>{load(own.find(f=>f.id===replacementId.current));replacement.current?.close();}}>Edit my previous feedback</button><button className="secondary-button" onClick={()=>replacement.current?.close()}>Cancel</button></dialog>
+ <button className="secondary-button" onClick={()=>{load(editableFindings.find(f=>f.id===replacementId.current));replacement.current?.close();}}>Edit my previous feedback</button><button className="secondary-button" onClick={()=>replacement.current?.close()}>Cancel</button></dialog>
 
  </aside>;
 

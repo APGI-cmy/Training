@@ -363,6 +363,8 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
     if(!d.units.some(u=>u.slug===unit))throw Error("Choose the LU or assessment being reviewed.");
     const replaceId=formText(form,'replace_id'),previous=activeFindings(d).find(f=>f.id===replaceId);
     const requestedScope=formText(form,'finding_scope',0,20);
+    if(requestedScope==='current'&&form.has('slide_unit')&&formText(form,'slide_unit')!==unit)throw Error('The slide belongs to another LU. Reopen feedback in the current learning unit.');
+    if(previous?.scope==='course'&&requestedScope==='current')throw Error('This is a course-wide finding. Add a new finding for the current LU instead.');
     // Existing clients/legacy findings remain editable. New clients send a
     // structured location; arbitrary browser reference text is not trusted.
     const location=requestedScope?previous&&previous.author===email&&requestedScope==='current'&&previous.scope!=='course'

@@ -1,7 +1,7 @@
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {describe,it,expect,vi} from 'vitest';
-import {observeReviewSlides,reviewFindingLocation,courseWideReference,type ReviewPresentationPlayer} from '@/lib/review-slide';
+import {observeReviewSlides,reviewFindingLocation,courseWideReference,registerReviewSlideSession,playerBelongsToReview,type ReviewSlideHost,type ReviewPresentationPlayer} from '@/lib/review-slide';
 import {findingAppliesToUnit,recordFinding,type ReviewDocument,type ReviewFinding} from '@/lib/course-review';
 import {screenshotError} from '@/lib/review-screenshot';
 vi.mock('@/components/reviews/ReviewForms',()=>({ReviewForm:({children}:{children:React.ReactNode})=><form>{children}</form>}));
@@ -48,5 +48,31 @@ describe('Automatic slide reference and shared course findings',()=>{
   expect(screenshotError({type:'image/png',size:100})).toBe('');
   expect(screenshotError({type:'text/html',size:100})).toMatch(/PNG/);
   expect(screenshotError({type:'image/png',size:3*1024*1024})).toMatch(/2 MB/);
+ });
+ it('separates this LU from course-wide findings and excludes a different LU',()=>{
+  const f={id:'local',unit:'lu6',author:'a@example.com',userId:'a',reference:'Slide 2',replies:[],at:'now',status:'open',text:'Only LU6',category:'Content',blocking:false} as ReviewFinding;
+  const html=renderToStaticMarkup(<ReviewPanel id="r" unit="lu6" canEdit email="a@example.com" hasEbook={false} findings={[f,{...f,id:'shared',unit:'lu5',scope:'course',text:'All units'},{...f,id:'other',unit:'lu5',text:'Only LU5 — must not appear'}]}/>);
+  expect(html).toContain('Saved feedback for LU6 only (1)');expect(html).toContain('Course-wide findings — all LUs (1)');
+  expect(html).toContain('Only LU6');expect(html).toContain('All units');expect(html).not.toContain('Only LU5 — must not appear');
+ });
+ it('rejects a previous player document even when it registers after the new LU opens',()=>{
+  const currentDocument={},oldDocument={};
+  const root={querySelectorAll:()=>[{contentDocument:currentDocument}]} as unknown as HTMLElement;
+  const player=(doc:object)=>({view:()=>({displayObject:()=>({ownerDocument:doc})})} as unknown as ReviewPresentationPlayer);
+  expect(playerBelongsToReview(player(currentDocument),root)).toBe(true);
+  expect(playerBelongsToReview(player(oldDocument),root)).toBe(false);
+ });
+ it('does not forward a new player to an old tracker and ignores retired callbacks',()=>{
+  const host:ReviewSlideHost={},oldPlayer={} as ReviewPresentationPlayer;
+  const oldChange=vi.fn(),newChange=vi.fn();
+  const stopOld=registerReviewSlideSession(host,p=>p===oldPlayer,oldChange),oldConnector=host.ispringPresentationConnector!;
+  let handler:(()=>void)|undefined,index=0;const removeHandler=vi.fn();
+  const newPlayer:ReviewPresentationPlayer={view:()=>({playbackController:()=>({currentSlideIndex:()=>index,slideChangeEvent:()=>({addHandler:h=>{handler=h;},removeHandler})})}),presentation:()=>({slides:()=>({getSlide:()=>({title:()=>''})})})};
+  const stopNew=registerReviewSlideSession(host,p=>p===newPlayer,newChange);
+  host.ispringPresentationConnector!.register(oldPlayer);expect(newChange).not.toHaveBeenCalled();
+  host.ispringPresentationConnector!.register(newPlayer);expect(newChange).toHaveBeenLastCalledWith({number:1,title:''});expect(oldChange).not.toHaveBeenCalled();
+  stopOld();oldConnector.register(oldPlayer);expect(oldChange).not.toHaveBeenCalled();
+  index=1;handler!();expect(newChange).toHaveBeenLastCalledWith({number:2,title:''});
+  stopNew();newChange.mockClear();handler!();expect(newChange).not.toHaveBeenCalled();expect(host.ispringPresentationConnector).toBeUndefined();
  });
 });

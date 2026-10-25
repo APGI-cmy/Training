@@ -1,9 +1,38 @@
 export type ReviewSlide = {number:number;title:string};
 type SlideEvent = {addHandler:(handler:()=>void)=>void;removeHandler:(handler:()=>void)=>void};
 export type ReviewPresentationPlayer = {
- view:()=>{playbackController:()=>{currentSlideIndex:()=>number;slideChangeEvent:()=>SlideEvent}};
+ view:()=>{displayObject?:()=>HTMLElement;playbackController:()=>{currentSlideIndex:()=>number;slideChangeEvent:()=>SlideEvent}};
  presentation:()=>{slides:()=>{getSlide:(index:number)=>{title?:()=>string}}};
 };
+
+export type ReviewSlideConnector={reviewSession?:true;register:(player:ReviewPresentationPlayer)=>void};
+export type ReviewSlideHost={ispringPresentationConnector?:ReviewSlideConnector};
+
+export function playerBelongsToReview(player:ReviewPresentationPlayer,root:HTMLElement){
+ try{
+  const doc=player.view().displayObject?.()?.ownerDocument;
+  return !!doc&&[...root.querySelectorAll('iframe')].some(frame=>frame.contentDocument===doc);
+ }catch{return false;}
+}
+
+// A late callback from a retired LU must never bind the next LU's feedback.
+export function registerReviewSlideSession(host:ReviewSlideHost,ownsPlayer:(player:ReviewPresentationPlayer)=>boolean,changed:(slide:ReviewSlide|null)=>void){
+ let active=true,release:(()=>void)|undefined;
+ const previous=host.ispringPresentationConnector;
+ const connector:ReviewSlideConnector={reviewSession:true,register(player){
+  if(!active||!ownsPlayer(player))return;
+  release?.();changed(null);
+  try{release=observeReviewSlides(player,slide=>{if(active)changed(slide);});}catch{/* Wait for a recognised player; never reuse another LU's location. */}
+ }};
+ host.ispringPresentationConnector=connector;
+ return ()=>{
+  active=false;release?.();
+  if(host.ispringPresentationConnector===connector){
+   if(previous&&!previous.reviewSession)host.ispringPresentationConnector=previous;
+   else delete host.ispringPresentationConnector;
+  }
+ };
+}
 
 // The exported iSpring connector and slide-change event are read-only here.
 // No SCORM values, playback state, scores or learner progress are changed.
