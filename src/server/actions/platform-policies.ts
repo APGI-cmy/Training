@@ -66,7 +66,7 @@ async function notifyPolicy(id: string) {
           "No decision is recorded by opening this link. Please submit your decision inside the platform.",
       }),
       text: `A policy is ready for your review. Sign in using this email: ${link}. Opening this link does not approve anything.`,
-      idempotencyKey: `policy-${id}-${createHash("sha256").update(item.recipient_email).digest("hex").slice(0, 16)}`,
+      tracking:{category:'policy',organisationId:policy.organisation_id,sourceId:id,messageKey:`policy:${id}:${item.recipient_email}`},idempotencyKey: `policy-${id}-${createHash("sha256").update(item.recipient_email).digest("hex").slice(0, 16)}`,
     });
     if (!delivered.ok) failed++;
     await write(

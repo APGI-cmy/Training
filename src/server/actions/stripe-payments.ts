@@ -50,7 +50,7 @@ export async function requestStripeSetup(_previous:PaymentState,_form:FormData):
    "Once you sign in, your sidebar Notifications will show this setup request. Opening it records a read receipt; completion is recorded only after the sandbox connection is verified. Hosting and database administrators remain a separate privileged access boundary."
   ];
   const escape=(s:string)=>s.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
-  const delivered=await deliverTransactionalEmail({to:STRIPE_OWNER_EMAIL,subject:"Action requested: your private APGI Stripe and bank setup",text:instructions.join("\n\n"),html:instructions.map(p=>`<p>${escape(p)}</p>`).join("")+`<p><a href="${privateUrl}">Open private APGI payment setup</a></p>`,idempotencyKey:`apgi-v2-stripe-setup-${request.id}`});
+  const delivered=await deliverTransactionalEmail({to:STRIPE_OWNER_EMAIL,subject:"Action requested: your private APGI Stripe and bank setup",text:instructions.join("\n\n"),html:instructions.map(p=>`<p>${escape(p)}</p>`).join("")+`<p><a href="${privateUrl}">Open private APGI payment setup</a></p>`,tracking:{category:'payment',sourceId:request.id,actorId:session.user.id},idempotencyKey:`apgi-v2-stripe-setup-${request.id}`});
   await write(`/rest/v1/v2_stripe_setup_requests?id=eq.${request.id}`,{mail_state:delivered.ok?"accepted":"failed",provider_message_id:delivered.ok?delivered.providerMessageId:null},"PATCH");
   if(delivered.ok&&request.sealed_token&&request.invitation_id){
    await write(`/rest/v1/course_invitations?id=eq.${request.invitation_id}&status=eq.pending`,{status:"sent"},"PATCH");

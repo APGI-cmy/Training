@@ -16,6 +16,7 @@ export type InvitationEmailInput = {
   invitationToken: string;
   expiresAt: string;
   accountSetup?: boolean;
+  actorId?: string|null;
 };
 export type InvitationEmailResult =
   | { ok: true; providerMessageId: string | null }
@@ -69,7 +70,7 @@ export async function sendCourseInvitationEmail(
   let brand = "APGI Training",
     logo: string | null = null,
     color = "#102b49",
-    courseId: string | null = null;
+    courseId: string | null = null, organisationId:string|null=null;
   try {
     const r = await adminRest(
       `/rest/v1/course_invitations?id=eq.${input.invitationId}&select=organisation_id,course_id&limit=1`,
@@ -77,6 +78,7 @@ export async function sendCourseInvitationEmail(
     if (r.ok) {
       const row = (await r.json())[0];
       courseId = row?.course_id ?? null;
+      organisationId=row?.organisation_id??null;
       if (row?.organisation_id && !admin) {
         const o = await adminRest(
           `/rest/v1/organisations?id=eq.${row.organisation_id}&is_active=eq.true&select=name,logo_path,primary_color&limit=1`,
@@ -132,6 +134,7 @@ export async function sendCourseInvitationEmail(
     footer: `This link expires ${expiry}. Administrator and owner rights require the matching verified account and a saved Profile.`,
   });
   return deliverTransactionalEmail({
+    tracking:!admin&&!owner?false:{category:admin?'admin_invitation':'company_invitation',organisationId,sourceId:input.invitationId,actorId:input.actorId,messageKey:`invitation:${input.invitationId}`},
     to: input.recipientEmail,
     subject: setup ? "Set up your APGI Training V2 password" : admin
       ? "Your APGI administrator invitation"

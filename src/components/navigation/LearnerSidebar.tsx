@@ -41,7 +41,7 @@ export async function LearnerSidebar() {
         ...(paymentEligible?[{href:"/payments",label:"My payment portal"}]:[]),
         ...(session ? [
           { href: "/messages", label: "Messages and support" },
-          ...(emailAdmin?[{href:'/messages/email-sets',label:'Email message sets'},{href:'/messages/image-library',label:'Image library'}]:[]),
+          ...(emailAdmin?[{href:'/messages/email-management',label:'Email management'},{href:'/messages/email-sets',label:'Email message sets'},{href:'/messages/image-library',label:'Image library'}]:[]),
           { href: "/company", label: "Company workspaces" },
           { href: "/policies", label: "Policies and reviews" },
           { href: "/course-reviews", label: "Course reviews" },

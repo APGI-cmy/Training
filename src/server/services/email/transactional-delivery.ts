@@ -1,5 +1,6 @@
 import "server-only";
 import { stagingEmailEnabled, STAGING_ORIGIN } from "@/server/environment-isolation";
+import {beginMailAttempt,finishMailAttempt,type MailTracking} from './delivery-ledger';
 
 export function emailConfiguration() {
   const staging=process.env.ALP_ENVIRONMENT==='v2-staging';
@@ -22,16 +23,31 @@ export function previewTransactionalEmail(input:{subject:string;html:string;text
  const notice='VERSION 2 TEST ENVIRONMENT. This message concerns the separate Version 2 platform. It does not change your Version 1 account or course access. Use a separate Version 2 account with this email address.';
  return {subject:(staging?'[APGI V2 TEST] ':'')+input.subject,html:(staging?`<p><strong>${notice}</strong></p>`:'')+input.html,text:(staging?notice+'\n\n':'')+input.text};
 }
-export async function deliverTransactionalEmail(input:{to:string;subject:string;html:string;text:string;idempotencyKey:string}) {
+export async function deliverTransactionalEmail(input:{to:string;subject:string;html:string;text:string;idempotencyKey:string;tracking?:MailTracking|false}) {
   const config=emailConfiguration();
   if(!config)return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.to) || (config.staging && /\.invalid$/i.test(input.to)))return {ok:false as const,error:'EMAIL_DELIVERY_FAILED' as const};
+  let attempt:string|undefined;
   try {
+    if(input.tracking){
+      const saved=await beginMailAttempt({...input,tracking:input.tracking,subject:previewTransactionalEmail(input).subject});attempt=saved.id;
+      if(saved.state==='accepted'&&saved.provider_id)return {ok:true as const,providerMessageId:saved.provider_id};
+    }
     const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{authorization:`Bearer ${config.apiKey}`,'content-type':'application/json','idempotency-key':input.idempotencyKey},body:JSON.stringify({from:config.from,to:[input.to],...previewTransactionalEmail(input),tags:config.staging?[{name:'environment',value:'v2-staging'}]:undefined}),cache:'no-store',signal:AbortSignal.timeout(15000)});
-    if(!response.ok)return {ok:false as const,error:'EMAIL_DELIVERY_FAILED' as const};
+    if(!response.ok){if(attempt)await finishMailAttempt(attempt,{error:response.status===429?'Email provider rate limit reached. Try again later.':`Email provider rejected this attempt (HTTP ${response.status}).`});return {ok:false as const,error:'EMAIL_DELIVERY_FAILED' as const};}
     const payload=await response.json() as {id?:string};
     // A successful HTTP response without a provider ID is not delivery evidence.
-    if(!payload.id)return {ok:false as const,error:'EMAIL_DELIVERY_FAILED' as const};
+    if(!payload.id){if(attempt)await finishMailAttempt(attempt,{error:'The provider returned no email identifier. Delivery is not confirmed.'});return {ok:false as const,error:'EMAIL_DELIVERY_FAILED' as const};}
+    if(attempt)await finishMailAttempt(attempt,{providerId:payload.id});
     return {ok:true as const,providerMessageId:payload.id};
-  } catch {return {ok:false as const,error:'EMAIL_DELIVERY_FAILED' as const};}
+  } catch {
+    // A timeout may follow acceptance. Leave an unresolved attempt visible;
+    // retrying the same provider key cannot create a second email.
+    if(attempt)await adminAttemptUnknown(attempt);
+    return {ok:false as const,error:'EMAIL_DELIVERY_FAILED' as const};
+  }
+}
+async function adminAttemptUnknown(id:string){
+ const {adminRest}=await import('@/server/supabase/admin-rest');
+ try{await adminRest(`/rest/v1/v2_mail_attempts?id=eq.${encodeURIComponent(id)}&state=eq.sending`,{method:'PATCH',body:JSON.stringify({state:'unknown',error:'Provider acceptance could not be confirmed. Check delivery events before resending.'})});}catch{/* Retain the sending record for reconciliation. */}
 }

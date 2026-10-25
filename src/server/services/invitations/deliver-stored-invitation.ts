@@ -32,6 +32,7 @@ export async function deliverStoredInvitation(input: {
     invitationToken: input.token,
     expiresAt: input.expiresAt,
     accountSetup: input.accountSetup,
+    actorId:input.actorId,
   });
   if (!delivered.ok) {
     await adminRest("/rest/v1/course_invitation_events", {

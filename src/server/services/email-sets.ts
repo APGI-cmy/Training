@@ -26,7 +26,7 @@ export async function runEmailSets(){
  let accepted=0,failed=0;
  for(let i=0;i<jobs.length;i+=5)await Promise.all(jobs.slice(i,i+5).map(async job=>{
   const rendered=renderEmailSet(job.snapshot);
-  const result=await deliverTransactionalEmail({to:job.recipient,...rendered,idempotencyKey:`email-set-${job.id}`});
+  const result=await deliverTransactionalEmail({to:job.recipient,...rendered,tracking:{category:'email_set',organisationId:job.snapshot.organisation_id,sourceId:job.id,messageKey:`email-set:${job.id}`},idempotencyKey:`email-set-${job.id}`});
   const saved=await adminRest(`/rest/v1/v2_email_outbox?id=eq.${job.id}&state=eq.sending`,{method:'PATCH',body:JSON.stringify({state:result.ok?'accepted':'failed',provider_id:result.ok?result.providerMessageId:null,last_error:result.ok?null:'The provider did not confirm acceptance. Queued for retry.',next_at:new Date(Date.now()+15*60000).toISOString()})});
   if(!saved.ok)throw Error('Email status is awaiting reconciliation.');
   if(result.ok)accepted++;else failed++;
