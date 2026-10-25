@@ -69,7 +69,7 @@ delegation, TLS setting or V1 application code was changed in this release.
 ## Verification
 
 - TypeScript check and local production build passed.
-- Release suite: 681 passing tests in 68 files.
+- Release suite: 687 passing tests in 69 files.
 - Transactional database tests rolled back all fixtures: company isolation,
   ordinary-user denial, foreign-ID denial, service-only grants/RLS, private-link
   omission, resend throttling, follow-up persistence, event deduplication and
@@ -79,7 +79,10 @@ delegation, TLS setting or V1 application code was changed in this release.
   were recorded. Repeating an accepted idempotency key returned the same email.
 - Browser checks verified the sidebar entry, recipient search, history, the
   separate activation status, a simulated resend and its second delivered event,
-  a disabled resend on the bounced simulation and saved follow-up notes.
+  a disabled resend on the bounced simulation and saved follow-up notes. The
+  selected follow-up status remained correct after saving. The table uses the
+  available page width. All simulation records and their dependent events were
+  removed after verification; the original administrator invitation was retained.
 - Advisor checks retained the existing three signed-in role-helper warnings and
   leaked-password-protection warning. Four new service-only RLS tables have no
   client policies intentionally; anonymous/authenticated grants were denied.
@@ -96,3 +99,11 @@ node --env-file=.env.local node_modules/vitest/vitest.mjs run --config vitest.ma
 Provider simulations consume a small sending quota. Their local report is under
 `C:/Users/Johan/Codex-Work/email-management-20261025/`; real reviewer/admin
 invitations were not resent by the engineering checks.
+
+## Released version
+
+Verified V2 staging deployment: `dpl_4TrY7EcZPKiLSH8TgJCLBqA2PwWG`,
+source commit `11f3394922b10cb29212fdef244b30805a462a09` on
+`v2-development`. The canonical staging alias was checked READY / PROMOTED
+against that project and commit. Private account links are removed before the
+logging request as well as inside the service-only database function.
