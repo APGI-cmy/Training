@@ -125,7 +125,7 @@ export function ScormPlayer({
     if (mode === "preview") {
       valuesRef.current = initialValues();
       installApi();
-      setStatus("Administrator preview — learner progress is not recorded.");
+      setStatus("Review preview — learner progress and grades are not saved.");
       setReady(true);
 
       return () => {
@@ -183,7 +183,7 @@ export function ScormPlayer({
   }, [courseSlug, mode, unitSlug]);
 
   return (
-    <section className={immersive ? "scorm-player-immersive" : undefined} aria-label={`${title} SCORM learning activity`}>
+    <section className={immersive ? "scorm-player scorm-player-immersive" : "scorm-player"} aria-label={`${title} SCORM learning activity`}>
       {immersive && returnHref ? (
         <nav className="activity-toolbar" aria-label="Learning activity navigation">
           <a className="secondary-button" href={returnHref} onClick={returnToUnit} aria-disabled={leaving}>
@@ -200,7 +200,7 @@ export function ScormPlayer({
           {!immersive && (
             <figcaption>
               {mode === "preview"
-                ? "Administrator preview only — this activity cannot create or change learner progress."
+                ? "Review preview only — this activity cannot create or change learner progress."
                 : "Complete the learning activities and quizzes here. Your resume point and results belong to your learner account."}
             </figcaption>
           )}

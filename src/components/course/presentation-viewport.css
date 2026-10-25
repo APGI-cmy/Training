@@ -1,0 +1,17 @@
+.presentation-viewport{min-width:0;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden;display:flex;flex-direction:column}
+.presentation-display-controls{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px;border-bottom:1px solid var(--line);flex:none;background:var(--surface);color:var(--ink)}
+.presentation-display-controls button{margin:0;flex:none}.presentation-display-hint{font-size:.88rem;line-height:1.4;flex:1;min-width:170px}
+.presentation-display-notice{padding:8px 12px;margin:0;flex:none}.presentation-display-content{min-width:0;min-height:0;display:flex;flex-direction:column}
+.presentation-display-content>.scorm-player{display:flex;flex-direction:column;min-height:0;height:100%;flex:1}
+.presentation-display-content .scorm-status{flex:none;padding:8px 12px;margin:0;font-size:.9rem}
+.presentation-display-content .media-item{display:flex;flex-direction:column;flex:1;min-height:0;border:0;border-radius:0}
+.presentation-display-content iframe{display:block;width:100%;height:clamp(440px,68vh,900px);min-height:0;border:0;background:var(--brand-navy)}
+.presentation-display-content .media-item figcaption{flex:none;font-size:.88rem;padding:8px 12px}
+.presentation-viewport[data-expanded=true],.presentation-viewport:fullscreen{position:fixed;inset:0;z-index:11000;width:100%;height:100vh;height:100dvh;margin:0;border:0;border-radius:0;box-sizing:border-box;background:var(--surface);display:flex;flex-direction:column}
+.presentation-viewport[data-expanded=true]>.presentation-display-content,.presentation-viewport:fullscreen>.presentation-display-content{flex:1;min-height:0}
+.presentation-viewport[data-expanded=true] iframe,.presentation-viewport:fullscreen iframe{height:100%;min-height:0;flex:1}
+.presentation-viewport::backdrop{background:var(--surface)}
+body:has(.presentation-viewport[data-expanded=true]){overflow:hidden}
+.presentation-viewport .review-floating{z-index:11010}
+.presentation-viewport[data-expanded=true]>.presentation-display-content:has(.review-floating),.presentation-viewport:fullscreen>.presentation-display-content:has(.review-floating){padding-bottom:76px;box-sizing:border-box}
+@media(max-width:600px){.presentation-display-controls{gap:8px;padding:8px}.presentation-display-controls>strong{width:100%}.presentation-display-hint{font-size:.8rem}.presentation-display-content iframe{height:65vh;min-height:300px}.presentation-viewport[data-expanded=true] iframe,.presentation-viewport:fullscreen iframe{height:100%;min-height:0}.presentation-display-content .media-item figcaption{font-size:.8rem}}

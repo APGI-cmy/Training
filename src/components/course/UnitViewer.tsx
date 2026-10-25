@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { encodeAssetPath } from "@/lib/courses";
 import { ScormPlayer } from "@/components/course/ScormPlayer";
+import { PresentationViewport } from "@/components/course/PresentationViewport";
 import { UnitResources } from "@/components/course/UnitResources";
 import type { CourseShellUnit } from "@/lib/services/courses/get-course-shell";
 import type { UnitContent } from "@/lib/services/courses/get-unit-content";
@@ -94,15 +95,15 @@ export function UnitViewer({
               </>
             ) : null}
             {!isPracticalAssessment && scormLaunchSrc ? (
-              <ScormPlayer
+              <PresentationViewport title={unit.title}><ScormPlayer
                 courseSlug={course.slug}
                 unitSlug={unit.slug}
                 launchSrc={scormLaunchSrc}
                 title={unit.title}
-              />
+              /></PresentationViewport>
             ) : !isPracticalAssessment ? (
               <>
-                <figure className="media-item">
+                <PresentationViewport title={unit.title}><figure className="media-item">
                   <iframe
                     title={`${unit.title} ${isScannexUnit ? "e-book" : "published unit"}`}
                     src={embeddedSrc}
@@ -115,7 +116,7 @@ export function UnitViewer({
                       ? "Embedded Scannex e-book. Use the link above if the embedded view is blocked."
                       : "Embedded published unit. Use the fallback link below if the embedded view is blocked."}
                   </figcaption>
-                </figure>
+                </figure></PresentationViewport>
                 <div className="button-row">
                   <a className="primary-button" href={originalHref} target="_blank" rel="noreferrer">
                     {isScannexUnit ? "Open e-book in a full window" : "Open expanded unit"}
