@@ -9,7 +9,7 @@ import { registerInvitedUser } from "@/server/actions/auth/register-invited-user
 import { confirmAccount } from "@/server/actions/auth/confirm-account";
 
 const invitation = { recipient_email: "learner@example.invalid", expires_at: "2099-01-01T00:00:00Z", revoked_at: null, redeemed_at: null, status: "sent" };
-function form(values: Record<string, string>) { const data = new FormData(); Object.entries(values).forEach(([key,value]) => data.set(key,value)); return data; }
+function form(values: Record<string, string>) { const data = new FormData(); Object.entries(values).forEach(([key,value]) => data.set(key,value)); if(values.password&&!Object.hasOwn(values,'confirmation'))data.set('confirmation',values.password); return data; }
 
 describe("Invited account confirmation and first profile", () => {
   beforeEach(() => {
@@ -47,6 +47,10 @@ describe("Invited account confirmation and first profile", () => {
     mocks.rest.mockImplementation(async (path: string) => path.startsWith("/rest/v1/course_invitations?") ? Response.json([invitation]) : Response.json(false));
     expect(await registerInvitedUser({}, form({ token: "test-invite", email: "learner@example.invalid", password: "fixture-password-only" }))).toHaveProperty("error");
     expect(mocks.email).not.toHaveBeenCalled();
+  });
+  it("does not create an account when the two new passwords do not match",async()=>{
+    expect((await registerInvitedUser({},form({token:'test-invite',email:'learner@example.invalid',password:'fixture-password-only',confirmation:'a-different-password'}))).error).toContain('do not match');
+    expect(mocks.rest).not.toHaveBeenCalled();expect(mocks.email).not.toHaveBeenCalled();
   });
   it("reports a confirmation email failure without advancing to the profile", async () => {
     mocks.email.mockResolvedValue(false);

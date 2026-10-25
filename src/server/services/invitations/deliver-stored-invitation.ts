@@ -12,6 +12,7 @@ export async function deliverStoredInvitation(input: {
   token: string;
   expiresAt: string;
   actorId: string | null;
+  accountSetup?: boolean;
 }): Promise<CreateInvitationState> {
   if (usesStagingMailCapture())
     return {
@@ -30,6 +31,7 @@ export async function deliverStoredInvitation(input: {
     courseTitle: input.courseTitle,
     invitationToken: input.token,
     expiresAt: input.expiresAt,
+    accountSetup: input.accountSetup,
   });
   if (!delivered.ok) {
     await adminRest("/rest/v1/course_invitation_events", {
@@ -60,6 +62,7 @@ export async function deliverStoredInvitation(input: {
       metadata: {
         provider_message_id: delivered.providerMessageId,
         environment: "v2-staging",
+        email_purpose: input.accountSetup ? "account_setup" : "invitation",
       },
     }),
   });

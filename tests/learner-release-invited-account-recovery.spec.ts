@@ -13,7 +13,7 @@ afterEach(()=>vi.unstubAllEnvs());
 describe("Unfinished invitation account recovery",()=>{
  it("uses only the existing invitation's recipient, role, company, course and expiry",async()=>{
   await recoverInvitedAccount(email);
-  expect(m.deliver).toHaveBeenCalledWith(expect.objectContaining({id,recipientEmail:email,role:"admin",expiresAt:row.expires_at,actorId:null}));
+  expect(m.deliver).toHaveBeenCalledWith(expect.objectContaining({id,recipientEmail:email,role:"admin",expiresAt:row.expires_at,actorId:null,accountSetup:true}));
   const claim=m.rest.mock.calls.find(([,i])=>i?.method==="PATCH")!;
   expect(claim[0]).toContain("token_hash=eq.old-hash");expect(claim[0]).toContain("expires_at=gt.");
   expect(Object.keys(JSON.parse(claim[1].body)).sort()).toEqual(["status","token_hash"]);

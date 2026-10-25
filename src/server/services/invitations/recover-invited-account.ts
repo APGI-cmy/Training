@@ -12,7 +12,8 @@ type Invitation = {
 };
 
 // Called only after the shared recovery budget and Auth's account-not-found
-// response. Reissue an existing invitation; never create accounts or grant roles.
+// response. Send a direct password-setup path for the existing invitation;
+// never create accounts, choose a password or grant roles here.
 export async function recoverInvitedAccount(email: string): Promise<void> {
   const now = new Date().toISOString();
   const found = await adminRest(`/rest/v1/course_invitations?recipient_email=eq.${encodeURIComponent(email)}&status=in.(pending,sent)&revoked_at=is.null&redeemed_at=is.null&expires_at=gt.${encodeURIComponent(now)}&select=id,recipient_email,invited_role,course_id,organisation_id,expires_at,status,revoked_at,redeemed_at,token_hash&order=created_at.desc&limit=20`);
@@ -46,7 +47,7 @@ export async function recoverInvitedAccount(email: string): Promise<void> {
     if (!audit.ok) throw new Error("INVITATION_RECOVERY_AUDIT_FAILED");
     const delivered = await deliverStoredInvitation({ id: row.id, recipientEmail: row.recipient_email,
       role: row.invited_role, courseTitle: getCourseBySlug(row.course_id ?? "")?.title ?? "APGI Training",
-      token, expiresAt: row.expires_at, actorId: null });
+      token, expiresAt: row.expires_at, actorId: null, accountSetup: true });
     if (!delivered.ok) throw new Error("INVITATION_RECOVERY_DELIVERY_FAILED");
     return;
   }

@@ -28,8 +28,9 @@ export default async function InvitationRedemptionPage({
           <p className="eyebrow">Platform invitation</p>
           <h1>Access your APGI invitation</h1>
           <p>
-            Sign in, or create an account with the email address that received
-            this invitation. Complete and save your profile to activate your
+            If you have not created your separate Version 2 account, choose
+            your password below first. If you already have a V2 account, sign in.
+            Use the email address that received this invitation. Complete and save your profile to activate your
             invitation. Learner courses appear on the dashboard, business owners
             open their company workspace, and platform administrators open
             Administration.
@@ -40,13 +41,14 @@ export default async function InvitationRedemptionPage({
             </p>
           ) : null}
           <div className="button-row">
-            <Link className="primary-button" href={signInHref}>
-              Sign in
+            <Link className="primary-button" href={`${registerHref}&setup=1`}>
+              First time on V2? Choose my password
             </Link>
-            <Link className="secondary-button" href={registerHref}>
-              Create account
+            <Link className="secondary-button" href={signInHref}>
+              I already have a V2 account — sign in
             </Link>
           </div>
+          <p><Link href={`/forgot-password?next=${encodeURIComponent(invitationPath)}`}>Forgot my V2 password</Link></p>
         </div>
       </main>
     );

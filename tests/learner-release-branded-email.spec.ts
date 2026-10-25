@@ -37,6 +37,14 @@ beforeEach(() => {
   );
 });
 describe("Branded invitation templates", () => {
+  it.each(['admin','learner','business_owner'] as const)('opens password setup directly for an invited %s without asking them to sign in',async invitedRole=>{
+    await sendCourseInvitationEmail({invitationId:'fixture',recipientEmail:'invited@example.invalid',invitedRole,courseTitle:'Test course',invitationToken:'fixture-token',expiresAt:'2099-01-01',accountSetup:true});
+    const mail=m.deliver.mock.calls[0][0];expect(mail.subject).toBe('Set up your APGI Training V2 password');
+    expect(mail.html).toContain('/register?token=fixture-token&amp;setup=1');expect(mail.text).toContain('/register?token=fixture-token&setup=1');
+    expect(mail.text).toContain('You do not need an existing password');expect(mail.text).toContain('confirm your own password');expect(mail.text).toContain('confirmation link');
+    expect(mail.text).not.toContain('/invitations/fixture-token');expect(mail.html).not.toContain('Open your administrator invitation');expect(mail.idempotencyKey).toMatch(/^account-setup-/);
+    expect(mail.to).toBe('invited@example.invalid');
+  });
   it("uses the stored inviting company and real course cover without changing the verified destination", async () => {
     await sendCourseInvitationEmail({
       invitationId: "fixture",

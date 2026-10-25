@@ -42,7 +42,8 @@ describe("Password recovery safeguards", () => {
   it("recovers an active invitation when the V2 account was never created, without returning its link", async () => {
     mocks.rest.mockImplementation(async (path: string) => path.includes("claim_password") ? Response.json(true) : new Response(null, { status: 404 }));
     const result = await requestPasswordRecovery({}, form({email:"Invited@Example.invalid"}));
-    expect(result.message).toContain("account-setup invitation");
+    expect(result.message).toContain("Set up your APGI Training V2 password");
+    expect(result.message).toContain("do not need to sign in first");
     expect(mocks.invitation).toHaveBeenCalledWith("invited@example.invalid");
     expect(mocks.email).not.toHaveBeenCalled();
     expect(result).not.toHaveProperty("invitationUrl");

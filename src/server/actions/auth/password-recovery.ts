@@ -16,7 +16,7 @@ const NEXT_COOKIE = "alp_recovery_next";
 function recoveryMessage() {
   return usesStagingMailCapture()
     ? "If a test account exists, its reset link is available to your staging administrator in Test messages. No email is sent from Version 2 staging."
-    : "If this address has an account or an active invitation, check your email for a password-reset link or your account-setup invitation. Check junk or quarantine too. Use the newest email. If nothing arrives within a few minutes, contact your training administrator.";
+    : "If this address has an account or an active invitation, check your email for ‘Reset your APGI Training password’ or ‘Set up your APGI Training V2 password’. The email opens the correct password page; you do not need to sign in first. Check junk or quarantine too and use the newest email. If nothing arrives within a few minutes, contact your training administrator.";
 }
 
 export async function requestPasswordRecovery(_state: PasswordRecoveryState, formData: FormData): Promise<PasswordRecoveryState> {

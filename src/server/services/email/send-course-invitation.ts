@@ -15,6 +15,7 @@ export type InvitationEmailInput = {
   courseTitle: string;
   invitationToken: string;
   expiresAt: string;
+  accountSetup?: boolean;
 };
 export type InvitationEmailResult =
   | { ok: true; providerMessageId: string | null }
@@ -53,8 +54,9 @@ export async function sendCourseInvitationEmail(
 ): Promise<InvitationEmailResult> {
   const config = emailConfiguration();
   if (!config) return { ok: false, error: "EMAIL_NOT_CONFIGURED" };
+  const setup = input.accountSetup === true;
   const invitationUrl = new URL(
-    `/invitations/${encodeURIComponent(input.invitationToken)}`,
+    setup ? `/register?token=${encodeURIComponent(input.invitationToken)}&setup=1` : `/invitations/${encodeURIComponent(input.invitationToken)}`,
     config.origin,
   ).toString();
   const expiry = new Date(input.expiresAt).toLocaleString("en-GB", {
@@ -96,22 +98,22 @@ export async function sendCourseInvitationEmail(
   } catch {
     /* Optional visuals fall back to APGI; the stored recipient and role never change. */
   }
-  const title = admin
+  const title = setup ? "Choose your APGI V2 password and finish joining" : admin
     ? "Your APGI administrator invitation"
     : owner
       ? `Manage ${brand}`
       : input.courseTitle;
-  const heading = admin
+  const heading = setup ? "You requested help signing in. This email address has an active invitation, but its separate Version 2 account has not been created yet." : admin
     ? "You have been invited to join APGI Training as a platform administrator."
     : owner
       ? `You have been invited to manage the ${brand} company workspace.`
       : `You have been invited to enrol in ${input.courseTitle}.`;
-  const instructions = admin
+  const instructions = setup ? "You do not need an existing password. Select Choose my password below, enter the email address that received this message, then choose and confirm your own password of at least 12 characters. We will email a confirmation link. Confirm your email, then complete and save Profile to activate only the access already assigned in your invitation. Your Version 1 account and password are separate and will not be changed. Never send your password to anyone." : admin
     ? "Sign in or create an account using this email address, then complete and save your profile. Your verified invitation will activate full administrator access in Version 2."
     : owner
       ? "Use this invited email, verify your account and save Profile. Manage only your company logo, colours, certificate design and assigned policies. This does not grant APGI platform administrator access."
       : "Use this invited email, verify your account and save Profile. Your invited course will appear on your dashboard automatically; no separate acceptance or approval is needed.";
-  const button = admin
+  const button = setup ? "Choose my password" : admin
     ? "Open your administrator invitation"
     : owner
       ? "Open your company invitation"
@@ -123,21 +125,21 @@ export async function sendCourseInvitationEmail(
     logo,
     color,
     title,
-    description: `${heading} ${course?.description ?? ""} ${instructions}`,
+    description: `${heading} ${setup ? "" : course?.description ?? ""} ${instructions}`,
     link: invitationUrl,
     button,
-    image: cover ? new URL(cover.src, config.origin).toString() : null,
+    image: !setup && cover ? new URL(cover.src, config.origin).toString() : null,
     footer: `This link expires ${expiry}. Administrator and owner rights require the matching verified account and a saved Profile.`,
   });
   return deliverTransactionalEmail({
     to: input.recipientEmail,
-    subject: admin
+    subject: setup ? "Set up your APGI Training V2 password" : admin
       ? "Your APGI administrator invitation"
       : owner
         ? `Your ${brand} company workspace invitation`
         : `Your ${brand} course invitation: ${input.courseTitle}`,
     html,
     text: `${brand}\n${heading}\n${button}: ${invitationUrl}\n\n${instructions}\nThis link expires ${expiry}. Hosted by APGI.`,
-    idempotencyKey: `course-invitation-${input.invitationId}-${createHash("sha256").update(input.invitationToken).digest("hex").slice(0, 20)}`,
+    idempotencyKey: `${setup ? "account-setup" : "course-invitation"}-${input.invitationId}-${createHash("sha256").update(input.invitationToken).digest("hex").slice(0, 20)}`,
   });
 }

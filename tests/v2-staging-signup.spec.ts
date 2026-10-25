@@ -18,7 +18,7 @@ describe('Version 2 private signup messages', () => {
     const token=randomBytes(32).toString('base64url'),email=`qa-v2-signup-${Date.now()}@example.invalid`;
     const created=await adminRest('/rest/v1/course_invitations',{method:'POST',body:JSON.stringify({recipient_email:email,course_id:'scannex-training-programme',organisation_id:orgs[0].id,invited_role:'learner',basis:'internal_allocation',reason:'Fictional signup QA',expires_at:new Date(Date.now()+86400000).toISOString(),token_hash:createHash('sha256').update(token).digest('hex'),created_by:actor})});
     expect(created.ok).toBe(true);
-    const form=new FormData();form.set('email',email);form.set('token',token);form.set('password',randomBytes(32).toString('base64url'));
+    const form=new FormData();form.set('email',email);form.set('token',token);form.set('password',randomBytes(32).toString('base64url'));form.set('confirmation',String(form.get('password')));
     expect(await registerInvitedUser({},form)).toMatchObject({ok:true,message:expect.stringContaining('No email was sent')});
     const rows=await (await adminRest(`/rest/v1/staging_auth_messages?recipient_email=eq.${email}&purpose=eq.confirmation&select=action_url`)).json();
     expect(rows).toHaveLength(1); const url=new URL(rows[0].action_url);

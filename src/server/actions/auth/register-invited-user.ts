@@ -16,10 +16,12 @@ export async function registerInvitedUser(_previousState: InvitationRegistration
   const token = String(formData.get("token") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
+  const confirmation = String(formData.get("confirmation") ?? "");
 
   if (!token || token.length > 512 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || password.length < 12 || password.length > 256) {
     return { error: "Enter the invited email address and a password of at least 12 characters." };
   }
+  if (password !== confirmation) return { error: "The two passwords do not match. Enter the same new password in both fields." };
 
   const tokenHash = createHash("sha256").update(token).digest("hex");
   const invitationResponse = await adminRest(`/rest/v1/course_invitations?select=recipient_email,expires_at,revoked_at,redeemed_at,status&token_hash=eq.${encodeURIComponent(tokenHash)}&limit=1`);
