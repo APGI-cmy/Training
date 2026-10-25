@@ -9,6 +9,7 @@ import {requirePartnerOwner} from "@/server/services/publication-workflow";
 import {fixFinding,verifyFinding} from "@/lib/review-corrections";
 import {declarationChoices,requestedChangeStatement,findingUpdateStatements} from "@/lib/review-declarations";
 import {reviewEbook} from "@/server/services/review-resources";
+import {reviewFindingLocation} from '@/lib/review-slide';
 import {revalidatePath} from "next/cache";
 
 import {redirect} from "next/navigation";
@@ -357,9 +358,18 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
     if(person.state==="finished"){person.state="active";reviewEvent(d,email,"report_reopened","Further feedback requires a new report version and fresh independent endorsement. Earlier reports are preserved.");}
 
-    const unit=text(form,"unit"),reference=text(form,"reference",1,200);
+    const unit=text(form,"unit");
 
     if(!d.units.some(u=>u.slug===unit))throw Error("Choose the LU or assessment being reviewed.");
+    const replaceId=formText(form,'replace_id'),previous=activeFindings(d).find(f=>f.id===replaceId);
+    const requestedScope=formText(form,'finding_scope',0,20);
+    // Existing clients/legacy findings remain editable. New clients send a
+    // structured location; arbitrary browser reference text is not trusted.
+    const location=requestedScope?previous&&previous.author===email&&requestedScope==='current'&&previous.scope!=='course'
+      ?{scope:previous.scope,reference:previous.reference}
+      :reviewFindingLocation(requestedScope,formText(form,'slide_number',0,8),formText(form,'slide_title',0,500))
+      :{reference:text(form,'reference',1,200),scope:undefined};
+    const {reference,scope}=location;
 
     const findingId=randomUUID();let attachment:string|undefined;
 
@@ -377,9 +387,8 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
     const comment=outcome==="satisfied"?satisfactionStatement(parts)+(extra?"\n\nReviewer comments:\n"+extra:" Nothing to add."):(parts.length?satisfactionStatement(parts)+"\n\n":"")+requestedChangeStatement(parts,hasEbook)+` Category: ${categories.join(", ")}.`+(extra?"\n\nReviewer comments:\n"+extra:"");
 
-    const finding:ReviewFinding={id:findingId,fingerprint:round.fingerprint,unit,reference,categories,satisfiedParts:parts,category:categories.join(", "),outcome,blocking:outcome!=="satisfied"&&form.get("blocking")==="on",author:email,userId:session.user.id,at:now,text:comment,status:outcome==="satisfied"?"closed" as const:"open" as const,replies:[],attachment};
+    const finding:ReviewFinding={id:findingId,fingerprint:round.fingerprint,unit,scope,reference,categories,satisfiedParts:parts,category:categories.join(", "),outcome,blocking:outcome!=="satisfied"&&form.get("blocking")==="on",author:email,userId:session.user.id,at:now,text:comment,status:outcome==="satisfied"?"closed" as const:"open" as const,replies:[],attachment};
 
-    const replaceId=formText(form,"replace_id"),previous=activeFindings(d).find(f=>f.id===replaceId);
     if(replaceId&&formText(form,"finding_version")&&previous?.at!==formText(form,"finding_version"))throw Error("This finding was updated in another tab. Reload the saved review before editing it.");
     finding.comment=extra;
 
@@ -405,7 +414,7 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
     if(attachment)finding.attachment=attachment;
 
-    notice="Review saved. Your feedback is recorded in the shared review and audit trail.";
+    notice=scope==='course'?"Review saved for all slides and every learning unit in this course review.":"Review saved. Your feedback is recorded in the shared review and audit trail.";
 
    }else if(op==="reply"||op==="fixed"||op==="close"){
 

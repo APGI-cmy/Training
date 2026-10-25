@@ -27,9 +27,11 @@ export function satisfactionStatement(parts:SatisfactoryPart[]) {
 
 export const declarationReference = (parts:SatisfactoryPart[]) => parts.map(p=>({lu:"Entire LU",quiz:"Quiz",ebook:"E-book"}[p])).join(" + ");
 
-export type ReviewFinding = { id: string; unit: string; reference: string; category: string; categories?: string[]; satisfiedParts?: SatisfactoryPart[]; outcome?: "issue" | "satisfied"; supersededBy?: string; blocking: boolean; author: string; userId: string; at: string; text: string; comment?: string; previousVersions?: {at:string;text:string;attachment?:string;reference:string;category:string;blocking:boolean;status:string}[]; attachment?: string; status: "open" | "fixed" | "closed"; fixedBy?: string; fingerprint?:string; fixedFingerprint?:string;fixedAt?:string;verifiedBy?:string;verifiedFingerprint?:string;verifiedAt?:string; replies: { email: string; userId: string; at: string; text: string }[] };
+export type ReviewFinding = { id: string; unit: string; scope?: "current" | "course"; reference: string; category: string; categories?: string[]; satisfiedParts?: SatisfactoryPart[]; outcome?: "issue" | "satisfied"; supersededBy?: string; blocking: boolean; author: string; userId: string; at: string; text: string; comment?: string; previousVersions?: {scope?:"current"|"course";at:string;text:string;attachment?:string;reference:string;category:string;blocking:boolean;status:string}[]; attachment?: string; status: "open" | "fixed" | "closed"; fixedBy?: string; fingerprint?:string; fixedFingerprint?:string;fixedAt?:string;verifiedBy?:string;verifiedFingerprint?:string;verifiedAt?:string; replies: { email: string; userId: string; at: string; text: string }[] };
 
 export const activeFindings = (doc: ReviewDocument) => doc.findings.filter(f => !f.supersededBy);
+export const findingAppliesToUnit = (finding:ReviewFinding,unit:string) => finding.scope==='course'||finding.unit===unit;
+export const findingLocationLabel = (finding:ReviewFinding) => finding.scope==='course'?'ALL LEARNING UNITS':finding.unit.toUpperCase();
 
 export function findingCategories(values: string[]) {
 
@@ -45,7 +47,7 @@ export function findingCategories(values: string[]) {
 
 export function recordFinding(doc: ReviewDocument, finding: ReviewFinding, replaceId = "", append = false) {
 
- const own = activeFindings(doc).filter(f => f.author === finding.author && f.unit === finding.unit);
+ const own = activeFindings(doc).filter(f => f.author === finding.author && (f.unit === finding.unit || (f.scope==='course'&&finding.scope==='course')));
 
  const previous = replaceId ? own.find(f=>f.id===replaceId) : own.find(f=>f.reference.toLowerCase()===finding.reference.toLowerCase());
 
@@ -57,7 +59,7 @@ export function recordFinding(doc: ReviewDocument, finding: ReviewFinding, repla
 
   if(previous.blocking && previous.status!=="closed" && (!finding.blocking || finding.outcome==="satisfied")) throw Error("An unresolved blocking finding must remain blocking until it is fixed and independently verified. Add a separate satisfactory declaration if needed.");
 
-  finding.previousVersions=[...(previous.previousVersions??[]),{at:previous.at,text:previous.text,attachment:previous.attachment,reference:previous.reference,category:previous.category,blocking:previous.blocking,status:previous.status}];
+  finding.previousVersions=[...(previous.previousVersions??[]),{scope:previous.scope,at:previous.at,text:previous.text,attachment:previous.attachment,reference:previous.reference,category:previous.category,blocking:previous.blocking,status:previous.status}];
 
   finding.id=previous.id; finding.replies=[...previous.replies]; finding.attachment=previous.attachment;
 

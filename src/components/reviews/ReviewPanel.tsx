@@ -6,8 +6,11 @@ import {ReviewForm} from "./ReviewForms";
 
 import Link from "next/link";
 
-import {declarationReference,satisfactoryParts,satisfactionStatement,type ReviewFinding,type SatisfactoryPart} from "@/lib/course-review";
+import {satisfactoryParts,satisfactionStatement,type ReviewFinding,type SatisfactoryPart} from "@/lib/course-review";
 import {declarationChoices} from "@/lib/review-declarations";
+import {courseWideReference,slideReference} from '@/lib/review-slide';
+import {useReviewSlide} from './ReviewSlideTracking';
+import {ReviewScreenshot} from './ReviewScreenshot';
 
 const options=["Content","Quiz or scoring","Navigation","Accessibility","Design","E-book issue","Other"];
 
@@ -29,22 +32,27 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
 
  const [parts,setParts]=useState<SatisfactoryPart[]>([]),[hasIssue,setHasIssue]=useState(false),[blocking,setBlocking]=useState(false);
 
- const [reference,setReference]=useState(""),[categories,setCategories]=useState(["Content"]),[comment,setComment]=useState(""),[editId,setEditId]=useState(""),[loadedAt,setLoadedAt]=useState("");
+ const [scope,setScope]=useState<'current'|'course'>('current'),[categories,setCategories]=useState(["Content"]),[comment,setComment]=useState(""),[editId,setEditId]=useState(""),[loadedAt,setLoadedAt]=useState("");
+ const [draftVersion,setDraftVersion]=useState(0);
+ const slide=useReviewSlide();
 
  const own=findings.filter(f=>f.author===email).sort((a,b)=>a.at.localeCompare(b.at)), latest=own.at(-1), selected=own.find(f=>f.id===editId);
+ const keepsReference=!!selected&&selected.scope!=='course'&&scope==='current';
+ const reference=scope==='course'?courseWideReference:keepsReference?selected.reference:(slide?slideReference(slide):'Waiting for the current slide…');
 
  const isIssue=hasIssue||parts.length===0;
  const choices=declarationChoices(parts,hasIssue,hasEbook),hasDeclaration=hasIssue||parts.length>0;
 
- const upload=useRef<HTMLInputElement>(null),replacement=useRef<HTMLDialogElement>(null),reopen=useRef<HTMLDialogElement>(null),pendingForm=useRef<HTMLFormElement|null>(null),replacementId=useRef("");
+ const replacement=useRef<HTMLDialogElement>(null),reopen=useRef<HTMLDialogElement>(null),pendingForm=useRef<HTMLFormElement|null>(null),replacementId=useRef("");
 
  function load(f?:ReviewFinding){
+  setDraftVersion(v=>v+1);
 
-  setEditId(f?.id??"");setLoadedAt(f?.at??"");setReference(f?.reference??"");setParts(f?.satisfiedParts??[]);setCategories((f?.categories??(f?.category?[f.category]:["Content"])).filter(c=>c!=="Other"));
+  setEditId(f?.id??"");setLoadedAt(f?.at??"");setScope(f?.scope==='course'?'course':'current');setParts(f?.satisfiedParts??[]);setCategories((f?.categories??(f?.category?[f.category]:["Content"])).filter(c=>c!=="Other"));
 
   setHasIssue(!!f&&f.outcome!=="satisfied");setBlocking(f?.blocking??false);setComment(f?editableFindingComment(f):"");setMessage("");
 
-  if(upload.current)upload.current.value="";setOpen(true);
+  setOpen(true);
 
  }
 
@@ -54,23 +62,9 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
 
   const next=satisfactoryParts(checked?[...parts,part]:parts.filter(p=>p!==part));
 
-  if(!reference||reference===declarationReference(parts))setReference(declarationReference(next));setParts(next);
+  setParts(next);
 
  }
-
- async function snapshot(){let stream:MediaStream|undefined;try{
-
-  stream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
-
-  const video=document.createElement("video");video.srcObject=stream;await video.play();
-
-  const canvas=document.createElement("canvas");canvas.width=video.videoWidth;canvas.height=video.videoHeight;canvas.getContext("2d")!.drawImage(video,0,0);
-
-  const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/png"));
-
-  if(blob&&upload.current){const data=new DataTransfer();data.items.add(new File([blob],"review-screenshot.png",{type:"image/png"}));upload.current.files=data.files;setMessage("Snapshot attached. Add your reference and comment, then save.");}
-
- }catch{setMessage("Capture was cancelled or is unavailable. You can upload a screenshot instead.");}finally{stream?.getTracks().forEach(t=>t.stop());}}
 
  return <aside className="review-floating" aria-label="Course feedback">
 
@@ -78,7 +72,7 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
 
  <div className="review-floating-body" hidden={!open}><h2>Feedback for {unit.toUpperCase()}</h2>
 
- <p>Save a separate finding for each issue, even when several issues concern the same slide or question. Categories describe this finding.</p>
+ <p>Save a separate finding for each issue. The current slide is recorded automatically. Choose all slides when the same finding applies throughout this course.</p>
 
  {findings.length?<details><summary>Saved feedback for this LU ({findings.length})</summary>{findings.map(f=><article key={f.id}><strong>{f.reference} · {f.outcome==="satisfied"?"Nothing to add":f.status}</strong><p>{f.text}</p>{canEdit&&f.author===email?<button type="button" className="secondary-button" onClick={()=>load(f)}>Edit this saved finding</button>:null}<Link href={`/course-reviews/${id}#finding-${f.id}`}>Read discussion or verify this finding</Link></article>)}</details>:null}
 
@@ -86,7 +80,7 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
 
  {own.length?<label>Saved finding to edit<select value={editId} onChange={e=>load(own.find(f=>f.id===e.target.value))}><option value="">Add another finding — keep all saved responses</option>{own.map(f=><option key={f.id} value={f.id}>{f.reference} · {f.category} · {f.text.slice(0,65)}</option>)}</select></label>:null}
 
- <ReviewForm preserveFields key={editId||"new"} id={id} operation="finding" disabled={!hasDeclaration||choices.conflict} hidden={{unit,outcome:isIssue?"issue":"satisfied"}} label={editId?"Save changes to this finding":"Save review feedback"} beforeSubmit={event=>{
+ <ReviewForm preserveFields key={`${editId||"new"}:${loadedAt}:${draftVersion}`} id={id} operation="finding" disabled={!hasDeclaration||choices.conflict||(scope==='current'&&!keepsReference&&!slide)} hidden={{unit:selected?.unit??unit,outcome:isIssue?"issue":"satisfied"}} label={editId?"Save changes to this finding":"Save review feedback"} beforeSubmit={event=>{
 
   const data=new FormData(event.currentTarget),ref=String(data.get("reference")??"").trim().toLowerCase();
 
@@ -97,6 +91,7 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
  }}>
 
  <input type="hidden" name="replace_id" defaultValue={editId}/><input type="hidden" name="finding_version" value={loadedAt}/><input type="hidden" name="keep_all" defaultValue=""/>
+ <input type="hidden" name="reference" value={reference}/><input type="hidden" name="slide_number" value={slide?.number??''}/><input type="hidden" name="slide_title" value={slide?.title??''}/>
 
  {selected?<p>Editing your saved finding. Earlier versions, discussion and attachments remain in the audit trail. Further feedback reopens a submitted report for a new version.</p>:null}
 
@@ -110,7 +105,9 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
  <p role="status">{choices.conflict?"These saved choices conflict. Untick a happy declaration or untick something needs changing before saving.":!hasDeclaration?"Choose a declaration before saving.":isIssue?"Saving records an open finding. It does not mark a correction fixed or verified.":"Saving records Nothing to add · closed for your selected declarations. This is a no-issue declaration, not verification of a correction."}</p>
  <p>Your choices determine the status. Comments only explain your choices and do not change the status.</p></fieldset>
 
- <label>Slide / quiz / question / e-book page reference<input name="reference" value={reference} onChange={e=>setReference(e.target.value)} required maxLength={200}/></label>
+ <label>This finding applies to<select name="finding_scope" value={scope} onChange={e=>setScope(e.target.value as 'current'|'course')}><option value="current">Current slide</option><option value="course">Applicable to all slides</option></select></label>
+ <p aria-live="polite"><strong>Reference: {reference}</strong></p>
+ {scope==='course'?<p>This finding is shared automatically with every learning unit in this course review. Its discussion, screenshot and correction status are kept together.</p>:keepsReference?<p>Editing keeps this finding’s saved slide reference. To comment on the slide currently open, add another finding.</p>:<p>The reference follows the slide currently open in the presentation, including slides containing activities and quizzes.</p>}
 
  <fieldset><legend>Categories — select all that apply</legend>{categories.map((category,index)=><div key={index}><label>Category {index+1}<select name="category" value={category} onChange={e=>setCategories(current=>current.map((v,i)=>i===index?e.target.value:v))}>{[...new Set([...options,category])].map(o=><option key={o}>{o}</option>)}</select></label>{category==="Other"?<label>Another category<input name="custom_category" required maxLength={80}/></label>:null}{index>0?<button type="button" className="secondary-button" onClick={()=>setCategories(current=>current.filter((_,i)=>i!==index))}>Remove category {index+1}</button>:null}</div>)}<button type="button" className="secondary-button" disabled={categories.length>=10} onClick={()=>setCategories(current=>[...current,"Content"])}>Add another category</button></fieldset>
 
@@ -120,7 +117,7 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
 
  {selected?.attachment?<p><a href={`/course-reviews/${id}/evidence/${selected.id}`} target="_blank" rel="noreferrer">View saved screenshot</a>. It is retained unless you upload a new image; earlier images remain in the audit trail.</p>:null}
 
- <button type="button" className="secondary-button" onClick={snapshot}>Take a snapshot</button><label>Upload a screenshot or image (optional, up to 2 MB)<input ref={upload} type="file" name="screenshot" accept="image/png,image/jpeg,image/webp"/></label>
+ <ReviewScreenshot/>
 
  {!isIssue?<p>Your selected declarations and any comments or image attachment will be saved together. Confirm complete LU/quiz coverage separately after reviewing the entire unit.</p>:null}{message?<p role="status">{message}</p>:null}
 
