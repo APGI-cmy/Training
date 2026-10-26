@@ -86,3 +86,15 @@ new commercial version and approvals to adopt the corrected rule.
   [password protection](https://supabase.com/docs/guides/auth/password-security).
 - Temporary browser-check source was removed before deployment. Ephemeral QA
   evidence is outside OneDrive at `C:/Users/Johan/Codex-Work/commercial-models-20261026`.
+
+Implementation `a332af2038cd14ba05865d717209a4791e6de942` was deployed to the
+V2 project `prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf` as
+`dpl_GKryXEprSdwDP8iU751kQYVnjVkN`. The canonical V2 staging alias was verified
+READY / PROMOTED at this exact commit. Authenticated browser verification on the
+live Tiger Kidnapping preparation page confirmed all three ownership options,
+APGI as the unchanged current legal owner, and NKS Capital as the named client
+under the recovery model. This was a temporary tab selection, never saved.
+
+Live screenshot: `C:/Users/Johan/Codex-Work/commercial-models-20261026/live-ownership-conditions.jpg`.
+Runtime error scan returned zero records from 06:52:48 to 07:07:48 UTC on
+26 October 2026 (08:52:48–09:07:48 South African time).
