@@ -136,7 +136,7 @@ Status: ${w.stage}. Counter-offer responses used: ${w.counterOffers}/3.`);
 
  try{if(mail.length)await processReviewMail();}catch{/* Durable outbox retains pending delivery. */}
 
- revalidatePath(`/course-reviews/${id}`);revalidatePath("/course-reviews");revalidatePath(`/company/${round.organisation_id}`);return {success:message,...(op==="begin_commercials"?{href:`/admin/courses/${round.course_id}/publish?review=${id}`}:{})};
+ revalidatePath(`/course-reviews/${id}`);revalidatePath(`/course-reviews/${id}/commercials`);revalidatePath("/course-reviews");revalidatePath(`/company/${round.organisation_id}`);return {success:message,...(op==="begin_commercials"?{href:`/admin/courses/${round.course_id}/publish?review=${id}`}:{})};
 
  }catch(e){if(e instanceof Error&&"digest" in e)throw e;return {error:e instanceof Error?e.message:"Publication workflow could not be saved."};}
 

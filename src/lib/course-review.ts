@@ -92,6 +92,7 @@ export type ReviewDocument = {
 
   requests?: ReviewChangeRequest[];
   taskDecisions?:TaskDecision[];
+  commercialFeedback?:import("./publication-workflow").CommercialFeedback[];
 
   title: string; brand: { name: string; revision: number; color: string; logo: string | null }; requester: string; requesterId: string;
 

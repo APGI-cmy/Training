@@ -21,7 +21,7 @@ export function ReviewForm({id,operation,children,label="Save",hidden={},disable
  const router=useRouter();
  const [state,action,pending]=useActionState<ReviewActionState,FormData>((previous,form)=>submitReviewFeedback(workflow?publicationWorkflowAction:courseReviewAction,previous,form,acknowledge,message=>window.alert(message),href=>router.push(href)),{});
  const [toast,setToast]=useState(false);
- useEffect(()=>{if(state.success){router.refresh();setToast(true);const timer=setTimeout(()=>setToast(false),6000);return ()=>clearTimeout(timer);}},[state,router]);
+ useEffect(()=>{if(state.success){window.dispatchEvent(new Event("apgi-notifications-changed"));router.refresh();setToast(true);const timer=setTimeout(()=>setToast(false),6000);return ()=>clearTimeout(timer);}},[state,router]);
  return <><form action={action} onReset={preserveFields?event=>event.preventDefault():undefined} onSubmit={beforeSubmit} className="review-form"><input type="hidden" name="round_id" value={id}/><input type="hidden" name="operation" value={operation}/>{Object.entries(hidden).map(([name,value])=><input key={name} type="hidden" name={name} value={value}/>)}{children}<button className="primary-button" disabled={pending||disabled}>{pending?"Saving…":label}</button>{state.error?<p className="form-error" role="alert">{state.error}</p>:null}{state.success?<>{!toast?<p className="form-success" role="status">{state.success}</p>:null}{toast?<div className="review-toast" role="status">{state.success}</div>:null}</>:null}</form></>;
 }
 export function CoverageConfirmation({id,unit,confirmed,locked=false}:{id:string;unit:string;confirmed:boolean;locked?:boolean}){

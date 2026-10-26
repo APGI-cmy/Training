@@ -1,0 +1,12 @@
+import Link from "next/link";
+import {contentReviewBlockers,type ReviewRound} from "@/lib/course-review";
+import {findWorkflowStep,type WorkflowStep} from "@/lib/publication-guide";
+import {WorkflowSectionStatus} from "./WorkflowSectionStatus";
+import {ReviewForm} from "./ReviewForms";
+export function FinalContentClearance({round,principal,email,hash,guide}:{round:ReviewRound;principal:boolean;email:string;hash:string;guide?:WorkflowStep[]}){
+ const w=round.document.workflow;
+ if(!w)return null;
+ if(!principal||round.document.requester!==email||w.contentApproval)return <section id="final-content-clearance" className="review-box"><div className="workflow-section-heading"><h2>Final content clearance status</h2><WorkflowSectionStatus step={findWorkflowStep(guide,"clearance")}/></div><p>{w.contentApproval?.fingerprint===hash?`Final content clearance recorded by ${w.contentApproval.email} at ${w.contentApproval.at}.`:"The requester must clear the exact corrected content after the required reviews, independent checks and blocking corrections are complete."}</p></section>;
+ const blockers=contentReviewBlockers(round,hash),hintId=`content-approval-hint-${round.id}`;
+ return <details id="final-content-clearance" className="review-box"><summary className="workflow-section-heading"><span>Final content clearance — requester only</span><WorkflowSectionStatus step={findWorkflowStep(guide,"clearance")}/></summary><p>This is step 6.1. Commercial preparation and sign-off are separate: <Link href={`/course-reviews/${round.id}/commercials`}>Open the full commercial proposal</Link>.</p>{blockers.length?<ul>{blockers.map(b=><li key={b}>{b}</li>)}</ul>:null}<div className="review-approval-hint" role="group" aria-label="Content approval availability" data-disabled={!!blockers.length} tabIndex={blockers.length?0:undefined} aria-describedby={blockers.length?hintId:undefined}><ReviewForm workflow id={round.id} operation="approve_content" label="Approve final corrected content" disabled={!!blockers.length}><label><input name="confirm_content" type="checkbox" required disabled={!!blockers.length}/> I approve this exact reviewed course content. This does not approve any commercials.</label></ReviewForm>{blockers.length?<span role="tooltip" id={hintId} className="review-approval-tooltip">This checkbox and button will only be available once all modules and quizzes have been reviewed, all full review reports have been submitted and independently endorsed, and blocking findings have been resolved.</span>:null}</div></details>;
+}

@@ -1,0 +1,3 @@
+.notification-reference{margin:0 0 18px;padding:15px 18px;border:2px solid var(--accent);border-radius:9px;background:var(--surface-strong);color:var(--ink);line-height:1.6;overflow-wrap:anywhere}
+.notification-reference strong{display:block;font-size:1rem}.notification-reference p{margin:.5rem 0}.notification-reference a{font-weight:700;text-decoration:underline}
+.notification-reference-mount{scroll-margin-top:calc(var(--app-header-height,90px) + 20px)}

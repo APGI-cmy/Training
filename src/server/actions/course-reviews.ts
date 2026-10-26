@@ -1,4 +1,6 @@
 "use server";
+import {commercialReviewPath} from "@/lib/review-navigation";
+import {canProposeCommercial,readCommercialSuggestion} from "@/lib/commercial-feedback";
 
 import {randomUUID,randomBytes,createHash} from "node:crypto";
 import {reviewInvitationNarrative} from '@/server/services/email/review-message';
@@ -147,7 +149,7 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
 
    try{await processReviewMail();}catch{/* Publication and its outbox are committed atomically; delivery can retry. */}
 
-   revalidatePath(`/company/${round.organisation_id}`);revalidatePath(`/course-reviews/${id}`);
+   revalidatePath(`/company/${round.organisation_id}`);revalidatePath(`/course-reviews/${id}`);revalidatePath(`/course-reviews/${id}/commercials`);
 
    return {success:"Reviewed release published for this V2 company. Prices, payments and V1 remain unchanged."};
 
@@ -334,6 +336,15 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
    reviewEvent(d,email,op,`${task} revision ${target}: ${decision}. ${formText(form,"comment")}`);
    mail=reviewMail(round,`${task}_review_decision`,`${task}:${round.revision}:${email}`,`${email} recorded ${decision} for ${task} revision ${target}: ${formText(form,"comment")}. This task decision does not replace joint APGI commercial signatures, company-owner acceptance or final publication.`);
    notice=`${task==="branding"?"Branding":"Commercial"} review decision saved for this exact version.`;
+  }else if(op==="commercial_proposal"){
+   const v=d.workflow?.commercials.at(-1);
+   if(!canProposeCommercial(round,email,principal))throw Error("Commercial discussion is available only to an APGI principal or an assigned reviewer of an offered version, within the review deadline.");
+   if(!v||text(form,"version_id")!==v.id)throw Error("The commercial version changed. Reload before proposing a change.");
+   if(d.participants.some(p=>p.email===email&&p.state!=="declined"))claimReviewer(round,email,session.user.id);
+   const suggestion={id:randomUUID(),versionId:v.id,email,userId:session.user.id,at:now,...readCommercialSuggestion(form)};
+   d.commercialFeedback??=[];d.commercialFeedback.push(suggestion);
+   reviewEvent(d,email,op,`Saved a discussion proposal for commercial version ${v.id}. This does not amend or approve the terms.`);
+   notice="Your comment or counter-proposal is saved below for this exact version. No commercial terms or approval decisions were changed.";
   }else if(op==="commercial_feedback"){
 
    const person=d.participants.find(p=>p.email===email),w=d.workflow,v=w?.commercials?.at(-1);
@@ -525,7 +536,7 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
 
   try{if(mail.length)await processReviewMail();}catch{/* Durable failed/pending delivery remains visible. */}
 
-  revalidatePath(`/course-reviews/${id}`,"layout");revalidatePath("/course-reviews");return {success:notice,...(op==="report"&&principal&&d.requester===email?{href:d.workflow&&["commercial_draft","negotiation"].includes(d.workflow.stage)?`/admin/courses/${round.course_id}/publish?review=${id}`:`/course-reviews/${id}#commercial-preparation`}:{})};
+  revalidatePath(`/course-reviews/${id}`,"layout");revalidatePath("/course-reviews");return {success:notice,...(op==="commercial_proposal"?{href:`${commercialReviewPath(id)}#commercial-feedback-${d.commercialFeedback!.at(-1)!.id}`}:op==="task_decision"&&form.get("task")==="commercials"?{href:`${commercialReviewPath(id)}#commercial-review-entry-${d.taskDecisions!.at(-1)!.id}`}:{}) ,...(op==="report"&&principal&&d.requester===email?{href:d.workflow&&["commercial_draft","negotiation"].includes(d.workflow.stage)?`/admin/courses/${round.course_id}/publish?review=${id}`:`/course-reviews/${id}#commercial-preparation`}:{})};
 
  }catch(e){if(e instanceof Error&&"digest" in e)throw e;return {error:e instanceof Error?e.message:"Review action could not be saved."};}
 

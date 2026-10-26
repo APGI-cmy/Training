@@ -2,7 +2,7 @@
 import {revalidatePath} from "next/cache";
 import {redirect} from "next/navigation";
 import {adminRest} from "@/server/supabase/admin-rest";
-import {notificationSession} from "@/server/services/notifications";
+import {notificationSession,notificationDestination} from "@/server/services/notifications";
 import {notificationTarget} from "@/lib/notifications";
 import {validId} from "@/lib/company-structure";
 export type NotificationState={error?:string;success?:string};
@@ -16,8 +16,13 @@ export async function notificationAction(_previous:NotificationState,form:FormDa
    if(!response.ok)throw Error("Notifications could not be marked as read.");
   }else{
    const id=validId(String(form.get("id")??""));
+   const destination=operation==="open"?await notificationDestination(session,id):undefined;
    const response=await adminRest("/rest/v1/rpc/v2_notification_receipt",{method:"POST",body:JSON.stringify({p_user:session.user.id,p_id:id,p_mode:operation==="acknowledge"?"acknowledge":"read"})});
    if(!response.ok)throw Error("This notification is unavailable or requires a response in its workflow.");target=notificationTarget(await response.json());
+   if(destination?.source_type==="review"){
+    target=notificationTarget(destination.target_path);
+    if(target.startsWith("/course-reviews/")){const [path,anchor]=target.split("#");target=`${path}?notification=${id}${anchor?`#${anchor}`:""}`;}
+   }
   }
   revalidatePath("/","layout");if(operation==="open")redirect(target);
   return {success:operation==="acknowledge"?"Receipt acknowledged. No approval or agreement was recorded.":"Marked as read. Any required workflow response remains outstanding."};
