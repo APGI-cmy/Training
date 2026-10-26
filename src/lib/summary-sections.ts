@@ -35,15 +35,21 @@ export function commercialSummarySections(text: string): SummarySection[] {
 
 export function feedbackSummarySections(text: string): SummarySection[] {
   const sections: SummarySection[] = [];
-  for (const line of text.split(/\r?\n/).map(line => line.trim()).filter(Boolean)) {
+  let paragraphEnded = false;
+  for (const line of text.split(/\r?\n/).map(line => line.trim())) {
+    if (!line) {
+      paragraphEnded = !!sections.at(-1)?.items.length;
+      continue;
+    }
     const heading = /^(Reviewer explanation|Findings at submission|Reviewer comments):$/.exec(line)?.[1]
       ?? /^#{1,6}\s+(.+)$/.exec(line)?.[1];
     if (heading) sections.push({ title: heading, items: [] });
     else {
-      if (!sections.length) sections.push({ title: "", items: [] });
+      if (!sections.length || paragraphEnded) sections.push({ title: "", items: [] });
       // Existing plain-text bullet markers become actual list items.
       sections.at(-1)!.items.push(...summaryItems(line.replace(/^[-*•]\s+/, "")));
     }
+    paragraphEnded = false;
   }
   return sections;
 }

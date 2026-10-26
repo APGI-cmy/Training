@@ -62,6 +62,13 @@ describe("Readable saved summaries",()=>{
     expect(html).toContain("<h4>Reviewer comments</h4>");
     expect(renderToStaticMarkup(<SummaryText text=" "/>)).toBe("");
   });
+  it("keeps a later finding outside the preceding reviewer's comment section",()=>{
+    const sections=feedbackSummarySections("Reviewer comments:\nAdd captions to slide 2.\n\nNext saved finding | lu3 | Slide 4\nKeep the original colours.");
+    expect(sections).toEqual([
+      {title:"Reviewer comments",items:["Add captions to slide 2."]},
+      {title:"",items:["Next saved finding | lu3 | Slide 4","Keep the original colours."]},
+    ]);
+  });
   it("shows prices, decision status and the full reference as distinct labelled facts",()=>{
     const html=renderToStaticMarkup(<SummaryFacts entries={[["Minimum learner fee","USD 277.18"],["Decision","Awaiting decision"],["Commercial version reference","6a43a446-5797-4177-af5e-22a4ac60c655"]]}/>);
     expect(html).toContain("<dt>Decision</dt><dd>Awaiting decision</dd>");
