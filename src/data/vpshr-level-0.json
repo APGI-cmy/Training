@@ -51,25 +51,7 @@
           "body": "Learners are asked to connect each topic to real choices they may make on site or in the field."
         }
       ],
-      "quiz": [
-        {
-          "id": "intro-q1",
-          "type": "trueFalse",
-          "prompt": "VPSHR training only applies to specialist legal teams.",
-          "options": [
-            {
-              "id": "true",
-              "label": "True"
-            },
-            {
-              "id": "false",
-              "label": "False"
-            }
-          ],
-          "answer": "false",
-          "feedback": "VPSHR awareness is relevant to security personnel, employees, contractors, managers, and leaders."
-        }
-      ],
+      "quiz": [],
       "survey": [
         {
           "id": "intro-s1",
@@ -133,29 +115,7 @@
           "thumbnail": "/courses/vpshr-level-0/LU1 Definition/data/thmb3.jpg"
         }
       ],
-      "quiz": [
-        {
-          "id": "lu1-q1",
-          "type": "multipleChoice",
-          "prompt": "Which statement best describes human rights in this training context?",
-          "options": [
-            {
-              "id": "a",
-              "label": "Standards that protect dignity, safety, and fair treatment"
-            },
-            {
-              "id": "b",
-              "label": "Benefits that only apply after a legal complaint"
-            },
-            {
-              "id": "c",
-              "label": "Internal company preferences with no operational effect"
-            }
-          ],
-          "answer": "a",
-          "feedback": "The course treats human rights as practical standards that guide how people are treated during security operations."
-        }
-      ],
+      "quiz": [],
       "survey": [
         {
           "id": "lu1-s1",
@@ -234,33 +194,7 @@
           "thumbnail": "/courses/vpshr-level-0/LU2 Responsibilities/data/thmb3.jpg"
         }
       ],
-      "quiz": [
-        {
-          "id": "lu2-q1",
-          "type": "multipleResponse",
-          "prompt": "Which actions support responsible VPSHR implementation? Select all that apply.",
-          "options": [
-            {
-              "id": "report",
-              "label": "Report credible concerns through the correct channel"
-            },
-            {
-              "id": "train",
-              "label": "Keep security teams trained and supervised"
-            },
-            {
-              "id": "hide",
-              "label": "Avoid documenting incidents to reduce paperwork"
-            },
-            {
-              "id": "review",
-              "label": "Review incidents for lessons learned"
-            }
-          ],
-          "answers": ["report", "train", "review"],
-          "feedback": "Responsible implementation depends on training, reporting, supervision, and review."
-        }
-      ],
+      "quiz": [],
       "survey": [
         {
           "id": "lu2-s1",
@@ -330,28 +264,7 @@
           "thumbnail": "/courses/vpshr-level-0/LU3 benefits-human-rights/data/thmb3.jpg"
         }
       ],
-      "quiz": [
-        {
-          "id": "lu3-q1",
-          "type": "matching",
-          "prompt": "Match each practice to its likely benefit.",
-          "pairs": [
-            {
-              "left": "Clear communication",
-              "right": "Lower confusion at security touchpoints"
-            },
-            {
-              "left": "Consistent reporting",
-              "right": "Better accountability and follow-up"
-            },
-            {
-              "left": "De-escalation",
-              "right": "Reduced risk of harm"
-            }
-          ],
-          "feedback": "Human rights practice has operational value when it is applied consistently."
-        }
-      ],
+      "quiz": [],
       "survey": [
         {
           "id": "lu3-s1",
@@ -430,34 +343,7 @@
           "thumbnail": "/courses/vpshr-level-0/LU4 30-human-rights/data/thmb3.jpg"
         }
       ],
-      "quiz": [
-        {
-          "id": "lu4-q1",
-          "type": "dragWords",
-          "prompt": "Complete the VPSHR principle.",
-          "sentenceParts": [
-            "Security action should be ",
-            ", ",
-            ", and proportionate."
-          ],
-          "words": [
-            {
-              "id": "lawful",
-              "label": "lawful"
-            },
-            {
-              "id": "necessary",
-              "label": "necessary"
-            },
-            {
-              "id": "secret",
-              "label": "secret"
-            }
-          ],
-          "answer": ["lawful", "necessary"],
-          "feedback": "Proportionate security action should be lawful and necessary before force or restrictions are considered."
-        }
-      ],
+      "quiz": [],
       "survey": [
         {
           "id": "lu4-s1",
@@ -516,29 +402,7 @@
           "thumbnail": "/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)/data/thmb3.jpg"
         }
       ],
-      "quiz": [
-        {
-          "id": "lu5-q1",
-          "type": "multipleChoice",
-          "prompt": "Which situation is an early warning sign for human rights risk?",
-          "options": [
-            {
-              "id": "unclear",
-              "label": "Unclear instructions during a tense community interaction"
-            },
-            {
-              "id": "briefing",
-              "label": "A calm briefing with documented escalation channels"
-            },
-            {
-              "id": "review",
-              "label": "A supervisor reviewing incident reports"
-            }
-          ],
-          "answer": "unclear",
-          "feedback": "Unclear instructions during tension can lead to inconsistent, disproportionate, or harmful responses."
-        }
-      ],
+      "quiz": [],
       "survey": [
         {
           "id": "lu5-s1",
@@ -602,25 +466,7 @@
           "thumbnail": "/courses/vpshr-level-0/LU6 Role-of-Employees/data/thmb3.jpg"
         }
       ],
-      "quiz": [
-        {
-          "id": "lu6-q1",
-          "type": "trueFalse",
-          "prompt": "Only supervisors can raise human rights concerns.",
-          "options": [
-            {
-              "id": "true",
-              "label": "True"
-            },
-            {
-              "id": "false",
-              "label": "False"
-            }
-          ],
-          "answer": "false",
-          "feedback": "Every employee has a role in recognizing and escalating credible concerns."
-        }
-      ],
+      "quiz": [],
       "survey": [
         {
           "id": "lu6-s1",
@@ -693,33 +539,7 @@
           "thumbnail": "/courses/vpshr-level-0/LU7 Key-policy-requirements/8. Key policy requirements - final (Published)/data/thmb3.jpg"
         }
       ],
-      "quiz": [
-        {
-          "id": "lu7-q1",
-          "type": "multipleResponse",
-          "prompt": "Which items belong in a practical VPSHR policy framework?",
-          "options": [
-            {
-              "id": "training",
-              "label": "Training expectations"
-            },
-            {
-              "id": "reporting",
-              "label": "Incident reporting channels"
-            },
-            {
-              "id": "oversight",
-              "label": "Contractor oversight"
-            },
-            {
-              "id": "silence",
-              "label": "Instruction to avoid documenting concerns"
-            }
-          ],
-          "answers": ["training", "reporting", "oversight"],
-          "feedback": "Policy requirements should make training, reporting, supervision, and oversight clear."
-        }
-      ],
+      "quiz": [],
       "survey": [
         {
           "id": "lu7-s1",
@@ -784,28 +604,7 @@
           "thumbnail": "/courses/vpshr-level-0/LU8 VPSHR/data/thmb3.jpg"
         }
       ],
-      "quiz": [
-        {
-          "id": "lu8-q1",
-          "type": "matching",
-          "prompt": "Match each VPSHR area to the practical question it raises.",
-          "pairs": [
-            {
-              "left": "Risk assessment",
-              "right": "What context and impacts should we anticipate?"
-            },
-            {
-              "left": "Public security",
-              "right": "How do we engage state security actors responsibly?"
-            },
-            {
-              "left": "Private security",
-              "right": "How do we train and oversee contracted providers?"
-            }
-          ],
-          "feedback": "VPSHR becomes operational when each area is tied to practical questions and controls."
-        }
-      ],
+      "quiz": [],
       "survey": [
         {
           "id": "lu8-s1",
@@ -864,25 +663,7 @@
           "thumbnail": "/courses/vpshr-level-0/LU9 Role-of-security/data/thmb3.jpg"
         }
       ],
-      "quiz": [
-        {
-          "id": "lu9-q1",
-          "type": "trueFalse",
-          "prompt": "A security response should be proportionate to the actual risk.",
-          "options": [
-            {
-              "id": "true",
-              "label": "True"
-            },
-            {
-              "id": "false",
-              "label": "False"
-            }
-          ],
-          "answer": "true",
-          "feedback": "Proportionality is one of the key checks for rights-aware security action."
-        }
-      ],
+      "quiz": [],
       "survey": [
         {
           "id": "lu9-s1",
@@ -959,29 +740,7 @@
           "thumbnail": "/courses/vpshr-level-0/LU10 Investigations/11. Investigations-Final (Published)/data/thmb3.jpg"
         }
       ],
-      "quiz": [
-        {
-          "id": "lu10-q1",
-          "type": "multipleChoice",
-          "prompt": "Which practice best supports a rights-aware investigation?",
-          "options": [
-            {
-              "id": "facts",
-              "label": "Collect facts fairly and protect sensitive information"
-            },
-            {
-              "id": "pressure",
-              "label": "Pressure witnesses until they agree"
-            },
-            {
-              "id": "share",
-              "label": "Share allegations widely before review"
-            }
-          ],
-          "answer": "facts",
-          "feedback": "Fairness, privacy, and careful documentation reduce investigation risk."
-        }
-      ],
+      "quiz": [],
       "survey": [
         {
           "id": "lu10-s1",
@@ -1040,33 +799,7 @@
           "thumbnail": "/courses/vpshr-level-0/LU11 Civil-unrest/data/thmb3.jpg"
         }
       ],
-      "quiz": [
-        {
-          "id": "lu11-q1",
-          "type": "multipleResponse",
-          "prompt": "Which actions support a rights-aware response to unrest?",
-          "options": [
-            {
-              "id": "plan",
-              "label": "Clarify roles and escalation paths"
-            },
-            {
-              "id": "observe",
-              "label": "Observe and communicate before escalating"
-            },
-            {
-              "id": "default-force",
-              "label": "Use force as the default first action"
-            },
-            {
-              "id": "record",
-              "label": "Document decisions and incidents"
-            }
-          ],
-          "answers": ["plan", "observe", "record"],
-          "feedback": "Preparation, communication, documentation, and restraint support rights-aware response."
-        }
-      ],
+      "quiz": [],
       "survey": [
         {
           "id": "lu11-s1",
@@ -1143,29 +876,7 @@
           "thumbnail": "/courses/vpshr-level-0/LU12 Surveillance/LU 11 Surveillance and monitoring-final (Published)/data/thmb3.jpg"
         }
       ],
-      "quiz": [
-        {
-          "id": "lu12-q1",
-          "type": "multipleChoice",
-          "prompt": "What is the best first check before using surveillance data?",
-          "options": [
-            {
-              "id": "purpose",
-              "label": "Confirm a legitimate purpose and authorized access"
-            },
-            {
-              "id": "curiosity",
-              "label": "Use it if someone is curious"
-            },
-            {
-              "id": "share",
-              "label": "Share it widely to save time"
-            }
-          ],
-          "answer": "purpose",
-          "feedback": "Monitoring data should be used only for legitimate purposes by authorized people."
-        }
-      ],
+      "quiz": [],
       "survey": [
         {
           "id": "lu12-s1",

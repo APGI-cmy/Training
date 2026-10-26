@@ -3,8 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContentSlides } from "@/components/ContentSlides";
 import { MediaPanel } from "@/components/MediaPanel";
-import { ProgressTracker } from "@/components/ProgressTracker";
-import { QuizEngine } from "@/components/QuizEngine";
 import { SurveyEngine } from "@/components/SurveyEngine";
 import { UnitNavigation } from "@/components/UnitNavigation";
 import { getAdjacentUnits, getUnitBySlug, getUnitStaticParams } from "@/lib/courses";
@@ -73,13 +71,11 @@ export default async function LearningUnitPage({ params }: UnitPageProps) {
               ))}
             </ol>
           </div>
-          <ProgressTracker unit={unit} />
         </div>
       </section>
 
       <MediaPanel media={unit.media} />
       <ContentSlides slides={unit.slides} />
-      <QuizEngine unitId={unit.id} questions={unit.quiz} />
       <SurveyEngine unitId={unit.id} prompts={unit.survey} />
 
       <section className="content-band">
@@ -91,7 +87,7 @@ export default async function LearningUnitPage({ params }: UnitPageProps) {
               <li key={item}>{item}</li>
             ))}
           </ul>
-          <UnitNavigation previous={previous} next={next} />
+          <UnitNavigation unit={unit} previous={previous} next={next} />
         </div>
       </section>
     </main>

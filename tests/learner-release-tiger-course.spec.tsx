@@ -21,8 +21,9 @@ describe("Tiger Kidnapping course registration and delivery",()=>{
  it("resolves every SCORM manifest resource and uses SCORM 2004",()=>{
   for(const unit of tiger.units){const root=join(process.cwd(),"public",decodeURIComponent(unit.assetBase));const manifest=readFileSync(join(root,"imsmanifest.xml"),"utf8");expect(manifest).toContain("2004 4th Edition");for(const match of manifest.matchAll(/<file href="([^"]+)"/g))expect(existsSync(join(root,match[1]))).toBe(true);}
  });
- it("leaves the two existing course identities unchanged",()=>{
-  for(const [slug,hash] of Object.entries(priorIdentities))expect(createHash("sha256").update(JSON.stringify(getCourseBySlug(slug))).digest("hex")).toBe(hash);
+ it("leaves Scannex unchanged; VPSHR's separately requested quiz removal is tested in its own release checks",()=>{
+  const slug="scannex-training-programme";
+  expect(createHash("sha256").update(JSON.stringify(getCourseBySlug(slug))).digest("hex")).toBe(priorIdentities[slug]);
  });
  it("uses the restored LU5 while keeping review and publication approval gates",()=>{
   expect(tiger.publicationIssues).toEqual([]);

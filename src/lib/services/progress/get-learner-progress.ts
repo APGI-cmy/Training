@@ -41,11 +41,13 @@ export function emptyProgressSnapshot(): LearnerProgressSnapshot {
 export async function getLearnerProgress({
   accessToken,
   userId,
-  courseId
+  courseId,
+  requireVerifiedRead = false
 }: {
   accessToken: string;
   userId: string;
   courseId: string;
+  requireVerifiedRead?: boolean;
 }): Promise<LearnerProgressSnapshot> {
   const headers = progressHeaders(accessToken);
   const url = getSupabaseRestUrl(
@@ -53,6 +55,7 @@ export async function getLearnerProgress({
   );
 
   if (!headers || !url) {
+    if (requireVerifiedRead) throw Error("Progress storage is unavailable.");
     return emptyProgressSnapshot();
   }
 
@@ -63,10 +66,16 @@ export async function getLearnerProgress({
   });
 
   if (!response.ok) {
+    if (requireVerifiedRead) throw Error("Progress could not be read.");
     return emptyProgressSnapshot();
   }
 
-  const rows = (await response.json().catch(() => [])) as LearnerProgressRow[];
+  const payload = await response.json().catch(() => {
+    if (requireVerifiedRead) throw Error("Progress response is invalid.");
+    return [];
+  });
+  if (!Array.isArray(payload) && requireVerifiedRead) throw Error("Progress response is invalid.");
+  const rows = (Array.isArray(payload) ? payload : []) as LearnerProgressRow[];
   const openedUnitIds = new Set<string>();
   const completedUnitIds = new Set<string>();
 

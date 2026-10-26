@@ -52,12 +52,14 @@ export async function recordProgressForSession({
   session,
   courseSlug,
   unitSlug,
-  eventType
+  eventType,
+  requirePersistence = false
 }: {
   session: AlpSession;
   courseSlug: string;
   unitSlug: string;
   eventType: ProgressEventType;
+  requirePersistence?: boolean;
 }) {
   const course = getCourseBySlug(courseSlug);
 
@@ -76,7 +78,7 @@ export async function recordProgressForSession({
   const occurredAt = new Date().toISOString();
   const eventKey = `${session.user.id}:${course.id}:${unit.id}:${eventType}`;
 
-  await postJson({
+  const eventSaved = await postJson({
     accessToken: session.accessToken,
     path: "/rest/v1/progress_events?on_conflict=event_key",
     prefer: "resolution=ignore-duplicates",
@@ -93,16 +95,19 @@ export async function recordProgressForSession({
       }
     }
   });
+  if (requirePersistence && !eventSaved) throw Error("Progress event could not be saved.");
 
   const progressBeforeWrite = await getLearnerProgress({
     accessToken: session.accessToken,
     userId: session.user.id,
-    courseId: course.id
+    courseId: course.id,
+    requireVerifiedRead: requirePersistence
   });
   const wasAlreadyCompleted = progressBeforeWrite.completedUnitIds.has(unit.id);
   const nextStatus = eventType === "unit_completed" || wasAlreadyCompleted ? "completed" : "opened";
+  const completedAt = nextStatus === "completed" ? progressBeforeWrite.rows.find(row => row.unit_id === unit.id)?.completed_at ?? occurredAt : null;
 
-  await postJson({
+  const unitSaved = await postJson({
     accessToken: session.accessToken,
     path: "/rest/v1/learner_progress?on_conflict=user_id,course_id,unit_id",
     prefer: "resolution=merge-duplicates",
@@ -112,10 +117,11 @@ export async function recordProgressForSession({
       unit_id: unit.id,
       status: nextStatus,
       first_opened_at: progressBeforeWrite.openedUnitIds.has(unit.id) ? undefined : occurredAt,
-      completed_at: nextStatus === "completed" ? occurredAt : null,
+      completed_at: completedAt,
       updated_at: occurredAt
     }
   });
+  if (requirePersistence && !unitSaved) throw Error("Unit completion could not be saved.");
 
   const completedUnitIds = new Set(progressBeforeWrite.completedUnitIds);
 
@@ -128,7 +134,7 @@ export async function recordProgressForSession({
     completedUnits: completedUnitIds.size
   });
 
-  await postJson({
+  const courseSaved = await postJson({
     accessToken: session.accessToken,
     path: "/rest/v1/completion_states?on_conflict=user_id,course_id",
     prefer: "resolution=merge-duplicates",
@@ -144,4 +150,5 @@ export async function recordProgressForSession({
       updated_at: occurredAt
     }
   });
+  if (requirePersistence && !courseSaved) throw Error("Course progress could not be saved.");
 }

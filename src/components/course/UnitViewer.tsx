@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { QuizEngine } from "@/components/QuizEngine";
 import { PreviewUnitProgress } from "./PreviewProgress";
+import { AdvanceUnit } from "./AdvanceUnit";
 import { previewUnitHref, type CoursePreview } from "@/lib/course-preview";
 import { encodeAssetPath } from "@/lib/courses";
 import { ScormPlayer } from "@/components/course/ScormPlayer";
@@ -36,11 +37,12 @@ export function UnitViewer({
   const isScannexUnit = course.slug === "scannex-training-programme";
   const isPracticalAssessment = Boolean(unit.practicalAssessment);
   const isCompleted = activeUnit?.isCompleted ?? false;
+  const completeOnNext = course.id === "vpshr-level-0" && !unit.scormPath && !unit.practicalAssessment;
   const courseHref = preview?.courseHref ?? `/learn/${course.slug}`;
   const unitHref = (slug: string) => preview ? previewUnitHref(preview, slug) : `/learn/${course.slug}/units/${slug}`;
   const navigation = <nav className="unit-navigation" aria-label="Learning unit navigation">
     {previous ? <a className="secondary-button" href={unitHref(previous.slug)}>Previous: {previous.title}</a> : <Link className="secondary-button" href={courseHref}>Course home</Link>}
-    {next ? <a className="primary-button" href={unitHref(next.slug)}>Next: {next.title}</a> : <Link className="primary-button" href={courseHref}>Finish — return to course</Link>}
+    {completeOnNext ? <AdvanceUnit courseSlug={course.slug} unitSlug={unit.slug} unitId={unit.id} previewScope={preview?.scope} href={next?unitHref(next.slug):courseHref} label={next?`Next: ${next.title}`:"Finish — return to course"}/> : next ? <a className="primary-button" href={unitHref(next.slug)}>Next: {next.title}</a> : <Link className="primary-button" href={courseHref}>Finish — return to course</Link>}
   </nav>;
 
   const completeUnit = recordProgressEvent.bind(null, {
@@ -146,11 +148,11 @@ export function UnitViewer({
                     Open legacy responsive unit
                   </Link> : null}
                 </div>
-                {preview ? <PreviewUnitProgress scope={preview.scope} unitId={unit.id} complete/> : <form action={completeUnit}>
+                {!completeOnNext ? preview ? <PreviewUnitProgress scope={preview.scope} unitId={unit.id} complete/> : <form action={completeUnit}>
                   <button className="primary-button" type="submit" disabled={isCompleted}>
                     {isCompleted ? "Unit completed" : "Mark unit complete"}
                   </button>
-                </form>}
+                </form> : null}
               </>
             ) : null}
           </div>
