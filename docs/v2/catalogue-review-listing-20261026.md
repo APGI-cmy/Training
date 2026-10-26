@@ -39,9 +39,17 @@ V2 staging alias at `27e1beaa2cee5d2c9a021977636f0a7c3b78e56d`, in project
 not promoted. The new deployment returned zero runtime error records in the
 07:50:59–08:05:59 UTC scan on 26 October 2026 (09:50:59–10:05:59 South African time).
 
-The final signed-in live browser check remains pending: the dedicated Edge tab
-redirected to sign-in, and the user was asked to sign in there. Local visual
-verification rendered the actual card component, course data and cover with
-the NKS review metadata. Its temporary localhost-only page was created after
-deployment, never committed or deployed, and removed after the check. Full
-preview evidence: `C:/Users/Johan/Codex-Work/catalogue-review-listing-20261026/catalogue-card-preview.jpg`.
+The final signed-in live Edge check passed on 26 October 2026 after the user
+signed in. The canonical catalogue displays the Tiger Kidnapping card for
+NKS Capital with **Under review**, **Commercial sign-off**, and **Open course
+review**. Opening that link reached the existing review
+`f1ef8430-64d6-410d-abdf-18a1c0260ded`, showing the correct course title, company,
+review team and commercial preparation workflow. The tab was returned to the
+catalogue without submitting or changing review data. Live screenshot:
+`C:/Users/Johan/Codex-Work/catalogue-review-listing-20261026/live-catalogue.jpg`.
+
+Earlier local visual verification rendered the actual card component, course
+data and cover with the NKS review metadata. Its temporary localhost-only page
+was created after deployment, never committed or deployed, and removed after
+the check. Full local preview evidence:
+`C:/Users/Johan/Codex-Work/catalogue-review-listing-20261026/catalogue-card-preview.jpg`.
