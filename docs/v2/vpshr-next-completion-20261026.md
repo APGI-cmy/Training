@@ -37,3 +37,31 @@ The VPSHR course definition changes its review fingerprint normally. Existing
 evidence is retained and version-registration/approval checks remain in place.
 No review correction is registered automatically. QA evidence is kept outside
 OneDrive under `C:/Users/Johan/Codex-Work/vpshr-next-completion-20261026/`.
+
+## Deployment and signed-in verification
+
+Implementation `febcd5f44a1e02a37d165ce2abcca1783d2182f7` was verified READY and
+PROMOTED as deployment `dpl_FdAd6QKtRg5qSXE6ewkigBkYXwM2`. The canonical V2
+staging alias was checked against that exact deployment in project
+`prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf`.
+
+The signed-in Edge preview opened orientation, advanced to LU1, then used the
+bottom Next control to open LU2. Returning through Previous opened LU1 with
+Completed status. LU2's visible layout retained Previous: Definition of Human
+Rights and Next: Benefits of Human Rights, directly after the published unit
+and Open expanded unit link. No platform knowledge check or Mark unit complete
+control was present. This browser check exercised preview test state, without
+writing actual learner grades or enrolments.
+
+Read-only V2 schema inspection confirmed the three existing progress tables,
+their expected columns, enabled row-level security and write checks against
+`auth.uid()`. No schema, policy or access grant was changed. Real learner
+persistence and failure handling were tested through the authenticated action
+and progress-service regression checks; no real learner completion fixture was
+inserted. The final runtime scan returned zero error/fatal records for
+09:19:29–09:29:29 UTC on 26 October 2026 (11:19:29–11:29:29 SAST).
+
+Screenshots: `live-navigation-no-extra-quiz.jpg` and
+`live-completed-unit-revisited.jpg` in the QA folder above. The automated browser
+still showed a blank embedded player, so no new playback claim is made; the
+published media and internal quizzes were not edited.
