@@ -63,3 +63,34 @@ Verification before release:
 
 V2 staging only. No emails, course publication, commercial acceptance, permission
 changes, learner enrolments, grades or certificates are created by this release.
+
+## Released and signed-in verification
+
+Implementation commits: `c992004d`, followed by `be318386` for the current-version
+preview with protected review evidence. Final deployment
+`dpl_GAeT2okfEtx8sWEZnLTDDoxbjJ5g` was verified READY / PROMOTED at
+`be318386a818262e3a86cd05176604dafc4ef1ee`, and the canonical alias
+`training-platform-v2-staging.vercel.app` was checked against that deployment in
+project `prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf`.
+
+The signed-in Edge check followed VPSHR's **Preview as administrator** button to
+the learner course home, then **Start learning** to orientation. The preview
+quiz returned 1/1, **Mark unit complete** changed the preview status to Completed,
+and the enlarged presentation's Next link opened LU1. Returning to course home
+showed one of thirteen units completed, 8%, and **Continue learning** targeting
+LU1. These were tab-local preview records, without learner progress actions.
+
+On the final deployment, Tiger's assigned-review preview showed the same course
+home, Start learning and eight units, with the explicit version notice. Opening
+LU5 and using the enlarged presentation's Next link reached LU6. Its own feedback
+panel showed one LU6-only finding and three separately labelled course-wide
+findings. Saving remained unavailable with the version-registration explanation.
+No feedback, coverage or review report was submitted. Live embedded players were
+blank in this automated browser, so live package playback is not verified; real
+local package rendering and slide/activity controls are evidenced above.
+
+The final deployment returned zero runtime error/fatal records for the
+08:56:26–09:06:26 UTC window on 26 October 2026 (10:56:26–11:06:26 SAST).
+Evidence includes `live-administrator-course-home.jpg`,
+`live-preview-progress.jpg`, `live-reviewer-course-home.jpg`,
+`local-unit6-navigation.jpg` and `runtime-errors.jsonl` in the QA folder above.
