@@ -8,6 +8,8 @@ import { getAvailableCourseIds } from "@/server/services/organisations/get-organ
 import { CourseCardCover } from "@/components/course/CourseCardCover";
 import styles from "@/components/course/compact-course-catalogue.module.css";
 import { requireLearnerProfile } from "@/server/auth/learner-onboarding";
+import { getCatalogueReviews } from "@/server/services/organisations/get-catalogue-reviews";
+import { CatalogueReviewCard } from "@/components/course/CatalogueReviewCard";
 
 export const metadata = {
   title: "Course catalogue"
@@ -48,7 +50,7 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
   const { view } = (await searchParams) ?? {};
   const courses = getCourses();
   const commerce = await getCourseCommerceSettings(courses.map((course) => course.slug));
-  const [availableCourseIds, access] = await Promise.all([getAvailableCourseIds(session.user.id, courses.map((course) => course.id)), Promise.all(
+  const [availableCourseIds, access, reviews] = await Promise.all([getAvailableCourseIds(session.user.id, courses.map((course) => course.id)), Promise.all(
     courses.map((course) =>
       getCourseAccess({
         accessToken: session.accessToken,
@@ -57,11 +59,12 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
         courseId: course.id
       })
     )
-  )]);
+  ),view==="my-learning"?Promise.resolve(new Map()):getCatalogueReviews(session,courses.map(course=>course.id))]);
   const sourceEntries = courses.filter((course) => availableCourseIds.has(course.id)).map((course) => ({ course, decision: access[courses.indexOf(course)] }));
   const entries = view === "my-learning"
     ? getMyLearningEntries(sourceEntries)
     : getCatalogueEntries(sourceEntries);
+  const reviewCourses=view==="my-learning"?[]:courses.filter(course=>!availableCourseIds.has(course.id)&&reviews.has(course.id));
 
   return (
     <main className={`page-shell ${styles.page}`}>
@@ -71,12 +74,12 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
         <p>
           {view === "my-learning"
             ? "Courses with an enrolled, pending, or revoked relationship are shown here."
-            : "Every published course is shown with your current enrolment state and the action available to you."}
+            : "Browse available courses and any private courses you are authorised to review. Courses under review open in the review workspace until publication is complete."}
         </p>
       </header>
 
-      <section className={`course-grid ${styles.grid}`} aria-label={view === "my-learning" ? "My learning courses" : "Published courses"}>
-        {entries.length === 0 ? <p>No courses are currently linked to your learning profile.</p> : null}
+      <section className={`course-grid ${styles.grid}`} aria-label={view === "my-learning" ? "My learning courses" : "Available courses and assigned reviews"}>
+        {entries.length === 0 && reviewCourses.length===0 ? <p>No courses are currently linked to your learning profile.</p> : null}
         {entries.map(({ course, decision }) => {
           const state = stateLabels[decision.status];
           const pricing = commerce.get(course.slug) ?? defaultCourseCommerceSetting(course.slug);
@@ -105,6 +108,7 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
             </article>
           );
         })}
+        {reviewCourses.map(course=><CatalogueReviewCard key={course.id} course={course} review={reviews.get(course.id)!}/>)}
       </section>
     </main>
   );
