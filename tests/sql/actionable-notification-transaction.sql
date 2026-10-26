@@ -2,7 +2,7 @@
 begin;
 set local role service_role;
 do $check$
-declare actor uuid;other_actor uuid;r public.course_review_rounds;tasks jsonb;versions jsonb;item public.admin_notifications;result jsonb;before_document jsonb;reference bigint;
+declare actor uuid;other_actor uuid;r public.course_review_rounds;tasks jsonb;versions jsonb;item public.admin_notifications;result jsonb;before_document jsonb;reference bigint;proposed_document jsonb;next_revision integer;mail_before bigint;
 begin
  select id into actor from auth.users where lower(email)='jorrie.jordaan@apginc.ca' and email_confirmed_at is not null;
  select id into other_actor from auth.users where lower(email)='johan.ras@apginc.ca';
@@ -32,6 +32,15 @@ begin
  or has_function_privilege('authenticated','public.v3_notification_inbox(uuid,jsonb,jsonb,text,integer,boolean)','execute')
  or has_function_privilege('authenticated','public.v3_notification_one(uuid,uuid)','execute')
  or has_function_privilege('anon','public.v3_notification_targets(uuid,text,uuid)','execute') then raise exception 'Private notification API exposed to browser roles';end if;
+ -- Exercise the actual review writer with an advisory proposal, then roll it back.
+ select count(*) into mail_before from public.course_review_mail where round_id=r.id;
+ proposed_document=jsonb_set(before_document,'{commercialFeedback}',coalesce(before_document->'commercialFeedback','[]')||jsonb_build_array(jsonb_build_object(
+  'id','qa-transaction-only','versionId',before_document#>>'{workflow,commercials,-1,id}','email','jorrie.jordaan@apginc.ca','userId',actor,
+  'at',now(),'comment','QA transaction-only non-binding proposal.','apgiShare','30')));
+ next_revision=public.v2_commit_course_review(r.id,r.revision,proposed_document,actor,'commercial_proposal','[]');
+ if next_revision<>r.revision+1 or (select document->'workflow' from public.course_review_rounds where id=r.id) is distinct from before_document->'workflow'
+ then raise exception 'Advisory proposal changed approvals or commercial terms';end if;
+ if (select count(*) from public.course_review_mail where round_id=r.id)<>mail_before then raise exception 'Advisory proposal queued email';end if;
 end $check$;
 select 'All notification identity, receipt, completion and privacy checks passed; writes rolled back' as result;
 rollback;
