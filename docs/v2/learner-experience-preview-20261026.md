@@ -28,9 +28,19 @@ end-of-course preview explains this boundary. Native Scannex practical assessmen
 remains supervised and assessor-controlled; preview neither launches a practical
 assessment/Viewer session nor awards practical marks.
 
+The shared player is included in the existing review engine fingerprint, so
+this release changes the deployed review version even though packages and
+questions are unchanged. The version safeguard remains intact. Assigned
+reviewers can view/test the latest deployment, with a clear warning and
+read-only saved findings until a principal registers the update in Changes
+implemented. Pure preview scoring creates no attempt or approval. Review
+submissions, coverage changes, sign-off and publication retain their existing
+version checks. No correction registration, reset of reports or notification
+mail is performed automatically.
+
 Verification before release:
 
-- All 740 release tests across 73 files and TypeScript pass. Tests cover the actual shared screens,
+- All 742 release tests across 73 files and TypeScript pass. Tests cover the actual shared screens,
   in-player/full-window navigation, preview-only routes, access denial, declined
   assignments, isolated accounts/versions/units, real theory scoring without
   persistence and SCORM commits/resume without learner API requests.

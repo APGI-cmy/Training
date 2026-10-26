@@ -31,6 +31,6 @@ export async function requireReviewCoursePreview(id: string) {
   const shell = getCourseShell(review.round.course_id);
   if (!shell) notFound();
   const base = `/course-reviews/${id}`;
-  const preview: CoursePreview = { scope: `review:${review.session.user.id}:${id}:${review.round.fingerprint}`, courseHref: `${base}/preview`, unitBaseHref: `${base}/units`, returnHref: `${base}#review-units`, returnLabel: "Back to review summary" };
+  const preview: CoursePreview = { scope: `review:${review.session.user.id}:${id}:${review.source.fingerprint}`, courseHref: `${base}/preview`, unitBaseHref: `${base}/units`, returnHref: `${base}#review-units`, returnLabel: "Back to review summary", notice: review.fresh ? undefined : "You are previewing the latest deployed course. Saved findings belong to the earlier registered review version. Johan or Jorrie must register the update in Changes implemented before findings or approvals can be saved. Existing evidence is retained." };
   return { ...review, person, shell, preview };
 }

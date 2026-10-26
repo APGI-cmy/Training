@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireReviewCoursePreview } from "@/server/services/course-preview";
 import { PreviewNotice } from "@/components/course/PreviewProgress";
-import { PreviewVersionChanged } from "@/components/course/PreviewVersionChanged";
 import { UnitViewer } from "@/components/course/UnitViewer";
 import { getUnitContent } from "@/lib/services/courses/get-unit-content";
 import { canWork, activeFindings, findingAppliesToUnit } from "@/lib/course-review";
@@ -17,12 +16,11 @@ export const dynamic="force-dynamic";
 export default async function ReviewUnit({params}:{params:Promise<{id:string;unit:string}>}) {
   const {id,unit}=await params;
   const {round,email,fresh,person,shell,preview}=await requireReviewCoursePreview(id);
-  if(!fresh)return <PreviewVersionChanged id={id}/>;
   const content=getUnitContent(round.course_id,unit);if(!content)notFound();
   const lu=content.unit,ebook=reviewEbook(lu);
-  const editable=canWork(round)&&!!person&&person.state!=="declined"&&hasReviewTask(person,"content");
+  const editable=fresh&&canWork(round)&&!!person&&person.state!=="declined"&&hasReviewTask(person,"content");
   const viewerAvailability=content.course.slug==="scannex-training-programme"?evaluateViewerLabAvailability(await getViewerLabSettings(),lu.slug):undefined;
-  const feedback=<ReviewPanel key={`${id}:${lu.slug}`} id={id} unit={lu.slug} canEdit={editable} email={email} hasEbook={!!ebook} findings={activeFindings(round.document).filter(f=>findingAppliesToUnit(f,lu.slug))}/>;
+  const feedback=<ReviewPanel key={`${id}:${lu.slug}`} id={id} unit={lu.slug} canEdit={editable} disabledReason={preview.notice} email={email} hasEbook={!!ebook} findings={activeFindings(round.document).filter(f=>findingAppliesToUnit(f,lu.slug))}/>;
   return <><PreviewNotice preview={preview}/><p className="content-inner">{round.document.brand.name} · Review version {round.fingerprint.slice(0,12)}</p>
     <ReviewSlideTracking key={`${id}:${lu.slug}:${round.fingerprint}`} unit={lu.slug}>
       <UnitViewer key={`${preview.scope}:${lu.slug}`} content={content} units={shell.units} preview={preview} referenceEbook={ebook} feedback={feedback} viewerAvailability={viewerAvailability}/>

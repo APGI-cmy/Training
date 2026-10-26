@@ -38,7 +38,7 @@ export type ReviewActionState={error?:string;success?:string;href?:string};
 
 export async function previewReviewTheory(_:ScannexTheoryActionState,form:FormData):Promise<ScannexTheoryActionState>{
 
- try{const {round,fresh}=await requireReview(validId(String(form.get("round_id")??"")));if(!fresh||round.course_id!=="scannex-training-programme")throw Error("This review version is unavailable.");
+ try{const {round,email,principal}=await requireReview(validId(String(form.get("round_id")??"")));if(round.course_id!=="scannex-training-programme"||(!principal&&!round.document.participants.some(p=>p.email===email&&p.state!=="declined")))throw Error("This review preview is unavailable.");
 
   const raw=String(form.get("answers")??"");if(raw.length>30000)throw Error("Invalid answers.");const answers=JSON.parse(raw) as ScannexTheoryAnswerState;
 

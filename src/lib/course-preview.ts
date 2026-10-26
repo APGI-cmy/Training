@@ -4,6 +4,7 @@ export type CoursePreview = {
   unitBaseHref: string;
   returnHref: string;
   returnLabel: string;
+  notice?: string;
 };
 
 export type PreviewProgress = {

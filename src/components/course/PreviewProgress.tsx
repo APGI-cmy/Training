@@ -34,7 +34,7 @@ export function usePreviewProgress(scope: string) {
 
 export function PreviewNotice({ preview }: { preview: CoursePreview }) {
   return <aside className="preview-toolbar" aria-label="Learner experience preview">
-    <div><strong>Learner experience preview</strong><p>Try the course as a learner. Test progress and quiz results stay in this tab; no enrolment, learner grade or certificate is created.</p></div>
+    <div><strong>Learner experience preview</strong><p>Try the course as a learner. Test progress and quiz results stay in this tab; no enrolment, learner grade or certificate is created.</p>{preview.notice?<p role="status">{preview.notice}</p>:null}</div>
     <div className="button-row"><Link className="secondary-button" href={preview.returnHref}>{preview.returnLabel}</Link>
       <button type="button" className="secondary-button" onClick={() => {
         if (window.confirm("Clear this course’s test progress and resume points? Saved review findings will be kept.")) {

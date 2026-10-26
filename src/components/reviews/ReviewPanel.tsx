@@ -26,7 +26,7 @@ export function editableFindingComment(f:ReviewFinding) {
 
 }
 
-export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:string;unit:string;canEdit:boolean;email:string;hasEbook:boolean;findings?:ReviewFinding[]}){
+export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[],disabledReason}:{id:string;unit:string;canEdit:boolean;email:string;hasEbook:boolean;findings?:ReviewFinding[];disabledReason?:string}){
 
  const [open,setOpen]=useState(false),[message,setMessage]=useState("");
 
@@ -125,7 +125,7 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[]}:{id:str
 
  {!isIssue?<p>Your selected declarations and any comments or image attachment will be saved together. Confirm complete LU/quiz coverage separately after reviewing the entire unit.</p>:null}{message?<p role="status">{message}</p>:null}
 
- </ReviewForm></>:<p>This review is closed or overdue. Ask for an extension in the team workspace.</p>}
+ </ReviewForm></>:<p>{disabledReason??"This review is closed or overdue. Ask for an extension in the team workspace."}</p>}
 
  </div>
 

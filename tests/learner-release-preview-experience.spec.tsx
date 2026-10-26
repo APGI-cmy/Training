@@ -18,11 +18,13 @@ import { coursePreviewEntry,requireAdminCoursePreview,requireReviewCoursePreview
 import { parsePreviewProgress,previewStorageKey,type CoursePreview } from "@/lib/course-preview";
 import { previewAdminTheory } from "@/server/actions/assessments/preview-admin-theory";
 import { getScannexTheoryQuestions } from "@/server/assessments/scannex-theory-bank";
+import { previewReviewTheory } from "@/server/actions/course-reviews";
+import { ReviewPanel } from "@/components/reviews/ReviewPanel";
 
 const course="tiger-kidnapping-telecommunications";
 const preview:CoursePreview={scope:"test-account:review-id:version",courseHref:"/course-reviews/review-id/preview",unitBaseHref:"/course-reviews/review-id/units",returnHref:"/course-reviews/review-id",returnLabel:"Back to review summary"};
 const assignment={email:"reviewer@example.invalid",state:"invited"};
-beforeEach(()=>{vi.clearAllMocks();mocks.session.mockResolvedValue({accessToken:"qa",user:{id:"reviewer-id"}});mocks.roles.mockResolvedValue([]);mocks.catalogueReviews.mockResolvedValue(new Map());mocks.admin.mockResolvedValue({session:{user:{id:"admin-id"}}});mocks.review.mockResolvedValue({session:{user:{id:"reviewer-id"}},email:assignment.email,principal:false,fresh:true,round:{id:"review-id",course_id:course,fingerprint:"version",document:{participants:[assignment]}}});});
+beforeEach(()=>{vi.clearAllMocks();mocks.session.mockResolvedValue({accessToken:"qa",user:{id:"reviewer-id"}});mocks.roles.mockResolvedValue([]);mocks.catalogueReviews.mockResolvedValue(new Map());mocks.admin.mockResolvedValue({session:{user:{id:"admin-id"}}});mocks.review.mockResolvedValue({session:{user:{id:"reviewer-id"}},source:{fingerprint:"version"},email:assignment.email,principal:false,fresh:true,round:{id:"review-id",course_id:course,fingerprint:"version",document:{participants:[assignment]}}});});
 
 describe("Learner experience preview",()=>{
  it("sends administrators to the role-gated preview and reviewers to only their assigned review",async()=>{
@@ -57,8 +59,14 @@ describe("Learner experience preview",()=>{
  });
  it("requires the actual review assignment and scopes each version separately",async()=>{
   const result=await requireReviewCoursePreview("review-id");expect(mocks.review).toHaveBeenCalledWith("review-id");expect(result.preview.scope).toBe("review:reviewer-id:review-id:version");
-  mocks.review.mockResolvedValue({...await mocks.review(),round:{course_id:course,fingerprint:"new-version",document:{participants:[assignment]}}});
+  mocks.review.mockResolvedValue({...await mocks.review(),source:{fingerprint:"new-version"}});
   expect((await requireReviewCoursePreview("review-id")).preview.scope).not.toBe(result.preview.scope);
+ });
+ it("lets assigned reviewers preview a changed deployment while keeping saved review evidence read-only",async()=>{
+  const context=await mocks.review();mocks.review.mockResolvedValue({...context,fresh:false,source:{fingerprint:"new-version"}});
+  const result=await requireReviewCoursePreview("review-id");expect(result.round.fingerprint).toBe("version");expect(result.preview.scope).toContain("new-version");expect(result.preview.notice).toContain("Changes implemented");
+  const html=renderToStaticMarkup(<ReviewPanel id="review-id" unit="lu1" canEdit={false} disabledReason={result.preview.notice} email={assignment.email} hasEbook={false}/>);
+  expect(html).toContain("earlier registered review version");expect(html).not.toContain("Save review feedback");expect(html).not.toContain("closed or overdue");
  });
  it("rejects a declined reviewer even when a legacy review reader returns that assignment",async()=>{
   const context=await mocks.review();mocks.review.mockResolvedValue({...context,round:{...context.round,document:{participants:[{...assignment,state:"declined"}]}}});
@@ -72,5 +80,10 @@ describe("Learner experience preview",()=>{
   const form=new FormData();form.set("courseSlug","scannex-training-programme");form.set("answers",JSON.stringify(Object.fromEntries(getScannexTheoryQuestions().map(q=>[q.id,[q.options[0].id]]))));
   const fetchSpy=vi.spyOn(globalThis,"fetch");const result=await previewAdminTheory({},form);
   expect(result.error).toBeUndefined();expect(result.maxScore).toBe(68);expect(result.message).toContain("No learner attempt");expect(fetchSpy).not.toHaveBeenCalled();fetchSpy.mockRestore();expect(mocks.admin).toHaveBeenCalledOnce();
+ });
+ it("checks current preview theory without accepting an obsolete review or notifying its team",async()=>{
+  const context=await mocks.review();mocks.review.mockResolvedValue({...context,fresh:false,round:{...context.round,course_id:"scannex-training-programme"}});
+  const form=new FormData();form.set("round_id","11111111-1111-4111-8111-111111111111");form.set("answers",JSON.stringify(Object.fromEntries(getScannexTheoryQuestions().map(q=>[q.id,[q.options[0].id]]))));
+  const network=vi.spyOn(globalThis,"fetch");const result=await previewReviewTheory({},form);expect(result.error).toBeUndefined();expect(result.maxScore).toBe(68);expect(result.message).toContain("No learner attempt");expect(network).not.toHaveBeenCalled();network.mockRestore();
  });
 });
