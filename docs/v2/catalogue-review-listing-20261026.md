@@ -6,7 +6,7 @@ published organisation offering. Its existing review was open at commercial
 sign-off. This change adds catalogue visibility for the authorised review team
 and verified platform principals without granting enrolment or publishing it.
 
-The card shows the course cover, title, company, **Under review**, workflow stage
+While under review, the card shows the course cover, title, company, **Under review**, workflow stage
 and **Open course review**. It displays no unapproved price or learner-enrolment
 action. The existing review route checks access again when opened.
 
@@ -18,7 +18,13 @@ already visible as learner offerings are not duplicated, and the My Learning
 view excludes review-only cards. Public legacy course pages and company-course
 publication/enrolment checks remain in place.
 
-Verification: 727 release tests passed across 71 files; TypeScript passed.
+After publication, a principal or assigned reviewer outside the company's learner
+audience retains a **Published company course** card and **View publication
+record** action. The card explains that the company manages learner access.
+Company learners continue to receive the normal published offering card through
+the existing availability checks.
+
+Verification: 728 release tests passed across 71 files; TypeScript passed.
 New tests cover the real catalogue rendering, review-only action, exclusion from
 My Learning, no duplicates, private/unassigned/declined access, principal access
 and lookup failure. Read-only V2 inspection confirmed the existing private

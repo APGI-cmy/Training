@@ -25,6 +25,10 @@ describe("Private reviews in the signed-in course catalogue",()=>{
   m.enrolled=true;const html=renderToStaticMarkup(await CataloguePage({searchParams:Promise.resolve({view:"my-learning"})}));
   expect(html).toContain("VPSHR Level 0");expect(html).not.toContain("Tiger Kidnapping");expect(m.principal).not.toHaveBeenCalled();expect(m.rest).not.toHaveBeenCalled();
  });
+ it("keeps the private course visible to its review team after publication without granting learner access",async()=>{
+  m.rest.mockResolvedValue(new Response(JSON.stringify([{...row,status:"published",document:{...row.document,workflow:{stage:"published"}}}])));
+  const html=renderToStaticMarkup(await CataloguePage({}));expect(html).toContain("Published company course");expect(html).toContain("View publication record");expect(html).toContain("Learner access is managed by NKS Capital");expect(html).not.toContain('href="/courses/tiger-kidnapping-telecommunications"');
+ });
  it("does not duplicate a course that already has a learner catalogue entry",async()=>{
   m.available.mockResolvedValue(new Set([course]));const html=renderToStaticMarkup(await CataloguePage({}));expect(html.match(/<h2>Tiger Kidnapping/g)).toHaveLength(1);expect(html).not.toContain("Open course review");
  });

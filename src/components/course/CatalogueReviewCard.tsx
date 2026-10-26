@@ -11,8 +11,8 @@ export function CatalogueReviewCard({course,review}:{course:Course;review:Catalo
     <CourseCardCover courseSlug={course.slug}/>
     <div className="course-card-body">
       <p className="eyebrow">{course.level}</p><h2>{course.title}</h2><p>{course.description}</p>
-      <div className="course-card-status"><p><strong>{review.company}</strong></p><p><strong>Status: Under review</strong><br/>{stages[review.stage]??"Publication workflow"}</p><p>Not yet open for learner enrolment.</p></div>
-      <Link className="button-link" href={`/course-reviews/${review.id}`}>Open course review</Link>
+      <div className="course-card-status"><p><strong>{review.company}</strong></p><p><strong>Status: {review.status==="published"?"Published company course":"Under review"}</strong>{review.status!=="published"?<><br/>{stages[review.stage]??"Publication workflow"}</>:null}</p><p>{review.status==="published"?`Learner access is managed by ${review.company}.`:"Not yet open for learner enrolment."}</p></div>
+      <Link className="button-link" href={`/course-reviews/${review.id}`}>{review.status==="published"?"View publication record":"Open course review"}</Link>
     </div>
   </article>;
 }
