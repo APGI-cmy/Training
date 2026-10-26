@@ -15,7 +15,7 @@ export function SummaryText({ text, commercial = false, headingLevel = 4 }: {
 }
 
 export function SummaryFacts({ entries }: { entries: readonly (readonly [string, ReactNode])[] }) {
-  return <dl className="summary-facts">{entries.map(([label, value]) => <div key={label}>
+  return <dl className="summary-facts">{entries.map(([label, value]) => <div className="summary-fact" key={label}>
     <dt>{label}</dt><dd>{value}</dd>
   </div>)}</dl>;
 }
