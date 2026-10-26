@@ -31,3 +31,17 @@ and lookup failure. Read-only V2 inspection confirmed the existing private
 catalogue setting, open review and absent published offering. No catalogue
 permissions, enrolments, reviews, agreements or offerings were modified in the
 database, and no email was sent.
+
+Release: implementation commits `815b006` and `27e1bea`; deployment
+`dpl_3EWTepQMNPU4ZjiQpPYprgjoLvj7` was verified READY / PROMOTED on the canonical
+V2 staging alias at `27e1beaa2cee5d2c9a021977636f0a7c3b78e56d`, in project
+`prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf`. The prior intermediate staged build was
+not promoted. The new deployment returned zero runtime error records in the
+07:50:59–08:05:59 UTC scan on 26 October 2026 (09:50:59–10:05:59 South African time).
+
+The final signed-in live browser check remains pending: the dedicated Edge tab
+redirected to sign-in, and the user was asked to sign in there. Local visual
+verification rendered the actual card component, course data and cover with
+the NKS review metadata. Its temporary localhost-only page was created after
+deployment, never committed or deployed, and removed after the check. Full
+preview evidence: `C:/Users/Johan/Codex-Work/catalogue-review-listing-20261026/catalogue-card-preview.jpg`.
