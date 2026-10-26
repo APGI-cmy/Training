@@ -10,7 +10,8 @@ export const currentCommercial=(w:PublicationWorkflow)=>w.commercials.at(-1);
 export function bothCommercialApprovals(v:CommercialVersion|undefined){return !!v&&commercialPrincipals.every(email=>v.decisions.some(d=>d.email===email&&d.decision==="approve"))&&!v.decisions.some(d=>d.decision==="reject")&&new Set(v.decisions.filter(d=>d.decision==="approve").map(d=>d.userId)).size===2;}
 export function commercialInput(c:Record<string,string|null>):PlanningInput{
  const development=moneyCents(c.development_cost??"","development cost"),paid=moneyCents(c.already_paid??"","development already paid");if(paid>development)throw Error("Development paid cannot exceed the approved cost.");
- return {...costEstimate(c),minimumApgiCents:moneyCents(c.minimum_apgi_income??"","minimum APGI income"),apgiShareBps:percentageBps(c.apgi_share??"","APGI share"),recoveryBps:c.development_status==="recover"?percentageBps(c.recovery_rate??"","recovery rate"):0,outstandingCents:development-paid};
+ if(c.recovery_base&&!["partner_share","cost_cleared_pool"].includes(c.recovery_base))throw Error("Unknown recovery base; review the commercial version.");
+ return {...costEstimate(c),minimumApgiCents:moneyCents(c.minimum_apgi_income??"","minimum APGI income"),apgiShareBps:percentageBps(c.apgi_share??"","APGI share"),recoveryBps:c.development_status==="recover"?percentageBps(c.recovery_rate??"","recovery rate"):0,outstandingCents:development-paid,recoveryBase:c.recovery_base==="partner_share"?"partner_share":"cost_cleared_pool"};
 }
 export function quoteCommercial(c:Record<string,string|null>,price?:number){
  const input=commercialInput(c),floor=minimumCourseQuote(input).price,allocation=allocationAtPrice(price??floor,input);

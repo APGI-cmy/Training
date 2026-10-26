@@ -14,6 +14,8 @@
 .field-help-text[hidden],.commercial-step[hidden] { display:none; }
 .commercial-step { border:0; padding:1rem 0; min-width:0; }
 .commercial-step legend { font-weight:700; font-size:1.2rem; padding-top:1rem; }
+.tailored-sharing { min-width:0; border:1px solid var(--line); border-radius:8px; padding:1rem; }
+.tailored-sharing legend { font-size:1rem; padding:.25rem .5rem; }
 .planning-steps { display:flex; flex-wrap:wrap; gap:1rem; list-style:none; padding:0; }
 .planning-steps li { border-bottom:3px solid #456077; padding:.5rem; }
 .planning-steps [aria-current="step"] { border-color:#9bd7e9; font-weight:700; }

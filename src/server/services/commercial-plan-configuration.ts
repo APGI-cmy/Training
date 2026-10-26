@@ -1,6 +1,6 @@
 import "server-only";
 import { formText, validId } from "@/lib/company-structure";
-import { applicableApgiShare, costEstimate, minimumCourseQuote, moneyCents, partnerPlanningDefaults, percentageBps } from "@/lib/commercial-planning";
+import { costEstimate, courseOwnershipSummary, developmentRecoverySummary, minimumCourseQuote, moneyCents, partnerPlanningDefaults, percentageBps, resolvePlanSharing, sharingBasisLabel, sharingModelLabels, validatePlanOwnership } from "@/lib/commercial-planning";
 import { getCourseBySlug } from "@/lib/courses";
 import { requireCompany, rows } from "./company-structure";
 import { calculateServiceCosts, readServiceSelection } from "@/lib/service-costs";
@@ -37,26 +37,34 @@ export async function coursePlanConfiguration(form: FormData) {
   const developmentCost = moneyCents(formText(form, "development_cost") || "0", "development cost");
   const alreadyPaid = developmentStatus === "paid" ? developmentCost : moneyCents(formText(form, "already_paid") || "0", "development already paid");
   if (alreadyPaid > developmentCost || (developmentStatus === "recover" && alreadyPaid >= developmentCost)) throw new Error("Recoverable development requires a positive outstanding balance.");
-  const source = formText(form, "customer_source");
-  if (!["owner", "apgi"].includes(source)) throw new Error("Record who provides the customer.");
-  const defaultShare = applicableApgiShare(owner.company.slug === "apgi", brand.company.slug === "apgi", source);
-  const ownApgi = owner.company.slug === "apgi" && brand.company.slug === "apgi";
-  const share = !ownApgi && form.get("custom_shares") === "on" ? formText(form, "apgi_share") : defaultShare;
-  if (!share) throw new Error("Record the agreed APGI share for this licensing arrangement.");
-  const shareBps = percentageBps(share, "APGI share");
+  const ownershipModel = formText(form, "ownership_model");
+  const clientOwnerId = ownershipModel === "apgi_until_recovered" ? validId(formText(form, "client_owner_id")) : ownershipModel === "partner_paid" ? ownerId : null;
+  const clientOwner = clientOwnerId ? (clientOwnerId === ownerId ? owner : clientOwnerId === org ? brand : await requireCompany(clientOwnerId)) : null;
+  validatePlanOwnership(ownershipModel, owner.company.slug === "apgi", developmentStatus, !!clientOwner && clientOwner.company.slug !== "apgi");
+  const partnerRecovery = ownershipModel === "apgi_until_recovered";
+  const ownApgi = owner.company.slug === "apgi" && brand.company.slug === "apgi" && !partnerRecovery;
+  const sharing = resolvePlanSharing({ model: formText(form, "sharing_model") || (form.get("custom_shares") === "on" ? "tailored" : formText(form, "customer_source")),
+    ownerIsApgi: owner.company.slug === "apgi", brandIsApgi: brand.company.slug === "apgi",
+    partnerRecovery,
+    apgiShare: formText(form, "apgi_share"), partnerShare: form.has("platform_user_share") ? formText(form, "platform_user_share") : undefined,
+    reason: formText(form, "tailored_reason", 0, 1000) });
+  const shareBps = sharing.apgiShareBps;
   const recovery = developmentStatus === "recover" ? formText(form, "recovery_rate") : "0";
+  const recoveryBase = ownApgi ? "cost_cleared_pool" : partnerPlanningDefaults.recoveryBase;
   const estimate = serviceResult?.estimate ?? costEstimate(profile!.configuration);
-  const quote = minimumCourseQuote({ ...estimate, minimumApgiCents: moneyCents(formText(form, "minimum_apgi_income"), "minimum APGI income"), apgiShareBps: shareBps, recoveryBps: percentageBps(recovery, "development recovery percentage"), outstandingCents: developmentCost - alreadyPaid });
+  const quote = minimumCourseQuote({ ...estimate, minimumApgiCents: moneyCents(formText(form, "minimum_apgi_income"), "minimum APGI income"), apgiShareBps: shareBps, recoveryBps: percentageBps(recovery, "development recovery percentage"), outstandingCents: developmentCost - alreadyPaid, recoveryBase });
   const configuration: Record<string, string | null> = {
     planning_version: "1", agreement_scope: ownApgi ? "apgi_course" : "partner", currency,
-    contract_partner_id: brand.company.slug !== "apgi" ? brand.company.id : owner.company.slug !== "apgi" ? owner.company.id : null,
+    contract_partner_id: clientOwnerId ?? (brand.company.slug !== "apgi" ? brand.company.id : owner.company.slug !== "apgi" ? owner.company.id : null),
     rights_holder: ownerId, rights_holder_name: owner.company.name, brand_name: brand.company.name,
+    ownership_model: ownershipModel, client_owner_id: clientOwnerId, client_owner_name: clientOwner?.company.name ?? null,
     designer_name:designerName,designer_company:designerCompany,
     brand_revision: String(brand.company.brand_revision), development_status: developmentStatus,
     development_cost: (developmentCost / 100).toFixed(2), already_paid: (alreadyPaid / 100).toFixed(2),
     development_funder: ownApgi ? "SRMS" : "APGI platform",
-    recovery_rate: recovery, recovery_base: partnerPlanningDefaults.recoveryBase,
-    customer_source: source, apgi_share: (shareBps / 100).toFixed(2), platform_user_share: ((10000 - shareBps) / 100).toFixed(2),
+    recovery_rate: recovery, recovery_base: recoveryBase,
+    customer_source: sharing.model, sharing_model: sharing.model, tailored_reason: sharing.reason,
+    apgi_share: (shareBps / 100).toFixed(2), platform_user_share: ((10000 - shareBps) / 100).toFixed(2),
     minimum_apgi_income: formText(form, "minimum_apgi_income"), cost_profile_id: profile?.id??null,
     cost_mode:mode,service_cost_snapshot:serviceResult?JSON.stringify(serviceResult.snapshot):null,
     administration_rate: (estimate.administrationBps/100).toFixed(2),
@@ -66,10 +74,17 @@ export async function coursePlanConfiguration(form: FormData) {
     minimum_course_price: (quote.price / 100).toFixed(2), estimated_costs: (quote.costs / 100).toFixed(2),
     estimated_administration: (quote.administration / 100).toFixed(2), estimated_recovery: (quote.recovery / 100).toFixed(2),
     estimated_apgi_income: (quote.apgi / 100).toFixed(2), estimated_partner_income: (quote.partner / 100).toFixed(2),
-    calculation_basis: "Costs first; separate operating-cost contingency; administration on eligible costs only, excluding the reserve; capped recovery from cost-cleared pool; then owner/platform split. Unused reserve must be reconciled and released through the agreed recovery and sharing rules. Draft estimate, not an approved price or settlement.",
+    calculation_basis: `Costs first; separate operating-cost contingency; administration on eligible costs only, excluding the reserve; ${ownApgi?"capped internal recovery from the cost-cleared pool":"APGI ongoing platform share set aside first; capped development recovery deducted only from the partner share"}. Unused reserve must be reconciled and released through the agreed recovery and sharing rules. Draft estimate, not an approved price or settlement.`,
     notes: formText(form, "notes", 0, 5000) || null,
   };
-  configuration.terms_summary = `${brand.company.name}: ${getCourseBySlug(course)!.title}. Current declared owner: ${owner.company.name}. Planning minimum learner price ${currency} ${(quote.price/100).toFixed(2)}; minimum combined APGI income ${currency} ${(moneyCents(formText(form,"minimum_apgi_income"),"minimum income")/100).toFixed(2)}. Running costs are provided first, plus ${estimate.administrationBps/100}% administration on eligible costs only. A separate ${((estimate.contingencyBps??0)/100).toFixed(2)}% operating-cost contingency of ${currency} ${(quote.contingency/100).toFixed(2)} is reserved; it is not an incurred expense and attracts no administration fee. Reconcile it against actual costs and release any unused reserve through the agreed recovery and sharing rules. Development recovery is ${recovery}% of the cost-cleared pool before sharing, capped at ${currency} ${((developmentCost-alreadyPaid)/100).toFixed(2)} outstanding. The remaining pool is shared ${(shareBps/100).toFixed(2)}% APGI and ${((10000-shareBps)/100).toFixed(2)}% partner. No separate fixed hosting or seat subscription. Any proposed higher price must be recalculated against the same cost and income requirements. This working draft does not approve rights, transfer ownership, publish a course or activate payment terms.`;
+  configuration.terms_summary = [
+    `${brand.company.name}: ${getCourseBySlug(course)!.title}. Current declared owner: ${owner.company.name}. Planning minimum learner price ${currency} ${(quote.price/100).toFixed(2)}; minimum ongoing combined APGI income ${currency} ${(moneyCents(formText(form,"minimum_apgi_income"),"minimum income")/100).toFixed(2)}, excluding development recovery.`,
+    `Running costs are provided first, plus ${estimate.administrationBps/100}% administration on eligible costs only. A separate ${((estimate.contingencyBps??0)/100).toFixed(2)}% operating-cost contingency of ${currency} ${(quote.contingency/100).toFixed(2)} is reserved; it is not an incurred expense and attracts no administration fee. Reconcile it against actual costs and release any unused reserve through the agreed recovery and sharing rules.`,
+    `The split ${sharingBasisLabel(configuration)} is ${(shareBps/100).toFixed(2)}% APGI and ${((10000-shareBps)/100).toFixed(2)}% partner. ${developmentRecoverySummary(configuration)} Outstanding recovery: ${currency} ${((developmentCost-alreadyPaid)/100).toFixed(2)}.`,
+    "No separate fixed hosting or seat subscription. Any proposed higher price must be recalculated against the same cost and income requirements. This working draft does not approve rights, transfer ownership, publish a course or activate payment terms.",
+  ].join(" ");
   configuration.terms_summary += ` Course design credit: ${designerName}, ${designerCompany}. Design credit is recorded separately from legal ownership and does not itself transfer rights.`;
+  configuration.terms_summary += ` Sharing model: ${ownApgi ? "APGI-owned and APGI-branded course" : sharingModelLabels[sharing.model]}.${sharing.reason ? ` Reason for the tailored model: ${sharing.reason}` : ""}`;
+  configuration.terms_summary += ` ${courseOwnershipSummary(configuration)} This draft records the proposed conditions; saving it does not activate or execute an ownership transfer.`;
   return configuration;
 }

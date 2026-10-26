@@ -23,6 +23,7 @@ export async function attachCommercialPlan(roundId:string,planId:string,actorId:
  const plan=(await rows<DraftRecord>(`/rest/v1/commercial_agreement_drafts?id=eq.${planId}&select=*&limit=1`))[0];
 
  if(!plan||plan.kind!=="course_agreement"||plan.organisation_id!==round.organisation_id||plan.course_id!==round.course_id||plan.configuration.rights_holder!==w.ownerId||plan.configuration.designer_name!==w.designerName||plan.configuration.designer_company!==w.designerCompany)throw Error("The plan must match this approved course, owner, design credits and publishing brand.");
+ if(plan.configuration.client_owner_id&&plan.configuration.client_owner_id!==(w.partnerCompanyId??(w.partner?round.organisation_id:undefined)))throw Error("The named client must match this review's partner company. Start a new review to change the client.");
 
  const previous=currentCommercial(w);if(previous?.planId===planId){if(previous.decisions.some(d=>d.decision==="reject"))throw Error("A rejected commercial version must be revised before resubmission.");return;}
 

@@ -18,6 +18,7 @@ describe("Confirmed-fee cost sharing",()=>{
  const input={hostingFixedCents:100,hostingRateBps:0,stripeFixedCents:30,stripeRateBps:300,administrationBps:600,contingencyBps:1000,minimumApgiCents:1,apgiShareBps:4000,recoveryBps:2500,outstandingCents:500};
  it("uses the actual fee once, balances every cent and caps recovery",()=>{const a=settledAllocation(10000,432,input);expect(a.costs).toBe(532);expect(a.recovery).toBe(500);expect(a.costs+a.administration+a.contingency+a.recovery+a.apgi+a.partner).toBe(10000);});
  it("stops recovery when the outstanding balance reaches zero",()=>expect(settledAllocation(10000,200,{...input,outstandingCents:0}).recovery).toBe(0));
+ it("keeps ongoing APGI income separate when recovery comes from the partner share",()=>{const a=settledAllocation(10000,432,{...input,apgiShareBps:2000,outstandingCents:100000,recoveryBase:"partner_share"});expect(a.apgi).toBe(Math.floor(a.available*.2));expect(a.recovery).toBe(Math.floor((a.available-a.apgi)*.25));expect(a.costs+a.administration+a.contingency+a.recovery+a.apgi+a.partner).toBe(10000);});
  it("holds an actual fee that breaches the approved minimum",()=>expect(()=>settledAllocation(100,99,input)).toThrow());
  it.each([-1,0.5,10001])("rejects invalid processor fee %s",fee=>expect(()=>settledAllocation(10000,fee,input)).toThrow());
 });

@@ -4,7 +4,7 @@ import {revalidatePath} from "next/cache";
 
 import {formText,validId} from "@/lib/company-structure";
 
-import {moneyCents} from "@/lib/commercial-planning";
+import {commercialConditionsSummary,developmentRecoverySummary,moneyCents,sharingBasisLabel} from "@/lib/commercial-planning";
 
 import {companyBrandApproved,hasReviewTask,outstandingAssignedTasks} from "@/lib/review-tasks";
 import {contentReviewBlockers} from "@/lib/course-review";
@@ -89,9 +89,11 @@ Estimated running costs: ${money(q.costs)}
 
 Cost administration: ${money(q.administration)} (costs only)
 
-Development recovery: ${c.development_status==="recover"?c.recovery_rate:"0"}% of the cost-cleared pool, capped at the outstanding balance.
+${developmentRecoverySummary(c)}
 
-Remaining pool: APGI ${c.apgi_share}%; your company ${c.platform_user_share}%.
+Split ${sharingBasisLabel(c)}: APGI ${c.apgi_share}%; your company ${c.platform_user_share}%.
+
+${commercialConditionsSummary(c)}
 
 Estimated company income at the proposed price: ${money(q.partner)}.
 
