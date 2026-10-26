@@ -1,4 +1,6 @@
 "use client";
+import {SummaryText} from "@/components/shared/SummaryText";
+
 import "./commercial-planning.css";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -160,7 +162,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
       <label title="Record any exception that must be included in the approval schedule.">Notes for the agreement<textarea name="notes" value={values.notes} onChange={event=>update("notes")(event.target.value)} maxLength={5000} rows={3}/></label>
       <p>Sharing model: <strong>{ownApgi?"APGI-owned and APGI-branded course":sharingModelLabels[values.sharing_model as keyof typeof sharingModelLabels]}</strong>. APGI {ownApgi?"100":values.sharing_model==="tailored"?values.apgi_share:standardShare}% · Partner {ownApgi?"0":(100-Number(values.sharing_model==="tailored"?values.apgi_share:standardShare)).toFixed(2)}% after operating costs{ownApgi?" and internal recovery":"; development recovery is deducted from the partner share"}.</p>
       {values.sharing_model==="tailored"&&!ownApgi?<p>Reason for the tailored model: {values.tailored_reason}</p>:null}
-      {ownershipSummary?<p className="notice-card"><strong>Course ownership / sale conditions</strong><br/>{ownershipSummary}</p>:null}
+      {ownershipSummary?<div className="notice-card"><SummaryText commercial text={ownershipSummary}/></div>:null}
       <p className="notice-card">Save this exact commercial version, then continue to joint APGI commercial sign-off. Content approval is separate and must already be recorded for an active publication workflow. Saving alone does not send invitations, accept terms, publish the course or activate a payment.</p>
     </fieldset>
     <div className="planning-controls">{step>0 ? <button key="back" type="button" className="secondary-button" onClick={()=>setStep(current=>current-1)}>Back</button> : null}{step<3 ? <button key="continue" type="button" className="primary-button" disabled={step===2&&!quote} onClick={event=>{event.preventDefault();advance();}}>Continue</button> : <button key="save-draft" type="submit" name="intent" value="save_course_draft" className="primary-button" disabled={pending||!quote}>{pending?"Saving…":"Save course and terms draft"}</button>}</div>

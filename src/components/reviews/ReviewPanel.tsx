@@ -1,4 +1,6 @@
 "use client";
+import {SummaryText} from "@/components/shared/SummaryText";
+
 
 import {useRef,useState} from "react";
 
@@ -76,8 +78,8 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[],disabled
 
  <p>Save a separate finding for each issue. The current slide is recorded automatically. Choose all slides when the same finding applies throughout this course.</p>
 
- <details><summary>Saved feedback for {unit.toUpperCase()} only ({localFindings.length})</summary>{localFindings.length?localFindings.map(f=><article key={f.id}><strong>{unit.toUpperCase()} · {f.reference} · {f.outcome==="satisfied"?"Nothing to add":f.status}</strong><p>{f.text}</p>{canEdit&&f.author===email?<button type="button" className="secondary-button" onClick={()=>load(f)}>Edit this saved finding</button>:null}<Link href={`/course-reviews/${id}#finding-${f.id}`}>Read discussion or verify this finding</Link></article>):<p>No feedback saved specifically for {unit.toUpperCase()} yet.</p>}</details>
- {sharedFindings.length?<details><summary>Course-wide findings — all LUs ({sharedFindings.length})</summary><p>These were explicitly marked applicable to all slides. They are separate from this LU’s own feedback.</p>{sharedFindings.map(f=><article key={f.id}><strong>All LUs · {f.outcome==='satisfied'?'Nothing to add':f.status}</strong><p>{f.text}</p>{canEdit&&f.author===email?<button type="button" className="secondary-button" onClick={()=>load(f)}>Edit this course-wide finding</button>:null}<Link href={`/course-reviews/${id}#finding-${f.id}`}>Read shared discussion or verify this finding</Link></article>)}</details>:null}
+ <details><summary>Saved feedback for {unit.toUpperCase()} only ({localFindings.length})</summary>{localFindings.length?localFindings.map(f=><article key={f.id}><strong>{unit.toUpperCase()} · {f.reference} · {f.outcome==="satisfied"?"Nothing to add":f.status}</strong><SummaryText text={f.text}/>{canEdit&&f.author===email?<button type="button" className="secondary-button" onClick={()=>load(f)}>Edit this saved finding</button>:null}<Link href={`/course-reviews/${id}#finding-${f.id}`}>Read discussion or verify this finding</Link></article>):<p>No feedback saved specifically for {unit.toUpperCase()} yet.</p>}</details>
+ {sharedFindings.length?<details><summary>Course-wide findings — all LUs ({sharedFindings.length})</summary><p>These were explicitly marked applicable to all slides. They are separate from this LU’s own feedback.</p>{sharedFindings.map(f=><article key={f.id}><strong>All LUs · {f.outcome==='satisfied'?'Nothing to add':f.status}</strong><SummaryText text={f.text}/>{canEdit&&f.author===email?<button type="button" className="secondary-button" onClick={()=>load(f)}>Edit this course-wide finding</button>:null}<Link href={`/course-reviews/${id}#finding-${f.id}`}>Read shared discussion or verify this finding</Link></article>)}</details>:null}
 
  {canEdit?<>
 
