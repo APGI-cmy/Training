@@ -7,6 +7,7 @@ import {
 } from "@/server/actions/assessments/submit-scannex-theory-attempt";
 import type { ScannexTheoryAnswerState, ScannexTheoryQuestion } from "@/types/scannex-assessment";
 import {previewReviewTheory} from "@/server/actions/course-reviews";
+import {previewAdminTheory} from "@/server/actions/assessments/preview-admin-theory";
 
 const initialState: ScannexTheoryActionState = {};
 
@@ -14,15 +15,17 @@ export function ScannexTheoryAssessment({
   courseSlug,
   questions,
   latestResult,
-  reviewId
+  reviewId,
+  adminPreview = false
 }: {
   courseSlug: string;
   questions: ScannexTheoryQuestion[];
   latestResult: { score: number; maxScore: number; submittedAt: string } | null;
   reviewId?: string;
+  adminPreview?: boolean;
 }) {
   const [answers, setAnswers] = useState<ScannexTheoryAnswerState>({});
-  const [state, action, pending] = useActionState(reviewId?previewReviewTheory:submitScannexTheoryAttempt, initialState);
+  const [state, action, pending] = useActionState(reviewId ? previewReviewTheory : adminPreview ? previewAdminTheory : submitScannexTheoryAttempt, initialState);
 
   function setAnswer(question: ScannexTheoryQuestion, optionId: string) {
     setAnswers((current) => {
@@ -44,7 +47,7 @@ export function ScannexTheoryAssessment({
           <div>
             <p className="eyebrow">Part A: knowledge assessment</p>
             <h2 id="scannex-theory-heading">Scannex theory assessment</h2>
-            <p>{reviewId?"Review preview: scoring is checked on the server, but no learner attempt, grade or certificate is recorded.":"Answer every question. The correct answers are assessed securely after submission and are not displayed."}</p>
+            <p>{reviewId || adminPreview ? "Preview: scoring is checked on the server, but no learner attempt, grade or certificate is recorded." : "Answer every question. The correct answers are assessed securely after submission and are not displayed."}</p>
           </div>
           <div className="score-badge">68 marks</div>
         </div>
@@ -99,7 +102,7 @@ export function ScannexTheoryAssessment({
 
           <div className="button-row">
             <button className="primary-button" type="submit" disabled={pending}>
-              {pending ? "Checking assessment…" : reviewId?"Check preview answers (no learner record)":"Submit knowledge assessment"}
+              {pending ? "Checking assessment…" : "Submit knowledge assessment"}
             </button>
           </div>
         </form>

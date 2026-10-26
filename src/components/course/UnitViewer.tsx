@@ -1,4 +1,8 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
+import { QuizEngine } from "@/components/QuizEngine";
+import { PreviewUnitProgress } from "./PreviewProgress";
+import { previewUnitHref, type CoursePreview } from "@/lib/course-preview";
 import { encodeAssetPath } from "@/lib/courses";
 import { ScormPlayer } from "@/components/course/ScormPlayer";
 import { PresentationViewport } from "@/components/course/PresentationViewport";
@@ -12,11 +16,17 @@ import type { ViewerLabAvailability } from "@/lib/services/viewer-lab/viewer-lab
 export function UnitViewer({
   content,
   units,
-  viewerAvailability
+  viewerAvailability,
+  preview,
+  feedback,
+  referenceEbook
 }: {
   content: UnitContent;
   units: CourseShellUnit[];
   viewerAvailability?: ViewerLabAvailability;
+  preview?: CoursePreview;
+  feedback?: ReactNode;
+  referenceEbook?: string | null;
 }) {
   const { course, unit, previous, next, embeddedContentHref, originalContentHref } = content;
   const activeUnit = units.find((candidate) => candidate.id === unit.id);
@@ -26,6 +36,12 @@ export function UnitViewer({
   const isScannexUnit = course.slug === "scannex-training-programme";
   const isPracticalAssessment = Boolean(unit.practicalAssessment);
   const isCompleted = activeUnit?.isCompleted ?? false;
+  const courseHref = preview?.courseHref ?? `/learn/${course.slug}`;
+  const unitHref = (slug: string) => preview ? previewUnitHref(preview, slug) : `/learn/${course.slug}/units/${slug}`;
+  const navigation = <nav className="unit-navigation" aria-label="Learning unit navigation">
+    {previous ? <a className="secondary-button" href={unitHref(previous.slug)}>Previous: {previous.title}</a> : <Link className="secondary-button" href={courseHref}>Course home</Link>}
+    {next ? <a className="primary-button" href={unitHref(next.slug)}>Next: {next.title}</a> : <Link className="primary-button" href={courseHref}>Finish — return to course</Link>}
+  </nav>;
 
   const completeUnit = recordProgressEvent.bind(null, {
     courseSlug: course.slug,
@@ -35,10 +51,10 @@ export function UnitViewer({
 
   return (
     <main>
-      {viewerAvailability?.appliesToUnit ? <ViewerLabNotice courseSlug={course.slug} unitSlug={unit.slug} availability={viewerAvailability} /> : null}
+      {!preview && viewerAvailability?.appliesToUnit ? <ViewerLabNotice courseSlug={course.slug} unitSlug={unit.slug} availability={viewerAvailability} /> : null}
       <section className="unit-masthead">
         <div className="content-inner">
-          <Link className="back-link" href={`/learn/${course.slug}`}>
+          <Link className="back-link" href={courseHref}>
             Back to course shell
           </Link>
           <p className="eyebrow">{isPracticalAssessment ? "Summative assessment" : unit.order === 0 ? "Orientation" : `Learning Unit ${unit.order}`}</p>
@@ -46,11 +62,12 @@ export function UnitViewer({
           <p>{unit.subtitle}</p>
           <div className="unit-meta">
             <span>{unit.duration}</span>
-            <span>{isCompleted ? "Completed" : "Opened"}</span>
+            {preview ? <PreviewUnitProgress scope={preview.scope} unitId={unit.id}/> : <span>{isCompleted ? "Completed" : "Opened"}</span>}
             {!isPracticalAssessment ? (
               <a href={originalHref}>{isScannexUnit ? "Open Scannex e-book" : "Open original unit"}</a>
             ) : null}
           </div>
+          {navigation}
         </div>
       </section>
 
@@ -66,19 +83,19 @@ export function UnitViewer({
                   The final result requires 75% overall and an assessor-approved practical outcome. This is a controlled training assessment, not production Viewer access.
                 </p>
                 <div className="button-row">
-                  <Link className="primary-button" href={`/learn/${course.slug}/units/${unit.slug}/knowledge`}>
+                  <Link className="primary-button" href={`${unitHref(unit.slug)}/knowledge`}>
                     Start knowledge assessment
                   </Link>
-                  <Link className="primary-button" href={unit.practicalAssessment.labPath}>
-                    Open practical assessment
-                  </Link>
+                  {preview ? <button className="primary-button" type="button" disabled>Supervised practical — assessor required</button> : <Link className="primary-button" href={unit.practicalAssessment.labPath}>Open practical assessment</Link>}
                 </div>
+                {preview ? <p>The native practical remains supervised and assessor-controlled. Preview does not launch an assessment or award practical marks.</p> : null}
+                {feedback}
               </section>
             ) : isScannexUnit ? (
               <>
                 <UnitResources
                   eBookHref={originalHref}
-                  activityHref={scormLaunchSrc ? `/learn/${course.slug}/units/${unit.slug}/scorm` : undefined}
+                  activityHref={scormLaunchSrc ? `${unitHref(unit.slug)}/${preview ? "activity" : "scorm"}` : undefined}
                   activityAvailable={Boolean(scormLaunchSrc)}
                 />
                 {viewerAvailability?.appliesToUnit ? (
@@ -88,22 +105,26 @@ export function UnitViewer({
                     <p>Open a separate, secure Windows session to practise the controls taught in this learning unit.</p>
                     <p className={viewerAvailability.canLaunch ? "resource-status" : "form-error"}>{viewerAvailability.message}</p>
                     <div className="button-row">
-                      {viewerAvailability.canLaunch ? <Link className="primary-button" href={`/learn/${course.slug}/units/${unit.slug}/viewer-lab`}>Prepare Viewer practice session</Link> : <button className="primary-button" type="button" disabled>Viewer unavailable</button>}
+                      {!preview && viewerAvailability.canLaunch ? <Link className="primary-button" href={`/learn/${course.slug}/units/${unit.slug}/viewer-lab`}>Prepare Viewer practice session</Link> : <button className="primary-button" type="button" disabled>{preview ? "Viewer practice requires a separate authorised session" : "Viewer unavailable"}</button>}
                     </div>
                   </section>
                 ) : null}
               </>
             ) : null}
             {!isPracticalAssessment && scormLaunchSrc ? (
-              <PresentationViewport title={unit.title}><ScormPlayer
+              <PresentationViewport title={unit.title} navigation={navigation}><ScormPlayer
+                key={`${preview?.scope ?? "learner"}:${unit.slug}`}
                 courseSlug={course.slug}
                 unitSlug={unit.slug}
                 launchSrc={scormLaunchSrc}
                 title={unit.title}
-              /></PresentationViewport>
+                mode={preview ? "preview" : "learner"}
+                previewScope={preview?.scope}
+                unitId={unit.id}
+              />{feedback}</PresentationViewport>
             ) : !isPracticalAssessment ? (
               <>
-                <PresentationViewport title={unit.title}><figure className="media-item">
+                <PresentationViewport title={unit.title} navigation={navigation}><figure className="media-item">
                   <iframe
                     title={`${unit.title} ${isScannexUnit ? "e-book" : "published unit"}`}
                     src={embeddedSrc}
@@ -116,41 +137,33 @@ export function UnitViewer({
                       ? "Embedded Scannex e-book. Use the link above if the embedded view is blocked."
                       : "Embedded published unit. Use the fallback link below if the embedded view is blocked."}
                   </figcaption>
-                </figure></PresentationViewport>
+                </figure>{feedback}</PresentationViewport>
                 <div className="button-row">
                   <a className="primary-button" href={originalHref} target="_blank" rel="noreferrer">
                     {isScannexUnit ? "Open e-book in a full window" : "Open expanded unit"}
                   </a>
-                  <Link className="secondary-button" href={`/courses/${course.slug}/${unit.slug}`}>
+                  {!preview ? <Link className="secondary-button" href={`/courses/${course.slug}/${unit.slug}`}>
                     Open legacy responsive unit
-                  </Link>
+                  </Link> : null}
                 </div>
-                <form action={completeUnit}>
+                {preview ? <PreviewUnitProgress scope={preview.scope} unitId={unit.id} complete/> : <form action={completeUnit}>
                   <button className="primary-button" type="submit" disabled={isCompleted}>
                     {isCompleted ? "Unit completed" : "Mark unit complete"}
                   </button>
-                </form>
+                </form>}
               </>
             ) : null}
           </div>
+          {referenceEbook && !isScannexUnit ? <p><a className="secondary-button" href={encodeAssetPath(referenceEbook)} target="_blank" rel="noreferrer">Open reference e-book (PDF)</a></p> : null}
         </div>
       </section>
+
+      {unit.quiz.length ? <QuizEngine key={`${preview?.scope ?? "learner"}:${unit.id}`} unitId={unit.id} questions={unit.quiz} preview={!!preview}/> : null}
 
       <section className="content-band muted-band">
         <div className="content-inner">
           <p className="eyebrow">Navigation</p>
-          <div className="unit-navigation">
-            {previous ? (
-              <Link className="secondary-button" href={`/learn/${course.slug}/units/${previous.slug}`}>
-                Previous: {previous.title}
-              </Link>
-            ) : <span />}
-            {next ? (
-              <a className="primary-button" href={`/learn/${course.slug}/units/${next.slug}`}>
-                Next: {next.title}
-              </a>
-            ) : null}
-          </div>
+          {navigation}
         </div>
       </section>
     </main>

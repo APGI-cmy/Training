@@ -4,7 +4,7 @@ import {useEffect,useId,useRef,useState,type ReactNode} from 'react';
 import './presentation-viewport.css';
 
 // Resize the existing player; never remount it or open a second SCORM session.
-export function PresentationViewport({title,children}:{title:string;children:ReactNode}){
+export function PresentationViewport({title,children,navigation}:{title:string;children:ReactNode;navigation?:ReactNode}){
  const root=useRef<HTMLElement>(null),enlargeButton=useRef<HTMLButtonElement>(null),ownedFullscreen=useRef(false);
  const [expanded,setExpanded]=useState(false),[fullscreen,setFullscreen]=useState(false),[pending,setPending]=useState(false),[notice,setNotice]=useState('');
  const contentId=useId();
@@ -51,6 +51,7 @@ export function PresentationViewport({title,children}:{title:string;children:Rea
    <button type="button" className="primary-button" disabled={pending} aria-controls={contentId} onClick={()=>void fullScreen()}>{fullscreen?'Exit full screen':'Full screen'}</button>
    <span className="presentation-display-hint">{expanded?'Your place is kept when you return.':'Use the presentation controls for slides, audio, activities and quizzes.'}</span>
   </nav>
+  {navigation?<div className="presentation-unit-navigation">{navigation}</div>:null}
   {notice?<p className="presentation-display-notice" role="status">{notice}</p>:null}
   <div id={contentId} className="presentation-display-content">{children}</div>
  </section>;

@@ -1,68 +1,10 @@
+import { requireAdminCoursePreview } from "@/server/services/course-preview";
+import { PreviewCourseHome, PreviewNotice } from "@/components/course/PreviewProgress";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { requireAdmin } from "@/lib/auth/require-admin";
-import { getCourseShell } from "@/lib/services/courses/get-course-shell";
-import {CoursePackageNotice} from "@/components/course/CoursePackageNotice";
-
+import { CoursePackageNotice } from "@/components/course/CoursePackageNotice";
 export const dynamic = "force-dynamic";
-
-type PageProps = {
-  params: Promise<{
-    courseSlug: string;
-  }>;
-};
-
-export default async function AdminCoursePreviewPage({ params }: PageProps) {
-  await requireAdmin();
-  const { courseSlug } = await params;
-  const shell = getCourseShell(courseSlug);
-
-  if (!shell) {
-    notFound();
-  }
-
-  const { course, units } = shell;
-
-  return (
-    <main className="page-shell" data-mode="preview">
-      <header className="page-header">
-        <p className="eyebrow">Administration preview</p>
-        <h1>{course.title}</h1>
-        <p>
-          This preview is role-gated for administrators and reads course content without creating
-          learner enrolments or progress records.
-        </p>
-      <Link className="primary-button" href={`/course-reviews/new?course=${course.slug}`}>Start content review and publication workflow</Link>
-      </header>
-
-      <CoursePackageNotice course={course}/>
-
-      {course.slug === "scannex-training-programme" ? (
-        <section className="admin-alert" aria-label="Scannex Viewer administration">
-          <div><strong>Scannex Viewer capacity and cost control</strong><span>Configure Viewer learning units, access dates, enrolled-learner capacity and the cost tolerance.</span></div>
-          <Link className="primary-button" href={`/admin/courses/${course.slug}/viewer-lab`}>Manage Viewer</Link>
-        </section>
-      ) : null}
-
-      <section className="course-grid" aria-label={`${course.title} preview units`}>
-        {units.map((unit) => (
-          <article className="course-card" key={unit.id}>
-            <p className="eyebrow">{unit.kind === "summative_assessment" ? "Summative assessment" : unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}</p>
-            <h2>{unit.title}</h2>
-            <p>{unit.subtitle}</p>
-            <Link
-              className="button-link"
-              href={`/admin/courses/${course.slug}/preview/${unit.slug}`}
-            >
-              Open preview
-            </Link>
-          </article>
-        ))}
-      </section>
-
-      <p>
-        <Link href="/admin/courses">Back to course previews</Link>
-      </p>
-    </main>
-  );
+export default async function AdminCoursePreviewPage({params}:{params:Promise<{courseSlug:string}>}) {
+  const {courseSlug}=await params;
+  const {shell,preview}=await requireAdminCoursePreview(courseSlug);
+  return <><PreviewNotice preview={preview}/><PreviewCourseHome shell={shell} preview={preview}/><section className="content-band"><div className="content-inner"><CoursePackageNotice course={shell.course}/><details><summary>Administrator tools</summary><div className="button-row"><Link className="secondary-button" href={`/course-reviews/new?course=${shell.course.slug}`}>Start content review and publication workflow</Link>{courseSlug==="scannex-training-programme"?<Link className="secondary-button" href={`/admin/courses/${courseSlug}/viewer-lab`}>Manage Viewer</Link>:null}</div></details></div></section></>;
 }

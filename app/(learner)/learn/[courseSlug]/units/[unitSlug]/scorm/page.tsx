@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
-import { ScormPlayer } from "@/components/course/ScormPlayer";
+import { LearningActivity } from "@/components/course/LearningActivity";
+import { getUnitContent } from "@/lib/services/courses/get-unit-content";
 import { ViewerUnitAccess } from "@/components/course/ViewerUnitAccess";
 import { getCourseBySlug } from "@/lib/courses";
-import { encodeAssetPath } from "@/lib/asset-path";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { requireSession } from "@/server/auth/session";
 
@@ -24,20 +24,12 @@ export default async function ScormLaunchPage({ params }: PageProps) {
     courseId: course.id
   });
   if (!access.canAccess) notFound();
+  const content = getUnitContent(courseSlug, unitSlug);
+  if (!content) notFound();
 
   return (
     <ViewerUnitAccess userId={session.user.id} courseSlug={course.slug} unitSlug={unit.slug}>
-    <main className="learner-scorm-full">
-      <ScormPlayer
-        courseSlug={course.slug}
-        unitSlug={unit.slug}
-        launchSrc={encodeAssetPath(unit.scormPath)}
-        title={unit.title}
-        immersive
-        returnHref={`/learn/${course.slug}/units/${unit.slug}#unit-resources-heading`}
-        resourceHref={encodeAssetPath(unit.publishedPath)}
-      />
-    </main>
+    <LearningActivity content={content}/>
     </ViewerUnitAccess>
   );
 }

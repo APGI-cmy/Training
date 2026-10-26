@@ -13,7 +13,10 @@ describe("ALP Batch 3 Correction 1 — administrator preview containment", () =>
     const overview = source("app/admin/courses/[courseSlug]/preview/page.tsx");
     const unitPreview = source("app/admin/courses/[courseSlug]/preview/[unitSlug]/page.tsx");
 
-    expect(overview).toContain("/preview/${unit.slug}");
+    const access = source("src/server/services/course-preview.ts");
+    expect(overview).toContain("PreviewCourseHome");
+    expect(access).toContain("requireAdmin()");
+    expect(access).toContain("/admin/courses/${shell.course.slug}/preview");
     expect(overview).not.toContain('href={unit.assetHref}');
     expect(unitPreview).toContain("requireAdmin");
     expect(unitPreview).toContain("getUnitContent");

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
+import { readPreviewProgress, updatePreviewProgress } from "./PreviewProgress";
 
 type ScormValues = Record<string, string>;
 
@@ -73,7 +74,10 @@ export function ScormPlayer({
   mode = "learner",
   immersive = false,
   returnHref,
-  resourceHref
+  resourceHref,
+  previewScope,
+  unitId,
+  navigation
 }: {
   courseSlug: string;
   unitSlug: string;
@@ -83,6 +87,9 @@ export function ScormPlayer({
   immersive?: boolean;
   returnHref?: string;
   resourceHref?: string;
+  previewScope?: string;
+  unitId?: string;
+  navigation?: ReactNode;
 }) {
   const valuesRef = useRef<ScormValues | null>(null);
   const [ready, setReady] = useState(false);
@@ -123,13 +130,29 @@ export function ScormPlayer({
     };
 
     if (mode === "preview") {
-      valuesRef.current = initialValues();
-      installApi();
-      setStatus("Administrator preview — learner progress is not recorded.");
+      const saved = previewScope ? readPreviewProgress(previewScope).attempts[unitSlug] : undefined;
+      valuesRef.current = { ...initialValues(), ...saved };
+      valuesRef.current["cmi.entry"] = saved?.["cmi.suspend_data"] ? "resume" : "ab-initio";
+      const savePreview = async () => {
+        const values = valuesRef.current;
+        if (previewScope && values) updatePreviewProgress(previewScope, current => ({
+          ...current,
+          attempts: { ...current.attempts, [unitSlug]: { ...values } },
+          completed: unitId && values["cmi.completion_status"] === "completed" && values["cmi.success_status"] === "passed" ? [...new Set([...current.completed, unitId])] : current.completed
+        }));
+        return true;
+      };
+      installApi(() => { void savePreview(); });
+      saveProgressRef.current = savePreview;
+      window.addEventListener("pagehide", savePreview);
+      setStatus("Learner experience preview — test progress stays in this tab.");
       setReady(true);
 
       return () => {
         active = false;
+        void savePreview();
+        saveProgressRef.current = null;
+        window.removeEventListener("pagehide", savePreview);
         delete window.API_1484_11;
       };
     }
@@ -180,7 +203,7 @@ export function ScormPlayer({
       void save();
       delete window.API_1484_11;
     };
-  }, [courseSlug, mode, unitSlug]);
+  }, [courseSlug, mode, unitSlug, previewScope, unitId]);
 
   return (
     <section className={immersive ? "scorm-player-immersive" : undefined} aria-label={`${title} SCORM learning activity`}>
@@ -191,6 +214,7 @@ export function ScormPlayer({
           </a>
           <p className="activity-save-status" role="status">{status}</p>
           {resourceHref ? <a className="primary-button" href={resourceHref} target="_blank" rel="noreferrer">Open Scannex e-book</a> : null}
+          {navigation}
         </nav>
       ) : null}
       {!immersive && <p className="scorm-status" role="status">{status}</p>}

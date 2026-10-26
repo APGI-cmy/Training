@@ -1,15 +1,17 @@
 import { CourseOverview } from "@/components/course/CourseOverview";
 import { getCourseBySlug } from "@/lib/courses";
+import { coursePreviewEntry } from "@/server/services/course-preview";
 
 export const metadata = {
   title: "Scannex Training Programme",
   description: "Published Scannex operator and reviewer learning pathway."
 };
 
-export default function ScannexCoursePage() {
+export default async function ScannexCoursePage() {
   const course = getCourseBySlug("scannex-training-programme");
 
   if (!course) return null;
 
-  return <CourseOverview course={course} previewHref={`/admin/courses/${course.slug}/preview`} />;
+  const preview = await coursePreviewEntry(course.slug);
+  return <CourseOverview course={course} previewHref={preview?.href} previewLabel={preview?.label} />;
 }

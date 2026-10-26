@@ -4,10 +4,16 @@ import type { CourseShell as CourseShellModel } from "@/lib/services/courses/get
 
 export function CourseShell({
   shell,
-  progressMessage
+  progressMessage,
+  backHref = "/dashboard",
+  backLabel = "Back to dashboard",
+  certificateHref
 }: {
   shell: CourseShellModel;
   progressMessage?: string;
+  backHref?: string;
+  backLabel?: string;
+  certificateHref?: string;
 }) {
   const { course, units, firstUnit, completedUnits, nextAction } = shell;
   const showCompletionMessage = progressMessage === "unit-completed";
@@ -17,8 +23,8 @@ export function CourseShell({
       <section className="course-masthead">
         <div className="content-inner course-masthead-grid">
           <div>
-            <Link className="back-link" href="/dashboard">
-              Back to dashboard
+            <Link className="back-link" href={backHref}>
+              {backLabel}
             </Link>
             <p className="eyebrow">Learner course shell</p>
             <h1>{course.title}</h1>
@@ -69,6 +75,7 @@ export function CourseShell({
           </div>
         </div>
       </section>
+      <section className="content-band"><div className="content-inner notice-card"><h2>Finish your course</h2><p>When your required learning and assessment are complete, issue and download your numbered certificate.</p><Link className="primary-button" href={certificateHref ?? `/learn/${course.slug}/certificate`}>My course certificate</Link></div></section>
     </main>
   );
 }

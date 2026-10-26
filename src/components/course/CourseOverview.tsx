@@ -5,10 +5,12 @@ import type { Course } from "@/types/course";
 
 export function CourseOverview({
   course,
-  previewHref
+  previewHref,
+  previewLabel = "Preview as administrator"
 }: {
   course: Course;
   previewHref?: string;
+  previewLabel?: string;
 }) {
   return (
     <main>
@@ -28,7 +30,7 @@ export function CourseOverview({
               </Link>
               {previewHref ? (
                 <Link className="secondary-button" href={previewHref}>
-                  Preview as administrator
+                  {previewLabel}
                 </Link>
               ) : null}
             </div>

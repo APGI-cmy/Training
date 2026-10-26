@@ -67,5 +67,5 @@ export default async function Page({ params, searchParams }: PageProps) {
     notFound();
   }
 
-  return <><CourseShell shell={shell} progressMessage={progressMessage} /><section className="content-band"><div className="content-inner notice-card"><h2>Finish your course</h2><p>When your required learning and assessment are complete, issue and download your numbered certificate.</p><a className="primary-button" href={`/learn/${course.slug}/certificate`}>My course certificate</a></div></section></>;
+  return <CourseShell shell={shell} progressMessage={progressMessage} />;
 }

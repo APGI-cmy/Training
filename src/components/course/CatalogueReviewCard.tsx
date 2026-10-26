@@ -13,6 +13,7 @@ export function CatalogueReviewCard({course,review}:{course:Course;review:Catalo
       <p className="eyebrow">{course.level}</p><h2>{course.title}</h2><p>{course.description}</p>
       <div className="course-card-status"><p><strong>{review.company}</strong></p><p><strong>Status: {review.status==="published"?"Published company course":"Under review"}</strong>{review.status!=="published"?<><br/>{stages[review.stage]??"Publication workflow"}</>:null}</p><p>{review.status==="published"?`Learner access is managed by ${review.company}.`:"Not yet open for learner enrolment."}</p></div>
       <Link className="button-link" href={`/course-reviews/${review.id}`}>{review.status==="published"?"View publication record":"Open course review"}</Link>
+      <Link className="button-link" href={`/course-reviews/${review.id}/preview`}>Preview as learner</Link>
     </div>
   </article>;
 }

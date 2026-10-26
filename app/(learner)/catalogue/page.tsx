@@ -104,6 +104,7 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
               ) : null}
 
               {decision.status === "revoked" ? <p>Access revoked. Contact an administrator.</p> : null}
+              {reviews.has(course.id) ? <Link className="button-link" href={`/course-reviews/${reviews.get(course.id)!.id}/preview`}>Preview as learner</Link> : null}
               </div>
             </article>
           );

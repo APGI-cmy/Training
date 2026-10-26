@@ -10,6 +10,7 @@ import { getLearnerProgress } from "@/lib/services/progress/get-learner-progress
 import { requireSession } from "@/server/auth/session";
 import { getCookieCompletedUnitIds } from "@/server/progress/progress-cookie";
 import { evaluateViewerLabAvailability, getViewerLabSettings } from "@/lib/services/viewer-lab/viewer-lab-settings";
+import { reviewEbook } from "@/server/services/review-resources";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +70,6 @@ export default async function Page({ params }: PageProps) {
     : undefined;
 
   return <ViewerUnitAccess userId={session.user.id} courseSlug={course.slug} unitSlug={content.unit.slug}>
-    <UnitViewer content={content} units={shell.units} viewerAvailability={viewerAvailability} />
+    <UnitViewer content={content} units={shell.units} viewerAvailability={viewerAvailability} referenceEbook={reviewEbook(content.unit)} />
   </ViewerUnitAccess>;
 }
