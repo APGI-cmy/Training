@@ -24,3 +24,30 @@
   are modified by this import. Independent correction verification and final
   publication approvals remain separate workflow actions.
 - Release and signed-in browser results are recorded in the external QA folder.
+
+## Release verification
+
+- Application commit: `e1250e1ccbdef974beb1f00a73e77507eee0cdd9`.
+- V2 deployment: `dpl_4tJQhb6g32b7Tb7bEKFVtniNA5PX`, READY and promoted to
+  `https://training-platform-v2-staging.vercel.app`.
+- All 119 archive files matched the imported files byte for byte. The live
+  entry HTML and SCORM runtime also matched the original package by SHA-256.
+- Isolated SCORM preview ran continuously for the complete video. After more
+  than 570 seconds, it remained on slide 1 with playback stopped. Clicking Next
+  opened slide 2; a second explicit click opened the five-question embedded quiz.
+  No quiz answers were submitted and no learner database was used by this test.
+- Signed-in platform preview loaded LU11 at its updated SCORM launch path.
+  Presentation expansion and video startup worked within the platform player.
+- The unrelated Tiger deployed review fingerprint remained `9a757b0a89c0`
+  before and after promotion. Its package, course definition and shared player
+  sources are unchanged. Scannex package bytes are also unchanged.
+- A bounded runtime error/fatal scan returned zero records for 06:21:44-06:26:44
+  UTC on 27 October 2026 (08:21:44-08:26:44 SAST).
+- Git-based deployment was already blocked by the repository's LFS budget.
+  The materialized local release route verified all 82 MP4 files as real media
+  both locally and in the hosted prebuild before promotion. No LFS pointers were
+  published. The user's original ZIP remains on `main`; this import targets V2.
+- No review revision was registered or notified by this deployment. The
+  Changes implemented workflow remains the place to register this exact
+  correction for independent review; it retains earlier evidence and commercial
+  sign-offs and sends the reviewers their updated-version notification.
