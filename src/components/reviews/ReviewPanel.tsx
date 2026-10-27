@@ -28,13 +28,14 @@ export function editableFindingComment(f:ReviewFinding) {
 
 }
 
-export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[],disabledReason}:{id:string;unit:string;canEdit:boolean;email:string;hasEbook:boolean;findings?:ReviewFinding[];disabledReason?:string}){
+export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[],disabledReason,openOnLoad=false,initialFindingId}:{id:string;unit:string;canEdit:boolean;email:string;hasEbook:boolean;findings?:ReviewFinding[];disabledReason?:string;openOnLoad?:boolean;initialFindingId?:string}){
 
- const [open,setOpen]=useState(false),[message,setMessage]=useState("");
+ const initial=canEdit?findings.find(f=>f.id===initialFindingId&&f.author===email&&(f.unit===unit||f.scope==='course')):undefined;
+ const [open,setOpen]=useState(openOnLoad||!!initial),[message,setMessage]=useState("");
 
- const [parts,setParts]=useState<SatisfactoryPart[]>([]),[hasIssue,setHasIssue]=useState(false),[blocking,setBlocking]=useState(false);
+ const [parts,setParts]=useState<SatisfactoryPart[]>(initial?.satisfiedParts??[]),[hasIssue,setHasIssue]=useState(!!initial&&initial.outcome!=="satisfied"),[blocking,setBlocking]=useState(initial?.blocking??false);
 
- const [scope,setScope]=useState<'current'|'course'>('current'),[categories,setCategories]=useState(["Content"]),[comment,setComment]=useState(""),[editId,setEditId]=useState(""),[loadedAt,setLoadedAt]=useState("");
+ const [scope,setScope]=useState<'current'|'course'>(initial?.scope==='course'?'course':'current'),[categories,setCategories]=useState(initial?.categories??[initial?.category??"Content"]),[comment,setComment]=useState(initial?editableFindingComment(initial):""),[editId,setEditId]=useState(initial?.id??""),[loadedAt,setLoadedAt]=useState(initial?.at??"");
  const [draftVersion,setDraftVersion]=useState(0);
  const slide=useReviewSlide(unit);
 
@@ -61,6 +62,7 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[],disabled
  }
 
  function toggle(){if(open){setOpen(false);return;}if(canEdit&&latest)reopen.current?.showModal();else setOpen(true);}
+
 
  function declare(part:SatisfactoryPart,checked:boolean){
 

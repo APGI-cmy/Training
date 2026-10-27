@@ -9,6 +9,7 @@ type Marker={notice:PersonalNotification;mount:HTMLElement};
 export function NotificationTargetMarkers(){
  const pathname=usePathname(),selected=useSearchParams().get("notification"),[notices,setNotices]=useState<PersonalNotification[]>([]),[markers,setMarkers]=useState<Marker[]>([]);
  const revealed=useRef<string|null>(null);
+ const [overview,setOverview]=useState<HTMLElement|null>(null);
  useEffect(()=>{
   if(notificationTarget(pathname)!==pathname||pathname==="/notifications"){setNotices([]);return;}
   let stopped=false;let controller:AbortController|undefined;
@@ -25,6 +26,7 @@ export function NotificationTargetMarkers(){
  },[pathname,selected]);
  useEffect(()=>{
   const mounted:Marker[]=[];
+  setOverview(document.getElementById("review-process-notifications"));
   for(const notice of notices){
    const anchor=notice.target_path?.split("#")[1];
    const target=anchor?document.getElementById(anchor):document.querySelector("main");
@@ -40,5 +42,5 @@ export function NotificationTargetMarkers(){
   const frame=target&&revealed.current!==key?requestAnimationFrame(()=>{revealed.current=key;target.scrollIntoView({block:"start",behavior:"instant"});}):undefined;
   return()=>{if(frame!==undefined)cancelAnimationFrame(frame);for(const marker of mounted)marker.mount.remove();};
  },[notices,selected,pathname]);
- return <>{markers.map(({notice,mount})=>createPortal(<aside className="notification-reference" aria-label={notificationReference(notice)}><strong>{notificationReference(notice)} · {notice.pending?"Your response is required":"Update opened"}</strong><p>{notice.message}</p><p>{notice.requirement}</p><Link href={`/notifications#notification-${notice.id}`}>View notification and its tracking history</Link></aside>,mount,notice.id))}</>;
+ return <>{overview?createPortal(<section aria-label="Your review notifications"><h3>Your notifications</h3>{notices.length?notices.map(notice=><article className="notification-reference" key={notice.id}><strong>{notificationReference(notice)} · {notice.pending?"Action required":"Update opened"}</strong><p>{notice.message}</p><p>{notice.requirement}</p><a className="secondary-button" href={notice.target_path??"#review-process"}>Go to this review action</a></article>):<p>No outstanding notifications for this page. Your review status and saved feedback are shown below.</p>}<Link href="/notifications">Open all notifications and tracking</Link></section>,overview):null}{markers.map(({notice,mount})=>createPortal(<aside className="notification-reference" aria-label={notificationReference(notice)}><strong>{notificationReference(notice)} · {notice.pending?"Your response is required":"Update opened"}</strong>{overview?<p><a href="#review-process-notifications">Read this requirement in Review process</a></p>:<><p>{notice.message}</p><p>{notice.requirement}</p></>}<Link href={`/notifications#notification-${notice.id}`}>View notification and its tracking history</Link></aside>,mount,notice.id))}</>;
 }

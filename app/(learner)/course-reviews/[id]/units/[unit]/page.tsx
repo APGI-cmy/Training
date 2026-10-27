@@ -13,20 +13,21 @@ import { CoverageConfirmation } from "@/components/reviews/ReviewForms";
 import { evaluateViewerLabAvailability, getViewerLabSettings } from "@/lib/services/viewer-lab/viewer-lab-settings";
 import "../../../reviews.css";
 export const dynamic="force-dynamic";
-export default async function ReviewUnit({params}:{params:Promise<{id:string;unit:string}>}) {
+export default async function ReviewUnit({params,searchParams}:{params:Promise<{id:string;unit:string}>;searchParams?:Promise<{feedback?:string;finding?:string}>}) {
   const {id,unit}=await params;
+  const query=await searchParams;
   const {round,email,fresh,person,shell,preview}=await requireReviewCoursePreview(id);
   const content=getUnitContent(round.course_id,unit);if(!content)notFound();
   const lu=content.unit,ebook=reviewEbook(lu);
   const editable=fresh&&canWork(round)&&!!person&&person.state!=="declined"&&hasReviewTask(person,"content");
   const viewerAvailability=content.course.slug==="scannex-training-programme"?evaluateViewerLabAvailability(await getViewerLabSettings(),lu.slug):undefined;
-  const feedback=<ReviewPanel key={`${id}:${lu.slug}`} id={id} unit={lu.slug} canEdit={editable} disabledReason={preview.notice} email={email} hasEbook={!!ebook} findings={activeFindings(round.document).filter(f=>findingAppliesToUnit(f,lu.slug))}/>;
+  const feedback=<ReviewPanel key={`${id}:${lu.slug}:${query?.finding??query?.feedback??""}`} id={id} unit={lu.slug} canEdit={editable} disabledReason={preview.notice} email={email} hasEbook={!!ebook} findings={activeFindings(round.document).filter(f=>findingAppliesToUnit(f,lu.slug))} openOnLoad={query?.feedback==="1"||!!query?.finding} initialFindingId={query?.finding}/>;
   return <><PreviewNotice preview={preview}/><p className="content-inner">{round.document.brand.name} · Review version {round.fingerprint.slice(0,12)}</p>
     <ReviewSlideTracking key={`${id}:${lu.slug}:${round.fingerprint}`} unit={lu.slug}>
       <UnitViewer key={`${preview.scope}:${lu.slug}`} content={content} units={shell.units} preview={preview} referenceEbook={ebook} feedback={feedback} viewerAvailability={viewerAvailability}/>
     </ReviewSlideTracking>
     <section className="content-band"><div className="content-inner review-box"><h2>Finish reviewing this LU</h2>
       {person?.role==="primary"&&hasReviewTask(person,"content")?<CoverageConfirmation id={id} unit={lu.slug} confirmed={person.coverage.includes(lu.slug)} locked={!editable}/>:null}
-      <Link className="secondary-button" href={`/course-reviews/${id}#review-summary`}>Review findings and submit report</Link>
+      <Link className="secondary-button" href={`/course-reviews/${id}#review-process`}>Return to Review process</Link>
     </div></section></>;
 }
