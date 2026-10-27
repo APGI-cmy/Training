@@ -82,4 +82,3 @@ begin
 end $function$;
 revoke all on function public.v2_register_course_correction(uuid,integer,text,text,uuid,jsonb,text,text,timestamptz,jsonb) from public,anon,authenticated;
 grant execute on function public.v2_register_course_correction(uuid,integer,text,text,uuid,jsonb,text,text,timestamptz,jsonb) to service_role;
-
