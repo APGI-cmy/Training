@@ -9,8 +9,8 @@ export type LUStage='initial'|'implementation'|'reopened'|'endorsements';
 export const designerEmail=(d:ReviewDocument)=>d.designerEmail??d.requester;
 export function isCourseDesigner(d:ReviewDocument,email:string,userId:string){
  if(email!==designerEmail(d))return false;
- const bound=email===d.requester?d.requesterId:d.participants.find(p=>p.email===email)?.userId;
- return !!bound&&bound===userId;
+ if(email===d.requester)return d.requesterId===userId;
+ const person=d.participants.find(p=>p.email===email&&p.state!=='declined');return !!person&&(!person.userId||person.userId===userId);
 }
 export function contentReviewer(d:ReviewDocument,email:string,userId:string){return d.participants.some(p=>p.email===email&&p.userId===userId&&p.state!=='declined'&&hasReviewTask(p,'content'));}
 export function carriedVersion(round:ReviewRound,f:ReviewFinding,from:string){
@@ -40,7 +40,8 @@ export function findingPhase(round:ReviewRound,f:ReviewFinding):FindingPhase{
 }
 export function canImplement(round:ReviewRound,f:ReviewFinding,email:string,userId:string){return isCourseDesigner(round.document,email,userId)&&f.outcome!=='satisfied'&&['Open','Reopened'].includes(findingPhase(round,f));}
 export function canDecideImplementation(round:ReviewRound,f:ReviewFinding,email:string,userId:string){const r=currentImplementation(round,f);return findingPhase(round,f)==='Awaiting reviewer decision'&&f.author===email&&f.userId===userId&&r?.userId!==userId&&contentReviewer(round.document,email,userId);}
-export function canEndorseFinding(round:ReviewRound,f:ReviewFinding,email:string,userId:string){return findingPhase(round,f)==='Awaiting endorsement'&&f.author!==email&&f.userId!==userId&&contentReviewer(round.document,email,userId)&&!currentEndorsements(round,f).some(e=>e.userId===userId);}
+function eligibleContentReviewer(d:ReviewDocument,email:string,userId:string){return d.participants.some(p=>p.email===email&&(!p.userId||p.userId===userId)&&p.state!=='declined'&&hasReviewTask(p,'content'));}
+export function canEndorseFinding(round:ReviewRound,f:ReviewFinding,email:string,userId:string){return findingPhase(round,f)==='Awaiting endorsement'&&f.author!==email&&f.userId!==userId&&eligibleContentReviewer(round.document,email,userId)&&!currentEndorsements(round,f).some(e=>e.userId===userId);}
 export function submitImplementation(round:ReviewRound,f:ReviewFinding,actor:{email:string;userId:string},input:{id:string;at:string;implemented:'yes'|'no';notes:string}){
  if(!canImplement(round,f,actor.email,actor.userId))throw Error('Only the assigned course designer may respond to an open or reopened finding. Wait for the reviewer decision before submitting another response.');
  if(!['yes','no'].includes(input.implemented)||input.notes.trim().length<5)throw Error('Explain the implemented correction, or the reason for no change.');

@@ -4,11 +4,12 @@ import {revalidatePath} from 'next/cache';
 import {validId,formText} from '@/lib/company-structure';
 import {activeFindings} from '@/lib/course-review';
 import {currentImplementation,submitImplementation,decideImplementation,endorseFinding,reopenOwnFinding} from '@/lib/lu-review-workflow';
-import {assertReviewWork,requireReview,commitReview,reviewEvent,reviewMail,processReviewMail} from '@/server/services/course-reviews';
+import {assertReviewWork,claimReviewer,requireReview,commitReview,reviewEvent,reviewMail,processReviewMail} from '@/server/services/course-reviews';
 import type {ReviewActionState} from './course-reviews';
 export async function luReviewAction(_:ReviewActionState,form:FormData):Promise<ReviewActionState>{
  try{
   const id=validId(formText(form,'round_id',1)),{round,email,session,fresh}=await requireReview(id);assertReviewWork(round,fresh);
+  if(round.document.participants.some(p=>p.email===email))claimReviewer(round,email,session.user.id);
   const f=activeFindings(round.document).find(f=>f.id===formText(form,'finding_id',1));if(!f)throw Error('Finding unavailable. Reload the LU workspace.');
   const op=formText(form,'operation',1),actor={email,userId:session.user.id},at=new Date().toISOString(),r=currentImplementation(round,f);
   if(formText(form,'finding_at',1)!==f.at||formText(form,'response_id')!==(r?.id??''))throw Error('This finding or response changed. Reload before submitting; earlier saved work is safe.');
