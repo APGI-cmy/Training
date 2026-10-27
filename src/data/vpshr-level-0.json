@@ -762,8 +762,8 @@
       "title": "Civil Unrest",
       "subtitle": "Prepare for protest and unrest scenarios with restraint.",
       "duration": "15 min",
-      "assetBase": "/courses/vpshr-level-0/LU11 Civil-unrest",
-      "publishedPath": "/courses/vpshr-level-0/LU11 Civil-unrest/index.html",
+      "assetBase": "/courses/vpshr-level-0/LU11 Civil-unrest/res",
+      "publishedPath": "/courses/vpshr-level-0/LU11 Civil-unrest/res/index.html",
       "objectives": [
         "Recognize rights risks during protest, unrest, or crowd scenarios.",
         "Apply de-escalation and proportionality principles.",
@@ -773,30 +773,30 @@
         {
           "kind": "video",
           "title": "Civil unrest video",
-          "src": "/courses/vpshr-level-0/LU11 Civil-unrest/data/video1.mp4",
-          "poster": "/courses/vpshr-level-0/LU11 Civil-unrest/data/thmb1.jpg"
+          "src": "/courses/vpshr-level-0/LU11 Civil-unrest/res/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU11 Civil-unrest/res/data/thmb1.jpg"
         },
         {
           "kind": "embed",
           "title": "Original published unit",
-          "src": "/courses/vpshr-level-0/LU11 Civil-unrest/index.html"
+          "src": "/courses/vpshr-level-0/LU11 Civil-unrest/res/index.html"
         }
       ],
       "slides": [
         {
           "title": "Safety first",
           "body": "Civil unrest planning should protect people while respecting lawful expression and movement.",
-          "thumbnail": "/courses/vpshr-level-0/LU11 Civil-unrest/data/thmb1.jpg"
+          "thumbnail": "/courses/vpshr-level-0/LU11 Civil-unrest/res/data/thmb1.jpg"
         },
         {
           "title": "Clear roles",
           "body": "Private security roles should be defined before public security actors become involved.",
-          "thumbnail": "/courses/vpshr-level-0/LU11 Civil-unrest/data/thmb2.jpg"
+          "thumbnail": "/courses/vpshr-level-0/LU11 Civil-unrest/res/data/thmb2.jpg"
         },
         {
           "title": "Restraint",
           "body": "Force, restrictions, and dispersal should never be default responses.",
-          "thumbnail": "/courses/vpshr-level-0/LU11 Civil-unrest/data/thmb3.jpg"
+          "thumbnail": "/courses/vpshr-level-0/LU11 Civil-unrest/res/data/thmb3.jpg"
         }
       ],
       "quiz": [],

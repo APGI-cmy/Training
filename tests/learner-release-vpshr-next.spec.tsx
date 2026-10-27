@@ -24,8 +24,10 @@ describe("VPSHR completion using Next",()=>{
  it("removes all duplicate platform questions and otherwise preserves the existing course definition",()=>{
   expect(course.units).toHaveLength(13);expect(course.units.every(unit=>unit.quiz.length===0)).toBe(true);
   const copy=JSON.parse(JSON.stringify(course));copy.units.forEach((unit:{quiz?:unknown})=>delete unit.quiz);
-  // Baseline from 2a09a6c4 with only the quiz properties omitted.
-  expect(createHash("sha256").update(JSON.stringify(copy)).digest("hex")).toBe("512fbc464d2bb9410f514c4146168c4730713a8d36891c54726b9c2470acd573");
+  // Keep the original identity check, normalizing only LU11's approved SCORM resource move.
+  // The new package and launch path have dedicated SCORM integration checks.
+  const baseline=JSON.stringify(copy).replaceAll("/courses/vpshr-level-0/LU11 Civil-unrest/res","/courses/vpshr-level-0/LU11 Civil-unrest");
+  expect(createHash("sha256").update(baseline).digest("hex")).toBe("512fbc464d2bb9410f514c4146168c4730713a8d36891c54726b9c2470acd573");
  });
  it("keeps Previous/Next and the published iframe while removing the manual completion control and extra quiz in both modes",()=>{
   const content=getUnitContent(slug,"lu2")!,shell=getCourseShell(slug)!;

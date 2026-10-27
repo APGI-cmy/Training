@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest identifier="qRnvnVsKVsFsB" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:imsss="http://www.imsglobal.org/xsd/imsss" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3" xmlns:adlseq="http://www.adlnet.org/xsd/adlseq_v1p3" xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3" xmlns:lom="http://ltsc.ieee.org/xsd/LOM" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://www.imsglobal.org/xsd/imsss imsss_v1p0.xsd http://www.adlnet.org/xsd/adlcp_v1p3 adlcp_v1p3.xsd http://www.adlnet.org/xsd/adlseq_v1p3 adlseq_v1p3.xsd http://www.adlnet.org/xsd/adlnav_v1p3 adlnav_v1p3.xsd http://ltsc.ieee.org/xsd/LOM lom.xsd">
+<metadata>
+<schema>ADL SCORM</schema>
+<schemaversion>2004 4th Edition</schemaversion>
+<lom:lom>
+<lom:general>
+<lom:title>
+<lom:string>LU 11 Civil unrest-final</lom:string>
+</lom:title>
+</lom:general>
+<lom:educational>
+<lom:typicalLearningTime>
+<lom:duration>PT1H0M0S</lom:duration>
+</lom:typicalLearningTime>
+</lom:educational>
+</lom:lom>
+</metadata>
+<organizations default="lu_11_civil_unrest-final_organization">
+<organization identifier="lu_11_civil_unrest-final_organization">
+<title>LU 11 Civil unrest-final</title>
+<item identifier="B4BC62AC-7330-4324-86E7-A959577F5109" identifierref="resource">
+<title>LU 11 Civil unrest-final</title>
+<imsss:sequencing>
+<imsss:deliveryControls completionSetByContent="true" objectiveSetByContent="true"/>
+</imsss:sequencing>
+</item>
+<imsss:sequencing>
+<imsss:controlMode flow="true"/>
+</imsss:sequencing>
+</organization>
+</organizations>
+<resources>
+<resource identifier="resource" type="webcontent" adlcp:scormType="sco" href="res/index.html">
+<file href="res/index.html"/>
+<file href="res/lms.js"/>
+<file href="res/data/video1.mp4"/>
+<file href="res/data/thmb1.jpg"/>
+<file href="res/data/slide1.js"/>
+<file href="res/data/slide1.css"/>
+<file href="res/data/thmb2.jpg"/>
+<file href="res/data/slide2.js"/>
+<file href="res/data/slide2.css"/>
+<file href="res/data/quiz1.js"/>
+<file href="res/data/quiz1/audios/snd-1af5fb94840b98002ad63537bd525a3eb106a8c8.mp3"/>
+<file href="res/data/quiz1/audios/snd-1b75aede63567f4e26b86782f36b0ad6ce1fdd60.mp3"/>
+<file href="res/data/quiz1/audios/snd-23dcfbb54f12dc4c4b575c95aa369a9d395c0f11.mp3"/>
+<file href="res/data/quiz1/audios/snd-27fd1388fc13b44f51b47401641a04e89e66027a.mp3"/>
+<file href="res/data/quiz1/audios/snd-2faf2ce11e4a3f54fd0bdd1d3a038bc129d9d169.mp3"/>
+<file href="res/data/quiz1/audios/snd-44aa472ba0e510772003b0a310287fccb8a83b9e.mp3"/>
+<file href="res/data/quiz1/audios/snd-47445b05fca3066e45d33a1052c58e899468b909.mp3"/>
+<file href="res/data/quiz1/audios/snd-54db8d5efc90e21c051eeeaa3419287e7ebf057c.mp3"/>
+<file href="res/data/quiz1/audios/snd-55c2c5da6d37a1d75a5db487c8a675211e7227e9.mp3"/>
+<file href="res/data/quiz1/audios/snd-55d76e73325a181dd8bc00785315453f480fe3ab.mp3"/>
+<file href="res/data/quiz1/audios/snd-600591dbb060167cf121eab40b50ffad6ea29d58.mp3"/>
+<file href="res/data/quiz1/audios/snd-6ce2dff1b3cd2c5a0b7def8ca12a9665386b75e6.mp3"/>
+<file href="res/data/quiz1/audios/snd-6ff035f304e88c2603cf6e3d9e561e1b2f19f570.mp3"/>
+<file href="res/data/quiz1/audios/snd-81d1077ac73f5f1cda44200d1fece9942f3c69de.mp3"/>
+<file href="res/data/quiz1/audios/snd-8731865cf7a3f3c4c17ca0e917faefb1649bfc13.mp3"/>
+<file href="res/data/quiz1/audios/snd-9e0ba5719beb287f42e2febbabb56d4e819653fb.mp3"/>
+<file href="res/data/quiz1/audios/snd-a2bcc6eea096a2f48dba7198a636eafe76d6111e.mp3"/>
+<file href="res/data/quiz1/audios/snd-a89c41859ca547c8489c9b1928c83a3eecb7e79b.mp3"/>
+<file href="res/data/quiz1/audios/snd-b16eb94b1ec83835c26104ee899630c22fd7f628.mp3"/>
+<file href="res/data/quiz1/audios/snd-c0ea070c3d86b4a5436a42f276e7176f499f46d8.mp3"/>
+<file href="res/data/quiz1/audios/snd-d57e708c88d7397de40b915450bf7cd79c964822.mp3"/>
+<file href="res/data/quiz1/audios/snd-d85f5e0408821379262d10eeeea60eb8f12f4d34.mp3"/>
+<file href="res/data/quiz1/audios/snd-daeff217da4155242d8d602f5d9eedcac4572623.mp3"/>
+<file href="res/data/quiz1/audios/snd-de86f814a3272ce9470ea64b2be314c01aa4cf0d.mp3"/>
+<file href="res/data/quiz1/audios/snd-e3e661da52eb24d9378792c86653a97709c190e7.mp3"/>
+<file href="res/data/quiz1/audios/snd-e778d3ad7deab6f807e4b47b45240088bd44b0cc.mp3"/>
+<file href="res/data/quiz1/audios/snd-e89daddf448e31d54a5572af9f82d0a9c60a0125.mp3"/>
+<file href="res/data/quiz1/audios/snd-f032897694e603eb7d3a9c2ca40dc840114dc024.mp3"/>
+<file href="res/data/quiz1/audios/snd-f6c11ec0bb936c8c48ebaafa3797992975d39133.mp3"/>
+<file href="res/data/quiz1/audios/snd-f81700c103b9c8941add8533069de445fd6cc82b.mp3"/>
+<file href="res/data/quiz1/audios/snd-fdc16dc71e0320c98af5ea945eaa1b25b641a756.mp3"/>
+<file href="res/data/quiz1/fonts/fnt0.woff"/>
+<file href="res/data/quiz1/fonts/fnt1.woff"/>
+<file href="res/data/quiz1/fonts/fnt2.woff"/>
+<file href="res/data/quiz1/fonts/fnt3.woff"/>
+<file href="res/data/quiz1/fonts/fnt4.woff"/>
+<file href="res/data/quiz1/fonts/fnt5.woff"/>
+<file href="res/data/quiz1/fonts/fnt6.woff"/>
+<file href="res/data/quiz1/fonts/fnt7.woff"/>
+<file href="res/data/quiz1/fonts/fnt8.woff"/>
+<file href="res/data/quiz1/images/img-2b1ff02d3f45295a6efdb492a79cca873e2ca369.png"/>
+<file href="res/data/quiz1/images/img-2f58c85bb66c2f1042a7a239daaabca184eea5ec.png"/>
+<file href="res/data/quiz1/images/img-46bda4c5a4f543d7b5c6bf5e4411ab1ebecbec3a.png"/>
+<file href="res/data/quiz1/images/img-8bd33a53ce867eb744e18a07fc74391672e2b279.png"/>
+<file href="res/data/quiz1/images/img-97757cc6af527ac2ad6c64ec74993948335e42f0.png"/>
+<file href="res/data/quiz1/images/img-aba53691e79bb1289e059835bb7cffca92c979ee.png"/>
+<file href="res/data/quiz1/images/quiz_bg_0.png"/>
+<file href="res/data/thmb3.jpg"/>
+<file href="res/data/sound1.mp3"/>
+<file href="res/data/quizplayer.js"/>
+<file href="res/index.html"/>
+<file href="res/data/player.js"/>
+<file href="res/data/eraser.cur"/>
+<file href="res/data/highlighter.cur"/>
+<file href="res/data/marker.cur"/>
+<file href="res/data/lock.cur"/>
+<file href="res/data/browsersupport.js"/>
+<file href="res/data/apple-touch-icon.png"/>
+<file href="res/data/favicon.ico"/>
+<file href="res/data/fnt0.woff"/>
+<file href="res/data/fnt4.woff"/>
+<file href="res/data/fnt6.woff"/>
+<file href="res/data/fnt7.woff"/>
+<file href="res/data/fnt8.woff"/>
+<file href="res/data/html5-unsupported.html"/>
+<file href="res/data/img0.png"/>
+<file href="res/data/img1.png"/>
+<file href="res/data/img10.png"/>
+<file href="res/data/img11.png"/>
+<file href="res/data/img12.png"/>
+<file href="res/data/img13.png"/>
+<file href="res/data/img14.png"/>
+<file href="res/data/img2.png"/>
+<file href="res/data/img3.png"/>
+<file href="res/data/img4.png"/>
+<file href="res/data/img5.png"/>
+<file href="res/data/img6.png"/>
+<file href="res/data/img7.png"/>
+<file href="res/data/img8.png"/>
+<file href="res/data/img9.png"/>
+<file href="res/data/goodbye.html"/>
+</resource>
+</resources>
+</manifest>
