@@ -18,3 +18,6 @@ public/courses/Scannex Training Programme/**/LU * (SCORM).zip
 # Governance documents belong in private policy storage, never the public repo.
 output/pdf/
 public/courses/Tiger kidnapping_telecommunications/**/*.zip
+
+# Original VPSHR SCORM archives stay in the authoring folders.
+public/courses/vpshr-level-0/**/*.zip
