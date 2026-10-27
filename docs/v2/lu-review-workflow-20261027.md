@@ -47,7 +47,7 @@ helpers use SECURITY INVOKER and grant execute only to service_role (plus owner)
 ## Verification
 
 - TypeScript and production build pass.
-- 845 tests across 87 files pass, including new state machine, server authorization,
+- 847 tests across 87 files pass, including new state machine, server authorization,
   stale-response, two-person completion, client-data isolation and notification tests.
 - Ten database publication-gate checks pass in rolled-back fixtures. Missing
   acceptance, self-endorsement, stale responses and missing coverage are rejected.
@@ -55,3 +55,40 @@ helpers use SECURITY INVOKER and grant execute only to service_role (plus owner)
   `C:/Users/Johan/Codex-Work/lu-review-workflow-release-20261027/`.
 - Database migration applied: `20261027155139_lu_review_workflow`.
 - Live deployment and data-preservation verification are recorded below after release.
+
+## Released on 27 October 2026
+
+Application commit: `405232fad5fa83e9d87d42e5c2281aa4520810ec`.
+Database migration: `20261027155139_lu_review_workflow`.
+
+The existing VPSHR round was enabled at revision 62, retaining all 16 findings and
+both earlier reports. The Tiger round was enabled at revision 32, retaining all
+10 findings and its earlier report. Before/after comparisons confirm that findings,
+reports, participants and coverage, course fingerprints and commercial schedules
+are unchanged by activation. No reviewer data was reset and no email was sent by
+that metadata transition.
+
+Signed-in browser verification passed on the live V2 site: one LU entry, all four
+modal stages, saved author and other-reviewer records, current notification links
+to the exact finding, the presentation-side editor opening the same saved finding,
+and no premature reopened implementation notes. Visual inspection found no modal
+layout overlaps. No fabricated finding, implementation response, acceptance,
+endorsement, commercial decision or publication was submitted to live records.
+A final return-link adjustment uses a full page navigation so the exact LU anchor
+opens reliably after returning from the presentation. TypeScript passed again.
+
+The automated suite passed 847 tests across 87 files, plus ten database gate checks
+inside rolled-back fixtures. Those tests exercise submissions and rejection loops;
+the live walkthrough was read only. The presentation iframe was blank in the
+agent's browser session, so this release does not claim course-media playback QA.
+Sources remain in their original locations; release caches are outside OneDrive.
+Final deployment: `dpl_9YbcWfsooJAXABbwqxfHgJjH5Fpb` (READY),
+`training-platform-v2-staging-bzbaki8a5-rassie-ras-projects.vercel.app`.
+The canonical alias `training-platform-v2-staging.vercel.app` was promoted and
+independently resolved to that deployment and the existing V2 project. Production
+build, environment isolation, course manifests and all 82 real-media checks passed.
+No dependency links or junctions were introduced into the synced source projects.
+Post-promotion signed-in check confirmed that Return to this LU workflow now
+opens the exact Introduction modal at its Initial review stage. The saved finding
+editor also displays the updated shared-record explanation. Runtime error/fatal
+log scan returned zero records for 16:26:48–16:31:48 UTC on the final deployment.
