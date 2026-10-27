@@ -23,3 +23,28 @@
   stale-version navigation, requester/reviewer views, retained old anchors,
   peer identity restrictions, direct finding editing and immutable stored data.
 - QA evidence: `C:/Users/Johan/Codex-Work/review-process-20261027/`.
+
+## Live verification
+
+- Application commit `69d6c8591d4cf2cfea887e8d931e47dadd2ab7b9` was deployed
+  as `dpl_9USAQn1Y6e3wJqsjFGi3YYDrtYb6`, READY and promoted to the canonical
+  V2 alias. All course asset and shared engine fingerprints are unchanged.
+- Before/after DOM-backed comparison for the active VPSHR round matched
+  exactly: revision 56, registered version `37a1df4f2487`, the same 15 finding
+  IDs, two report IDs and both team rows with 13/13 coverage. Both submitted
+  reports and their independent endorsements remain displayed as complete.
+- All 13 coverage cards retain direct review links. Review process renders
+  the requester view, numbered personal notifications, direct action links
+  and the same saved responses grouped by reviewer.
+- A notification link opened its exact finding and displayed the matching
+  numbered reference. An author's saved-finding link opened the LU with its
+  feedback panel expanded. No finding, endorsement or coverage form was saved.
+- VPSHR already had unregistered content changes before this UI release.
+  Its existing submission gate is clearly explained; no correction revision
+  was registered and no evidence or coverage was reset to test the controls.
+- Ordinary reviewer ordering, own-finding editor values, peer restrictions
+  and stale/fresh save gates were verified by the automated fixtures. Another
+  reviewer's live account was not impersonated.
+- Runtime error/fatal scan returned zero records for 10:01:10-10:06:10 UTC
+  (12:01:10-12:06:10 SAST) on 27 October 2026. Browser screenshots and the
+  before/after evidence are in the external QA directory.
