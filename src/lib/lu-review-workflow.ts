@@ -29,7 +29,7 @@ function materializeImplementationRounds(round:ReviewRound,f:ReviewFinding){cons
 export function currentImplementation(round:ReviewRound,f:ReviewFinding){const r=implementationRounds(round,f).at(-1);return r&&r.findingAt===f.at&&r.fingerprint===round.fingerprint?r:undefined;}
 export function currentEndorsements(round:ReviewRound,f:ReviewFinding){return (f.outcome==='satisfied'?f.workflowEndorsements??[]:currentImplementation(round,f)?.endorsements??[]).filter(e=>e.findingAt===f.at&&e.fingerprint===round.fingerprint);}
 export function hasPeerEndorsement(round:ReviewRound,f:ReviewFinding){return currentEndorsements(round,f).some(e=>e.decision==='yes'&&e.email!==f.author&&e.userId!==f.userId&&contentReviewer(round.document,e.email,e.userId));}
-export function retainedClosure(round:ReviewRound,f:ReviewFinding){return !f.implementationRounds?.length&&f.outcome!=='satisfied'&&f.status==='closed'&&!!f.verifiedBy&&f.verifiedBy!==f.fixedBy&&f.verifiedFingerprint===round.fingerprint;}
+export function retainedClosure(round:ReviewRound,f:ReviewFinding){const verifier=round.document.participants.find(p=>p.userId===f.verifiedBy);return !f.implementationRounds?.length&&f.outcome!=='satisfied'&&f.status==='closed'&&!!f.fixedBy&&!!f.verifiedBy&&f.verifiedBy!==f.fixedBy&&f.fixedFingerprint===round.fingerprint&&f.verifiedFingerprint===round.fingerprint&&!!verifier&&contentReviewer(round.document,verifier.email,f.verifiedBy);}
 export function findingPhase(round:ReviewRound,f:ReviewFinding):FindingPhase{
  if(retainedClosure(round,f))return 'Closed';
  if(f.outcome==='satisfied')return hasPeerEndorsement(round,f)?'Closed':'Awaiting endorsement';
