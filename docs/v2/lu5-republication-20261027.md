@@ -24,3 +24,35 @@
   independent verification and final publication remain separate actions.
 - Local and hosted QA evidence is retained outside OneDrive under
   `C:/Users/Johan/Codex-Work/lu5-republish-20261027/`.
+
+## Browser checks
+
+- An isolated, in-memory SCORM session initialized successfully. After 50
+  seconds, the opening 34.474-second video had finished and remained on slide 1.
+  Clicking Next explicitly opened the first labeled-graphic interaction.
+- The original embedded drag-and-drop quiz on slide 6 opened from the slide
+  menu. No quiz answers were submitted. These checks sampled playback,
+  navigation and quiz rendering; they are not a full content review.
+- All seven materialized MP4 SHA-256 hashes matched their committed LFS object
+  identifiers. The unit has 373 files, no files over 100 MiB and no links.
+
+## Release verification
+
+- Application commit `c5e40163793ae3bab8db57396282e922dd4a8043` is pushed to
+  `v2-development`. Deployment `dpl_cp5YsmkW8rFCSnavXdpV5j5EomUx` reached READY
+  in the existing V2 project and was promoted to
+  `https://training-platform-v2-staging.vercel.app`.
+- The canonical alias points to that exact deployment. Live `res/index.html`
+  and `res/lms.js` match the imported package by SHA-256.
+- The signed-in administrator learner-experience preview loads the new
+  resource, expands the presentation and starts the opening video. Unit-level
+  Previous and Next navigation remain visible in the expanded presentation.
+- A bounded runtime error/fatal scan returned zero records for 08:43:20-
+  08:48:20 UTC on 27 October 2026 (10:43:20-10:48:20 SAST).
+- As for the preceding LU11 release, the materialized local source was used
+  because repository-based deployment had hit the Git LFS budget. Both local
+  and hosted prebuild checks confirmed all 82 MP4s were real media objects;
+  no unresolved LFS pointers were deployed.
+- No correction revision was registered and no reviewer notification was
+  sent. The existing Changes implemented workflow remains available for that
+  separate review action.
