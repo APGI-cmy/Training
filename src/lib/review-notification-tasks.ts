@@ -1,3 +1,4 @@
+import {canImplement,canDecideImplementation,canEndorseFinding,currentImplementation,findingPhase,isCourseDesigner} from "./lu-review-workflow";
 import {activeFindings,canWork,currentReport,contentReviewBlockers,reviewBlockers,type ReviewRound} from "./course-review";
 import {hasReviewTask,taskDecision,commercialReviewApproved,companyBrandApproved} from "./review-tasks";
 import {bothCommercialApprovals} from "./publication-workflow";
@@ -13,7 +14,16 @@ export function reviewNotificationTasks({round:r,hash,brandRevision}:ReviewTaskS
  if(!canWork(r)){
   add("extension",d.cutoff,principal?"Review deadline passed — decide on an extension":"Request an extension to continue reviewing","The cutoff has passed. Work cannot continue until the requester approves an extension; overdue work never counts as approval.","manage-request");return tasks;
  }
- if(fresh&&p&&p.state!=="declined"&&hasReviewTask(p,"content")){
+ if(d.reviewProcessVersion===3&&fresh){
+  for(const u of d.units)if(p?.role==="primary"&&hasReviewTask(p,"content")&&p.state!=="declined"&&(!p.coverage.includes(u.slug)||!activeFindings(d).some(f=>f.author===email&&(f.unit===u.slug||f.scope==="course"))))add("lu-initial",`${u.slug}:${r.fingerprint}`,"Complete the LU initial review",`${u.title}: open the presentation, save a finding or nothing-to-add declaration and confirm your LU review.`,`review-unit-${u.slug}`);
+  for(const f of activeFindings(d)){const response=currentImplementation(r,f),version=`${f.id}:${f.at}:${response?.id??"first"}:${findingPhase(r,f)}`;
+   if(canImplement(r,f,email,userId))add("lu-implementation",version,"Respond to a review finding",`${f.unit.toUpperCase()} · ${f.reference}: ${response?"The reviewer rejected response ("+response.number+"). Implement the next correction and submit the next numbered response.":"Record and submit the first implementation response, or explain why no change is proposed."}`,`finding-${f.id}`);
+   if(canDecideImplementation(r,f,email,userId))add("lu-decision",version,"Decide on the designer response",`${f.unit.toUpperCase()} · ${f.reference}: check Implementation notes (${response!.number}), then accept or reject that response. Rejection requires a reason.`,`finding-${f.id}`);
+   if(canEndorseFinding(r,f,email,userId))add("lu-endorsement",version,"Endorse a completed reviewer record",`${f.unit.toUpperCase()} · ${f.reference}: read ${f.author}’s submitted record and choose Endorse Yes or No. One additional endorsement is sufficient; give a reason for No.`,`finding-${f.id}`);
+   if(f.author===email&&f.userId===userId&&findingPhase(r,f)==="Awaiting endorsement"&&response?.endorsements.some(e=>e.decision==="no"))add("lu-declined-endorsement",version,"Review a declined endorsement",`${f.unit.toUpperCase()} · ${f.reference}: read the peer reviewer’s reason. Reopen your finding if a further correction is needed.`,`finding-${f.id}`);
+  }
+ }
+ if(d.reviewProcessVersion!==3&&fresh&&p&&p.state!=="declined"&&hasReviewTask(p,"content")){
   const missing=d.units.filter(u=>!p.coverage.includes(u.slug));
   const ownReport=currentReport(d,email);
   if(p.state==="finished"&&ownReport?.endorsements.some(e=>e.decision==="changes"))add("revise-report",ownReport.id,"Revise your content review report","A peer requested a revised report. Read the saved explanation, start a new report version and submit it for fresh independent endorsement.","review-summary");
@@ -27,7 +37,7 @@ export function reviewNotificationTasks({round:r,hash,brandRevision}:ReviewTaskS
     add("endorse",report.id,"Independently check a submitted report",`Read the current report submitted by ${report.email}, then endorse it or request a revised report. This is a peer check and does not approve unresolved course defects.`,reportAnchor(report.id));
   }
  }
- if(fresh){
+ if(fresh&&d.reviewProcessVersion!==3){
   for(const f of activeFindings(d).filter(f=>f.blocking&&f.outcome!=="satisfied")){
    if(principal&&f.status==="open")add("fix",`${f.id}:${r.fingerprint}`,"Address a blocking finding",`${f.unit.toUpperCase()} — ${f.reference}: apply and describe the correction, then record it as implemented. Another reviewer must verify it.`,`finding-${f.id}`);
    if(p&&hasReviewTask(p,"content")&&f.status==="fixed"&&f.fixedFingerprint===hash&&f.fixedBy!==userId)add("verify",`${f.id}:${hash}`,"Verify an implemented correction",`Check the deployed correction for ${f.unit.toUpperCase()} — ${f.reference}. Record verification only if the correction works.`,`finding-${f.id}`);

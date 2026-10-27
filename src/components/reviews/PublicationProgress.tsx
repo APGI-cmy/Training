@@ -1,3 +1,4 @@
+import {initialReviewerComplete} from "@/lib/lu-review-workflow";
 import {commercialReviewPath,commercialSignoffAnchor} from "@/lib/review-navigation";
 import {CommercialDiscussion} from "./CommercialDiscussion";
 import {hasReviewTask,companyBrandApproved} from "@/lib/review-tasks";
@@ -26,14 +27,14 @@ export function PublicationProgress({round,principal,email,hash,brandRevision,gu
 
  const own=round.document.participants.find(p=>p.email===email);
 
- const preparationReady=own?.state==="finished"&&round.document.units.every(u=>own.coverage.includes(u.slug))&&round.document.reports.some(r=>r.email===email);
+ const preparationReady=round.document.reviewProcessVersion===3?initialReviewerComplete(round,email):own?.state==="finished"&&round.document.units.every(u=>own.coverage.includes(u.slug))&&round.document.reports.some(r=>r.email===email);
 
 
 
 
  return <section className="review-box" id="commercial-preparation" aria-label="Publication workflow"><WorkflowSectionHeading title="Commercial preparation and sign-off" step={findWorkflowStep(guide,"commercials")}/><p><strong>Current step: {round.status==="published"?"Published":w.stage.replaceAll("_"," ")}</strong></p><p>Course designer: {w.designerName} · {w.designerCompany}</p>{w.contentApproval?<p>Content approved by {w.contentApproval.email} · {w.contentApproval.at}. Commercial and branding decisions remain separate.</p>:<p>Commercial preparation can continue while findings are addressed. All content, peer checks, commercial and branding approvals remain required before publication.</p>}
 
- {requester&&w.stage==="content_review"?<><p>{preparationReady?"Your review is submitted. You can prepare commercials while the team resolves findings and completes independent checks.":"Complete all your LU/quiz coverage confirmations and submit your report to open commercial preparation."}</p><ReviewForm workflow id={round.id} operation="begin_commercials" label="Continue to commercials" disabled={!preparationReady||round.status!=="open"||hash!==round.fingerprint}/></>:null}
+ {requester&&w.stage==="content_review"?<><p>{preparationReady?"Your review is submitted. You can prepare commercials while the team resolves findings and completes independent checks.":"Complete your initial LU findings and coverage confirmations to open commercial preparation."}</p><ReviewForm workflow id={round.id} operation="begin_commercials" label="Continue to commercials" disabled={!preparationReady||round.status!=="open"||hash!==round.fingerprint}/></>:null}
 
 
 

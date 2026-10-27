@@ -5,7 +5,8 @@ import type {ReviewRound} from '@/lib/course-review';
 import {STAGING_ORIGIN} from '@/server/environment-isolation';
 import {escapeEmail} from './send-course-invitation';
 
-export function reviewInvitationNarrative(requester:string){
+export function reviewInvitationNarrative(requester:string,perLu=false){
+ if(perLu)return `You are invited to a collaborative course review by ${requester}. Review every assigned learning unit and its embedded quizzes. Record findings or a nothing-to-add declaration beside the presentation, and confirm your LU review. Each LU has an Initial review, Implementation feedback, Reopened rounds and Endorsements workflow. The original reviewer accepts or rejects the designer’s numbered response. One other reviewer endorses the completed record. Findings, screenshots and submitted responses are shared with the assigned team; private drafts are not. Daily reminders stop when assigned work is complete, declined or overdue. Overdue work requires an extension and never counts as approval. Sign in with the invited email. Review access does not enrol you or grant administrator rights.`;
  return `You are invited to a collaborative course review by ${requester}. Full reviewers examine every LU and quiz, mark coverage and submit a report, even when no issues are found. Every full report needs one different reviewer's endorsement. Peer-only checkers may read and endorse reports directly. Findings, screenshots and comments are shared with the assigned team. You may decline with a reason. Daily reminders stop when you finish, decline or reach the cutoff. Overdue work requires an extension and never counts as approval. Sign in with the invited email. Review access does not enrol you or grant administrator rights.`;
 }
 // One renderer for real review delivery and the administrator's preview.

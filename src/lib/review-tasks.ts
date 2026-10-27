@@ -1,3 +1,4 @@
+import {reviewerContentComplete} from "./lu-review-workflow";
 import type {ReviewDocument,ReviewPerson,ReviewRound} from "./course-review";
 export const reviewTaskLabels={content:"Content",commercials:"Commercials",branding:"Branding"} as const;
 export type ReviewTask=keyof typeof reviewTaskLabels;
@@ -38,7 +39,7 @@ export function reviewTaskBlockers(round:ReviewRound,brandRevision:number){
 }
 export function outstandingAssignedTasks(round:ReviewRound,p:ReviewPerson,brandRevision=round.document.brand.revision){
  const v=round.document.workflow?.commercials.at(-1);
- return assignedTasks(p).filter(task=>task==="content"?p.state!=="finished":
+ return assignedTasks(p).filter(task=>task==="content"?round.document.reviewProcessVersion===3?!reviewerContentComplete(round,p.email):p.state!=="finished":
   // Legacy commercial scope was advisory. Existing reports retain their meaning.
   !p.tasks?false:task==="commercials"?!commercialReviewApproved(round.document,p.email,p.userId):taskDecision(round.document,p.email,task,String(brandRevision))?.decision!=="approve");
 }

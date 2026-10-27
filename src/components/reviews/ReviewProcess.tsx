@@ -1,3 +1,5 @@
+import {LUReviewWorkspace} from "./LUReviewWorkspace";
+import {luWorkflowBlockers} from "@/lib/lu-review-workflow";
 import Link from "next/link";
 import {activeFindings,canWork,currentReport,findingLocationLabel,type ReviewRound} from "@/lib/course-review";
 import {hasReviewTask} from "@/lib/review-tasks";
@@ -14,7 +16,7 @@ export function workingReviewText(text:string){
 }
 const Comment=({label,defaultValue}:{label:string;defaultValue?:string})=><label>{label} (optional explanation)<textarea name="comment" maxLength={5000} defaultValue={defaultValue}/></label>;
 
-export function ReviewProcess({round,email,userId,requester,fresh}:{round:ReviewRound;email:string;userId:string;requester:boolean;fresh:boolean}){
+function LegacyReviewProcess({round,email,userId,requester,fresh}:{round:ReviewRound;email:string;userId:string;requester:boolean;fresh:boolean}){
  const d=round.document,base=`/course-reviews/${round.id}`,findings=activeFindings(d),person=d.participants.find(p=>p.email===email);
  const editable=canWork(round)&&fresh&&!!person&&person.state!=="declined"&&hasReviewTask(person,"content");
  const primary=d.participants.filter(p=>p.role==="primary"&&p.state!=="declined"&&hasReviewTask(p,"content"));
@@ -60,5 +62,19 @@ export function ReviewProcess({round,email,userId,requester,fresh}:{round:Review
     </details>;
    })}
   </div>
+ </section>;
+}
+
+export function ReviewProcess(props:{round:ReviewRound;email:string;userId:string;requester:boolean;fresh:boolean}){
+ const {round,email,userId,fresh}=props,d=round.document;
+ if(d.reviewProcessVersion!==3)return <LegacyReviewProcess {...props}/>;
+ // Whitelist the content-workflow snapshot. Private commercial schedules never enter client props.
+ const snapshot:ReviewRound={id:round.id,plan_id:null,organisation_id:round.organisation_id,course_id:round.course_id,fingerprint:round.fingerprint,revision:round.revision,status:round.status,created_at:round.created_at,document:{title:d.title,brand:d.brand,requester:d.requester,requesterId:d.requesterId,designerEmail:d.designerEmail,reviewProcessVersion:3,cutoff:d.cutoff,units:d.units,participants:d.participants,findings:d.findings,reports:[],events:[],terms:{text:"",partner:false,acceptor:""},...(d.workflow?{workflow:{version:2,stage:d.workflow.stage,designerName:d.workflow.designerName,designerCompany:d.workflow.designerCompany,ownerId:d.workflow.ownerId,partner:d.workflow.partner,partnerEmail:"",commercials:[],counterOffers:0}}:{})}};
+ const pending=luWorkflowBlockers(round);
+ return <section className="review-box review-process" id="review-process" aria-labelledby="review-process-heading"><h2 id="review-process-heading">Review process</h2><p>One workspace per LU. New findings and feedback saved beside the presentation appear here. Submitted designer responses and reviewer decisions update the same record.</p><span id="review-units"/><span id="review-summary"/><span id="shared-findings"/><span id="my-full-review"/>
+ {d.reports.map(r=><span key={r.id} id={reportAnchor(r.id)} className="review-process-anchor"/>)}
+ <div id="review-process-notifications"><Link href="/notifications">Open notifications and tracking</Link></div>
+ <p>{pending.length?"Open a learning unit to see its initial review, implementation feedback, reopened rounds and endorsements.":"All LU reviews and required finding endorsements are complete. Final course, commercial and branding approvals remain separate."}</p>
+ <LUReviewWorkspace round={snapshot} email={email} userId={userId} fresh={fresh}/>
  </section>;
 }

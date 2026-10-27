@@ -1,6 +1,7 @@
 import {hasReviewTask,reviewTaskBlockers,outstandingAssignedTasks,type ReviewTask,type TaskDecision} from "./review-tasks";
 import {correctionBlockers,type ContentRevision} from "./review-corrections";
 import {commercialPublicationBlockers,type PublicationWorkflow} from "./publication-workflow";
+import {luWorkflowBlockers} from "./lu-review-workflow";
 import {getCourseBySlug} from "./courses";
 
 export type ReviewPerson = { email: string; role: "primary" | "peer" | "partner"; scope?: "content" | "content_and_commercials"; tasks?:ReviewTask[]; state: "invited" | "active" | "finished" | "declined"; userId?: string; reason?: string; coverage: string[] };
@@ -27,7 +28,7 @@ export function satisfactionStatement(parts:SatisfactoryPart[]) {
 
 export const declarationReference = (parts:SatisfactoryPart[]) => parts.map(p=>({lu:"Entire LU",quiz:"Quiz",ebook:"E-book"}[p])).join(" + ");
 
-export type ReviewFinding = { id: string; unit: string; scope?: "current" | "course"; reference: string; category: string; categories?: string[]; satisfiedParts?: SatisfactoryPart[]; outcome?: "issue" | "satisfied"; supersededBy?: string; blocking: boolean; author: string; userId: string; at: string; text: string; comment?: string; previousVersions?: {scope?:"current"|"course";at:string;text:string;attachment?:string;reference:string;category:string;blocking:boolean;status:string}[]; attachment?: string; status: "open" | "fixed" | "closed"; fixedBy?: string; fingerprint?:string; fixedFingerprint?:string;fixedAt?:string;verifiedBy?:string;verifiedFingerprint?:string;verifiedAt?:string; replies: { email: string; userId: string; at: string; text: string }[] };
+export type ReviewFinding = { carriedForwardEvidence?:{from:string;to:string;unit:string;at:string}[]; implementationRounds?:import("./lu-review-workflow").ImplementationRound[]; workflowEndorsements?:import("./lu-review-workflow").FindingEndorsement[]; id: string; unit: string; scope?: "current" | "course"; reference: string; category: string; categories?: string[]; satisfiedParts?: SatisfactoryPart[]; outcome?: "issue" | "satisfied"; supersededBy?: string; blocking: boolean; author: string; userId: string; at: string; text: string; comment?: string; previousVersions?: {scope?:"current"|"course";at:string;text:string;attachment?:string;reference:string;category:string;blocking:boolean;status:string}[]; attachment?: string; status: "open" | "fixed" | "closed"; fixedBy?: string; fingerprint?:string; fixedFingerprint?:string;fixedAt?:string;verifiedBy?:string;verifiedFingerprint?:string;verifiedAt?:string; replies: { email: string; userId: string; at: string; text: string }[] };
 
 export const activeFindings = (doc: ReviewDocument) => doc.findings.filter(f => !f.supersededBy);
 export const findingAppliesToUnit = (finding:ReviewFinding,unit:string) => finding.scope==='course'||finding.unit===unit;
@@ -61,7 +62,7 @@ export function recordFinding(doc: ReviewDocument, finding: ReviewFinding, repla
 
   finding.previousVersions=[...(previous.previousVersions??[]),{scope:previous.scope,at:previous.at,text:previous.text,attachment:previous.attachment,reference:previous.reference,category:previous.category,blocking:previous.blocking,status:previous.status}];
 
-  finding.id=previous.id; finding.replies=[...previous.replies]; finding.attachment=previous.attachment;
+  finding.id=previous.id; finding.replies=[...previous.replies]; finding.attachment=previous.attachment; finding.implementationRounds=previous.implementationRounds; finding.workflowEndorsements=previous.workflowEndorsements;
 
   // Editing a fix invalidates its verification; an unresolved blocker stays open.
 
@@ -87,6 +88,7 @@ export type ReviewChangeRequest = {
 
 export type ReviewDocument = {
 
+  reviewProcessVersion?:3; designerEmail?:string;
   workflow?: PublicationWorkflow;
   contentRevisions?:ContentRevision[];
 
@@ -108,7 +110,7 @@ export type ReviewRound = { id: string; plan_id: string | null; organisation_id:
 
 export const normalizedEmail = (value: string) => value.trim().toLowerCase();
 
-export function reviewPeople(emails: string[], roles: string[], requester: string, scopes: string[] = [], tasks?:ReviewTask[][]): ReviewPerson[] {
+export function reviewPeople(emails: string[], roles: string[], requester: string, scopes: string[] = [], tasks?:ReviewTask[][], requireRequesterReview=true): ReviewPerson[] {
 
   const clean = emails.map(normalizedEmail);
 
@@ -118,7 +120,7 @@ export function reviewPeople(emails: string[], roles: string[], requester: strin
 
   const people = clean.map((email, i) => ({ email, role: roles[i] === "peer" ? "peer" as const : "primary" as const, scope: scopes[i] === "content_and_commercials" ? "content_and_commercials" as const : "content" as const, ...(tasks?{tasks:tasks[i]}:{}), state: "invited" as const, coverage: [] }));
 
-  if (!people.some(p => p.email === normalizedEmail(requester) && p.role === "primary" && hasReviewTask(p,"content")) || people.filter(p => p.role === "primary" && hasReviewTask(p,"content")).length < 2)
+  if (requireRequesterReview && !people.some(p => p.email === normalizedEmail(requester) && p.role === "primary" && hasReviewTask(p,"content")) || people.filter(p => p.role === "primary" && hasReviewTask(p,"content")).length < 2)
 
     throw Error("Include yourself and at least one other full reviewer. Peer-only checkers are optional.");
 
@@ -144,6 +146,8 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
 
   if (d.participants.some(p => p.state === "declined")) reasons.push("A decline needs requester acknowledgement or replacement.");
 
+  if(d.reviewProcessVersion===3) reasons.push(...luWorkflowBlockers(round));
+  else {
   for (const p of primaries) {
 
     const report = currentReport(d, p.email);
@@ -162,6 +166,7 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
 
   }
 
+  }
   if (activeFindings(d).some(f => f.blocking && f.status !== "closed")) reasons.push("Publication-blocking findings remain unresolved.");
 
   reasons.push(...correctionBlockers(round));
@@ -185,7 +190,7 @@ export function canWork(round: ReviewRound, now = Date.now()) { return round.sta
 
 export function needsReminder(round: ReviewRound, person: ReviewPerson, now = Date.now(),brandRevision=round.document.brand?.revision??0) {
 
-  return person.role!=="partner" && canWork(round, now) && person.state !== "declined" && (person.tasks?outstandingAssignedTasks(round,person,brandRevision).length>0:person.state!=="finished");
+  return person.role!=="partner" && canWork(round, now) && person.state !== "declined" && (person.tasks||round.document.reviewProcessVersion===3?outstandingAssignedTasks(round,person,brandRevision).length>0:person.state!=="finished");
 
 }
 

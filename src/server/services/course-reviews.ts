@@ -195,7 +195,7 @@ export async function dailyReviewMail(){
 
   if(hour>=9||overdue){
 
-   for(const p of d.participants)if(needsReminder(round,p,Date.now(),liveBrand))mail.push(...reviewMail(round,"reminder",`reminder:${day}`,"Your assigned course-review tasks are outstanding. Complete the content report, commercial review and/or branding review assigned to you, or request an assignment change. Opening this message is not approval.",[p.email]));
+   for(const p of d.participants)if(needsReminder(round,p,Date.now(),liveBrand))mail.push(...reviewMail(round,"reminder",`reminder:${day}`,d.reviewProcessVersion===3?"Your assigned course-review tasks are outstanding. Open each LU workflow for findings, designer responses, reopened corrections and endorsements. Complete any assigned commercial or branding reviews separately. Opening this message does not complete a required action.":"Your assigned course-review tasks are outstanding. Complete the content report, commercial review and/or branding review assigned to you, or request an assignment change. Opening this message is not approval.",[p.email]));
 
    mail.push(...reviewMail(round,"progress_digest",`digest:${day}`,overdue?"Unfinished work is OVERDUE. An explicit extension is required; nothing was approved automatically.":"Daily course-review progress summary.",[d.requester]));
 

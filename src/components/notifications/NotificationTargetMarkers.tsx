@@ -21,12 +21,12 @@ export function NotificationTargetMarkers(){
    }catch{/* Keep the workflow usable if reference tracking is temporarily unavailable. */}
   }
   void refresh();const update=()=>void refresh();
-  window.addEventListener("apgi-notifications-changed",update);window.addEventListener("focus",update);
-  return()=>{stopped=true;controller?.abort();window.removeEventListener("apgi-notifications-changed",update);window.removeEventListener("focus",update);};
+  window.addEventListener("apgi-notifications-changed",update);window.addEventListener("apgi-review-workspace-changed",update);window.addEventListener("focus",update);
+  return()=>{stopped=true;controller?.abort();window.removeEventListener("apgi-notifications-changed",update);window.removeEventListener("apgi-review-workspace-changed",update);window.removeEventListener("focus",update);};
  },[pathname,selected]);
  useEffect(()=>{
   const mounted:Marker[]=[];
-  setOverview(document.getElementById("review-process-notifications"));
+  setOverview(document.querySelector("[data-lu-review-workflow]")?null:document.getElementById("review-process-notifications"));
   for(const notice of notices){
    const anchor=notice.target_path?.split("#")[1];
    const target=anchor?document.getElementById(anchor):document.querySelector("main");

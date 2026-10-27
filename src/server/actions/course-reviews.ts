@@ -1,4 +1,5 @@
 "use server";
+import {luReviewAction} from "./lu-review-workflow";
 import {assertApprovedCorrectionScope,correctionRecheckUnits} from "@/lib/course-correction-scope";
 import {commercialReviewPath} from "@/lib/review-navigation";
 import {canProposeCommercial,readCommercialSuggestion} from "@/lib/commercial-feedback";
@@ -74,8 +75,10 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
   const rawTasks=form.getAll("review_tasks").map(String);
   const tasks=rawTasks.length?rawTasks.map(raw=>{const parsed=JSON.parse(raw);if(!Array.isArray(parsed)||parsed.some(x=>typeof x!=="string"))throw Error("Choose valid reviewer assignments.");return selectedTasks(parsed);}):undefined;
   if(tasks&&tasks.length!==form.getAll("review_email").length)throw Error("Choose assignments for every reviewer.");
-  const people=reviewPeople(form.getAll("review_email").map(String),form.getAll("review_role").map(String),session.user.email!,form.getAll("review_scope").map(String),tasks);
+  const people=reviewPeople(form.getAll("review_email").map(String),form.getAll("review_role").map(String),session.user.email!,form.getAll("review_scope").map(String),tasks,false);
 
+  const assignedDesigner=normalizedEmail(formText(form,"designer_email")||session.user.email!);
+  if(assignedDesigner!==normalizedEmail(session.user.email!)&&!people.some(p=>p.email===assignedDesigner))throw Error("Assign the course designer to this review team using their sign-in email.");
   const partner=brand.slug!=="apgi"||owner.slug!=="apgi",acceptor=partner?normalizedEmail(text(form,"terms_acceptor",3,254)):"";
 
   if(partner&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(acceptor))throw Error("Enter the future company owner's email.");
@@ -90,7 +93,7 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
 
   const id=randomUUID(),cutoff=cutoffValue(form),now=new Date().toISOString();
 
-  const round:ReviewRound={id,plan_id:null,organisation_id:brand.id,course_id:course.slug,fingerprint:source.fingerprint,revision:1,status:"open",created_at:now,document:{workflow:{version:2,stage:"content_review",designerName,designerCompany,ownerId,partner,partnerCompanyId:brand.slug!=="apgi"?brand.id:ownerId,partnerEmail:acceptor,commercials:[],counterOffers:0},title:course.title,brand:{name:brand.name,revision:brand.brand_revision,color:brand.primary_color,logo:brand.logo_path},requester:normalizedEmail(session.user.email!),requesterId:session.user.id,cutoff,units:course.units.map(u=>({slug:u.slug,title:u.title})),participants:people,reports:[],findings:[],events:[],terms:{text:"Commercial preparation follows the requester report. Final content clearance and joint APGI commercial approvals remain required before publication.",partner,acceptor}}};
+  const round:ReviewRound={id,plan_id:null,organisation_id:brand.id,course_id:course.slug,fingerprint:source.fingerprint,revision:1,status:"open",created_at:now,document:{reviewProcessVersion:3,designerEmail:normalizedEmail(formText(form,"designer_email")||session.user.email!),workflow:{version:2,stage:"content_review",designerName,designerCompany,ownerId,partner,partnerCompanyId:brand.slug!=="apgi"?brand.id:ownerId,partnerEmail:acceptor,commercials:[],counterOffers:0},title:course.title,brand:{name:brand.name,revision:brand.brand_revision,color:brand.primary_color,logo:brand.logo_path},requester:normalizedEmail(session.user.email!),requesterId:session.user.id,cutoff,units:course.units.map(u=>({slug:u.slug,title:u.title})),participants:people,reports:[],findings:[],events:[],terms:{text:"Commercial preparation follows the requester report. Final content clearance and joint APGI commercial approvals remain required before publication.",partner,acceptor}}};
 
   const prior=(await rows<ReviewRound>(`/rest/v1/course_review_rounds?organisation_id=eq.${brand.id}&course_id=eq.${course.slug}&select=*&order=created_at.desc&limit=1`))[0];
 
@@ -100,9 +103,9 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
 
   const invitations=people.map(p=>({email:p.email,token:randomBytes(32).toString("base64url")}));
 
-  const messages=reviewMail(round,"invitation","invite",reviewInvitationNarrative(session.user.email!));
+  const messages=reviewMail(round,"invitation","invite",reviewInvitationNarrative(session.user.email!,true));
 
-  for(const m of messages){const invite=invitations.find(i=>i.email===m.to)!;const person=people.find(p=>p.email===m.to)!;m.body+=`\n\nYour assignments: ${(person.tasks??["content"]).join(", ")}. ${hasReviewTask(person,"content")?"Complete your assigned content review and report.":"No learning-unit coverage or full content report is required for your assignment."}`;m.body+=`\n\nFirst time on V2? Create your separate review account here: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}/join/${invite.token}`;}
+  for(const m of messages){const invite=invitations.find(i=>i.email===m.to)!;const person=people.find(p=>p.email===m.to)!;m.body+=`\n\nYour assignments: ${(person.tasks??["content"]).join(", ")}. ${hasReviewTask(person,"content")?"Complete the findings, feedback decisions and coverage in each assigned LU workflow.":"No learning-unit coverage or full content report is required for your assignment."}`;m.body+=`\n\nFirst time on V2? Create your separate review account here: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}/join/${invite.token}`;}
 
   const saved=await adminRest("/rest/v1/rpc/v2_create_course_review",{method:"POST",body:JSON.stringify({p_round:round,p_actor:session.user.id,p_mail:messages,p_invites:invitations.map(i=>({email:i.email,hash:createHash("sha256").update(i.token).digest("hex"),expires:cutoff}))})});
 
@@ -117,6 +120,7 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
 }
 
 export async function courseReviewAction(_:ReviewActionState,form:FormData):Promise<ReviewActionState>{
+ if(["implementation_submit","implementation_decision","finding_endorsement","finding_reopen"].includes(String(form.get("operation"))))return luReviewAction(_,form);
 
  try{
 
@@ -434,6 +438,7 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
     notice=scope==='course'?"Review saved for all slides and every learning unit in this course review.":"Review saved. Your feedback is recorded in the shared review and audit trail.";
 
    }else if(op==="reply"||op==="fixed"||op==="close"){
+    if(d.reviewProcessVersion===3&&op!=="reply")throw Error("Use the numbered implementation, reviewer decision and endorsement controls in the LU workspace.");
 
     const f=activeFindings(d).find(f=>f.id===text(form,"finding_id"));if(!f)throw Error("Finding unavailable.");
 

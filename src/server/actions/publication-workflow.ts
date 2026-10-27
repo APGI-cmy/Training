@@ -1,4 +1,5 @@
 "use server";
+import {initialReviewerComplete} from "@/lib/lu-review-workflow";
 
 import {revalidatePath} from "next/cache";
 
@@ -35,7 +36,7 @@ export async function publicationWorkflowAction(_:ReviewActionState,form:FormDat
  if(op==="begin_commercials"){
   const person=round.document.participants.find(p=>p.email===email);
   if(round.document.requester!==email||round.document.requesterId!==session.user.id)throw Error("The review requester starts commercial preparation.");
-  if(w.stage!=="content_review"||!person||person.state!=="finished"||!round.document.units.every(u=>person.coverage.includes(u.slug))||!round.document.reports.some(r=>r.email===email))throw Error("Complete your LU/quiz coverage and submit your report before preparing commercials. Unresolved findings do not block commercial preparation.");
+  if(w.stage!=="content_review"||(round.document.reviewProcessVersion===3?!initialReviewerComplete(round,email):!person||person.state!=="finished"||!round.document.units.every(u=>person.coverage.includes(u.slug))||!round.document.reports.some(r=>r.email===email)))throw Error("Complete your LU initial review and coverage before preparing commercials. Unresolved findings do not block commercial preparation.");
   w.commercialPreparation={at:now,email,userId:session.user.id};w.stage="commercial_draft";
   message="Commercial preparation opened. Content corrections and independent checks still block final publication.";
  }else if(op==="approve_content"){
