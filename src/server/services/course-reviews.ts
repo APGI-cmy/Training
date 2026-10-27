@@ -91,11 +91,11 @@ export async function requireReview(id:string) {
 
 export type ReviewMail={key:string;to:string;kind:string;subject:string;body:string};
 
-export function reviewMail(round:ReviewRound,kind:string,key:string,body:string,to?:string[]):ReviewMail[] {
+export function reviewMail(round:ReviewRound,kind:string,key:string,body:string,to?:string[],includeProgress=true):ReviewMail[] {
 
  const d=round.document;
 
- return (to??d.participants.filter(p=>p.state!=="declined").map(p=>p.email)).map(email=>({key:`${round.id}:${key}:${email}`,to:email,kind,subject:`${d.brand.name} — ${d.title}: ${kind.replaceAll("_"," ")}`,body:`${body}\n\n${progressText(round)}\n\nSign in with ${email}: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${round.id}\nHosted by APGI`}));
+ return (to??d.participants.filter(p=>p.state!=="declined").map(p=>p.email)).map(email=>({key:`${round.id}:${key}:${email}`,to:email,kind,subject:`${d.brand.name} — ${d.title}: ${kind.replaceAll("_"," ")}`,body:`${body}${includeProgress?`\n\n${progressText(round)}`:""}\n\nSign in with ${email}: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${round.id}\nHosted by APGI`}));
 
 }
 

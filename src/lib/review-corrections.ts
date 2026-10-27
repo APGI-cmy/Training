@@ -1,6 +1,6 @@
 import type {ReviewRound,ReviewFinding} from "./course-review";
 
-export type ContentRevision = {fingerprint:string;previousFingerprint:string;at:string;email:string;userId:string;notes:string;deployment:string};
+export type ContentRevision = {fingerprint:string;previousFingerprint:string;at:string;email:string;userId:string;notes:string;deployment:string;changedUnits?:string[];preservedUnits?:string[]};
 
 export function fixFinding(round:ReviewRound,finding:ReviewFinding,userId:string,at:string) {
  if(finding.outcome==="satisfied"||(finding.status!=="open"&&!(finding.status==="fixed"&&finding.fixedFingerprint!==round.fingerprint)))throw Error("Only an open issue can be marked implemented.");

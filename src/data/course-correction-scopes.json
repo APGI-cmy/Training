@@ -1,0 +1,13 @@
+[
+  {
+    "roundId": "4e26a845-4c1e-442a-87f8-2ad192647b37",
+    "courseId": "vpshr-level-0",
+    "previousFingerprint": "37a1df4f248783b6f583595dd3c339586b933ef3dcc342653c4838cee6f4702b",
+    "fingerprint": "b47c284e32ff813100ba0cd63fefb09fcb67146ad73204f681067cecf72e7664",
+    "changedUnits": ["lu5", "lu11"],
+    "baselineCommit": "8d168944",
+    "contentCommit": "c5e40163793ae3bab8db57396282e922dd4a8043",
+    "engineSource": "d92c5ae0944f933b1dc55c6b5a12247ef0770aa085e1b42908412ac8be596399",
+    "authorisation": "2026-10-27: Preserve unchanged LUs; recheck only LU5/LU11."
+  }
+]

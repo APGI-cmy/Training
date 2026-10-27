@@ -1,4 +1,5 @@
 "use server";
+import {assertApprovedCorrectionScope,correctionRecheckUnits} from "@/lib/course-correction-scope";
 import {commercialReviewPath} from "@/lib/review-navigation";
 import {canProposeCommercial,readCommercialSuggestion} from "@/lib/commercial-feedback";
 
@@ -130,8 +131,11 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
    if(form.get("confirm_revision")!=="on")throw Error("Confirm that the corrected package is deployed and ready for independent review.");
    const cutoff=cutoffValue(form);if(Date.parse(cutoff)<Date.parse(d.cutoff))throw Error("Keep the existing deadline or choose a later cutoff.");
    const notes=text(form,"comment",5),deployment=text(form,"deployment",3,500);
+   assertApprovedCorrectionScope(round,access.source.fingerprint);
+   const recheck=correctionRecheckUnits(round,access.source.fingerprint,access.source.course.units);
+   const reviewScope=`Recheck only these learning units and their embedded quizzes: ${recheck.map(slug=>`${slug.toUpperCase()} — ${access.source.course.units.find(u=>u.slug===slug)?.title??slug}`).join("; ")}. Coverage for the other ${access.source.course.units.length-recheck.length} unchanged learning units is retained. Earlier findings, screenshots, reports and endorsements remain saved.`;
    const recipients=[...new Set([...d.participants.filter(p=>p.state!=="declined").map(p=>p.email),...(d.workflow.partner&&d.workflow.commercials.at(-1)?.acceptance?[d.workflow.partnerEmail]:[])])];
-   mail=reviewMail(round,"content_revision_registered",`content-revision:${access.source.fingerprint}:${round.revision}`,`${email} registered corrected deployed content ${access.source.fingerprint.slice(0,12)}. ${notes} Deployment reference: ${deployment}. Recheck all learning units and quizzes, submit a report for this version and obtain an independent endorsement. Each blocking correction must be recorded as implemented and verified by a different reviewer. Unchanged commercial sign-offs are retained. Any previous partner acceptance of content must be reconfirmed. Cutoff: ${cutoff}. Reminders stop on completion, decline or cutoff; unfinished work needs an extension.`,recipients);
+   mail=reviewMail(round,"content_revision_registered",`content-revision:${access.source.fingerprint}:${round.revision}`,`${email} registered corrected deployed content ${access.source.fingerprint.slice(0,12)}. ${notes} Deployment reference: ${deployment}. ${reviewScope} After those rechecks, submit an updated report for this version and obtain a fresh independent endorsement. Blocking corrections in changed units require implementation and independent verification. Unchanged commercial sign-offs are retained. Any previous partner acceptance of content must be reconfirmed. Cutoff: ${cutoff}. Reminders stop on completion, decline or cutoff; unfinished work needs an extension.`,recipients,false);
    const saved=await adminRest("/rest/v1/rpc/v2_register_course_correction",{method:"POST",body:JSON.stringify({p_id:id,p_revision:round.revision,p_previous:round.fingerprint,p_fingerprint:access.source.fingerprint,p_actor:session.user.id,p_units:access.source.course.units.map(u=>({slug:u.slug,title:u.title})),p_notes:notes,p_deployment:deployment,p_cutoff:cutoff,p_mail:mail})});
    if(!saved.ok)throw Error("The corrected version could not be registered. Reload and check the current deployment and deadline; earlier evidence is safe.");
    try{await processReviewMail();}catch{/* Durable outbox retries. */}
