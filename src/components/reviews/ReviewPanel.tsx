@@ -101,7 +101,7 @@ export function ReviewPanel({id,unit,canEdit,email,hasEbook,findings=[],disabled
  <input type="hidden" name="replace_id" defaultValue={editId}/><input type="hidden" name="finding_version" value={loadedAt}/><input type="hidden" name="keep_all" defaultValue=""/>
  <input type="hidden" name="reference" value={reference}/><input type="hidden" name="slide_unit" value={unit}/><input type="hidden" name="slide_number" value={slide?.number??''}/><input type="hidden" name="slide_title" value={slide?.title??''}/>
 
- {selected?<p>Editing your saved finding. Earlier versions, discussion and attachments remain in the audit trail. Further feedback reopens a submitted report for a new version.</p>:null}
+ {selected?<p>Editing your saved finding. Earlier versions, discussion and attachments remain saved. Changes update the shared LU review record and require a fresh review decision.</p>:null}
 
  <fieldset><legend>Review declarations — choose the combination that applies</legend>
 

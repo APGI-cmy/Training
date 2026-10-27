@@ -28,6 +28,6 @@ export default async function ReviewUnit({params,searchParams}:{params:Promise<{
     </ReviewSlideTracking>
     <section className="content-band"><div className="content-inner review-box"><h2>Finish reviewing this LU</h2>
       {person?.role==="primary"&&hasReviewTask(person,"content")?<CoverageConfirmation id={id} unit={lu.slug} confirmed={person.coverage.includes(lu.slug)} locked={!editable}/>:null}
-      <Link className="secondary-button" href={`/course-reviews/${id}#review-unit-${lu.slug}`}>Return to this LU workflow</Link>
+      <a className="secondary-button" href={`/course-reviews/${id}#review-unit-${lu.slug}`}>Return to this LU workflow</a>
     </div></section></>;
 }
