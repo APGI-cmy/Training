@@ -36,6 +36,7 @@ describe("VPSHR completion using Next",()=>{
   // Keep the original identity check, normalizing only approved SCORM resource moves.
   // Both packages and their launch paths have dedicated SCORM integration checks.
   const baseline=JSON.stringify(copy)
+   .replaceAll("/courses/vpshr-level-0/LU1 Definition/res","/courses/vpshr-level-0/LU1 Definition")
    .replaceAll("/courses/vpshr-level-0/LU11 Civil-unrest/res","/courses/vpshr-level-0/LU11 Civil-unrest")
    .replaceAll("/courses/vpshr-level-0/LU5 Factors-contributing/res","/courses/vpshr-level-0/LU5 Factors-contributing/5. Basic human rights-final (Published)/6. Factors that may contribute-final (Published)");
   expect(createHash("sha256").update(baseline).digest("hex")).toBe("512fbc464d2bb9410f514c4146168c4730713a8d36891c54726b9c2470acd573");

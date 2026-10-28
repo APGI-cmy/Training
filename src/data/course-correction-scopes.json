@@ -19,5 +19,15 @@
     "baselineCommit": "172a801d",
     "contentEvidence": "docs/v2/vpshr-introduction-import-20261028.md",
     "authorisation": "2026-10-28: Import the approved introduction into both PowerPoint and V2. Preserve unchanged LU review evidence."
+  },
+  {
+    "roundId": "4e26a845-4c1e-442a-87f8-2ad192647b37",
+    "courseId": "vpshr-level-0",
+    "previousFingerprint": "4f90eaf9ff306b9f77c0b6ed2543d4430a96e8e583519200c5879822eb3850f4",
+    "fingerprint": "82420476dbb8d3855b681a8ce7f507268c0348ba79e47c4f20542cb907aeb8b4",
+    "changedUnits": ["lu1"],
+    "baselineCommit": "960adacf6444bdebb31cae89212200418e51ce95",
+    "contentEvidence": "docs/v2/lu1-republication-20261028.md",
+    "authorisation": "2026-10-28: Deploy the republished LU1. Preserve unchanged LU coverage and existing review evidence."
   }
 ]

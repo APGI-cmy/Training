@@ -74,7 +74,7 @@
       "subtitle": "Build a shared vocabulary for rights and responsibilities.",
       "duration": "10 min",
       "assetBase": "/courses/vpshr-level-0/LU1 Definition",
-      "publishedPath": "/courses/vpshr-level-0/LU1 Definition/index.html",
+      "publishedPath": "/courses/vpshr-level-0/LU1 Definition/res/index.html",
       "objectives": [
         "Define human rights in plain operational language.",
         "Recognize that rights apply to everyone without discrimination.",
@@ -84,35 +84,35 @@
         {
           "kind": "video",
           "title": "Human rights definition video",
-          "src": "/courses/vpshr-level-0/LU1 Definition/data/video1.mp4",
-          "poster": "/courses/vpshr-level-0/LU1 Definition/data/thmb1.jpg"
+          "src": "/courses/vpshr-level-0/LU1 Definition/res/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU1 Definition/res/data/thmb1.jpg"
         },
         {
           "kind": "audio",
           "title": "Narration audio",
-          "src": "/courses/vpshr-level-0/LU1 Definition/data/sound1.mp3"
+          "src": "/courses/vpshr-level-0/LU1 Definition/res/data/sound1.mp3"
         },
         {
           "kind": "embed",
           "title": "Original published unit",
-          "src": "/courses/vpshr-level-0/LU1 Definition/index.html"
+          "src": "/courses/vpshr-level-0/LU1 Definition/res/index.html"
         }
       ],
       "slides": [
         {
           "title": "Universal rights",
           "body": "Human rights protect the dignity and safety of every person affected by security operations.",
-          "thumbnail": "/courses/vpshr-level-0/LU1 Definition/data/thmb1.jpg"
+          "thumbnail": "/courses/vpshr-level-0/LU1 Definition/res/data/thmb1.jpg"
         },
         {
           "title": "Operational relevance",
           "body": "The definition becomes practical when teams use it to guide communication, escalation, and reporting.",
-          "thumbnail": "/courses/vpshr-level-0/LU1 Definition/data/thmb2.jpg"
+          "thumbnail": "/courses/vpshr-level-0/LU1 Definition/res/data/thmb2.jpg"
         },
         {
           "title": "Accountability",
           "body": "Respect for rights depends on preparation, supervision, and consistent follow-through.",
-          "thumbnail": "/courses/vpshr-level-0/LU1 Definition/data/thmb3.jpg"
+          "thumbnail": "/courses/vpshr-level-0/LU1 Definition/res/data/thmb3.jpg"
         }
       ],
       "quiz": [],

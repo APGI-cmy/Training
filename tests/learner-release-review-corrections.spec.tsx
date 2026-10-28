@@ -22,6 +22,15 @@ function access(){const round=fixture();return {round,fresh:false,principal:true
 function form(){const f=new FormData();Object.entries({round_id:id,operation:"register_content_revision",expected_fingerprint:hash,expected_revision:"7",confirm_revision:"on",cutoff:"2090-01-02T12:00",comment:"Fixed the quiz explanations",deployment:"GitHub commit 123"}).forEach(([k,v])=>f.set(k,v));return f;}
 beforeEach(()=>{vi.clearAllMocks();m.access.mockResolvedValue(access());m.rpc.mockResolvedValue(new Response("8",{status:200}));});
 describe("Course correction versions",()=>{
+ it("rechecks only LU1 for the verified republished package while retaining the other twelve units",()=>{
+  const s=scopes.find(scope=>scope.changedUnits.length===1&&scope.changedUnits[0]==="lu1")!;
+  const r=fixture();r.id=s.roundId;r.course_id=s.courseId;r.fingerprint=s.previousFingerprint;
+  r.document.units=Array.from({length:13},(_,i)=>({slug:i===0?"introduction":`lu${i}`,title:`Unit ${i}`}));
+  expect(correctionRecheckUnits(r,s.fingerprint)).toEqual(["lu1"]);
+  expect(r.document.units.filter(u=>!correctionRecheckUnits(r,s.fingerprint).includes(u.slug))).toHaveLength(12);
+  expect(()=>assertApprovedCorrectionScope(r,s.fingerprint)).not.toThrow();
+  expect(correctionRecheckUnits({...r,id},s.fingerprint)).toHaveLength(13);
+ });
  it("limits preserved coverage to the approved round and exact verified transition",()=>{const s=scopes[0],r=fixture();r.id=s.roundId;r.course_id=s.courseId;r.fingerprint=s.previousFingerprint;r.document.units=Array.from({length:13},(_,i)=>({slug:i===0?"introduction":`lu${i}`,title:`Unit ${i}`}));expect(correctionRecheckUnits(r,s.fingerprint)).toEqual(["lu5","lu11"]);expect(correctionRecheckUnits({...r,id},s.fingerprint)).toHaveLength(13);expect(correctionRecheckUnits(r,"c".repeat(64))).toHaveLength(13);expect(()=>assertApprovedCorrectionScope(r,"c".repeat(64))).toThrow(/saved coverage has not been reset/);});
  it("verifies the historical Git packages and all unchanged units against the recorded scope",()=>{expect(execFileSync(process.execPath,["scripts/verify-vpshr-correction-scope.mjs"],{encoding:"utf8"})).toContain("11 LUs unchanged");});
  it("uses server-approved units in the reviewer message and ignores a forged browser scope",async()=>{const s=scopes[0],a=access();a.round.id=s.roundId;a.round.course_id=s.courseId;a.round.fingerprint=s.previousFingerprint;a.source.fingerprint=s.fingerprint;a.source.course.units=Array.from({length:13},(_,i)=>({slug:i===0?"introduction":`lu${i}`,title:`Unit ${i}`}));m.access.mockResolvedValue(a);const f=form();f.set("round_id",s.roundId);f.set("expected_fingerprint",s.fingerprint);f.set("changed_units","lu1");expect((await courseReviewAction({},f)).error).toBeUndefined();expect(m.mail.mock.calls[0][3]).toContain("LU5 — Unit 5; LU11 — Unit 11");expect(m.mail.mock.calls[0][3]).toContain("other 11 unchanged");expect(m.mail.mock.calls[0][5]).toBe(false);expect(JSON.parse(m.rpc.mock.calls[0][1].body).p_changed_units).toBeUndefined();});
