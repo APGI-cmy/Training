@@ -6,9 +6,12 @@ vi.mock("next/link",()=>({default:({href,children,...props}:{href:string;childre
 vi.mock("@/server/actions/notifications",()=>({notificationAction:vi.fn()}));
 import {SidebarNotifications} from "@/components/notifications/SidebarNotifications";
 import {NotificationControls} from "@/components/notifications/NotificationControls";
+import {NotificationReadReceipt} from "@/components/notifications/NotificationReadReceipt";
 import {notificationTarget,notificationStatus,countNotifications,type PersonalNotification} from "@/lib/notifications";
 const notice=(values:Partial<PersonalNotification>={}):PersonalNotification=>({id:"a",message:"Update",kind:"platform_event",created_at:"now",read_at:null,acknowledged_at:null,target_path:"/notifications",response_type:"read",pending:false,actor_user_id:null,...values});
 describe("Personal notification prompt and receipt meaning",()=>{
+ it("offers a read-only receipt inside feedback without nesting another form",()=>{const html=renderToStaticMarkup(<NotificationReadReceipt item={notice({reference_number:4483,response_type:"action",pending:true})}/>);expect(html).toContain('type="button"');expect(html).toContain("Read receipt for Notification 4483");expect(html).not.toContain("<form");expect(html).not.toContain("Acknowledge");expect(html).not.toContain("Open update");});
+ it("shows the shared recorded receipt for a notice already read on the inbox page",()=>{const html=renderToStaticMarkup(<NotificationReadReceipt item={notice({read_at:"today",response_type:"action",pending:true})}/>);expect(html).toContain("Read receipt recorded");expect(html).not.toContain("<button");});
  it("counts an unread pending task once and retains read tasks needing action",()=>{expect(countNotifications([notice({response_type:"action",pending:true}),notice({read_at:"today",response_type:"action",pending:true}),notice({read_at:"today"})])).toEqual({unread:1,responses:2,attention:2});});
  it("shows the badge and both counts with the current inbox highlighted",()=>{const html=renderToStaticMarkup(<SidebarNotifications initial={{unread:2,responses:3,attention:4}}/>);expect(html).toContain('aria-current="page"');expect(html).toContain('class="notification-badge">4');expect(html).toContain("2 unread, 3 requiring a response");});
  it("caps the visual badge without losing the accessible full count",()=>{const html=renderToStaticMarkup(<SidebarNotifications initial={{unread:200,responses:3,attention:202}}/>);expect(html).toContain("99+");expect(html).toContain("200 unread");});
