@@ -32,3 +32,36 @@ learner records or notification receipts are reset by this deployment.
 Correction registration and publication approvals remain separate actions.
 
 Release verification is recorded after deployment.
+
+## Verified release
+
+- Source commit: `c4cc5282093d567fe9cc04469d205a1126c0dfa7`, pushed to
+  `v2-development` and verified against the remote branch.
+- Deployment: `dpl_FH1n29rGFzbCjmVCLfKHCZr4vSYk`, READY and promoted to
+  `https://training-platform-v2-staging.vercel.app`.
+- 868 release tests in 92 files and TypeScript passed. Hosted prebuild verified
+  all 85 MP4 files are materialized media and compiled successfully.
+- All 165 source-package files match the staged Git blobs byte for byte.
+  The deployed launch HTML, both quiz resources, MP4 and manifest also match
+  source hashes. Canonical-domain HTML and MP4 hashes passed after promotion.
+- Live expanded player plays the captioned introduction, finishes on the
+  Click Next to proceed end card without advancing, and opens the survey only
+  after clicking Next. No answers, scores or review approvals were submitted.
+- Signed-in review route uses the new SCORM launch path. Changes implemented
+  displays reviewed version `4f90eaf9ff30`, deployed version `82420476dbb8`,
+  and Recheck only LU1; coverage for the other 12 learning units is retained.
+- Applied migration: `20261028132952_lu1_scorm_correction_scope`. The database
+  helper returns only `lu1` for this exact transition; anonymous and authenticated
+  clients retain no direct execute permission.
+- The review row remains revision 73 with all 16 findings and two reports.
+  Its entire document hash is unchanged: `f80683bc45a3442e574e52ffa1cf20f3`.
+  No correction registration, notification delivery, coverage reset or learner
+  publication was performed. A principal must register the deployed package in
+  Changes implemented before new review submissions can be saved.
+- Bounded runtime error/fatal scan returned zero records for 13:30:21-13:40:21
+  UTC (15:30:21-15:40:21 SAST), 28 October 2026.
+- Browser limitation: the automated embedded iframe appeared blank, as recorded
+  for earlier releases, while the live expanded player works. Embedded playback
+  is not claimed as verified. The final quiz was verified by package and hosted
+  byte checks; no final quiz attempt was submitted.
+- QA files and live screenshots: `C:/Users/Johan/Codex-Work/lu1-republish-20261028/`.
