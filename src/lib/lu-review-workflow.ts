@@ -68,11 +68,18 @@ export function reopenOwnFinding(round:ReviewRound,f:ReviewFinding,actor:{email:
  if(reason.trim().length<5)throw Error('Explain why the finding needs a further correction.');
  materializeImplementationRounds(round,f);const r=currentImplementation(round,f);if(!r)throw Error('Record an implementation before reopening it.');if(r.decision)r.previousDecisions=[...(r.previousDecisions??[]),r.decision];r.decision={...actor,at,decision:'reopen',reason:reason.trim()};f.status='open';delete f.verifiedBy;delete f.verifiedAt;delete f.verifiedFingerprint;
 }
+export function luInitialReviewProgress(round:ReviewRound,unit:string){
+ const findings=activeFindings(round.document).filter(f=>findingAppliesToUnit(f,unit));
+ return round.document.participants.filter(p=>p.role==='primary'&&p.state!=='declined'&&hasReviewTask(p,'content')).map(p=>{
+  const coverage=p.coverage.includes(unit),recorded=findings.some(f=>f.author===p.email);
+  return {email:p.email,coverage,recorded,complete:coverage&&recorded};
+ });
+}
 export function luReviewStages(round:ReviewRound,unit:string){
  const d=round.document,findings=activeFindings(d).filter(f=>findingAppliesToUnit(f,unit));
- const reviewers=d.participants.filter(p=>p.role==='primary'&&p.state!=='declined'&&hasReviewTask(p,'content'));
+ const reviewers=luInitialReviewProgress(round,unit);
  const reopens=findings.flatMap(f=>implementationRounds(round,f).filter(r=>r.decision?.decision==='reopen').map(r=>({findingId:f.id,number:r.number})));
- return [{id:'initial' as const,label:'Initial review',done:reviewers.length>=2&&reviewers.every(p=>p.coverage.includes(unit)&&findings.some(f=>f.author===p.email))},
+ return [{id:'initial' as const,label:'Initial review',done:reviewers.length>=2&&reviewers.every(p=>p.complete)},
  {id:'implementation' as const,label:'Implementation feedback',done:findings.length>0&&findings.every(f=>f.outcome==='satisfied'||retainedClosure(round,f)||!!implementationRounds(round,f)[0]&&(implementationRounds(round,f)[0].userId===f.userId||!!implementationRounds(round,f)[0].decision))},
  {id:'reopened' as const,label:'Reopened rounds',done:reopens.every(x=>['Closed','Awaiting endorsement'].includes(findingPhase(round,findings.find(f=>f.id===x.findingId)!))),rounds:[...new Set(reopens.map(r=>r.number))].sort((a,b)=>a-b)},
  {id:'endorsements' as const,label:'Endorsements',done:findings.length>0&&findings.every(f=>findingPhase(round,f)==='Closed')}];
