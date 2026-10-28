@@ -1,5 +1,6 @@
 import {LUReviewWorkspace} from "./LUReviewWorkspace";
 import {luWorkflowBlockers} from "@/lib/lu-review-workflow";
+import {correctionRecheckUnits} from "@/lib/course-correction-scope";
 import Link from "next/link";
 import {activeFindings,canWork,currentReport,findingLocationLabel,type ReviewRound} from "@/lib/course-review";
 import {hasReviewTask} from "@/lib/review-tasks";
@@ -65,7 +66,7 @@ function LegacyReviewProcess({round,email,userId,requester,fresh}:{round:ReviewR
  </section>;
 }
 
-export function ReviewProcess(props:{round:ReviewRound;email:string;userId:string;requester:boolean;fresh:boolean}){
+export function ReviewProcess(props:{round:ReviewRound;email:string;userId:string;requester:boolean;fresh:boolean;deployedFingerprint?:string}){
  const {round,email,userId,fresh}=props,d=round.document;
  if(d.reviewProcessVersion!==3)return <LegacyReviewProcess {...props}/>;
  // Whitelist the content-workflow snapshot. Private commercial schedules never enter client props.
@@ -75,6 +76,6 @@ export function ReviewProcess(props:{round:ReviewRound;email:string;userId:strin
  {d.reports.map(r=><span key={r.id} id={reportAnchor(r.id)} className="review-process-anchor"/>)}
  <div id="review-process-notifications"><Link href="/notifications">Open notifications and tracking</Link></div>
  <p>{pending.length?"Open a learning unit to see its initial review, implementation feedback, reopened rounds and endorsements.":"All LU reviews and required finding endorsements are complete. Final course, commercial and branding approvals remain separate."}</p>
- <LUReviewWorkspace round={snapshot} email={email} userId={userId} fresh={fresh}/>
+ <LUReviewWorkspace round={snapshot} email={email} userId={userId} fresh={fresh} pendingRecheckUnits={fresh?[]:correctionRecheckUnits(round,props.deployedFingerprint??'')}/>
  </section>;
 }

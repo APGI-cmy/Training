@@ -72,16 +72,16 @@ export function reopenOwnFinding(round:ReviewRound,f:ReviewFinding,actor:{email:
  if(reason.trim().length<5)throw Error('Explain why the finding needs a further correction.');
  materializeImplementationRounds(round,f);const r=currentImplementation(round,f);if(!r)throw Error('Record an implementation before reopening it.');if(r.decision)r.previousDecisions=[...(r.previousDecisions??[]),r.decision];r.decision={...actor,at,decision:'reopen',reason:reason.trim()};f.status='open';delete f.verifiedBy;delete f.verifiedAt;delete f.verifiedFingerprint;
 }
-export function luInitialReviewProgress(round:ReviewRound,unit:string){
+export function luInitialReviewProgress(round:ReviewRound,unit:string,recheckPending=false){
  const findings=activeFindings(round.document).filter(f=>findingAppliesToUnit(f,unit));
  return round.document.participants.filter(p=>p.role==='primary'&&p.state!=='declined'&&hasReviewTask(p,'content')).map(p=>{
-  const coverage=p.coverage.includes(unit),recorded=findings.some(f=>f.author===p.email);
+   const coverage=!recheckPending&&p.coverage.includes(unit),recorded=findings.some(f=>f.author===p.email);
   return {email:p.email,coverage,recorded,complete:coverage&&recorded};
  });
 }
-export function luReviewStages(round:ReviewRound,unit:string){
+export function luReviewStages(round:ReviewRound,unit:string,recheckPending=false){
  const d=round.document,findings=activeFindings(d).filter(f=>findingAppliesToUnit(f,unit));
- const reviewers=luInitialReviewProgress(round,unit);
+ const reviewers=luInitialReviewProgress(round,unit,recheckPending);
  const reopens=findings.flatMap(f=>f.outcome==='satisfied'&&findingPhase(round,f)==='Reopened'?[{findingId:f.id,number:1}]:implementationRounds(round,f).filter(r=>r.decision?.decision==='reopen'||r.endorsementReopen).map(r=>({findingId:f.id,number:r.number})));
  return [{id:'initial' as const,label:'Initial review',done:reviewers.length>=2&&reviewers.every(p=>p.complete)},
  {id:'implementation' as const,label:'Implementation feedback',done:findings.length>0&&findings.every(f=>f.outcome==='satisfied'||retainedClosure(round,f)||!!implementationRounds(round,f)[0])},

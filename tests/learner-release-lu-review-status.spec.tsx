@@ -11,6 +11,19 @@ function setup(){
  return r;
 }
 describe('Clear personal and team LU status',()=>{
+ it('keeps the changed LU red while old confirmations remain saved, then requires every reviewer to reconfirm',()=>{
+  const r=setup();r.document.participants[1].coverage=['lu1'];r.document.findings.push({...r.document.findings[0],id:'other',author:'jorrie.jordaan@apginc.ca',userId:'jorrie',outcome:'satisfied'});
+  const before=JSON.stringify(r);
+  expect(luReviewStages(r,'lu1')[0].done).toBe(true);
+  expect(luReviewStages(r,'lu1',true)[0].done).toBe(false);
+  const html=renderToStaticMarkup(<InitialReviewStatus round={r} unit="lu1" email="johan.ras@apginc.ca" recheckPending/>);
+  expect(html).toContain('Earlier coverage confirmations remain saved');expect(html).toContain('0 of 2 reviewers complete');expect(html).toContain('jorrie.jordaan@apginc.ca');expect(html).toContain('recheck the updated LU');
+  expect(JSON.stringify(r)).toBe(before);
+  r.document.participants.forEach(p=>p.coverage=[]);
+  expect(luReviewStages(r,'lu1')[0].done).toBe(false);
+  r.document.participants[0].coverage=['lu1'];expect(luReviewStages(r,'lu1')[0].done).toBe(false);
+  r.document.participants[1].coverage=['lu1'];expect(luReviewStages(r,'lu1')[0].done).toBe(true);
+ });
  it('shows personal completion while the team still needs another reviewer, without changing the gate',()=>{
   const r=setup(),html=renderToStaticMarkup(<InitialReviewStatus round={r} unit="lu1" email="johan.ras@apginc.ca"/>);
   expect(html).toContain('Your initial review: Complete');expect(html).toContain('1 of 2 reviewers complete');
