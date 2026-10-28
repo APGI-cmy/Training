@@ -9,6 +9,14 @@ function team(){
  const f:ReviewFinding={id:'own',unit:'lu1',at:'now',reference:'Slide 1',category:'Content',author:r.document.requester,userId:'johan',text:'Fixed navigation',status:'open',blocking:false,replies:[]};r.document.findings=[f];return {r,f};
 }
 describe('Messages and endorsements for larger review teams',()=>{
+ it('notifies the finding author and other peers directly after implementation, excluding the implementation writer',()=>{
+  const {r,f}=team();f.author='peer1@example.com';f.userId='peer1';
+  submitImplementation(r,f,{email:r.document.requester,userId:'johan'},{id:'response',at:'now',implemented:'yes',notes:'Corrected the full presentation'});
+  const before=JSON.stringify(r.document.participants);
+  for(const p of r.document.participants){const tasks=reviewNotificationTasks({round:r,hash:r.fingerprint,brandRevision:1},p.email,p.userId!,p.userId==='johan');const endorsement=tasks.find(t=>t.key.includes(':lu-endorsement:'));expect(!!endorsement).toBe(p.userId!=='johan');expect(tasks.some(t=>t.key.includes(':lu-decision:'))).toBe(false);if(endorsement)expect(endorsement.actorUserId).toBe('johan');}
+  expect(JSON.stringify(r.document.participants)).toBe(before);
+  endorseFinding(r,f,{email:f.author,userId:f.userId},{at:'now',decision:'yes',reason:''});expect(findingPhase(r,f)).toBe('Closed');
+ });
  it('does not retroactively reopen an earlier declined endorsement when this release is installed',()=>{
   const {r,f}=team();f.outcome='satisfied';f.workflowEndorsements=[{email:'peer1@example.com',userId:'peer1',at:'earlier',decision:'no',reason:'Earlier disagreement retained',findingAt:f.at,fingerprint:r.fingerprint}];
   expect(findingPhase(r,f)).toBe('Awaiting endorsement');expect(f.declarationReopen).toBeUndefined();

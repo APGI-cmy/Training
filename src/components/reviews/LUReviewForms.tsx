@@ -14,13 +14,13 @@ export function ImplementationEditor({round,finding,userId}:{round:ReviewRound;f
  <label>Implementation feedback / reason<textarea name="comment" required minLength={5} maxLength={5000} value={notes} onChange={e=>{setNotes(e.target.value);setSaved(false);}}/></label><button type="button" className="secondary-button" onClick={save}>Save private draft</button>{saved?<p role="status">Private draft saved. Reviewer views are unchanged.</p>:null}
  </ReviewForm></div>;
 }
-export function FindingDecisionForm({round,finding,response,endorsement=false}:{round:ReviewRound;finding:ReviewFinding;response?:ImplementationRound;endorsement?:boolean}){
+export function FindingDecisionForm({round,finding,response}:{round:ReviewRound;finding:ReviewFinding;response?:ImplementationRound}){
  const [choice,setChoice]=useState('');
- return <ReviewForm key={`${finding.id}:${response?.id??finding.at}:${endorsement}`} id={round.id} operation={endorsement?'finding_endorsement':'implementation_decision'} preserveFields hidden={{finding_id:finding.id,finding_at:finding.at,response_id:response?.id??''}} label={endorsement?'Submit endorsement decision':`Submit decision on response (${response!.number})`}>
- <h4>{endorsement?'Endorse this reviewer’s submitted record':`Your decision on the designer’s response (${response!.number})`}</h4>
- <label><input type="radio" name="decision" value={endorsement?'yes':'accept'} required checked={choice===(endorsement?'yes':'accept')} onChange={e=>setChoice(e.target.value)}/>{endorsement?'Yes — endorse':`Yes — accept response (${response!.number}) and close this response loop`}</label>
- <label><input type="radio" name="decision" value={endorsement?'no':'reopen'} required checked={choice===(endorsement?'no':'reopen')} onChange={e=>setChoice(e.target.value)}/>{endorsement?'No — do not endorse':`No — reject response (${response!.number}) and reopen this finding`}</label>
- <label>{endorsement?'Comments / reason for not endorsing':'Comments / reason for reopening'}<textarea name="comment" required={choice==='no'||choice==='reopen'} minLength={choice==='no'||choice==='reopen'?5:undefined} maxLength={5000}/></label>
- <p>{endorsement?'One additional endorsement is sufficient. A No decision requires a reason and reopens the record for correction, without requiring you to monitor someone else’s feedback loop.':`This decision applies only to Implementation notes (${response!.number}). There is no self-endorsement step.`}</p>
+ return <ReviewForm key={`${finding.id}:${response?.id??finding.at}`} id={round.id} operation="finding_endorsement" preserveFields hidden={{finding_id:finding.id,finding_at:finding.at,response_id:response?.id??''}} label="Submit endorsement decision">
+ <h4>{response?`Endorse Implementation notes (${response.number})`:'Endorse this review declaration'}</h4>
+ <label><input type="radio" name="decision" value="yes" required checked={choice==='yes'} onChange={e=>setChoice(e.target.value)}/>Yes — endorse and close</label>
+ <label><input type="radio" name="decision" value="no" required checked={choice==='no'} onChange={e=>setChoice(e.target.value)}/>No — do not endorse; reopen with a reason</label>
+ <label>Comments / reason for not endorsing<textarea name="comment" required={choice==='no'} minLength={choice==='no'?5:undefined} maxLength={5000}/></label>
+ <p>One additional endorsement is sufficient. No requires a reason and reopens the record for correction. The implementation writer cannot endorse their own response; a declaration’s author cannot endorse their own declaration.</p>
  </ReviewForm>;
 }

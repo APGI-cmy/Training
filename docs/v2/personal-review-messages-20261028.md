@@ -1,5 +1,7 @@
 # Personal review messages and recipient tracking
 
+The later [direct LU endorsement release](direct-lu-endorsement-20261028.md) replaces the separate original-author acceptance described below. New implementation responses move straight to Endorsements; earlier saved decisions remain intact.
+
 Each LU now has a **Messages for you** inbox with explicit To and From labels. These are the signed-in person's own action notifications. They are no longer inserted beneath another reviewer's finding or email heading. Other reviewers' submitted findings remain shared snapshots; their personal inboxes are not displayed.
 
 **Messages you sent** is a separate, paginated receipt table on the Notifications page and inside each LU. Every recipient has a separate row, notification reference, platform delivery time, read state/time, outstanding response and reminder history. Sender rows have no read button. LU tables filter by the selected unit, including course-wide records. Fifty-row pagination supports larger teams and long review histories.

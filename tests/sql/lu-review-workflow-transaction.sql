@@ -13,11 +13,18 @@ begin
  changed=jsonb_set(doc,'{findings,0,implementationRounds,0,endorsements}','[]');if public.v3_lu_review_ready(changed,hash) then raise exception 'Missing peer endorsement accepted';end if;
  changed=jsonb_set(doc,'{findings,0,implementationRounds,0,endorsements,0,userId}',to_jsonb(a::text));if public.v3_lu_review_ready(changed,hash) then raise exception 'Self endorsement accepted';end if;
  changed=jsonb_set(doc,'{findings,1,implementationRounds,0,decision,decision}','"reopen"');if public.v3_lu_review_ready(changed,hash) then raise exception 'Rejected response accepted';end if;
- changed=doc#-'{findings,1,implementationRounds,0,decision}';if public.v3_lu_review_ready(changed,hash) then raise exception 'Missing author acceptance accepted';end if;
+ changed=doc#-'{findings,1,implementationRounds,0,decision}';if public.v3_lu_review_ready(changed,hash) then raise exception 'Designer self endorsement accepted without historical independent acceptance';end if;
+ -- New workflow: original reviewer endorses the designer response directly; no separate acceptance.
+ response=jsonb_build_array(jsonb_build_object('email','jorrie.jordaan@apginc.ca','userId',b,'decision','yes','reason','','findingAt','finding-date','fingerprint',hash));
+ changed=jsonb_set(changed,'{findings,1,implementationRounds,0,endorsements}',response);
+ if not public.v3_lu_review_ready(changed,hash) then raise exception 'Direct author endorsement of designer correction rejected';end if;
+ doc=changed;
+ changed=jsonb_set(doc,'{findings,1,implementationRounds,0,endorsements,0,decision}','"no"');if public.v3_lu_review_ready(changed,hash) then raise exception 'No endorsement accepted as closure';end if;
+ changed=jsonb_set(doc,'{findings,1,implementationRounds,0,endorsementReopen}',jsonb_build_object('findingAt','finding-date','fingerprint',hash,'reason','Still needs correction'));if public.v3_lu_review_ready(changed,hash) then raise exception 'Reopened endorsement accepted as closure';end if;
  changed=jsonb_set(doc,'{findings,1,implementationRounds,0,fingerprint}','"other"');if public.v3_lu_review_ready(changed,hash) then raise exception 'Stale response accepted';end if;
  changed=jsonb_set(doc,'{participants,1,coverage}','[]');if public.v3_lu_review_ready(changed,hash) then raise exception 'Missing coverage accepted';end if;
  changed=jsonb_set(doc,'{findings,1,implementationRounds,0,implemented}','"no"');if not public.v3_lu_review_ready(changed,hash) then raise exception 'Accepted explanation rejected';end if;
  changed=doc#-'{findings,1,implementationRounds,0,implemented}';if public.v3_lu_review_ready(changed,hash) then raise exception 'Missing implementation decision accepted';end if;
  changed=jsonb_set(doc,'{findings,1,implementationRounds,0,findingAt}','"older"');if public.v3_lu_review_ready(changed,hash) then raise exception 'Earlier finding version accepted';end if;
 end $qa$;
-select '10 per-LU publication guard checks passed; no stored review changed' as result;
+select '13 per-LU publication guard checks passed; no stored review changed' as result;

@@ -3,7 +3,7 @@ import {randomUUID} from 'node:crypto';
 import {revalidatePath} from 'next/cache';
 import {validId,formText} from '@/lib/company-structure';
 import {activeFindings} from '@/lib/course-review';
-import {currentImplementation,submitImplementation,decideImplementation,endorseFinding,reopenOwnFinding} from '@/lib/lu-review-workflow';
+import {currentImplementation,submitImplementation,endorseFinding,reopenOwnFinding} from '@/lib/lu-review-workflow';
 import {assertReviewWork,claimReviewer,requireReview,commitReview,reviewEvent,reviewMail,processReviewMail} from '@/server/services/course-reviews';
 import type {ReviewActionState} from './course-reviews';
 import {reviewNotificationTasks} from '@/lib/review-notification-tasks';
@@ -18,10 +18,9 @@ export async function luReviewAction(_:ReviewActionState,form:FormData):Promise<
   const reason=formText(form,'comment',0,5000);let message='';
   if(op==='implementation_submit'){
    submitImplementation(round,f,actor,{id:randomUUID(),at,implemented:formText(form,'implemented',1) as 'yes'|'no',notes:reason});
-   message=`Implementation notes (${currentImplementation(round,f)!.number}) submitted. ${f.author===email?'Another reviewer can endorse your record.':'The original reviewer can now accept or reject this response.'}`;
+   message=`Implementation notes (${currentImplementation(round,f)!.number}) submitted. Implementation feedback is recorded. Continue directly to Endorsements: one other reviewer selects Yes to close or No with a reason to reopen.`;
   }else if(op==='implementation_decision'){
-   decideImplementation(round,f,actor,{at,decision:formText(form,'decision',1) as 'accept'|'reopen',reason});
-   message=form.get('decision')==='reopen'?'Finding reopened. The designer can now prepare the next correction. No new implementation notes exist until submission.':'Response accepted. Awaiting endorsement from one other eligible reviewer.';
+   throw Error('The separate response decision has been replaced by Endorsements. Reload and choose Yes—endorse or No—do not endorse there. Earlier saved decisions remain in the record.');
   }else if(op==='finding_endorsement'){
    endorseFinding(round,f,actor,{at,decision:formText(form,'decision',1) as 'yes'|'no',reason});
    message=form.get('decision')==='yes'?'Endorsement recorded. The finding is closed.':'Not endorsed. Your reason is recorded and the record is reopened for correction. No further monitoring is assigned to you.';

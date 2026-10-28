@@ -5,7 +5,7 @@ export type FindingDecision={email:string;userId:string;at:string;decision:'acce
 export type EndorsementReopen={email:string;userId:string;at:string;reason:string;findingAt:string;fingerprint:string};
 export type FindingEndorsement={email:string;userId:string;at:string;decision:'yes'|'no';reason:string;findingAt:string;fingerprint:string};
 export type ImplementationRound={id:string;number:number;findingAt:string;fingerprint:string;email:string;userId:string;at:string;implemented:'yes'|'no';notes:string;decision?:FindingDecision;endorsementReopen?:EndorsementReopen;previousDecisions?:FindingDecision[];endorsements:FindingEndorsement[];legacy?:boolean};
-export type FindingPhase='Open'|'Reopened'|'Awaiting reviewer decision'|'Awaiting endorsement'|'Closed';
+export type FindingPhase='Open'|'Reopened'|'Awaiting endorsement'|'Closed';
 export type LUStage='initial'|'implementation'|'reopened'|'endorsements';
 export const designerEmail=(d:ReviewDocument)=>d.designerEmail??d.requester;
 export function isCourseDesigner(d:ReviewDocument,email:string,userId:string){
@@ -29,33 +29,32 @@ export function implementationRounds(round:ReviewRound,f:ReviewFinding):Implemen
 function materializeImplementationRounds(round:ReviewRound,f:ReviewFinding){const effective=implementationRounds(round,f);f.implementationRounds=f.implementationRounds?.length?f.implementationRounds.map(old=>effective.find(r=>r.id===old.id)??old):effective;}
 export function currentImplementation(round:ReviewRound,f:ReviewFinding){const r=implementationRounds(round,f).at(-1);return r&&r.findingAt===f.at&&r.fingerprint===round.fingerprint?r:undefined;}
 export function currentEndorsements(round:ReviewRound,f:ReviewFinding){return (f.outcome==='satisfied'?f.workflowEndorsements??[]:currentImplementation(round,f)?.endorsements??[]).filter(e=>e.findingAt===f.at&&e.fingerprint===round.fingerprint);}
-export function hasPeerEndorsement(round:ReviewRound,f:ReviewFinding){return currentEndorsements(round,f).some(e=>e.decision==='yes'&&e.email!==f.author&&e.userId!==f.userId&&contentReviewer(round.document,e.email,e.userId));}
+function independentEndorser(round:ReviewRound,f:ReviewFinding,email:string,userId:string){const writer=f.outcome==='satisfied'?{email:f.author,userId:f.userId}:currentImplementation(round,f);return !!writer&&writer.email!==email&&writer.userId!==userId;}
+export function hasPeerEndorsement(round:ReviewRound,f:ReviewFinding){
+ const response=currentImplementation(round,f);
+ // Retain completed checks from the former two-decision process; new responses use endorsement alone.
+ const priorAcceptance=response?.decision?.decision==='accept'&&response.decision.email===f.author&&response.decision.userId===f.userId&&response.userId!==f.userId&&contentReviewer(round.document,f.author,f.userId);
+ return currentEndorsements(round,f).some(e=>e.decision==='yes'&&contentReviewer(round.document,e.email,e.userId)&&(independentEndorser(round,f,e.email,e.userId)||priorAcceptance&&e.email!==f.author&&e.userId!==f.userId));
+}
 export function retainedClosure(round:ReviewRound,f:ReviewFinding){const verifier=round.document.participants.find(p=>p.userId===f.verifiedBy);return !f.implementationRounds?.length&&f.outcome!=='satisfied'&&f.status==='closed'&&!!f.fixedBy&&!!f.verifiedBy&&f.verifiedBy!==f.fixedBy&&f.fixedFingerprint===round.fingerprint&&f.verifiedFingerprint===round.fingerprint&&!!verifier&&contentReviewer(round.document,verifier.email,f.verifiedBy);}
 export function findingPhase(round:ReviewRound,f:ReviewFinding):FindingPhase{
  if(retainedClosure(round,f))return 'Closed';
  if(f.outcome==='satisfied')return f.declarationReopen&&f.declarationReopen.findingAt===f.at&&carriedVersion(round,f,f.declarationReopen.fingerprint)?'Reopened':hasPeerEndorsement(round,f)?'Closed':'Awaiting endorsement';
  const r=currentImplementation(round,f);if(!r)return 'Open';
  if(r.decision?.decision==='reopen'||r.endorsementReopen)return 'Reopened';
- if(f.userId!==r.userId&&r.decision?.decision!=='accept')return 'Awaiting reviewer decision';
  return hasPeerEndorsement(round,f)?'Closed':'Awaiting endorsement';
 }
 export function canImplement(round:ReviewRound,f:ReviewFinding,email:string,userId:string){return isCourseDesigner(round.document,email,userId)&&f.outcome!=='satisfied'&&['Open','Reopened'].includes(findingPhase(round,f));}
-export function canDecideImplementation(round:ReviewRound,f:ReviewFinding,email:string,userId:string){const r=currentImplementation(round,f);return findingPhase(round,f)==='Awaiting reviewer decision'&&f.author===email&&f.userId===userId&&r?.userId!==userId&&contentReviewer(round.document,email,userId);}
 function eligibleContentReviewer(d:ReviewDocument,email:string,userId:string){return d.participants.some(p=>p.email===email&&(!p.userId||p.userId===userId)&&p.state!=='declined'&&hasReviewTask(p,'content'));}
-export function canEndorseFinding(round:ReviewRound,f:ReviewFinding,email:string,userId:string){return findingPhase(round,f)==='Awaiting endorsement'&&f.author!==email&&f.userId!==userId&&eligibleContentReviewer(round.document,email,userId)&&!currentEndorsements(round,f).some(e=>e.userId===userId);}
+export function canEndorseFinding(round:ReviewRound,f:ReviewFinding,email:string,userId:string){return findingPhase(round,f)==='Awaiting endorsement'&&independentEndorser(round,f,email,userId)&&eligibleContentReviewer(round.document,email,userId)&&!currentEndorsements(round,f).some(e=>e.userId===userId);}
 export function submitImplementation(round:ReviewRound,f:ReviewFinding,actor:{email:string;userId:string},input:{id:string;at:string;implemented:'yes'|'no';notes:string}){
- if(!canImplement(round,f,actor.email,actor.userId))throw Error('Only the assigned course designer may respond to an open or reopened finding. Wait for the reviewer decision before submitting another response.');
+ if(!canImplement(round,f,actor.email,actor.userId))throw Error('Only the assigned course designer may respond to an open or reopened finding. Wait for a No endorsement to reopen it before submitting another response.');
  if(!['yes','no'].includes(input.implemented)||input.notes.trim().length<5)throw Error('Explain the implemented correction, or the reason for no change.');
  const rounds=implementationRounds(round,f);f.implementationRounds=[...(f.implementationRounds??rounds),{...actor,...input,notes:input.notes.trim(),number:(rounds.at(-1)?.number??0)+1,findingAt:f.at,fingerprint:round.fingerprint,endorsements:[]}];
  f.status='fixed';f.fixedBy=actor.userId;f.fixedAt=input.at;f.fixedFingerprint=round.fingerprint;delete f.verifiedBy;delete f.verifiedAt;delete f.verifiedFingerprint;
 }
-export function decideImplementation(round:ReviewRound,f:ReviewFinding,actor:{email:string;userId:string},input:{at:string;decision:'accept'|'reopen';reason:string}){
- if(!canDecideImplementation(round,f,actor.email,actor.userId))throw Error('Only the original reviewer may decide on this submitted implementation response.');
- if(!['accept','reopen'].includes(input.decision)||input.decision==='reopen'&&input.reason.trim().length<5)throw Error('Give a reason for rejecting and reopening this response.');
- materializeImplementationRounds(round,f);const r=currentImplementation(round,f)!;r.decision={...actor,...input,reason:input.reason.trim()};f.status=input.decision==='reopen'?'open':'fixed';
-}
 export function endorseFinding(round:ReviewRound,f:ReviewFinding,actor:{email:string;userId:string},input:{at:string;decision:'yes'|'no';reason:string}){
- if(!canEndorseFinding(round,f,actor.email,actor.userId))throw Error('One different assigned reviewer may endorse the completed record. You cannot endorse your own finding, or a record already closed.');
+ if(!canEndorseFinding(round,f,actor.email,actor.userId))throw Error('One assigned reviewer other than the implementation writer may endorse the response. You cannot endorse your own implementation or review declaration, or a record already closed.');
  if(!['yes','no'].includes(input.decision)||input.decision==='no'&&input.reason.trim().length<5)throw Error('Give a reason for not endorsing this record.');
  const entry={...actor,...input,reason:input.reason.trim(),findingAt:f.at,fingerprint:round.fingerprint};
  if(f.outcome==='satisfied')f.workflowEndorsements=[...(f.workflowEndorsements??[]),entry];else {materializeImplementationRounds(round,f);currentImplementation(round,f)!.endorsements.push(entry);}
@@ -65,8 +64,7 @@ export function endorseFinding(round:ReviewRound,f:ReviewFinding,actor:{email:st
   f.status='open';delete f.verifiedBy;delete f.verifiedAt;delete f.verifiedFingerprint;
  }
  if(input.decision==='yes'){
-  f.status='closed';const r=currentImplementation(round,f),verification=r?.decision?.decision==='accept'&&r.decision.userId!==r.userId?r.decision:entry;
-  f.verifiedBy=verification.userId;f.verifiedAt=verification.at;f.verifiedFingerprint=round.fingerprint;
+  f.status='closed';f.verifiedBy=entry.userId;f.verifiedAt=entry.at;f.verifiedFingerprint=round.fingerprint;
  }
 }
 export function reopenOwnFinding(round:ReviewRound,f:ReviewFinding,actor:{email:string;userId:string},at:string,reason:string){
@@ -86,7 +84,7 @@ export function luReviewStages(round:ReviewRound,unit:string){
  const reviewers=luInitialReviewProgress(round,unit);
  const reopens=findings.flatMap(f=>f.outcome==='satisfied'&&findingPhase(round,f)==='Reopened'?[{findingId:f.id,number:1}]:implementationRounds(round,f).filter(r=>r.decision?.decision==='reopen'||r.endorsementReopen).map(r=>({findingId:f.id,number:r.number})));
  return [{id:'initial' as const,label:'Initial review',done:reviewers.length>=2&&reviewers.every(p=>p.complete)},
- {id:'implementation' as const,label:'Implementation feedback',done:findings.length>0&&findings.every(f=>f.outcome==='satisfied'||retainedClosure(round,f)||!!implementationRounds(round,f)[0]&&(implementationRounds(round,f)[0].userId===f.userId||!!implementationRounds(round,f)[0].decision))},
+ {id:'implementation' as const,label:'Implementation feedback',done:findings.length>0&&findings.every(f=>f.outcome==='satisfied'||retainedClosure(round,f)||!!implementationRounds(round,f)[0])},
  {id:'reopened' as const,label:'Reopened rounds',done:reopens.every(x=>['Closed','Awaiting endorsement'].includes(findingPhase(round,findings.find(f=>f.id===x.findingId)!))),rounds:[...new Set(reopens.map(r=>r.number))].sort((a,b)=>a-b)},
  {id:'endorsements' as const,label:'Endorsements',done:findings.length>0&&findings.every(f=>findingPhase(round,f)==='Closed')}];
 }
@@ -100,6 +98,6 @@ export function reviewerContentComplete(round:ReviewRound,email:string){
 export function luWorkflowBlockers(round:ReviewRound){
  const d=round.document,issues:string[]=[];
  for(const p of d.participants.filter(p=>p.role==='primary'&&p.state!=='declined'&&hasReviewTask(p,'content'))){const missing=d.units.filter(u=>!p.coverage.includes(u.slug));if(missing.length)issues.push(`${p.email}: ${missing.length} LU review confirmations outstanding.`);const absent=d.units.filter(u=>!activeFindings(d).some(f=>f.author===p.email&&findingAppliesToUnit(f,u.slug)));if(absent.length)issues.push(`${p.email}: ${absent.length} LUs need a finding or nothing-to-add declaration.`);}
- const pending=activeFindings(d).filter(f=>findingPhase(round,f)!=='Closed');if(pending.length)issues.push(`${pending.length} findings or review declarations still need a response, acceptance or one additional endorsement.`);
+ const pending=activeFindings(d).filter(f=>findingPhase(round,f)!=='Closed');if(pending.length)issues.push(`${pending.length} findings or review declarations still need an implementation response or one additional endorsement.`);
  return issues;
 }
