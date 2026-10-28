@@ -21,3 +21,17 @@ One eligible additional Yes endorsement closes the record even with five or more
 - Applied migrations: `20261028101443_personal_review_message_tracking`, `20261028101734_review_message_projection_compatibility`, `20261028101909_review_reminder_recipient_guard` in the V2 database.
 
 Source feature commit: `0eb6cf66`. Live release verification follows below.
+
+## Live release verification
+
+Final deployment `dpl_C1cLscJyhS2PjpKyLUKJnMmoRo1R` is READY and promoted to the canonical V2 alias; the alias API confirms project `prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf`. Final interface source: `e3334c96c88f5d5c88ba3aa5e8d228ca5d85404e`.
+
+Signed-in LU5 shows notification 4487 under **Messages for you**, explicitly **To: johan.ras@apginc.ca**, **From: jorrie.jordaan@apginc.ca**, with numbered endorsement instructions. Its original read receipt is preserved. There are zero notification cards under other reviewers' findings and zero old LU marker mounts.
+
+LU5 sender tracking displays five message rows addressed to Jorrie, each with a distinct reference, platform delivery and read status. There are zero sender-side read buttons. Newer unread messages have reminder controls disabled for 24 hours; an older unread message is eligible. No reminder was clicked or sent.
+
+The Notifications page shows only Johan as the incoming recipient. Its sent-message summary has 64 rows, supports Older/Newer pagination, and page two displays the remaining 14 rows. Message bodies are collapsed in the table; required incoming actions use numbered steps. No application console errors or bounded deployment error/fatal records were found.
+
+After all live checks, the real VPSHR review remains revision 73 with the same document MD5, 16 findings and 2 reports. No review decision, read receipt, endorsement, publication action or outgoing email was performed during this release's live verification. Derived platform action notifications were synchronized through the new feature.
+
+Screenshots and the verification receipt are saved in the user's Training portal platform project under `Personal review messages - 2026-10-28`.
