@@ -2,7 +2,7 @@
 import {revalidatePath} from "next/cache";
 import {redirect} from "next/navigation";
 import {adminRest} from "@/server/supabase/admin-rest";
-import {notificationSession,notificationDestination} from "@/server/services/notifications";
+import {notificationSession,notificationDestination,notificationSentMessages} from "@/server/services/notifications";
 import {notificationTarget} from "@/lib/notifications";
 import {validId} from "@/lib/company-structure";
 export type NotificationState={error?:string;success?:string};
@@ -29,3 +29,12 @@ export async function notificationAction(_previous:NotificationState,form:FormDa
  }catch(error){if(error instanceof Error&&"digest" in error)throw error;return {error:error instanceof Error?error.message:"The notification could not be updated."};}
 }
 export async function markNotificationRead(form:FormData){form.set("operation","read");return notificationAction({},form);}
+export async function remindNotification(id:string):Promise<NotificationState>{
+ try{
+  const session=await notificationSession();validId(id);
+  await notificationSentMessages(session);
+  const response=await adminRest('/rest/v1/rpc/v4_remind_notification',{method:'POST',body:JSON.stringify({p_actor:session.user.id,p_id:id})});
+  if(!response.ok)return {error:'A reminder can be sent only for your own unread, outstanding message after 24 hours, and once per 24 hours thereafter.'};
+  revalidatePath('/notifications');return {success:'A platform reminder was sent. The original message and its tracking history are retained.'};
+ }catch{return {error:'The reminder could not be sent. Refresh the message summary and try again.'};}
+}

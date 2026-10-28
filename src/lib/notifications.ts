@@ -1,10 +1,11 @@
 export type NotificationResponse = "read" | "acknowledge" | "action";
 export type PersonalNotification = {
+ recipient_email?:string;sender_email?:string|null;unit_slug?:string|null;reminder_count?:number;last_reminded_at?:string|null;can_remind?:boolean;
  id:string;message:string;kind:string;created_at:string;read_at:string|null;acknowledged_at:string|null;
  target_path:string|null;response_type:NotificationResponse;pending:boolean;actor_user_id:string|null;
  reference_number?:number;source_type?:string|null;source_id?:string|null;event_key?:string;
  requirement?:string;action_label?:string;resolved_at?:string;
- context?:{review_task?:string;task_pending?:boolean;requirement?:string;resolved_at?:string;legacy_review_reminder?:boolean};
+ context?:{review_task?:string;task_pending?:boolean;requirement?:string;resolved_at?:string;legacy_review_reminder?:boolean;unit?:string;reminder_for?:string};
  event?:{action:string;actor?:string;detail?:string;version?:string;task_decision?:{id:string;task:string;email:string;target:string;decision:string;comment:string};proposal?:{id:string;comment:string};report_id?:string;finding_id?:string;event_index?:number}|null;
 };
 export type NotificationCounts={unread:number;responses:number;attention:number};

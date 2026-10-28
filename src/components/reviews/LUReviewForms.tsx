@@ -21,6 +21,6 @@ export function FindingDecisionForm({round,finding,response,endorsement=false}:{
  <label><input type="radio" name="decision" value={endorsement?'yes':'accept'} required checked={choice===(endorsement?'yes':'accept')} onChange={e=>setChoice(e.target.value)}/>{endorsement?'Yes — endorse':`Yes — accept response (${response!.number}) and close this response loop`}</label>
  <label><input type="radio" name="decision" value={endorsement?'no':'reopen'} required checked={choice===(endorsement?'no':'reopen')} onChange={e=>setChoice(e.target.value)}/>{endorsement?'No — do not endorse':`No — reject response (${response!.number}) and reopen this finding`}</label>
  <label>{endorsement?'Comments / reason for not endorsing':'Comments / reason for reopening'}<textarea name="comment" required={choice==='no'||choice==='reopen'} minLength={choice==='no'||choice==='reopen'?5:undefined} maxLength={5000}/></label>
- <p>{endorsement?'One additional endorsement is sufficient. A No decision records your reason without requiring you to monitor someone else’s feedback loop.':`This decision applies only to Implementation notes (${response!.number}). There is no self-endorsement step.`}</p>
+ <p>{endorsement?'One additional endorsement is sufficient. A No decision requires a reason and reopens the record for correction, without requiring you to monitor someone else’s feedback loop.':`This decision applies only to Implementation notes (${response!.number}). There is no self-endorsement step.`}</p>
  </ReviewForm>;
 }

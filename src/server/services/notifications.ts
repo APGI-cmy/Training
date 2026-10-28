@@ -9,6 +9,7 @@ import type {ReviewRound} from "@/lib/course-review";
 import {rows} from "./company-structure";
 import {isPlatformPrincipal} from "./platform-principals";
 import {contentSource,reviewSource} from "./course-reviews";
+import {syncReviewMessages} from './review-message-sync';
 export async function notificationSession(){const session=await requireSession();if(!session.user.email_confirmed_at)throw Error("Confirm your email to use notifications.");return session;}
 const taskContext=cache(async(session:AlpSession)=>{
  const principal=await isPlatformPrincipal(session),email=session.user.email?.toLowerCase()??"";
@@ -29,7 +30,11 @@ async function present(session:AlpSession,items:PersonalNotification[]):Promise<
   const earlier=await rows<ReviewRound>(`/rest/v1/course_review_rounds?id=in.(${missing.join(",")})&select=*`);
   for(const round of earlier)if(principal||round.document.participants.some(p=>p.email===email))rounds.set(round.id,round);
  }
- return items.map(n=>presentNotification(n,n.source_id?rounds.get(n.source_id):undefined,principal,email));
+ return items.map(n=>{
+  const round=n.source_id?rounds.get(n.source_id):undefined;
+  const sender=n.sender_email??round?.document.participants.find(p=>p.userId===n.actor_user_id)?.email??(round?.document.requesterId===n.actor_user_id?round.document.requester:undefined)??n.event?.actor??null;
+  return {...presentNotification(n,round,principal,email),recipient_email:n.recipient_email??email,sender_email:sender};
+ });
 }
 export const notificationInbox=cache(async(session:AlpSession,filter="all",offset=0,summary=false):Promise<NotificationInbox>=>{
  const {tasks,sources}=await taskContext(session);
@@ -53,4 +58,13 @@ export async function notificationTargets(session:AlpSession,path:string,selecte
  if(!response.ok)throw Error("Notification references unavailable.");
  const items=await present(session,await response.json());
  return items.filter(n=>n.target_path?.split("#")[0]===path&&(n.pending||n.id===selected&&n.response_type!=="action"));
+}
+export async function notificationSentMessages(session:AlpSession,roundId:string|null=null,unit:string|null=null,offset=0){
+ const {sources}=await taskContext(session);
+ if(roundId&&!sources.some(s=>s.round.id===roundId))throw Error('Review unavailable.');
+ await Promise.all(sources.filter(s=>!roundId||s.round.id===roundId).map(s=>syncReviewMessages(session.user.id,s)));
+ const response=await adminRest('/rest/v1/rpc/v4_sent_notifications',{method:'POST',body:JSON.stringify({p_actor:session.user.id,p_round:roundId,p_unit:unit,p_offset:offset})});
+ if(!response.ok)throw Error('Sent messages are temporarily unavailable.');
+ const result:{items:PersonalNotification[];total:number}=await response.json();
+ return {...result,items:await present(session,result.items)};
 }

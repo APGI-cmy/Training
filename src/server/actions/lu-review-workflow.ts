@@ -6,6 +6,8 @@ import {activeFindings} from '@/lib/course-review';
 import {currentImplementation,submitImplementation,decideImplementation,endorseFinding,reopenOwnFinding} from '@/lib/lu-review-workflow';
 import {assertReviewWork,claimReviewer,requireReview,commitReview,reviewEvent,reviewMail,processReviewMail} from '@/server/services/course-reviews';
 import type {ReviewActionState} from './course-reviews';
+import {reviewNotificationTasks} from '@/lib/review-notification-tasks';
+import {syncReviewMessages} from '@/server/services/review-message-sync';
 export async function luReviewAction(_:ReviewActionState,form:FormData):Promise<ReviewActionState>{
  try{
   const id=validId(formText(form,'round_id',1)),{round,email,session,fresh}=await requireReview(id);assertReviewWork(round,fresh);
@@ -19,17 +21,25 @@ export async function luReviewAction(_:ReviewActionState,form:FormData):Promise<
    message=`Implementation notes (${currentImplementation(round,f)!.number}) submitted. ${f.author===email?'Another reviewer can endorse your record.':'The original reviewer can now accept or reject this response.'}`;
   }else if(op==='implementation_decision'){
    decideImplementation(round,f,actor,{at,decision:formText(form,'decision',1) as 'accept'|'reopen',reason});
-   message=form.get('decision')==='reopen'?'Finding reopened. The designer can now prepare the next correction. No new implementation notes exist until submission.':'Response accepted. Your response loop is complete; one other reviewer endorses the completed record.';
+   message=form.get('decision')==='reopen'?'Finding reopened. The designer can now prepare the next correction. No new implementation notes exist until submission.':'Response accepted. Awaiting endorsement from one other eligible reviewer.';
   }else if(op==='finding_endorsement'){
    endorseFinding(round,f,actor,{at,decision:formText(form,'decision',1) as 'yes'|'no',reason});
-   message=form.get('decision')==='yes'?'Endorsement recorded. The finding is closed.':'Not endorsed. Your reason is recorded; no further monitoring is assigned to you.';
+   message=form.get('decision')==='yes'?'Endorsement recorded. The finding is closed.':'Not endorsed. Your reason is recorded and the record is reopened for correction. No further monitoring is assigned to you.';
   }else if(op==='finding_reopen'){
    reopenOwnFinding(round,f,actor,at,reason);message='Your finding is reopened. Prepare and submit the next correction in Reopened rounds.';
   }else throw Error('Unknown LU review action.');
   round.document.reviewProcessVersion=3;if(round.document.workflow)delete round.document.workflow.contentApproval;
   reviewEvent(round.document,email,op,`${f.unit} · ${f.reference} · ${f.id}: ${message} ${reason}`);
-  const mail=reviewMail(round,'finding_workflow_update',`${op}:${f.id}:${round.revision}`,`${email}: ${f.unit.toUpperCase()} · ${f.reference}. ${message}${reason?' '+reason:''}\nOpen this finding: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}#finding-${f.id}`);
-  await commitReview(round,session.user.id,op,mail);try{await processReviewMail();}catch{/* Durable delivery can retry. */}
+  const source={round,hash:round.fingerprint,brandRevision:round.document.brand.revision};
+  const mail=round.document.participants.filter(p=>p.email!==email&&p.state!=='declined').flatMap(p=>{
+   const task=reviewNotificationTasks(source,p.email,p.userId??p.email,false).find(t=>t.anchor===`finding-${f.id}`);
+   const confirmation=op==='finding_endorsement'&&[f.author,r?.email].includes(p.email);
+   if(!task&&!confirmation)return [];
+   return reviewMail(round,'finding_workflow_update',`${op}:${f.id}:${round.revision}`,`From: ${email}\nTo: ${p.email}\n${task?.requirement??message}${reason?'\nSaved explanation: '+reason:''}\nOpen this finding: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}#finding-${f.id}`,[p.email],false);
+  });
+  await commitReview(round,session.user.id,op,mail);
+  try{await syncReviewMessages(session.user.id,source);}catch{console.error('Review saved; recipient messages will resync on refresh.');}
+  try{await processReviewMail();}catch{/* Durable delivery can retry. */}
   revalidatePath(`/course-reviews/${id}`,'layout');revalidatePath('/course-reviews');
   return {success:message,href:`/course-reviews/${id}#finding-${f.id}`};
  }catch(e){if(e instanceof Error&&'digest' in e)throw e;return {error:e instanceof Error?e.message:'The LU review update could not be saved.'};}

@@ -3,24 +3,28 @@ import {activeFindings,canWork,currentReport,contentReviewBlockers,reviewBlocker
 import {hasReviewTask,taskDecision,commercialReviewApproved,companyBrandApproved} from "./review-tasks";
 import {bothCommercialApprovals} from "./publication-workflow";
 import {commercialReviewPath,commercialSignoffAnchor,reportAnchor} from "./review-navigation";
-export type ReviewNotificationTask={key:string;roundId:string;revision:number;title:string;requirement:string;path:string;anchor:string;version:string};
+export type ReviewNotificationTask={key:string;roundId:string;revision:number;title:string;requirement:string;path:string;anchor:string;version:string;actorUserId?:string;unit?:string};
 export type ReviewTaskSource={round:ReviewRound;hash:string;brandRevision:number};
 export function reviewNotificationTasks({round:r,hash,brandRevision}:ReviewTaskSource,email:string,userId:string,principal:boolean):ReviewNotificationTask[]{
  const d=r.document,w=d.workflow,v=w?.commercials.at(-1),p=d.participants.find(p=>p.email===email),base=`/course-reviews/${r.id}`,commercial=commercialReviewPath(r.id),fresh=hash===r.fingerprint;
  if(r.status!=="open"||!w||!principal&&(!p||p.state==="declined"))return [];
  const tasks:ReviewNotificationTask[]=[];
- const add=(kind:string,version:string,title:string,requirement:string,anchor:string,path=base)=>tasks.push({key:`review-action:${r.id}:${kind}:${version}`,roundId:r.id,revision:r.revision,title:`${title} — ${d.title}`,requirement,path,anchor,version});
+ const add=(kind:string,version:string,title:string,requirement:string,anchor:string,path=base)=>tasks.push({key:`review-action:${r.id}:${kind}:${version}`,roundId:r.id,revision:r.revision,title:`${title} — ${d.title}`,requirement,path,anchor,version,actorUserId:d.requesterId});
  if(!fresh&&principal)add("deployment",hash,"Register the corrected course deployment","The deployed content differs from the recorded review. Check the corrections, register this deployment and confirm the review cutoff. This does not approve content.","changes-implemented");
  if(!canWork(r)){
   add("extension",d.cutoff,principal?"Review deadline passed — decide on an extension":"Request an extension to continue reviewing","The cutoff has passed. Work cannot continue until the requester approves an extension; overdue work never counts as approval.","manage-request");return tasks;
  }
  if(d.reviewProcessVersion===3&&fresh){
   for(const u of d.units)if(p?.role==="primary"&&hasReviewTask(p,"content")&&p.state!=="declined"&&(!p.coverage.includes(u.slug)||!activeFindings(d).some(f=>f.author===email&&(f.unit===u.slug||f.scope==="course"))))add("lu-initial",`${u.slug}:${r.fingerprint}`,"Complete the LU initial review",`${u.title}: open the presentation, save a finding or nothing-to-add declaration and confirm your LU review.`,`review-unit-${u.slug}`);
-  for(const f of activeFindings(d)){const response=currentImplementation(r,f),version=`${f.id}:${f.at}:${response?.id??"first"}:${findingPhase(r,f)}`;
-   if(canImplement(r,f,email,userId))add("lu-implementation",version,"Respond to a review finding",`${f.unit.toUpperCase()} · ${f.reference}: ${response?"The reviewer rejected response ("+response.number+"). Implement the next correction and submit the next numbered response.":"Record and submit the first implementation response, or explain why no change is proposed."}`,`finding-${f.id}`);
-   if(canDecideImplementation(r,f,email,userId))add("lu-decision",version,"Decide on the designer response",`${f.unit.toUpperCase()} · ${f.reference}: check Implementation notes (${response!.number}), then accept or reject that response. Rejection requires a reason.`,`finding-${f.id}`);
-   if(canEndorseFinding(r,f,email,userId))add("lu-endorsement",version,"Endorse a completed reviewer record",`${f.unit.toUpperCase()} · ${f.reference}: read ${f.author}’s submitted record and choose Endorse Yes or No. One additional endorsement is sufficient; give a reason for No.`,`finding-${f.id}`);
-   if(f.author===email&&f.userId===userId&&findingPhase(r,f)==="Awaiting endorsement"&&response?.endorsements.some(e=>e.decision==="no"))add("lu-declined-endorsement",version,"Review a declined endorsement",`${f.unit.toUpperCase()} · ${f.reference}: read the peer reviewer’s reason. Reopen your finding if a further correction is needed.`,`finding-${f.id}`);
+  for(const f of activeFindings(d)){
+   const response=currentImplementation(r,f),phase=findingPhase(r,f),version=`${f.id}:${f.at}:${response?.id??"first"}:${phase}`;
+   const unit=d.units.find(u=>u.slug===f.unit),label=`${f.unit.toUpperCase()} · ${unit?.title??f.reference}`;
+   const coverage=p?.role==='primary'&&!p.coverage.includes(f.unit)?` Open ${f.unit.toUpperCase()}, review the changed presentation and quizzes, then confirm “I reviewed this entire LU, including its quizzes and tests.” Your earlier comments remain saved.`:'';
+   const findingTask=(kind:string,title:string,requirement:string,actorUserId:string)=>{add(kind,version,title,requirement,`finding-${f.id}`);Object.assign(tasks[tasks.length-1],{actorUserId,unit:f.scope==='course'?'*':f.unit});};
+   if(canImplement(r,f,email,userId))findingTask("lu-implementation","Respond to a review finding",`${label}: ${phase==='Reopened'?"This finding was reopened. Read the rejection reason, make the next correction and submit the next numbered implementation response.":"Read the requested change. Implement the correction and submit Implementation notes (1), or explain why no change is proposed."}`,f.userId);
+   if(canDecideImplementation(r,f,email,userId))findingTask("lu-decision",`${response!.email} submitted a correction`,`${label}: ${response!.email} submitted Implementation notes (${response!.number}) for your finding.${coverage} Open this LU review workflow → Implementation feedback${response!.number>1?' / Reopened rounds':''}. Inspect the correction, then select Yes—accept response (${response!.number}) or No—reject and reopen. Give a reason for No. You do not endorse your own finding; after acceptance, one other eligible reviewer endorses the record.`,response!.userId);
+   if(canEndorseFinding(r,f,email,userId))findingTask("lu-endorsement","Endorse a completed reviewer record",`${label}: ${f.author} submitted a record for independent endorsement.${coverage} Open this LU review workflow → Endorsements. Read the record and ${response?`Implementation notes (${response.number})`:'the review declaration'}, then choose Yes—endorse or No—do not endorse. One additional endorsement is sufficient, even when the team has five or more reviewers. No requires a reason and returns the record for correction.`,f.userId);
+   if(f.outcome==='satisfied'&&phase==='Reopened'&&f.author===email&&f.userId===userId)findingTask("lu-revise-declaration","Revise your review declaration",`${label}: another reviewer declined endorsement. Read their reason in Reopened rounds, open the LU and update your saved review. A revised declaration needs a fresh endorsement.`,f.declarationReopen!.userId);
   }
  }
  if(d.reviewProcessVersion!==3&&fresh&&p&&p.state!=="declined"&&hasReviewTask(p,"content")){
@@ -60,5 +64,6 @@ export function reviewNotificationTasks({round:r,hash,brandRevision}:ReviewTaskS
   if(!w.contentApproval&&!contentReviewBlockers(r,hash).length)add("clearance",hash,"Clear the final corrected course content","All prerequisite content checks are complete. Review the evidence and explicitly clear this exact content; commercial approval remains separate.","final-content-clearance");
   if(!reviewBlockers(r,hash,brandRevision).length)add("publication",`${hash}:${v?.id}`,"Perform final course publication","All required checks are complete. Review the exact release and explicitly publish it for the selected company.","final-publication");
  }
+ for(const task of tasks)if(task.key.includes(":lu-initial:"))task.unit=task.anchor.replace("review-unit-","");
  return tasks;
 }
