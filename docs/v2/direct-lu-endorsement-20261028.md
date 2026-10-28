@@ -13,4 +13,8 @@ Initial review remains separate: each assigned full content reviewer must confir
 - Applied V2 migration: `20261028120335_lu_direct_implementation_endorsement`. Only the publication-readiness function changes; service-only grants and SECURITY INVOKER remain. Security advisor findings are unchanged.
 - Real VPSHR review remained revision 73, 16 findings and 2 reports, document MD5 `f80683bc45a3442e574e52ffa1cf20f3` before and after migration. Course manifests for three courses and 83 media files passed prebuild without changes.
 
-Live release evidence is recorded after deployment below.
+## Release
+
+Feature source `c9b35b38eebab4333fbf8aec35fb74270795c3c8` is pushed to `v2-development`. Production deployment `dpl_32xKbeKXyurbr5HNDXtkRwHm7kHp` is READY and promoted. The alias API confirms `training-platform-v2-staging.vercel.app` points to that deployment in the V2 project. The bounded deployment error/fatal scan returned no records.
+
+Signed-in visual verification remains pending: the Edge extension disconnected during an app update, native Edge reported concurrent user input, and a separate background in-app browser reached sign-in. No authentication, read receipt, reminder, implementation submission, endorsement, course publication or outgoing email was performed during live checks. The deployed behavior is covered by application tests and the rolled-back database checks above.
