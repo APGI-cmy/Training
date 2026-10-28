@@ -24,6 +24,15 @@ describe("VPSHR completion using Next",()=>{
  it("removes all duplicate platform questions and otherwise preserves the existing course definition",()=>{
   expect(course.units).toHaveLength(13);expect(course.units.every(unit=>unit.quiz.length===0)).toBe(true);
   const copy=JSON.parse(JSON.stringify(course));copy.units.forEach((unit:{quiz?:unknown})=>delete unit.quiz);
+  // The separately approved 28 October introduction changes only its media and duration.
+  expect(copy.units[0].duration).toBe('3 min');
+  expect(copy.units[0].media[0].src).toBe('/courses/vpshr-level-0/introduction/welcome.mp4');
+  expect(copy.units[0].media[0].poster).toBe('/courses/vpshr-level-0/introduction/poster.jpg');
+  expect(copy.units[0].media[1].title).toBe('Course welcome and orientation');
+  copy.units[0].duration='5 min';
+  copy.units[0].media[0].src='/courses/vpshr-level-0/introduction/data/video1.mp4';
+  copy.units[0].media[0].poster='/courses/vpshr-level-0/introduction/data/thmb1.jpg';
+  copy.units[0].media[1].title='Original published orientation';
   // Keep the original identity check, normalizing only approved SCORM resource moves.
   // Both packages and their launch paths have dedicated SCORM integration checks.
   const baseline=JSON.stringify(copy)

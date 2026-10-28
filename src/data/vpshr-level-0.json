@@ -20,7 +20,7 @@
       "order": 0,
       "title": "Introduction to VPSHR Level 0",
       "subtitle": "Set the context for rights-aware security practice.",
-      "duration": "5 min",
+      "duration": "3 min",
       "assetBase": "/courses/vpshr-level-0/introduction",
       "publishedPath": "/courses/vpshr-level-0/introduction/index.html",
       "objectives": [
@@ -32,12 +32,12 @@
         {
           "kind": "video",
           "title": "Orientation video",
-          "src": "/courses/vpshr-level-0/introduction/data/video1.mp4",
-          "poster": "/courses/vpshr-level-0/introduction/data/thmb1.jpg"
+          "src": "/courses/vpshr-level-0/introduction/welcome.mp4",
+          "poster": "/courses/vpshr-level-0/introduction/poster.jpg"
         },
         {
           "kind": "embed",
-          "title": "Original published orientation",
+          "title": "Course welcome and orientation",
           "src": "/courses/vpshr-level-0/introduction/index.html"
         }
       ],

@@ -9,5 +9,5 @@ export function correctionRecheckUnits(round:ReviewRound,fingerprint:string,unit
 }
 export function assertApprovedCorrectionScope(round:ReviewRound,fingerprint:string){
  const approved=scopes.find(s=>s.roundId===round.id&&s.courseId===round.course_id&&s.previousFingerprint===round.fingerprint);
- if(approved&&approved.fingerprint!==fingerprint)throw Error("The deployed content differs from the approved LU5/LU11 correction scope. Verify the new changes before registering; saved coverage has not been reset.");
+ if(approved&&approved.fingerprint!==fingerprint)throw Error("The deployed content differs from the approved correction scope. Verify the new changes before registering; saved coverage has not been reset.");
 }

@@ -1,3 +1,6 @@
 # Course-video binaries are stored in Git LFS.  Keep this rule at repository
 # root so local checkouts, GitHub and Vercel all resolve the real media objects.
 public/courses/**/*.mp4 filter=lfs diff=lfs merge=lfs -text
+
+# Small, approved introduction uses ordinary Git storage while LFS allowance is exhausted.
+public/courses/vpshr-level-0/introduction/welcome.mp4 -filter -diff -merge -text
