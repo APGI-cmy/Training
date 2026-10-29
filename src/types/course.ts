@@ -108,6 +108,7 @@ export interface Course {
   audience: string;
   duration: string;
   sourceRoot: string;
+  welcomePath?: string;
   integrationNotes: string[];
   publicationIssues?: string[];
   pricing?: "company_agreement";

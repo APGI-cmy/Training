@@ -1,0 +1,57 @@
+{
+  "id": "intro-09",
+  "text": "Learning activities let you explore ideas, make mistakes and compare your reasoning with guidance. Your practice is different from a formal assessment. Before a knowledge check, read the stated pass mark, attempt limits and feedback rules. A reviewed tick does not prove competence, and a prepared draft is not an assessor's decision. Follow the assessment instructions provided for your course.",
+  "voice": "en-ZA-LeahNeural",
+  "src": "intro-09.mp3",
+  "captions": "intro-09.vtt",
+  "seconds": 27.7060417,
+  "sha256": "f714556e99f14c6f29e0581270c4022add8ecc63b18a59503b8d419293d977bb",
+  "captionCues": [
+    {
+      "start": 0.06,
+      "end": 4.126,
+      "text": "Learning activities let you explore ideas make mistakes and"
+    },
+    {
+      "start": 4.218,
+      "end": 8.246,
+      "text": "compare your reasoning with guidance Your practice is different"
+    },
+    {
+      "start": 8.272,
+      "end": 12.561,
+      "text": "from a formal assessment Before a knowledge check read"
+    },
+    {
+      "start": 12.614,
+      "end": 16.469,
+      "text": "the stated pass mark attempt limits and feedback rules"
+    },
+    {
+      "start": 17.403,
+      "end": 20.298,
+      "text": "A reviewed tick does not prove competence and a"
+    },
+    {
+      "start": 20.351,
+      "end": 24.351,
+      "text": "prepared draft is not an assessor's decision Follow the"
+    },
+    {
+      "start": 24.403,
+      "end": 27.246,
+      "text": "assessment instructions provided for your course"
+    }
+  ],
+  "wordStreamMatchesScript": true,
+  "fullDecodePassed": true,
+  "humanListeningApproval": "PENDING",
+  "reusedSource": {
+    "id": "scene-692a6bc0",
+    "path": "C:\\Users\\Johan\\OneDrive\\Documents\\ChatGPT\\Training Material Development\\Executive_assitants_Elearning\\web-native publishing process\\Scene review 0.4 - 2026-10-26\\course\\assets\\scene-audio\\scene-692a6bc0.mp3",
+    "sha256": "f714556e99f14c6f29e0581270c4022add8ecc63b18a59503b8d419293d977bb",
+    "captions": "C:\\Users\\Johan\\OneDrive\\Documents\\ChatGPT\\Training Material Development\\Executive_assitants_Elearning\\web-native publishing process\\Scene review 0.4 - 2026-10-26\\course\\assets\\scene-audio\\scene-692a6bc0.vtt",
+    "captionSha256": "2d78af20ce8320c16b127a271fb30f695ddd5dc6bf251bc0102a253fe36954d6",
+    "audioEditRanges": null
+  }
+}

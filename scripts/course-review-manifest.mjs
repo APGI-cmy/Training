@@ -8,7 +8,7 @@ async function digestTree(root) {
  async function walk(dir){for(const entry of (await readdir(dir,{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name))){const path=join(dir,entry.name);if(entry.isDirectory())await walk(path);else if(entry.isFile()){hash.update(relative(root,path).replaceAll('\\','/')+'\0');for await(const bytes of createReadStream(path))hash.update(bytes);count++;}}}
  await walk(root);return {sha256:hash.digest('hex'),files:count};
 }
-const roots={'vpshr-level-0':'vpshr-level-0','scannex-training-programme':'Scannex Training Programme','tiger-kidnapping-telecommunications':'Tiger kidnapping_telecommunications'};
+const roots={'vpshr-level-0':'vpshr-level-0','scannex-training-programme':'Scannex Training Programme','tiger-kidnapping-telecommunications':'Tiger kidnapping_telecommunications','executive-assistant-lu1-compatibility':'Executive Assistant Training Programme'};
 const content={};for(const [slug,folder] of Object.entries(roots))content[slug]=await digestTree(join(process.cwd(),'public','courses',folder));
 // Catalogue objects are already included in each review's own fingerprint.
 // Keep the shared engine independent of course additions. The compatibility

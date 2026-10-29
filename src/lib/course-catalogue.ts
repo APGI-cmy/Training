@@ -1,4 +1,5 @@
 import vpshrLevel0 from "@/data/vpshr-level-0.json";
+import executiveAssistantCompatibility from "@/data/executive-assistant-lu1-compatibility.json";
 import tigerKidnapping from "@/data/tiger-kidnapping-telecommunications.json";
 import type {Course,LearningUnit} from "@/types/course";
 
@@ -80,5 +81,5 @@ const scannexTrainingProgramme: Course = {
   ]
 };
 
-export const courses: Course[] = [vpshrLevel0 as Course, scannexTrainingProgramme, tigerKidnapping as Course];
+export const courses: Course[] = [vpshrLevel0 as Course, scannexTrainingProgramme, tigerKidnapping as Course, executiveAssistantCompatibility as Course];
 

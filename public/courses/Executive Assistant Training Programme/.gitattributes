@@ -1,0 +1,5 @@
+# Preserve the generated course bytes. Only this course folder is affected.
+* -text
+**/* -text
+*.mp4 -filter -diff -merge -text
+**/*.mp4 -filter -diff -merge -text

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CourseShell } from "./CourseShell";
+import { PreviewCourseResources } from "./PreviewCourseResources";
 import { getNextLearningAction } from "@/lib/services/completion/get-next-learning-action";
 import type { CourseShell as Shell } from "@/lib/services/courses/get-course-shell";
 import { emptyPreviewProgress, parsePreviewProgress, previewStorageKey, previewUnitHref, type CoursePreview, type PreviewProgress } from "@/lib/course-preview";
@@ -50,7 +51,7 @@ export function PreviewCourseHome({ shell, preview }: { shell: Shell; preview: C
   const units = shell.units.map(unit => ({ ...unit, href: previewUnitHref(preview, unit.slug), isOpened: progress.opened.includes(unit.id), isCompleted: progress.completed.includes(unit.id) }));
   const completedUnits = units.filter(unit => unit.isCompleted).length;
   const testShell = { ...shell, units, firstUnit: units[0], completedUnits, progressPercent: units.length ? Math.round(100 * completedUnits / units.length) : 0, nextAction: getNextLearningAction(units) };
-  return <CourseShell shell={testShell} backHref="/catalogue" backLabel="Back to course catalogue" certificateHref={`${preview.courseHref}/certificate`} />;
+  return <><PreviewCourseResources course={shell.course} preview={preview}/><CourseShell shell={testShell} backHref="/catalogue" backLabel="Back to course catalogue" certificateHref={`${preview.courseHref}/certificate`} /></>;
 }
 
 export function PreviewUnitProgress({ scope, unitId, complete = false }: { scope: string; unitId: string; complete?: boolean }) {

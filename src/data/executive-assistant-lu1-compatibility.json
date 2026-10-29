@@ -1,0 +1,48 @@
+{
+  "id": "executive-assistant-lu1-compatibility",
+  "slug": "executive-assistant-lu1-compatibility",
+  "title": "Executive Assistant Training Programme — LU1 compatibility test",
+  "level": "STAGING TEST — not a released course",
+  "description": "A one-unit technical compatibility pilot of the web-native executive partnership course. No pass or attendance certificate is issued by this pilot.",
+  "audience": "Invited technical reviewers and test learners",
+  "duration": "LU1 test only",
+  "sourceRoot": "/courses/Executive%20Assistant%20Training%20Programme",
+  "catalogueVisibility": "client_specific",
+  "publicationIssues": [
+    "Compatibility pilot only: owner, independent, accessibility and authenticated staging acceptance remain pending.",
+    "Six selected Kokoro voices are still rendering; this frozen baseline uses the existing narration.",
+    "No certificate policy or learner enrolment is created by this file."
+  ],
+  "integrationNotes": [
+    "The welcome is separate: /courses/Executive%20Assistant%20Training%20Programme/introduction/index.html",
+    "The NKS Capital reading book is /courses/Executive%20Assistant%20Training%20Programme/course/ebook.html",
+    "Use the normal administrator/reviewer preview; a direct static URL is not an authenticated learner session.",
+    "Use the platform review workflow. The localhost review database and screenshots are excluded."
+  ],
+  "units": [
+    {
+      "id": "ea-lu1-compatibility-unit-1",
+      "slug": "lu1",
+      "order": 1,
+      "title": "The executive partnership",
+      "subtitle": "Web-native LU1 compatibility pilot",
+      "duration": "Self-paced test",
+      "assetBase": "/courses/Executive%20Assistant%20Training%20Programme",
+      "publishedPath": "/courses/Executive%20Assistant%20Training%20Programme/course/ebook.html",
+      "scormPath": "/courses/Executive%20Assistant%20Training%20Programme/course/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Executive partnership pilot",
+          "src": "/courses/Executive%20Assistant%20Training%20Programme/course/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": []
+    }
+  ],
+  "welcomePath": "/courses/Executive%20Assistant%20Training%20Programme/introduction/index.html"
+}
