@@ -58,4 +58,32 @@ assigned full reviewer to explicitly complete the LU and record no issues.
   worker only with an explicit environment opt-in and verified V2 project URL.
   It is excluded from ordinary release tests and can send real queued mail.
 
-Hosted release and activation evidence will be appended after verification.
+## Hosted release and activation
+
+- Source release: `10f89d3d0aed3d6ac52f01baa808f354c15e6eba`.
+- READY deployment: `dpl_Xe68rukYt4C6GaP3Zf95CuG1BukY`, promoted to
+  `https://training-platform-v2-staging.vercel.app`. The canonical alias was
+  verified against the V2 project. Hosted compilation, type checking and media
+  checks passed; all 85 MP4s were real media rather than LFS pointers.
+- Enabled in the two current open V3 rounds (VPSHR and Tiger Kidnapping).
+  Cancelled historical reviews were untouched. New rounds enable the rule in
+  their invitation automatically.
+- Seven policy notices and six grouped request emails reached provider-accepted
+  sent state, each with a provider ID. This is not a claim of inbox delivery.
+- Nineteen durable timers: four first invitations and fifteen endorsement
+  requests. Every deadline is exactly seven days after its successful-send
+  timestamp: 5 November 2026, approximately 15:33 SAST. VPSHR's cutoff was
+  extended to preserve the full window; Tiger's later cutoff stayed unchanged.
+- The real V2 worker completed successfully. A second run sent zero duplicate
+  emails and applied zero endorsements. No request was endorsed retroactively.
+- Hash comparisons before/after activation preserved the findings, reports,
+  participant coverage and workflow/commercial records in all three rounds.
+  Only policy, system events and the necessary cutoff extension changed.
+- A further 69 read-only designer/reviewer modal checks passed against the
+  previously captured review data. This was component/render verification,
+  not a live browser test under another person's account.
+
+Local operational evidence is under
+`C:/Users/Johan/Codex-Work/review-nonresponse-20261029/` (release/typecheck/build
+logs, hosted deployment and alias, notices/timers, preservation and repeat-run
+results). No credentials were written into source or release evidence.

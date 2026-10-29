@@ -42,4 +42,9 @@ publication boundaries and stale endorsement forms. TypeScript passed. The local
 optimized build passed before the accompanying guidance wording was aligned;
 the final hosted build verifies the complete release.
 
-Release identifiers and hosted checks are appended after deployment.
+Initial source release: `12dbb288481ad131410c286cbdad45a9a09fe2f5`, promoted
+deployment `dpl_5QwZY3EkNLnsZPBhYWFfsuoaitv2`. SQL final-publication parity was
+applied in migration `20261029123111_clean_lu_review_publication_parity.sql`.
+The subsequent seven-day release retains this actual no-findings shortcut and
+adds distinctly labelled deemed endorsements; see
+[the response protocol](review-nonresponse-protocol-20261029.md).
