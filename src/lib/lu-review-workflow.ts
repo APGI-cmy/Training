@@ -15,12 +15,32 @@ export function isCourseDesigner(d:ReviewDocument,email:string,userId:string){
 }
 export function contentReviewer(d:ReviewDocument,email:string,userId:string){return d.participants.some(p=>p.email===email&&p.userId===userId&&p.state!=='declined'&&hasReviewTask(p,'content'));}
 export function carriedVersion(round:ReviewRound,f:ReviewFinding,from:string){
- if(from===round.fingerprint)return true;if(f.fixedFingerprint!==round.fingerprint)return false;
- const edges=f.carriedForwardEvidence??[];let value=from;const seen=new Set<string>();while(!seen.has(value)){seen.add(value);const edge=edges.find(e=>e.from===value);if(!edge)return false;value=edge.to;if(value===round.fingerprint)return true;}return false;
+ if(from===round.fingerprint)return true;
+ // A registered correction preserves evidence for explicitly unchanged LUs, including
+ // nothing-to-add declarations. Never fabricate a new endorsement or carry one over a changed LU.
+ if(f.scope==='course'||!round.document.units.some(u=>u.slug===f.unit))return false;
+ let value=from;const seen=new Set<string>();
+ while(!seen.has(value)){
+  seen.add(value);
+  const revisions=(round.document.contentRevisions??[]).filter(r=>r.previousFingerprint===value);
+  if(revisions.length){
+   if(revisions.length!==1)return false;
+   const revision=revisions[0];
+   if(!revision.changedUnits||!revision.preservedUnits?.includes(f.unit)||revision.changedUnits.includes(f.unit))return false;
+   value=revision.fingerprint;
+  }else{
+   // Retain older, explicitly registered finding-level carry-forward evidence too.
+   if(f.fixedFingerprint!==round.fingerprint)return false;
+   const edges=(f.carriedForwardEvidence??[]).filter(e=>e.from===value&&e.unit===f.unit);
+   if(edges.length!==1)return false;value=edges[0].to;
+  }
+  if(value===round.fingerprint)return true;
+ }
+ return false;
 }
 export function implementationRounds(round:ReviewRound,f:ReviewFinding):ImplementationRound[]{
  const saved=f.implementationRounds??[];
- if(saved.length)return saved.filter(r=>r.findingAt===f.at&&carriedVersion(round,f,r.fingerprint)).map(r=>r.fingerprint===round.fingerprint?r:{...r,fingerprint:round.fingerprint,endorsements:r.endorsements.map(e=>({...e,fingerprint:round.fingerprint}))});
+ if(saved.length)return saved.filter(r=>r.findingAt===f.at&&carriedVersion(round,f,r.fingerprint)).map(r=>r.fingerprint===round.fingerprint?r:{...r,fingerprint:round.fingerprint,endorsements:r.endorsements.map(e=>carriedVersion(round,f,e.fingerprint)?{...e,fingerprint:round.fingerprint}:e)});
  // Preserve a previously recorded implementation without inventing a new acceptance.
  if(!f.fixedBy||!f.fixedAt||!f.fixedFingerprint||f.fixedFingerprint!==round.fingerprint)return [];
  const reply=[...f.replies].reverse().find(r=>r.userId===f.fixedBy&&/^fixed\s*·/.test(r.text));
@@ -28,7 +48,7 @@ export function implementationRounds(round:ReviewRound,f:ReviewFinding):Implemen
 }
 function materializeImplementationRounds(round:ReviewRound,f:ReviewFinding){const effective=implementationRounds(round,f);f.implementationRounds=f.implementationRounds?.length?f.implementationRounds.map(old=>effective.find(r=>r.id===old.id)??old):effective;}
 export function currentImplementation(round:ReviewRound,f:ReviewFinding){const r=implementationRounds(round,f).at(-1);return r&&r.findingAt===f.at&&r.fingerprint===round.fingerprint?r:undefined;}
-export function currentEndorsements(round:ReviewRound,f:ReviewFinding){return (f.outcome==='satisfied'?f.workflowEndorsements??[]:currentImplementation(round,f)?.endorsements??[]).filter(e=>e.findingAt===f.at&&e.fingerprint===round.fingerprint);}
+export function currentEndorsements(round:ReviewRound,f:ReviewFinding){return (f.outcome==='satisfied'?f.workflowEndorsements??[]:currentImplementation(round,f)?.endorsements??[]).filter(e=>e.findingAt===f.at&&carriedVersion(round,f,e.fingerprint)).map(e=>e.fingerprint===round.fingerprint?e:{...e,fingerprint:round.fingerprint});}
 function independentEndorser(round:ReviewRound,f:ReviewFinding,email:string,userId:string){const writer=f.outcome==='satisfied'?{email:f.author,userId:f.userId}:currentImplementation(round,f);return !!writer&&writer.email!==email&&writer.userId!==userId;}
 export function hasPeerEndorsement(round:ReviewRound,f:ReviewFinding){
  const response=currentImplementation(round,f);

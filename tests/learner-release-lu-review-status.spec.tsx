@@ -2,8 +2,8 @@ import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {describe,it,expect} from 'vitest';
 import {notificationRound} from './fixtures/review-notification';
-import {InitialReviewStatus,PendingEndorsement} from '@/components/reviews/LUReviewStatus';
-import {luInitialReviewProgress,luReviewStages} from '@/lib/lu-review-workflow';
+import {InitialReviewStatus,LUEndorsementStatus,PendingEndorsement} from '@/components/reviews/LUReviewStatus';
+import {endorseFinding,luInitialReviewProgress,luReviewStages,submitImplementation} from '@/lib/lu-review-workflow';
 
 function setup(){
  const r=notificationRound();r.document.participants=r.document.participants.slice(0,2);
@@ -11,6 +11,12 @@ function setup(){
  return r;
 }
 describe('Clear personal and team LU status',()=>{
+ it('explains a red endorsement stage with the exact remaining record and eligible reviewer',()=>{
+  const r=setup(),f=r.document.findings[0];submitImplementation(r,f,{email:r.document.requester,userId:'johan'},{id:'response',at:'now',implemented:'yes',notes:'Removed the duplicate quiz'});
+  const other={...f,id:'other',author:'jorrie.jordaan@apginc.ca',userId:'jorrie',outcome:'satisfied' as const,implementationRounds:undefined};r.document.findings.push(other);endorseFinding(r,other,{email:r.document.requester,userId:'johan'},{at:'now',decision:'yes',reason:''});
+  const before=JSON.stringify(r),html=renderToStaticMarkup(<LUEndorsementStatus round={r} unit="lu1"/>);
+  expect(html).toContain('1 of 2 records closed');expect(html).toContain('href="#finding-own"');expect(html).not.toContain('href="#finding-other"');expect(html).toContain('awaiting one endorsement from jorrie.jordaan@apginc.ca');expect(JSON.stringify(r)).toBe(before);
+ });
  it('keeps the changed LU red while old confirmations remain saved, then requires every reviewer to reconfirm',()=>{
   const r=setup();r.document.participants[1].coverage=['lu1'];r.document.findings.push({...r.document.findings[0],id:'other',author:'jorrie.jordaan@apginc.ca',userId:'jorrie',outcome:'satisfied'});
   const before=JSON.stringify(r);

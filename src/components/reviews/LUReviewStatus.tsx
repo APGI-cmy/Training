@@ -1,5 +1,10 @@
-import type {ReviewRound} from '@/lib/course-review';
-import {luInitialReviewProgress} from '@/lib/lu-review-workflow';
+import {activeFindings,findingAppliesToUnit,type ReviewRound} from '@/lib/course-review';
+import {canEndorseFinding,findingPhase,luInitialReviewProgress} from '@/lib/lu-review-workflow';
+
+export function LUEndorsementStatus({round,unit}:{round:ReviewRound;unit:string}){
+ const findings=activeFindings(round.document).filter(f=>findingAppliesToUnit(f,unit)),pending=findings.filter(f=>findingPhase(round,f)!=='Closed');
+ return <section className="lu-endorsement-status" aria-label="Team endorsement status"><p><strong>{findings.length-pending.length} of {findings.length} records closed with independent endorsement.</strong></p>{pending.length?<><p>Still outstanding for this LU:</p><ul>{pending.map(f=>{const phase=findingPhase(round,f),eligible=round.document.participants.filter(p=>canEndorseFinding(round,f,p.email,p.userId??p.email));return <li key={f.id}><a href={`#finding-${f.id}`}>{f.reference} · {f.author}</a>: {phase==='Awaiting endorsement'?`awaiting one endorsement${eligible.length?` from ${eligible.map(p=>p.email).join(', ')}`:'. No other eligible reviewer is currently assigned'}.`:phase==='Reopened'?'reopened — the next correction or revised review must be submitted before endorsement.':'designer implementation response required before endorsement.'}</li>;})}</ul></>:null}</section>;
+}
 
 export function InitialReviewStatus({round,unit,email,recheckPending=false}:{round:ReviewRound;unit:string;email:string;recheckPending?:boolean}){
  const progress=luInitialReviewProgress(round,unit,recheckPending),own=progress.find(p=>p.email===email),pending=progress.filter(p=>!p.complete);
