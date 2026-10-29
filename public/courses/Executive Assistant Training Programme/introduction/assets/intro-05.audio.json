@@ -1,0 +1,339 @@
+{
+  "id": "intro-05",
+  "text": "The final four units address privacy and access, emergency readiness and assistance, family liaison and wellbeing, and integrated practice and improvement. You will bring routine support and disruption management together. The emphasis remains on factual information, prompt appropriate help, professional boundaries and accepted continuity. Your final integrated work will show how you connect decisions and responsibilities, not simply how many isolated questions you can answer.",
+  "voice": "en-ZA-LeahNeural",
+  "src": "intro-05.mp3",
+  "captions": "intro-05.vtt",
+  "seconds": 33.4020833,
+  "sha256": "11a4a0ec37467bbae0cf0e69975c42f8879b974dcd088a54e4c10f4dfd7fa057",
+  "wordStreamMatchesScript": true,
+  "fullDecodePassed": true,
+  "words": [
+    {
+      "start": 0.06,
+      "end": 0.178416,
+      "text": "The"
+    },
+    {
+      "start": 0.178417,
+      "end": 0.573167,
+      "text": "final"
+    },
+    {
+      "start": 0.586292,
+      "end": 0.809958,
+      "text": "four"
+    },
+    {
+      "start": 0.862625,
+      "end": 1.231041,
+      "text": "units"
+    },
+    {
+      "start": 1.283667,
+      "end": 1.678417,
+      "text": "address"
+    },
+    {
+      "start": 1.744208,
+      "end": 2.244208,
+      "text": "privacy"
+    },
+    {
+      "start": 2.283667,
+      "end": 2.428417,
+      "text": "and"
+    },
+    {
+      "start": 2.481042,
+      "end": 3.086292,
+      "text": "access"
+    },
+    {
+      "start": 3.402083,
+      "end": 4.046833,
+      "text": "emergency"
+    },
+    {
+      "start": 4.112625,
+      "end": 4.66525,
+      "text": "readiness"
+    },
+    {
+      "start": 4.731042,
+      "end": 4.875792,
+      "text": "and"
+    },
+    {
+      "start": 4.902083,
+      "end": 5.612624,
+      "text": "assistance"
+    },
+    {
+      "start": 5.967875,
+      "end": 6.388916,
+      "text": "family"
+    },
+    {
+      "start": 6.428417,
+      "end": 6.994208,
+      "text": "liaison"
+    },
+    {
+      "start": 7.046833,
+      "end": 7.152083,
+      "text": "and"
+    },
+    {
+      "start": 7.244208,
+      "end": 7.796833,
+      "text": "wellbeing"
+    },
+    {
+      "start": 8.06,
+      "end": 8.217875,
+      "text": "and"
+    },
+    {
+      "start": 8.257333,
+      "end": 8.902083,
+      "text": "integrated"
+    },
+    {
+      "start": 8.967875,
+      "end": 9.441541,
+      "text": "practice"
+    },
+    {
+      "start": 9.481042,
+      "end": 9.612625,
+      "text": "and"
+    },
+    {
+      "start": 9.612625,
+      "end": 10.45475,
+      "text": "improvement"
+    },
+    {
+      "start": 11.388917,
+      "end": 11.507333,
+      "text": "You"
+    },
+    {
+      "start": 11.546833,
+      "end": 11.678416,
+      "text": "will"
+    },
+    {
+      "start": 11.757333,
+      "end": 11.967874,
+      "text": "bring"
+    },
+    {
+      "start": 12.033667,
+      "end": 12.41525,
+      "text": "routine"
+    },
+    {
+      "start": 12.481042,
+      "end": 12.91525,
+      "text": "support"
+    },
+    {
+      "start": 12.981042,
+      "end": 13.086292,
+      "text": "and"
+    },
+    {
+      "start": 13.16525,
+      "end": 13.731041,
+      "text": "disruption"
+    },
+    {
+      "start": 13.731042,
+      "end": 14.31,
+      "text": "management"
+    },
+    {
+      "start": 14.336292,
+      "end": 14.888917,
+      "text": "together"
+    },
+    {
+      "start": 15.7705,
+      "end": 15.902083,
+      "text": "The"
+    },
+    {
+      "start": 15.941583,
+      "end": 16.546833,
+      "text": "emphasis"
+    },
+    {
+      "start": 16.56,
+      "end": 17.007375,
+      "text": "remains"
+    },
+    {
+      "start": 17.06,
+      "end": 17.178416,
+      "text": "on"
+    },
+    {
+      "start": 17.204708,
+      "end": 17.731041,
+      "text": "factual"
+    },
+    {
+      "start": 17.757333,
+      "end": 18.507333,
+      "text": "information"
+    },
+    {
+      "start": 18.941583,
+      "end": 19.257374,
+      "text": "prompt"
+    },
+    {
+      "start": 19.323125,
+      "end": 19.91525,
+      "text": "appropriate"
+    },
+    {
+      "start": 19.928417,
+      "end": 20.270542,
+      "text": "help"
+    },
+    {
+      "start": 20.66525,
+      "end": 21.231041,
+      "text": "professional"
+    },
+    {
+      "start": 21.296833,
+      "end": 21.915249,
+      "text": "boundaries"
+    },
+    {
+      "start": 21.994208,
+      "end": 22.138958,
+      "text": "and"
+    },
+    {
+      "start": 22.178417,
+      "end": 22.691583,
+      "text": "accepted"
+    },
+    {
+      "start": 22.757333,
+      "end": 23.625749,
+      "text": "continuity"
+    },
+    {
+      "start": 24.5205,
+      "end": 24.652083,
+      "text": "Your"
+    },
+    {
+      "start": 24.66525,
+      "end": 25.112625,
+      "text": "final"
+    },
+    {
+      "start": 25.138917,
+      "end": 25.823125,
+      "text": "integrated"
+    },
+    {
+      "start": 25.875792,
+      "end": 26.16525,
+      "text": "work"
+    },
+    {
+      "start": 26.217875,
+      "end": 26.362625,
+      "text": "will"
+    },
+    {
+      "start": 26.375792,
+      "end": 26.638958,
+      "text": "show"
+    },
+    {
+      "start": 26.652083,
+      "end": 26.849458,
+      "text": "how"
+    },
+    {
+      "start": 26.902083,
+      "end": 27.007333,
+      "text": "you"
+    },
+    {
+      "start": 27.073125,
+      "end": 27.37575,
+      "text": "connect"
+    },
+    {
+      "start": 27.428417,
+      "end": 28.033667,
+      "text": "decisions"
+    },
+    {
+      "start": 28.086292,
+      "end": 28.178417,
+      "text": "and"
+    },
+    {
+      "start": 28.244208,
+      "end": 29.270541,
+      "text": "responsibilities"
+    },
+    {
+      "start": 29.652083,
+      "end": 29.849458,
+      "text": "not"
+    },
+    {
+      "start": 29.928417,
+      "end": 30.31,
+      "text": "simply"
+    },
+    {
+      "start": 30.349458,
+      "end": 30.507333,
+      "text": "how"
+    },
+    {
+      "start": 30.5205,
+      "end": 30.7705,
+      "text": "many"
+    },
+    {
+      "start": 30.836292,
+      "end": 31.481042,
+      "text": "isolated"
+    },
+    {
+      "start": 31.546833,
+      "end": 32.112624,
+      "text": "questions"
+    },
+    {
+      "start": 32.125792,
+      "end": 32.191583,
+      "text": "you"
+    },
+    {
+      "start": 32.244208,
+      "end": 32.402083,
+      "text": "can"
+    },
+    {
+      "start": 32.441583,
+      "end": 32.954749,
+      "text": "answer"
+    }
+  ],
+  "humanListeningApproval": "PENDING"
+}

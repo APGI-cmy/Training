@@ -1,0 +1,1 @@
+window.LU1_CANDIDATE={"edition": "0.15-completed-owner-review", "fingerprint": "d90c8056a5ae172bf8feea5acc15a79353a8bc194b8d218f39b4806426878dc9", "independentAcceptance": false, "livePlatformAccepted": false, "narrationComplete": false};
