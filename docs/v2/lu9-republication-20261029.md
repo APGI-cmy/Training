@@ -43,3 +43,48 @@ is performed by this package import.
 Applied migration: `20261029145323_lu9_scorm_correction_scope.sql`.
 925 release tests and TypeScript passed. Local/hosted build, deployment and served
 asset checks are recorded below after verification.
+
+
+## Completed deployment and served verification
+
+- Source release: `4ee77c02edee9619e54faf509aea748551d431f1`, pushed to
+  `v2-development`.
+- Vercel V2 project: `prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf` in team
+  `team_KOQzed54bA9hTgta0YarblZq`.
+- Deployment: `dpl_jo43b8xRdY7CZN6p78t857EsELMx`, production target, READY.
+  Built as a staged production candidate with automatic domain assignment off,
+  then promoted to `https://training-platform-v2-staging.vercel.app`.
+  Canonical alias and promotion mapping were verified against this exact ID.
+- Local and hosted production builds passed. Hosted prebuild verified V2
+  isolation, all 85 real MP4 media objects and all three course manifests;
+  compilation and TypeScript passed. All four existing cron definitions remain
+  in the submitted configuration and source `vercel.json`.
+- Standard bulk uploads exceeded local available memory before creating a
+  deployment. The successful upload hashed materialized source files in a
+  bounded buffer, reused existing source objects and uploaded 432 changed
+  objects (61,130,405 bytes) individually. Binary uploads were checked by the
+  host against their SHA1. The authenticated CLI handled credentials; none
+  were read or printed. No Git LFS pointers were uploaded as media.
+- Four protected-candidate resources were compared byte-for-byte before
+  promotion: the root compatibility entry, manifest, SCORM entry and quiz 16.
+- At `2026-10-29T15:28:58.956Z`, eleven live resource checks passed: root and
+  SCORM entries, manifest, LMS script, first/last quiz, first/last interaction,
+  slide 1 and the complete 19,649,666-byte video 1. Each full response matched
+  the source SHA256. The largest 277,741,826-byte MP4 also served an exact
+  4,096-byte range with HTTP 206 and the correct total size.
+- Live source-video SHA256:
+  `12095d4ef5c549c918e0c5809c9f6a1e2fb625b449f76f01002c457b2191fef0`.
+- The saved review rows were unchanged after promotion: VPSHR current revision
+  82 / document MD5 `aaa0a8f3c8dda770c54be695852a84d3`; cancelled VPSHR
+  revision 56 / `db1c73ca6a2a6c0cd3d22bd49a0334e3`; Tiger revision 36 /
+  `411ada1b5dabf73532ede7b46d36083b`.
+
+Correction registration remains a separate action. Its exact prevalidated
+transition selects LU9 only and preserves the other twelve LU confirmations.
+No review decisions, endorsement, correction registration, notification email,
+learner progress or course-publication approval were submitted during this
+release. Browser playback and answering all embedded quizzes have not been
+claimed as runtime acceptance.
+
+QA JSON, scripts and logs are retained at
+`C:/Users/Johan/Codex-Work/lu9-republish-20261029/`.
