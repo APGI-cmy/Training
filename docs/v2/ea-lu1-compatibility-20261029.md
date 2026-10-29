@@ -49,3 +49,43 @@ round is created later.
 
 QA and deployment evidence: `C:/Users/Johan/Codex-Work/ea-lu1-deploy-20261029/`.
 Hosted build and live verification are appended after deployment.
+
+
+## Verified live deployment
+
+- Source release: `6c4178dce7f080654188db64efee42302278a28b`, pushed to
+  `v2-development`. Course import/integration commit: `8413ebcc`.
+- Vercel deployment `dpl_6WxXZddxjUWuRJahM6DiqthLn4Pq`, project
+  `prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf`, team
+  `team_KOQzed54bA9hTgta0YarblZq`; READY, production target. Automatic
+  alias assignment was disabled while testing, then the verified build was
+  promoted. The canonical alias now resolves to that exact deployment.
+- Source upload reused previous verified file objects and supplied 2,391 new
+  objects (302,863,288 bytes). Successful creation with all 10,866 source-file
+  references confirms their availability. The upload queue used the CLI's
+  authenticated request without reading or printing credentials. The small
+  caption object whose acknowledgement was missing from the queue log was
+  separately confirmed through the upload API before deployment creation.
+- Hosted isolation checks passed. All 102 MP4s were real materialized media,
+  all four course manifests verified, compilation and TypeScript passed.
+  The dependency audit reports the same pre-existing five findings as the
+  preceding LU9 build; dependency versions were not changed in this release.
+- Five protected-candidate resources matched the imported SHA256s before
+  promotion: SCORM manifest, LU1 entry, SCORM adapter, book and welcome HTML.
+- Live verification at `2026-10-29T16:17:21.161Z`: 14 checks passed. Eleven full
+  resources matched the original SHA256s, including the full welcome MP4 and
+  sample narrated MP3. The PDF book and LU1 clip served matching 4,096-byte
+  ranges with HTTP 206 and correct total sizes. Anonymous access to the
+  learner SCORM API was denied with HTTP 401.
+- Following promotion, the pilot remains draft/client-specific with zero
+  enrolments and zero company offerings. Existing VPSHR review revisions
+  82 and 56 and Tiger revision 36 retain document hashes
+  `aaa0a8f3c8dda770c54be695852a84d3`,
+  `db1c73ca6a2a6c0cd3d22bd49a0334e3`, and
+  `411ada1b5dabf73532ede7b46d36083b`, respectively.
+- Database security-advisor findings were unchanged before/after the four
+  pilot seed inserts. No authorization policy or existing review was changed.
+
+The live administrator preview was opened for the owner. Authenticated visual
+and human listening/course acceptance remain for the owner's requested test;
+no learner-account write, review round, notification or certificate was created.
