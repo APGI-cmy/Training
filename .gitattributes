@@ -10,3 +10,6 @@ public/courses/vpshr-level-0/introduction/welcome.mp4 -filter -diff -merge -text
 "public/courses/vpshr-level-0/LU1 Definition/**" -text
 "public/courses/vpshr-level-0/LU1 Definition/res/data/video1.mp4" -filter -diff -merge -text
 "public/courses/vpshr-level-0/LU1 Definition/res/data/video2.mp4" -filter -diff -merge -text
+
+# Preserve the author's LU9 SCORM package bytes; videos retain the existing LFS rule.
+"public/courses/vpshr-level-0/LU9 Role-of-security/**" -text

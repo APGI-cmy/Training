@@ -4,7 +4,10 @@
     "courseId": "vpshr-level-0",
     "previousFingerprint": "37a1df4f248783b6f583595dd3c339586b933ef3dcc342653c4838cee6f4702b",
     "fingerprint": "b47c284e32ff813100ba0cd63fefb09fcb67146ad73204f681067cecf72e7664",
-    "changedUnits": ["lu5", "lu11"],
+    "changedUnits": [
+      "lu5",
+      "lu11"
+    ],
     "baselineCommit": "8d168944",
     "contentCommit": "c5e40163793ae3bab8db57396282e922dd4a8043",
     "engineSource": "d92c5ae0944f933b1dc55c6b5a12247ef0770aa085e1b42908412ac8be596399",
@@ -15,7 +18,9 @@
     "courseId": "vpshr-level-0",
     "previousFingerprint": "b47c284e32ff813100ba0cd63fefb09fcb67146ad73204f681067cecf72e7664",
     "fingerprint": "4f90eaf9ff306b9f77c0b6ed2543d4430a96e8e583519200c5879822eb3850f4",
-    "changedUnits": ["introduction"],
+    "changedUnits": [
+      "introduction"
+    ],
     "baselineCommit": "172a801d",
     "contentEvidence": "docs/v2/vpshr-introduction-import-20261028.md",
     "authorisation": "2026-10-28: Import the approved introduction into both PowerPoint and V2. Preserve unchanged LU review evidence."
@@ -25,9 +30,23 @@
     "courseId": "vpshr-level-0",
     "previousFingerprint": "4f90eaf9ff306b9f77c0b6ed2543d4430a96e8e583519200c5879822eb3850f4",
     "fingerprint": "82420476dbb8d3855b681a8ce7f507268c0348ba79e47c4f20542cb907aeb8b4",
-    "changedUnits": ["lu1"],
+    "changedUnits": [
+      "lu1"
+    ],
     "baselineCommit": "960adacf6444bdebb31cae89212200418e51ce95",
     "contentEvidence": "docs/v2/lu1-republication-20261028.md",
     "authorisation": "2026-10-28: Deploy the republished LU1. Preserve unchanged LU coverage and existing review evidence."
+  },
+  {
+    "roundId": "4e26a845-4c1e-442a-87f8-2ad192647b37",
+    "courseId": "vpshr-level-0",
+    "previousFingerprint": "82420476dbb8d3855b681a8ce7f507268c0348ba79e47c4f20542cb907aeb8b4",
+    "fingerprint": "ec3b6a49faa2949ca97d55db2475d3954db3f2ac80a67748d905be3783d3bff5",
+    "changedUnits": [
+      "lu9"
+    ],
+    "baselineCommit": "252e4507",
+    "contentEvidence": "docs/v2/lu9-republication-20261029.md",
+    "authorisation": "2026-10-29: Process and deploy the republished LU9; preserve unchanged LU review evidence."
   }
 ]

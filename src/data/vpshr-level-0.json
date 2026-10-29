@@ -627,7 +627,7 @@
       "subtitle": "Apply VPSHR expectations to security team conduct.",
       "duration": "20 min",
       "assetBase": "/courses/vpshr-level-0/LU9 Role-of-security",
-      "publishedPath": "/courses/vpshr-level-0/LU9 Role-of-security/index.html",
+      "publishedPath": "/courses/vpshr-level-0/LU9 Role-of-security/res/index.html",
       "objectives": [
         "Explain the role of security in protecting people and assets responsibly.",
         "Apply de-escalation, proportionality, and reporting expectations.",
@@ -637,30 +637,30 @@
         {
           "kind": "video",
           "title": "Security role video",
-          "src": "/courses/vpshr-level-0/LU9 Role-of-security/data/video1.mp4",
-          "poster": "/courses/vpshr-level-0/LU9 Role-of-security/data/thmb1.jpg"
+          "src": "/courses/vpshr-level-0/LU9 Role-of-security/res/data/video1.mp4",
+          "poster": "/courses/vpshr-level-0/LU9 Role-of-security/res/data/thmb1.jpg"
         },
         {
           "kind": "embed",
           "title": "Original published unit",
-          "src": "/courses/vpshr-level-0/LU9 Role-of-security/index.html"
+          "src": "/courses/vpshr-level-0/LU9 Role-of-security/res/index.html"
         }
       ],
       "slides": [
         {
           "title": "Protective posture",
           "body": "Security teams protect people, property, and rights when they act with discipline and respect.",
-          "thumbnail": "/courses/vpshr-level-0/LU9 Role-of-security/data/thmb1.jpg"
+          "thumbnail": "/courses/vpshr-level-0/LU9 Role-of-security/res/data/thmb1.jpg"
         },
         {
           "title": "De-escalation",
           "body": "Calm communication and measured action can prevent avoidable harm.",
-          "thumbnail": "/courses/vpshr-level-0/LU9 Role-of-security/data/thmb2.jpg"
+          "thumbnail": "/courses/vpshr-level-0/LU9 Role-of-security/res/data/thmb2.jpg"
         },
         {
           "title": "Accountability",
           "body": "Security actions should be explainable, documented, and open to review.",
-          "thumbnail": "/courses/vpshr-level-0/LU9 Role-of-security/data/thmb3.jpg"
+          "thumbnail": "/courses/vpshr-level-0/LU9 Role-of-security/res/data/thmb3.jpg"
         }
       ],
       "quiz": [],
