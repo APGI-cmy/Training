@@ -86,6 +86,6 @@ Hosted build and live verification are appended after deployment.
 - Database security-advisor findings were unchanged before/after the four
   pilot seed inserts. No authorization policy or existing review was changed.
 
-The live administrator preview was opened for the owner. Authenticated visual
+Opening the live administrator preview was requested; the app queued the tab. Authenticated visual
 and human listening/course acceptance remain for the owner's requested test;
 no learner-account write, review round, notification or certificate was created.
