@@ -1,5 +1,6 @@
 import {LUReviewWorkspace} from "./LUReviewWorkspace";
-import {luWorkflowBlockers} from "@/lib/lu-review-workflow";
+import {cleanReviewComplete,luWorkflowBlockers} from "@/lib/lu-review-workflow";
+import {CleanReviewStatus} from './LUReviewStatus';
 import {correctionRecheckUnits} from "@/lib/course-correction-scope";
 import Link from "next/link";
 import {activeFindings,canWork,currentReport,findingLocationLabel,type ReviewRound} from "@/lib/course-review";
@@ -78,6 +79,7 @@ export function ReviewProcess(props:{round:ReviewRound;email:string;userId:strin
  return <section className="review-box review-process" id="review-process" aria-labelledby="review-process-heading"><h2 id="review-process-heading">Review process</h2><p>One workspace per LU. New findings and feedback saved beside the presentation appear here. Submitted designer responses and reviewer decisions update the same record.</p><span id="review-units"/><span id="review-summary"/><span id="shared-findings"/><span id="my-full-review"/>
  {d.reports.map(r=><span key={r.id} id={reportAnchor(r.id)} className="review-process-anchor"/>)}
  <div id="review-process-notifications"><Link href="/notifications">Open notifications and tracking</Link></div>
+ {fresh&&cleanReviewComplete(round)?<CleanReviewStatus course/>:null}
  <p>{pending.length?"Open a learning unit to see its initial review, implementation feedback, reopened rounds and endorsements.":"All LU reviews and required finding endorsements are complete. Final course, commercial and branding approvals remain separate."}</p>
  <LUReviewWorkspace round={snapshot} email={email} userId={userId} fresh={fresh} pendingRecheckUnits={fresh?[]:correctionRecheckUnits(round,props.deployedFingerprint??'')}/>
  </section>;

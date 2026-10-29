@@ -14,6 +14,17 @@ vi.mock('@/server/actions/lu-review-workflow',()=>({luReviewAction:vi.fn()}));
 vi.mock('@/server/actions/notifications',()=>({notificationAction:vi.fn()}));
 vi.mock('@/components/notifications/NotificationSentMessages',()=>({NotificationSentMessages:()=>null}));
 import {LUReviewWorkspace} from '@/components/reviews/LUReviewWorkspace';
+import {cleanReviewRound} from './fixtures/clean-review';
+
+describe('No-findings designer and reviewer modal views',()=>{
+ it.each([2,5])('shows four green stages and no endorsement controls for a unanimous %i-person team',count=>{
+  const round=cleanReviewRound(count);view.unit='lu1';
+  for(const actor of round.document.participants)for(const stage of luReviewStages(round,'lu1')){
+   view.stage=stage.id;const html=renderToStaticMarkup(<LUReviewWorkspace round={round} email={actor.email} userId={actor.userId!} fresh/>);
+   expect((html.match(/class="lu-workflow-step" data-complete="true"/g)??[])).toHaveLength(4);expect(html).toContain('No review findings were raised');expect(html).toContain('No findings — review complete');expect(html).not.toContain('Submit endorsement decision');expect(html).not.toContain('one additional endorsement recorded');expect(html).not.toContain('No peer endorsements received yet');
+  }
+ });
+});
 
 // Optional read-only audit of a separately captured live snapshot. Private data is
 // never committed, and no server action or network request is executed by this test.

@@ -5,7 +5,7 @@ export type FindingDecision={email:string;userId:string;at:string;decision:'acce
 export type EndorsementReopen={email:string;userId:string;at:string;reason:string;findingAt:string;fingerprint:string};
 export type FindingEndorsement={email:string;userId:string;at:string;decision:'yes'|'no';reason:string;findingAt:string;fingerprint:string};
 export type ImplementationRound={id:string;number:number;findingAt:string;fingerprint:string;email:string;userId:string;at:string;implemented:'yes'|'no';notes:string;decision?:FindingDecision;endorsementReopen?:EndorsementReopen;previousDecisions?:FindingDecision[];endorsements:FindingEndorsement[];legacy?:boolean};
-export type FindingPhase='Open'|'Reopened'|'Awaiting endorsement'|'Closed';
+export type FindingPhase='Open'|'Reopened'|'Awaiting team review'|'Awaiting endorsement'|'Closed';
 export type LUStage='initial'|'implementation'|'reopened'|'endorsements';
 export const designerEmail=(d:ReviewDocument)=>d.designerEmail??d.requester;
 export function isCourseDesigner(d:ReviewDocument,email:string,userId:string){
@@ -38,6 +38,26 @@ export function carriedVersion(round:ReviewRound,f:ReviewFinding,from:string){
  }
  return false;
 }
+export const cleanReviewMessage='No review findings were raised by any of the assigned reviewers. All initial reviews are complete; endorsements are not required.';
+function cleanReviewCandidate(round:ReviewRound,unit:string){
+ if(round.document.reviewProcessVersion!==3||!round.document.units.some(u=>u.slug===unit))return false;
+ const records=round.document.findings.filter(f=>findingAppliesToUnit(f,unit));
+ // A correction or a declined endorsement must follow the normal response loop,
+ // even if its issue was later superseded by a satisfactory declaration.
+ return records.every(f=>f.outcome==='satisfied'&&!f.blocking&&!f.implementationRounds?.length&&!f.fixedBy&&!f.declarationReopen&&!f.workflowEndorsements?.some(e=>e.decision==='no')&&!(f.previousVersions??[]).some(v=>v.outcome!=='satisfied'))
+  &&activeFindings(round.document).filter(f=>findingAppliesToUnit(f,unit)).every(f=>!!f.fingerprint&&carriedVersion(round,f,f.fingerprint));
+}
+export function luCleanReviewComplete(round:ReviewRound,unit:string,recheckPending=false){
+ if(recheckPending||!cleanReviewCandidate(round,unit))return false;
+ const d=round.document,people=d.participants.filter(p=>p.role==='primary'&&hasReviewTask(p,'content'));
+ if(people.length<2||people.some(p=>p.state==='declined'||!p.userId)||new Set(people.map(p=>p.userId)).size!==people.length||new Set(people.map(p=>p.email)).size!==people.length)return false;
+ const complete=(slug:string)=>cleanReviewCandidate(round,slug)&&people.every(p=>p.coverage.includes(slug)&&activeFindings(d).some(f=>findingAppliesToUnit(f,slug)&&f.author===p.email&&f.userId===p.userId&&f.outcome==='satisfied'&&!!f.fingerprint&&carriedVersion(round,f,f.fingerprint)));
+ // A course-wide declaration is one shared record; waive its endorsement only
+ // once the team has finished every LU to which that declaration applies.
+ return complete(unit)&&(!activeFindings(d).some(f=>f.scope==='course')||d.units.every(u=>complete(u.slug)));
+}
+export function cleanReviewComplete(round:ReviewRound){return round.document.units.length>0&&round.document.units.every(u=>luCleanReviewComplete(round,u.slug));}
+export function cleanReviewDeclarationComplete(round:ReviewRound,f:ReviewFinding){return f.outcome==='satisfied'&&(f.scope==='course'?cleanReviewComplete(round):luCleanReviewComplete(round,f.unit));}
 export function implementationRounds(round:ReviewRound,f:ReviewFinding):ImplementationRound[]{
  const saved=f.implementationRounds??[];
  if(saved.length)return saved.filter(r=>r.findingAt===f.at&&carriedVersion(round,f,r.fingerprint)).map(r=>r.fingerprint===round.fingerprint?r:{...r,fingerprint:round.fingerprint,endorsements:r.endorsements.map(e=>carriedVersion(round,f,e.fingerprint)?{...e,fingerprint:round.fingerprint}:e)});
@@ -59,7 +79,7 @@ export function hasPeerEndorsement(round:ReviewRound,f:ReviewFinding){
 export function retainedClosure(round:ReviewRound,f:ReviewFinding){const verifier=round.document.participants.find(p=>p.userId===f.verifiedBy);return !f.implementationRounds?.length&&f.outcome!=='satisfied'&&f.status==='closed'&&!!f.fixedBy&&!!f.verifiedBy&&f.verifiedBy!==f.fixedBy&&f.fixedFingerprint===round.fingerprint&&f.verifiedFingerprint===round.fingerprint&&!!verifier&&contentReviewer(round.document,verifier.email,f.verifiedBy);}
 export function findingPhase(round:ReviewRound,f:ReviewFinding):FindingPhase{
  if(retainedClosure(round,f))return 'Closed';
- if(f.outcome==='satisfied')return f.declarationReopen&&f.declarationReopen.findingAt===f.at&&carriedVersion(round,f,f.declarationReopen.fingerprint)?'Reopened':hasPeerEndorsement(round,f)?'Closed':'Awaiting endorsement';
+ if(f.outcome==='satisfied')return f.declarationReopen&&f.declarationReopen.findingAt===f.at&&carriedVersion(round,f,f.declarationReopen.fingerprint)?'Reopened':hasPeerEndorsement(round,f)||cleanReviewDeclarationComplete(round,f)?'Closed':cleanReviewCandidate(round,f.unit)?'Awaiting team review':'Awaiting endorsement';
  const r=currentImplementation(round,f);if(!r)return 'Open';
  if(r.decision?.decision==='reopen'||r.endorsementReopen)return 'Reopened';
  return hasPeerEndorsement(round,f)?'Closed':'Awaiting endorsement';
@@ -74,6 +94,7 @@ export function submitImplementation(round:ReviewRound,f:ReviewFinding,actor:{em
  f.status='fixed';f.fixedBy=actor.userId;f.fixedAt=input.at;f.fixedFingerprint=round.fingerprint;delete f.verifiedBy;delete f.verifiedAt;delete f.verifiedFingerprint;
 }
 export function endorseFinding(round:ReviewRound,f:ReviewFinding,actor:{email:string;userId:string},input:{at:string;decision:'yes'|'no';reason:string}){
+ if(cleanReviewDeclarationComplete(round,f))throw Error('No endorsement is required: every assigned full reviewer completed the initial review with no findings. Open the LU and save a finding if something needs changing.');
  if(!canEndorseFinding(round,f,actor.email,actor.userId))throw Error('One assigned reviewer other than the implementation writer may endorse the response. You cannot endorse your own implementation or review declaration, or a record already closed.');
  if(!['yes','no'].includes(input.decision)||input.decision==='no'&&input.reason.trim().length<5)throw Error('Give a reason for not endorsing this record.');
  const entry={...actor,...input,reason:input.reason.trim(),findingAt:f.at,fingerprint:round.fingerprint};
@@ -110,7 +131,9 @@ export function luReviewStages(round:ReviewRound,unit:string,recheckPending=fals
 }
 export function initialReviewerComplete(round:ReviewRound,email:string){const p=round.document.participants.find(p=>p.email===email);return !!p&&p.state!=='declined'&&round.document.units.every(u=>p.coverage.includes(u.slug)&&activeFindings(round.document).some(f=>f.author===email&&findingAppliesToUnit(f,u.slug)));}
 export function reviewerContentComplete(round:ReviewRound,email:string){
- const d=round.document,p=d.participants.find(p=>p.email===email);if(!p||p.state==='declined'||!p.userId)return false;
+ const d=round.document,p=d.participants.find(p=>p.email===email);if(!p||p.state==='declined')return false;
+ if(p.role==='peer'&&cleanReviewComplete(round))return true;
+ if(!p.userId)return false;
  const all=activeFindings(d),own=all.filter(f=>f.author===email);
  if(p.role==='peer')return all.some(f=>currentEndorsements(round,f).some(e=>e.userId===p.userId));
  return d.units.every(u=>p.coverage.includes(u.slug)&&own.some(f=>findingAppliesToUnit(f,u.slug)))&&own.every(f=>findingPhase(round,f)==='Closed');
