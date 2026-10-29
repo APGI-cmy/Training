@@ -103,6 +103,7 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
 
   const invitations=people.map(p=>({email:p.email,token:randomBytes(32).toString("base64url")}));
 
+  round.document.nonresponsePolicy={version:1,days:7,roundId:round.id,enabledAt:now,enabledBy:session.user.id};
   const messages=reviewMail(round,"invitation","invite",reviewInvitationNarrative(session.user.email!,true));
 
   for(const m of messages){const invite=invitations.find(i=>i.email===m.to)!;const person=people.find(p=>p.email===m.to)!;m.body+=`\n\nYour assignments: ${(person.tasks??["content"]).join(", ")}. ${hasReviewTask(person,"content")?"Complete the findings, feedback decisions and coverage in each assigned LU workflow.":"No learning-unit coverage or full content report is required for your assignment."}`;m.body+=`\n\nFirst time on V2? Create your separate review account here: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${id}/join/${invite.token}`;}
@@ -146,6 +147,14 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
    try{await processReviewMail();}catch{/* Durable outbox retries. */}
    revalidatePath(`/course-reviews/${id}`,"layout");revalidatePath("/course-reviews");
    return {success:"Corrected version registered. Earlier evidence and unchanged commercial sign-offs are retained. Record each fix and request independent verification.",href:`/course-reviews/${id}#changes-implemented`};
+  }
+
+  if(op==='enable_nonresponse_policy'){
+   if(!principal||round.status!=='open'||d.reviewProcessVersion!==3)throw Error('Only an APGI principal may enable this policy in an open LU review.');
+   const saved=await adminRest('/rest/v1/rpc/v3_enable_review_nonresponse',{method:'POST',body:JSON.stringify({p_round:id,p_revision:round.revision,p_actor:session.user.id})});
+   if(!saved.ok)throw Error('The review changed. Reload before enabling the seven-day policy.');
+   try{await processReviewMail();}catch{/* The durable notice queue retains delivery for retry. */}
+   revalidatePath(`/course-reviews/${id}`,'layout');return {success:'Seven-day content nonresponse policy enabled. Fresh notices are queued; timers begin only after successful sending. No endorsement was fabricated or applied retroactively.'};
   }
 
   if(op==="publish"){

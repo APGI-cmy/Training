@@ -1,6 +1,7 @@
 import type {ReviewDocument,ReviewFinding,ReviewRound} from './course-review';
 import {activeFindings,findingAppliesToUnit} from './course-review';
 import {hasReviewTask} from './review-tasks';
+import {deemedEndorsementsForFinding,deemedReviewCoversUnit} from './review-nonresponse';
 export type FindingDecision={email:string;userId:string;at:string;decision:'accept'|'reopen';reason:string};
 export type EndorsementReopen={email:string;userId:string;at:string;reason:string;findingAt:string;fingerprint:string};
 export type FindingEndorsement={email:string;userId:string;at:string;decision:'yes'|'no';reason:string;findingAt:string;fingerprint:string};
@@ -14,7 +15,7 @@ export function isCourseDesigner(d:ReviewDocument,email:string,userId:string){
  const person=d.participants.find(p=>p.email===email&&p.state!=='declined');return !!person&&(!person.userId||person.userId===userId);
 }
 export function contentReviewer(d:ReviewDocument,email:string,userId:string){return d.participants.some(p=>p.email===email&&p.userId===userId&&p.state!=='declined'&&hasReviewTask(p,'content'));}
-export function carriedVersion(round:ReviewRound,f:ReviewFinding,from:string){
+export function carriedVersion(round:ReviewRound,f:Pick<ReviewFinding,'unit'|'scope'|'fixedFingerprint'|'carriedForwardEvidence'>,from:string){
  if(from===round.fingerprint)return true;
  // A registered correction preserves evidence for explicitly unchanged LUs, including
  // nothing-to-add declarations. Never fabricate a new endorsement or carry one over a changed LU.
@@ -79,10 +80,10 @@ export function hasPeerEndorsement(round:ReviewRound,f:ReviewFinding){
 export function retainedClosure(round:ReviewRound,f:ReviewFinding){const verifier=round.document.participants.find(p=>p.userId===f.verifiedBy);return !f.implementationRounds?.length&&f.outcome!=='satisfied'&&f.status==='closed'&&!!f.fixedBy&&!!f.verifiedBy&&f.verifiedBy!==f.fixedBy&&f.fixedFingerprint===round.fingerprint&&f.verifiedFingerprint===round.fingerprint&&!!verifier&&contentReviewer(round.document,verifier.email,f.verifiedBy);}
 export function findingPhase(round:ReviewRound,f:ReviewFinding):FindingPhase{
  if(retainedClosure(round,f))return 'Closed';
- if(f.outcome==='satisfied')return f.declarationReopen&&f.declarationReopen.findingAt===f.at&&carriedVersion(round,f,f.declarationReopen.fingerprint)?'Reopened':hasPeerEndorsement(round,f)||cleanReviewDeclarationComplete(round,f)?'Closed':cleanReviewCandidate(round,f.unit)?'Awaiting team review':'Awaiting endorsement';
+ if(f.outcome==='satisfied')return f.declarationReopen&&f.declarationReopen.findingAt===f.at&&carriedVersion(round,f,f.declarationReopen.fingerprint)?'Reopened':hasPeerEndorsement(round,f)||cleanReviewDeclarationComplete(round,f)||deemedEndorsementsForFinding(round,f).length?'Closed':cleanReviewCandidate(round,f.unit)?'Awaiting team review':'Awaiting endorsement';
  const r=currentImplementation(round,f);if(!r)return 'Open';
  if(r.decision?.decision==='reopen'||r.endorsementReopen)return 'Reopened';
- return hasPeerEndorsement(round,f)?'Closed':'Awaiting endorsement';
+ return hasPeerEndorsement(round,f)||deemedEndorsementsForFinding(round,f).length?'Closed':'Awaiting endorsement';
 }
 export function canImplement(round:ReviewRound,f:ReviewFinding,email:string,userId:string){return isCourseDesigner(round.document,email,userId)&&f.outcome!=='satisfied'&&['Open','Reopened'].includes(findingPhase(round,f));}
 function eligibleContentReviewer(d:ReviewDocument,email:string,userId:string){return d.participants.some(p=>p.email===email&&(!p.userId||p.userId===userId)&&p.state!=='declined'&&hasReviewTask(p,'content'));}
@@ -116,31 +117,33 @@ export function reopenOwnFinding(round:ReviewRound,f:ReviewFinding,actor:{email:
 export function luInitialReviewProgress(round:ReviewRound,unit:string,recheckPending=false){
  const findings=activeFindings(round.document).filter(f=>findingAppliesToUnit(f,unit));
  return round.document.participants.filter(p=>p.role==='primary'&&p.state!=='declined'&&hasReviewTask(p,'content')).map(p=>{
-   const coverage=!recheckPending&&p.coverage.includes(unit),recorded=findings.some(f=>f.author===p.email);
-  return {email:p.email,coverage,recorded,complete:coverage&&recorded};
+   const coverage=!recheckPending&&p.coverage.includes(unit),recorded=findings.some(f=>f.author===p.email),deemed=!recheckPending&&deemedReviewCoversUnit(round,p.email,unit);
+  return {email:p.email,coverage,recorded,...(deemed?{deemed:true}:{}),complete:deemed||coverage&&recorded};
  });
 }
 export function luReviewStages(round:ReviewRound,unit:string,recheckPending=false){
  const d=round.document,findings=activeFindings(d).filter(f=>findingAppliesToUnit(f,unit));
  const reviewers=luInitialReviewProgress(round,unit,recheckPending);
+ const initialComplete=reviewers.length>=2&&reviewers.every(p=>p.complete),emptyDeemed=initialComplete&&reviewers.some(p=>p.deemed)&&findings.length===0;
  const reopens=findings.flatMap(f=>f.outcome==='satisfied'&&findingPhase(round,f)==='Reopened'?[{findingId:f.id,number:1}]:implementationRounds(round,f).filter(r=>r.decision?.decision==='reopen'||r.endorsementReopen).map(r=>({findingId:f.id,number:r.number})));
- return [{id:'initial' as const,label:'Initial review',done:reviewers.length>=2&&reviewers.every(p=>p.complete)},
- {id:'implementation' as const,label:'Implementation feedback',done:findings.length>0&&findings.every(f=>f.outcome==='satisfied'||retainedClosure(round,f)||!!implementationRounds(round,f)[0])},
+ return [{id:'initial' as const,label:'Initial review',done:initialComplete},
+ {id:'implementation' as const,label:'Implementation feedback',done:emptyDeemed||findings.length>0&&findings.every(f=>f.outcome==='satisfied'||retainedClosure(round,f)||!!implementationRounds(round,f)[0])},
  {id:'reopened' as const,label:'Reopened rounds',done:reopens.every(x=>['Closed','Awaiting endorsement'].includes(findingPhase(round,findings.find(f=>f.id===x.findingId)!))),rounds:[...new Set(reopens.map(r=>r.number))].sort((a,b)=>a-b)},
- {id:'endorsements' as const,label:'Endorsements',done:findings.length>0&&findings.every(f=>findingPhase(round,f)==='Closed')}];
+ {id:'endorsements' as const,label:'Endorsements',done:emptyDeemed||findings.length>0&&findings.every(f=>findingPhase(round,f)==='Closed')}];
 }
-export function initialReviewerComplete(round:ReviewRound,email:string){const p=round.document.participants.find(p=>p.email===email);return !!p&&p.state!=='declined'&&round.document.units.every(u=>p.coverage.includes(u.slug)&&activeFindings(round.document).some(f=>f.author===email&&findingAppliesToUnit(f,u.slug)));}
+export function initialReviewerComplete(round:ReviewRound,email:string){if(!round.document.participants.some(p=>p.email===email&&p.role==='primary'&&p.state!=='declined'&&hasReviewTask(p,'content')))return false;return round.document.units.every(u=>luInitialReviewProgress(round,u.slug).some(p=>p.email===email&&p.complete));}
 export function reviewerContentComplete(round:ReviewRound,email:string){
  const d=round.document,p=d.participants.find(p=>p.email===email);if(!p||p.state==='declined')return false;
- if(p.role==='peer'&&cleanReviewComplete(round))return true;
+ if(p.role==='peer'&&(cleanReviewComplete(round)||d.units.some(u=>deemedReviewCoversUnit(round,email,u.slug))))return true;
+ if(d.units.length>0&&d.units.every(u=>deemedReviewCoversUnit(round,email,u.slug))&&activeFindings(d).filter(f=>f.author===email).every(f=>findingPhase(round,f)==='Closed'))return true;
  if(!p.userId)return false;
  const all=activeFindings(d),own=all.filter(f=>f.author===email);
  if(p.role==='peer')return all.some(f=>currentEndorsements(round,f).some(e=>e.userId===p.userId));
- return d.units.every(u=>p.coverage.includes(u.slug)&&own.some(f=>findingAppliesToUnit(f,u.slug)))&&own.every(f=>findingPhase(round,f)==='Closed');
+ return d.units.every(u=>deemedReviewCoversUnit(round,email,u.slug)||p.coverage.includes(u.slug)&&own.some(f=>findingAppliesToUnit(f,u.slug)))&&own.every(f=>findingPhase(round,f)==='Closed');
 }
 export function luWorkflowBlockers(round:ReviewRound){
  const d=round.document,issues:string[]=[];
- for(const p of d.participants.filter(p=>p.role==='primary'&&p.state!=='declined'&&hasReviewTask(p,'content'))){const missing=d.units.filter(u=>!p.coverage.includes(u.slug));if(missing.length)issues.push(`${p.email}: ${missing.length} LU review confirmations outstanding.`);const absent=d.units.filter(u=>!activeFindings(d).some(f=>f.author===p.email&&findingAppliesToUnit(f,u.slug)));if(absent.length)issues.push(`${p.email}: ${absent.length} LUs need a finding or nothing-to-add declaration.`);}
+ for(const p of d.participants.filter(p=>p.role==='primary'&&p.state!=='declined'&&hasReviewTask(p,'content'))){const missing=d.units.filter(u=>!p.coverage.includes(u.slug)&&!deemedReviewCoversUnit(round,p.email,u.slug));if(missing.length)issues.push(`${p.email}: ${missing.length} LU review confirmations outstanding.`);const absent=d.units.filter(u=>!deemedReviewCoversUnit(round,p.email,u.slug)&&!activeFindings(d).some(f=>f.author===p.email&&findingAppliesToUnit(f,u.slug)));if(absent.length)issues.push(`${p.email}: ${absent.length} LUs need a finding or nothing-to-add declaration.`);}
  const pending=activeFindings(d).filter(f=>findingPhase(round,f)!=='Closed');if(pending.length)issues.push(`${pending.length} findings or review declarations still need an implementation response or one additional endorsement.`);
  return issues;
 }

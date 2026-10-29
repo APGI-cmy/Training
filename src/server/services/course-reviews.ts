@@ -18,6 +18,8 @@ import {validId,type DraftRecord,type CompanyRecord} from "@/lib/company-structu
 
 import {outstandingAssignedTasks} from "@/lib/review-tasks";
 import {canWork,currentReport,needsReminder,normalizedEmail,progressText,reviewBlockers,type ReviewRound,type ReviewDocument} from "@/lib/course-review";
+import {queueReviewResponseRequests,processReviewNonresponses} from './review-nonresponse';
+import {reviewNonresponseNotice} from '@/lib/review-nonresponse';
 
 import manifest from "@/data/course-review-manifest.json";
 
@@ -94,6 +96,7 @@ export type ReviewMail={key:string;to:string;kind:string;subject:string;body:str
 export function reviewMail(round:ReviewRound,kind:string,key:string,body:string,to?:string[],includeProgress=true):ReviewMail[] {
 
  const d=round.document;
+ if(d.nonresponsePolicy?.version===1&&['invitation','finding_workflow_update','content_revision_registered'].includes(kind)&&!body.includes('Seven-day response rule:'))body+=`\n\n${reviewNonresponseNotice}`;
 
  return (to??d.participants.filter(p=>p.state!=="declined").map(p=>p.email)).map(email=>({key:`${round.id}:${key}:${email}`,to:email,kind,subject:`${d.brand.name} — ${d.title}: ${kind.replaceAll("_"," ")}`,body:`${body}${includeProgress?`\n\n${progressText(round)}`:""}\n\nSign in with ${email}: ${process.env.NEXT_PUBLIC_APP_URL}/course-reviews/${round.id}\nHosted by APGI`}));
 
@@ -155,10 +158,11 @@ export async function processReviewMail(){
   const brandRevision=round?brandRevisions.get(round.organisation_id)??round.document.brand.revision:0;
   const currentOffer=round?.document.workflow?.commercials.at(-1);
   const staleOffer=m.kind==="partner_offer"&&(!currentOffer||!m.notification_key.includes(currentOffer.id)||round?.document.workflow?.stage!=="partner_offer");
+  let staleResponse=false;if(m.kind==='review_response_request'){const check=await adminRest('/rest/v1/rpc/v3_review_response_notice_pending',{method:'POST',body:JSON.stringify({p_key:m.notification_key})});if(!check.ok)throw Error('Response notice eligibility could not be verified.');staleResponse=!(await check.json());}
 
   // Re-evaluate at send time: queued reminders cannot outlive their task/cutoff.
 
-  if(!round||staleOffer||round.status==="cancelled"||((m.kind==="reminder"||m.kind==="invitation")&&(!person||!needsReminder(round,person,Date.now(),brandRevision)))||(m.kind==="progress_digest"&&round.status!=="open")){
+  if(!round||staleOffer||staleResponse||round.status==="cancelled"||(['review_response_request','review_policy_notice','deemed_endorsement'].includes(m.kind)&&m.recipient!==round.document.requester&&(!person||person.state==='declined'))||((m.kind==="reminder"||m.kind==="invitation")&&(!person||!needsReminder(round,person,Date.now(),brandRevision)))||(m.kind==="progress_digest"&&round.status!=="open")){
 
    await write(`/rest/v1/course_review_mail?id=eq.${m.id}`,{state:"skipped"},"PATCH");continue;
 
@@ -181,7 +185,9 @@ export async function processReviewMail(){
 
 export async function dailyReviewMail(){
 
- const rounds=await rows<ReviewRound>("/rest/v1/course_review_rounds?status=eq.open&select=*&order=created_at.asc");
+ let rounds=await rows<ReviewRound>("/rest/v1/course_review_rounds?status=eq.open&select=*&order=created_at.asc");
+ const timed=rounds.some(r=>r.document.nonresponsePolicy?.version===1);let deemed=0;
+ if(timed){await queueReviewResponseRequests(rounds);await processReviewMail();deemed=await processReviewNonresponses();rounds=await rows<ReviewRound>("/rest/v1/course_review_rounds?status=eq.open&select=*&order=created_at.asc");}
 
  const now=new Date(),day=now.toLocaleDateString("en-CA",{timeZone:"Africa/Johannesburg"}),hour=Number(now.toLocaleString("en-GB",{hour:"2-digit",hourCycle:"h23",timeZone:"Africa/Johannesburg"}));
 
@@ -197,7 +203,7 @@ export async function dailyReviewMail(){
 
    for(const p of d.participants)if(needsReminder(round,p,Date.now(),liveBrand))mail.push(...reviewMail(round,"reminder",`reminder:${day}`,d.reviewProcessVersion===3?"Your assigned course-review tasks are outstanding. Open each LU workflow for findings, designer responses, reopened corrections and endorsements. Complete any assigned commercial or branding reviews separately. Opening this message does not complete a required action.":"Your assigned course-review tasks are outstanding. Complete the content report, commercial review and/or branding review assigned to you, or request an assignment change. Opening this message is not approval.",[p.email]));
 
-   mail.push(...reviewMail(round,"progress_digest",`digest:${day}`,overdue?"Unfinished work is OVERDUE. An explicit extension is required; nothing was approved automatically.":"Daily course-review progress summary.",[d.requester]));
+   mail.push(...reviewMail(round,"progress_digest",`digest:${day}`,overdue?d.nonresponsePolicy?"Some assigned tasks are overdue. Content requests follow their separately notified seven-day response window. Commercial and branding decisions still require explicit action.":"Unfinished work is OVERDUE. An explicit extension is required; nothing was approved automatically.":"Daily course-review progress summary.",[d.requester]));
 
   }
 
@@ -205,7 +211,7 @@ export async function dailyReviewMail(){
 
  }
 
- return processReviewMail();
+ const result=await processReviewMail();return {...result,...(timed?{deemed}:{} )};
 
 }
 

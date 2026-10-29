@@ -3,6 +3,7 @@ import {correctionBlockers,type ContentRevision} from "./review-corrections";
 import {commercialPublicationBlockers,type PublicationWorkflow} from "./publication-workflow";
 import {luWorkflowBlockers} from "./lu-review-workflow";
 import {getCourseBySlug} from "./courses";
+import {deemedReviewCoversUnit} from './review-nonresponse';
 
 export type ReviewPerson = { email: string; role: "primary" | "peer" | "partner"; scope?: "content" | "content_and_commercials"; tasks?:ReviewTask[]; state: "invited" | "active" | "finished" | "declined"; userId?: string; reason?: string; coverage: string[] };
 
@@ -88,7 +89,7 @@ export type ReviewChangeRequest = {
 
 export type ReviewDocument = {
 
-  reviewProcessVersion?:3; designerEmail?:string;
+  reviewProcessVersion?:3; designerEmail?:string; nonresponsePolicy?:import("./review-nonresponse").ReviewNonresponsePolicy; deemedEndorsements?:import("./review-nonresponse").DeemedEndorsement[];
   workflow?: PublicationWorkflow;
   contentRevisions?:ContentRevision[];
 
@@ -142,7 +143,8 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
 
   if (primaries.length < 2) reasons.push("At least two full reviewers are required.");
 
-  if (new Set(primaries.map(p=>p.userId).filter(Boolean)).size !== primaries.length) reasons.push("Each full reviewer must finish using a distinct verified account.");
+  const actualReviewers=primaries.filter(p=>!d.units.every(u=>deemedReviewCoversUnit(round,p.email,u.slug)));
+  if (new Set(actualReviewers.map(p=>p.userId).filter(Boolean)).size !== actualReviewers.length) reasons.push("Each full reviewer must finish using a distinct verified account.");
 
   if (d.participants.some(p => p.state === "declined")) reasons.push("A decline needs requester acknowledgement or replacement.");
 

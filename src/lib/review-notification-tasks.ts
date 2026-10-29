@@ -3,6 +3,7 @@ import {activeFindings,canWork,currentReport,contentReviewBlockers,reviewBlocker
 import {hasReviewTask,taskDecision,commercialReviewApproved,companyBrandApproved} from "./review-tasks";
 import {bothCommercialApprovals} from "./publication-workflow";
 import {commercialReviewPath,commercialSignoffAnchor,reportAnchor} from "./review-navigation";
+import {deemedReviewCoversUnit} from './review-nonresponse';
 export type ReviewNotificationTask={key:string;roundId:string;revision:number;title:string;requirement:string;path:string;anchor:string;version:string;actorUserId?:string;unit?:string};
 export type ReviewTaskSource={round:ReviewRound;hash:string;brandRevision:number};
 export function reviewNotificationTasks({round:r,hash,brandRevision}:ReviewTaskSource,email:string,userId:string,principal:boolean):ReviewNotificationTask[]{
@@ -15,7 +16,7 @@ export function reviewNotificationTasks({round:r,hash,brandRevision}:ReviewTaskS
   add("extension",d.cutoff,principal?"Review deadline passed — decide on an extension":"Request an extension to continue reviewing","The cutoff has passed. Work cannot continue until the requester approves an extension; overdue work never counts as approval.","manage-request");return tasks;
  }
  if(d.reviewProcessVersion===3&&fresh){
-  for(const u of d.units)if(p?.role==="primary"&&hasReviewTask(p,"content")&&p.state!=="declined"&&(!p.coverage.includes(u.slug)||!activeFindings(d).some(f=>f.author===email&&(f.unit===u.slug||f.scope==="course"))))add("lu-initial",`${u.slug}:${r.fingerprint}`,"Complete the LU initial review",`${u.title}: open the presentation, save a finding or nothing-to-add declaration and confirm your LU review.`,`review-unit-${u.slug}`);
+  for(const u of d.units)if(p?.role==="primary"&&hasReviewTask(p,"content")&&p.state!=="declined"&&!deemedReviewCoversUnit(r,email,u.slug)&&(!p.coverage.includes(u.slug)||!activeFindings(d).some(f=>f.author===email&&(f.unit===u.slug||f.scope==="course"))))add("lu-initial",`${u.slug}:${r.fingerprint}`,"Complete the LU initial review",`${u.title}: open the presentation, save a finding or nothing-to-add declaration and confirm your LU review.`,`review-unit-${u.slug}`);
   for(const f of activeFindings(d)){
    const response=currentImplementation(r,f),phase=findingPhase(r,f),version=`${f.id}:${f.at}:${response?.id??"first"}:${phase}`;
    const unit=d.units.find(u=>u.slug===f.unit),label=`${f.unit.toUpperCase()} · ${unit?.title??f.reference}`;
