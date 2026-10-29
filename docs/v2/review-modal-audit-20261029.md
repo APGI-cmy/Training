@@ -46,4 +46,10 @@ Real reviewers' accounts were not impersonated and no live Yes/No decision was s
 - All 85 MP4 files are real materialized media. Environment isolation checks passed. Review package manifests regenerated without a Git change, so this interface repair does not change course identity or require correction registration.
 - No database migration is required. Existing records are interpreted from their registered preservation evidence; no bulk rewrite, data reset or fabricated endorsement is performed.
 
-Hosted release verification is appended after deployment.
+## Hosted release verification
+
+- Source `c751895d6fe9d068c78f4954e25324d7a849eeb9`, deployment `dpl_y9UictFxXMMT1WPPUWi6225V1snQ`: READY and promoted. The alias API confirms `training-platform-v2-staging.vercel.app` points to this exact deployment in project `prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf`. The public sign-in page returns HTTP 200.
+- Hosted build completed successfully. A local-build chunk filename differed from the hosted build and returned 404 when requested directly; that probe is not a failed application route or a verified visual result.
+- After-audit read-only comparison: Tiger revision 35, VPSHR revision 79 and cancelled predecessor revision 56 are unchanged. All three complete documents compare equal to their captured baselines, including findings, coverage, reports, endorsements and commercial history.
+- Browser limitation: Johan's signed-in pre-release LU4 view confirmed the two closed declarations and separate pending quiz finding. Final visual verification stopped when the Windows computer-control tool could not reliably determine Edge's current URL. No alternate browser-control method or other reviewer's session was used. Post-release UI verification is limited to role-rendering tests and deployment provenance, not a fresh signed-in visual check.
+- The readable per-LU audit is saved at `C:/Users/Johan/OneDrive/Documents/ChatGPT/Training portal platform/Review workflow audit 2026-10-29/Review workflow audit.html`.
