@@ -72,4 +72,29 @@ draft structure: https://www.wipo.int/en/web/business/assignment-licensing .
 These are proposed business terms requiring the platform's normal exact-version
 approvals, not a claim that an ownership transfer or licence has already occurred.
 
-Live verification will be recorded after deployment.
+## Verified live release
+
+Source `eb57d57eaa9d51da0027bb7b28bbacc8490c399d` was deployed as
+`dpl_E88DvUniNGDK5R2hdNmipf6gYQnc` and promoted to the canonical V2 staging
+address. The hosted build is Ready. The canonical alias and public
+`/api/course-deployment` both identify that exact deployment; all four course
+fingerprints match the preceding release. The unauthenticated deployment job
+endpoint returns 401.
+
+Authenticated browser verification confirmed the equal-ownership statement,
+50/50 defaults, costs-first reimbursement terms and APGI/SRMS cost responsibilities
+on the private internal form. The NKS commercial page exposes the new safe revision
+control and the internal-settings link, while retaining version 1, its original
+20/80 split, 25% capped recovery from the partner's share, USD 50 minimum ongoing
+income, USD 3,000 outstanding development and Johan's earlier decision.
+
+Read-only database comparisons before/after promotion matched the commercial,
+finding and participant hashes for both NKS and VPSHR. No draft was saved, no
+approval/signature submitted, and no new proposal or message sent in verification.
+The new continuing-rights clauses therefore require a newly saved proposed version
+and fresh approvals; deploying the capability does not rewrite existing agreements.
+
+Evidence: `live-partnership.png`, `candidate-status.json`, `live-status.json`,
+`alias.json`, `build.log`, `release-tests.log` and `record-preservation.json` in
+the QA directory above. No OneDrive source project, dependency link or symlink
+was created or changed by this release.
