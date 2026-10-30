@@ -1,4 +1,6 @@
 "use client";
+import {OngoingSalesFields} from "./OngoingSalesFields";
+import {platformJointOwnership} from "@/lib/platform-partnership";
 import {SummaryText} from "@/components/shared/SummaryText";
 
 import "./commercial-planning.css";
@@ -42,7 +44,7 @@ export function PlanSharingFields({model,apgiShare,reason,standardShare,onChange
   </>;
 }
 export function CoursePlanForm({ companies, courses, costProfiles, principalId, initialCourse = "", initialBrand = "", workflowContext, catalogue=baselineRateCatalogue }: {
-  companies: PlanCompany[]; courses: {slug: string; title: string}[]; costProfiles: PlanCostProfile[];
+  companies: PlanCompany[]; courses: {slug: string; title: string; shareable?: boolean}[]; costProfiles: PlanCostProfile[];
   principalId: string; initialCourse?: string; initialBrand?: string; catalogue?:RateCatalogue; workflowContext?:{id:string;ownerId:string;partnerCompanyId?:string;designerName:string;designerCompany:string;configuration?:Record<string,string|null>};
 }) {
   const [state, action, pending] = useActionState<StructureState, FormData>(saveCommercialDraft, {});
@@ -51,7 +53,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
   const [step, setStep] = useState(0); const formRef = useRef<HTMLFormElement>(null);
   const [submittedValues,setSubmittedValues]=useState("");
   const [ready, setReady] = useState(false);
-  const [values, setValues] = useState<Record<string, string>>({ course_id: initialCourse, organisation_id: initialBrand, rights_holder: "", ownership_model:"", client_owner_id:workflowContext?.partnerCompanyId??initialBrand, designer_name: "", designer_company: "", development_status: "", development_cost: "0", already_paid: "0", recovery_rate: partnerPlanningDefaults.recoveryRate, currency: "USD", minimum_apgi_income: "", cost_profile_id: "", cost_mode:"services", service_costs:"", sharing_model: "owner", apgi_share: "", tailored_reason:"", notes: "" });
+  const [values, setValues] = useState<Record<string, string>>({ course_id: initialCourse, organisation_id: initialBrand, rights_holder: "", ownership_model:"", client_owner_id:workflowContext?.partnerCompanyId??initialBrand, designer_name: "", designer_company: "", development_status: "", development_cost: "0", already_paid: "0", recovery_rate: partnerPlanningDefaults.recoveryRate, currency: "USD", minimum_apgi_income: "", cost_profile_id: "", cost_mode:"services", service_costs:"", sharing_model: "owner", apgi_share: "", tailored_reason:"", reciprocal_course_ids:"[]", continuing_sales_conditions:"", notes: "" });
   const storageKey = (course: string) => `apgi-course-planning-v1:${principalId}:${course || "new"}${workflowContext?`:workflow:${workflowContext.id}`:""}`;
   useEffect(() => {
     try { const raw = sessionStorage.getItem(storageKey(initialCourse)); if (raw) {
@@ -124,7 +126,7 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
     else setSubmittedValues(JSON.stringify(values));
   }}>
     {workflowContext?<input type="hidden" name="workflow_round_id" value={workflowContext.id}/>:null}
-    <input type="hidden" name="workspace" value="course_plan" /><input type="hidden" name="kind" value="course_agreement" />
+    <input type="hidden" name="commercial_terms_version" value="2"/><input type="hidden" name="workspace" value="course_plan" /><input type="hidden" name="kind" value="course_agreement" />
     <input type="hidden" name="cost_mode" value={useServices?"services":"saved"}/><input type="hidden" name="service_costs" value={values.service_costs}/>
     <input type="hidden" name="title" value={`${selectedCourse?.title ?? "Course"} — ${brand?.name ?? "Brand"}`.slice(0,150)} />
     <ol className="planning-steps" aria-label="Course preparation steps">{["Course and brand","Development","Price calculation",ownApgi?"Review APGI price":"Review terms"].map((label,index) => <li key={label} aria-current={step===index ? "step" : undefined}>{index+1}. {label}</li>)}</ol>
@@ -148,10 +150,10 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
     </fieldset>
     <fieldset data-step="2" className="commercial-step admin-form-grid" hidden={step!==2}><legend>Minimum APGI income and the course price</legend>
       {field("currency","Currency","Course price currency. Provider rates use automatic dated reference rates, unless you deliberately select a documented manual rate. USD is the draft default.",{options:["USD","CAD","EUR","GBP","ZAR"].map(value=>({value,label:value}))})}
-      {field("minimum_apgi_income","Minimum APGI income per learner","Ongoing platform income after operating costs and the partner split, excluding development recovery. Recovery is additional and does not reduce this ongoing share. Internal APGI/SRMS distributions remain separate.",{required:true,placeholder:"Example: 100.00"})}
+      {field("minimum_apgi_income","Minimum combined APGI platform income per learner","Ongoing platform income after operating costs and the partner split, excluding development recovery. Recovery is additional and does not reduce this ongoing share. Internal APGI/SRMS distributions remain separate.",{required:true,placeholder:"Example: 100.00"})}
       {costProfiles.length?<div className="admin-span-two"><label>Cost preparation method<select value={values.cost_mode} onChange={e=>update("cost_mode")(e.target.value)}><option value="services">Select services here</option><option value="saved">Use an earlier saved estimate</option></select></label></div>:null}
       {useServices?<ServiceCostChecklist catalogue={catalogue} raw={values.service_costs} currency={values.currency} onChange={update("service_costs")}/>:field("cost_profile_id","Saved platform cost estimate","Use a previously prepared estimate in the course currency. Select services here instead to prepare one on this page.",{required:true,options:[{value:"",label:"Choose an earlier estimate"},...costProfiles.filter(p=>p.configuration.currency===values.currency).map(p=>({value:p.id,label:p.title}))]})}
-      {ownApgi ? <><input type="hidden" name="sharing_model" value="apgi"/><p>APGI share: 100% · Partner share: 0%</p></> : <PlanSharingFields model={values.sharing_model} apgiShare={values.apgi_share} reason={values.tailored_reason} standardShare={standardShare} onChange={(key,value)=>update(key)(value)}/>}
+      {ownApgi ? <><input type="hidden" name="sharing_model" value="apgi"/><p>Combined APGI platform share: 100% · External course-owner share: 0%</p><p>APGI and SRMS share this platform interest equally. The standard internal profit split is APGI 50% / SRMS 50%, after the agreed costs and recovery.</p><Link href="/admin/agreements/internal">Review the private APGI / SRMS 50/50 settings</Link></> : <PlanSharingFields model={values.sharing_model} apgiShare={values.apgi_share} reason={values.tailored_reason} standardShare={standardShare} onChange={(key,value)=>update(key)(value)}/>}
       {partnerRecovery?<p className="admin-span-two notice-card">APGI remains the legal owner until the approved development price is fully recovered. Recovery is {values.recovery_rate}% of the partner share, separately from APGI's ongoing share. When recovery ends, ownership passes to {clientOwner?.name??"the named client"} and the ongoing split continues.</p>:null}
       {!ownApgi&&workflowContext?.configuration&&workflowContext.configuration.recovery_base!=="partner_share"?<p className="admin-span-two notice-card">This revision deducts development recovery from the client share. The earlier saved version keeps its original calculation. Save and obtain fresh approval for this exact version before it can apply.</p>:null}
       <p className="admin-span-two">Costs and recovery are estimates for planning. Stripe fees depend on the configured account and payment route; actual costs must be reconciled.</p>
@@ -162,6 +164,8 @@ export function CoursePlanForm({ companies, courses, costProfiles, principalId, 
       <label title="Record any exception that must be included in the approval schedule.">Notes for the agreement<textarea name="notes" value={values.notes} onChange={event=>update("notes")(event.target.value)} maxLength={5000} rows={3}/></label>
       <p>Sharing model: <strong>{ownApgi?"APGI-owned and APGI-branded course":sharingModelLabels[values.sharing_model as keyof typeof sharingModelLabels]}</strong>. APGI {ownApgi?"100":values.sharing_model==="tailored"?values.apgi_share:standardShare}% · Partner {ownApgi?"0":(100-Number(values.sharing_model==="tailored"?values.apgi_share:standardShare)).toFixed(2)}% after operating costs{ownApgi?" and internal recovery":"; development recovery is deducted from the partner share"}.</p>
       {values.sharing_model==="tailored"&&!ownApgi?<p>Reason for the tailored model: {values.tailored_reason}</p>:null}
+      {owner?.slug==="apgi"?<p className="notice-card">{platformJointOwnership}</p>:null}
+      {!ownApgi?<OngoingSalesFields courseId={values.course_id} clientName={clientOwner?.name??brand?.name??"the named client"} ownershipModel={values.ownership_model} courses={courses} ids={values.reciprocal_course_ids} conditions={values.continuing_sales_conditions} onChange={(key,value)=>update(key)(value)}/>:null}
       {ownershipSummary?<div className="notice-card"><SummaryText commercial text={ownershipSummary}/></div>:null}
       <p className="notice-card">Save this exact commercial version, then continue to joint APGI commercial sign-off. Content approval is separate and must already be recorded for an active publication workflow. Saving alone does not send invitations, accept terms, publish the course or activate a payment.</p>
     </fieldset>

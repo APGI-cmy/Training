@@ -29,7 +29,7 @@ export async function publicationWorkflowAction(_:ReviewActionState,form:FormDat
  round.document.brand={name:source.brand.name,revision:source.brand.brand_revision,color:source.brand.primary_color,logo:source.brand.logo_path};
  const v=currentCommercial(w);let mail:ReturnType<typeof reviewMail>=[],message="Saved to the publication workflow.";
 
- if(["begin_commercials","approve_content","submit_commercials","commercial_decision","send_offer","confirm_brand","reconfirm_partner"].includes(op)&&!principal)throw Error("Only Johan or Jorrie can perform this APGI action.");
+ if(["begin_commercials","approve_content","submit_commercials","revise_commercials","commercial_decision","send_offer","confirm_brand","reconfirm_partner"].includes(op)&&!principal)throw Error("Only Johan or Jorrie can perform this APGI action.");
 
  if(op!=="begin_commercials"&&op!=="approve_content"&&op!=="confirm_brand"&&op!=="reconfirm_partner"&&(!v||formText(form,"version_id")!==v.id))throw Error("The commercial version changed. Reload before deciding.");
 
@@ -49,6 +49,11 @@ export async function publicationWorkflowAction(_:ReviewActionState,form:FormDat
 
   mail=internalWorkflowMail(round,"content_approved",`content:${round.revision}`,"Final course content is cleared. Commercial and company approvals remain separate requirements for publication.");
 
+ }else if(op==="revise_commercials"){
+  if(w.stage!=="apgi_approval"||!v||v.offeredAt||v.acceptance)throw Error('Only an unsent proposal awaiting APGI approval can be returned for a revised draft.');
+  const reason=formText(form,'reason',5,1500);w.stage='commercial_draft';
+  reviewEvent(round.document,email,'commercial_revision_opened',`Prepare a new version after ${v.id}. Earlier terms and decisions are retained. ${reason}`);
+  message='Prepare and save the revised commercial version. Earlier decisions remain in history; both principals must approve the new version. Content review work is retained.';
  }else if(op==="submit_commercials"){
 
   if(w.stage!=="commercial_draft"||!v||v.submittedAt||v.decisions.length)throw Error("Save a revised commercial version before requesting sign-off.");
@@ -137,7 +142,7 @@ Status: ${w.stage}. Counter-offer responses used: ${w.counterOffers}/3.`);
 
  try{if(mail.length)await processReviewMail();}catch{/* Durable outbox retains pending delivery. */}
 
- revalidatePath(`/course-reviews/${id}`);revalidatePath(`/course-reviews/${id}/commercials`);revalidatePath("/course-reviews");revalidatePath(`/company/${round.organisation_id}`);return {success:message,...(op==="begin_commercials"?{href:`/admin/courses/${round.course_id}/publish?review=${id}`}:{})};
+ revalidatePath(`/course-reviews/${id}`);revalidatePath(`/course-reviews/${id}/commercials`);revalidatePath("/course-reviews");revalidatePath(`/company/${round.organisation_id}`);return {success:message,...(["begin_commercials","revise_commercials"].includes(op)?{href:`/admin/courses/${round.course_id}/publish?review=${id}`}:{})};
 
  }catch(e){if(e instanceof Error&&"digest" in e)throw e;return {error:e instanceof Error?e.message:"Publication workflow could not be saved."};}
 

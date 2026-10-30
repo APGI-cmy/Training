@@ -18,6 +18,11 @@ const commercialHeadings: [RegExp, string][] = [
   [/^Course design credit:/, "Course design credit"],
   [/^Sharing model:/, "Sharing model"],
   [/^(APGI owns the course |.+ paid the development price in advance and owns the course )/, "Course ownership and transfer"],
+  [/^APGI platform identity:/, "APGI / SRMS joint ownership"],
+  [/^Ongoing hosting and sales rights:/, "Continuing hosting and sales rights"],
+  [/^(Reciprocal sales scope:|Approved reciprocal course list:)/, "Approved reciprocal courses"],
+  [/^(Routine course maintenance |Routine maintenance:)/, "Maintenance and future upgrades"],
+  [/^Additional sales conditions:/, "Additional sales conditions"],
   [/^This draft records the proposed conditions;/, "Saving and ownership transfer"],
 ];
 

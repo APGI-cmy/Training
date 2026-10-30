@@ -109,7 +109,7 @@ export const sharingModelLabels: Record<SharingModel, string> = {
 export function commercialConditionsSummary(configuration: Record<string, string | null | undefined>) {
   const model=configuration.sharing_model;
   const sharing=model&&Object.hasOwn(sharingModelLabels,model)?`Sharing model: ${sharingModelLabels[model as SharingModel]}.${model==="tailored"&&configuration.tailored_reason?` Reason: ${configuration.tailored_reason}`:""}`:"";
-  return [courseOwnershipSummary(configuration),sharing].filter(Boolean).join("\n");
+  return [courseOwnershipSummary(configuration),sharing,configuration.platform_ownership_terms,configuration.continuing_sales_terms,configuration.continuing_sales_conditions?`Additional sales conditions: ${configuration.continuing_sales_conditions}`:""].filter(Boolean).join("\n");
 }
 
 export const sharingBasisLabel = (configuration: Record<string, string | null | undefined>) => configuration.recovery_base === "partner_share" ? "after operating costs, before development recovery" : "after costs and development recovery";

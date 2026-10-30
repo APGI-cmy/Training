@@ -1,7 +1,8 @@
 import "server-only";
+import {continuingSalesConfiguration,platformJointOwnership,routineMaintenanceTerms} from "@/lib/platform-partnership";
 import { formText, validId } from "@/lib/company-structure";
 import { costEstimate, courseOwnershipSummary, developmentRecoverySummary, minimumCourseQuote, moneyCents, partnerPlanningDefaults, percentageBps, resolvePlanSharing, sharingBasisLabel, sharingModelLabels, validatePlanOwnership } from "@/lib/commercial-planning";
-import { getCourseBySlug } from "@/lib/courses";
+import { getCourseBySlug,getCourses } from "@/lib/courses";
 import { requireCompany, rows } from "./company-structure";
 import { calculateServiceCosts, readServiceSelection } from "@/lib/service-costs";
 import { currentRateCatalogue } from "./service-rate-register";
@@ -14,6 +15,7 @@ export function planningCostConfiguration(form: FormData) {
   return configuration;
 }
 export async function coursePlanConfiguration(form: FormData) {
+  const revisedTerms=formText(form,"commercial_terms_version")==="2";
   const designerName=formText(form,"designer_name",2,180);
   const designerCompany=formText(form,"designer_company",2,180);
   const org = validId(formText(form, "organisation_id"));
@@ -61,7 +63,7 @@ export async function coursePlanConfiguration(form: FormData) {
     designer_name:designerName,designer_company:designerCompany,
     brand_revision: String(brand.company.brand_revision), development_status: developmentStatus,
     development_cost: (developmentCost / 100).toFixed(2), already_paid: (alreadyPaid / 100).toFixed(2),
-    development_funder: ownApgi ? "SRMS" : "APGI platform",
+    development_funder: revisedTerms||ownApgi ? "SRMS" : "APGI platform",
     recovery_rate: recovery, recovery_base: recoveryBase,
     customer_source: sharing.model, sharing_model: sharing.model, tailored_reason: sharing.reason,
     apgi_share: (shareBps / 100).toFixed(2), platform_user_share: ((10000 - shareBps) / 100).toFixed(2),
@@ -86,5 +88,13 @@ export async function coursePlanConfiguration(form: FormData) {
   configuration.terms_summary += ` Course design credit: ${designerName}, ${designerCompany}. Design credit is recorded separately from legal ownership and does not itself transfer rights.`;
   configuration.terms_summary += ` Sharing model: ${ownApgi ? "APGI-owned and APGI-branded course" : sharingModelLabels[sharing.model]}.${sharing.reason ? ` Reason for the tailored model: ${sharing.reason}` : ""}`;
   configuration.terms_summary += ` ${courseOwnershipSummary(configuration)} This draft records the proposed conditions; saving it does not activate or execute an ownership transfer.`;
+  if(revisedTerms){
+    configuration.commercial_terms_version="2";
+    if(owner.company.slug==="apgi"){configuration.platform_ownership_terms=platformJointOwnership;configuration.terms_summary+=`\n${platformJointOwnership}`;}
+    if(!ownApgi){
+      const sales=continuingSalesConfiguration(form,{courseId:course,clientName:clientOwner?.company.name??brand.company.name,ownershipModel,catalogue:getCourses().map(c=>({slug:c.slug,title:c.title,restricted:c.catalogueVisibility==="client_specific"}))});
+      Object.assign(configuration,sales);configuration.terms_summary+=`\n${sales.continuing_sales_terms}${sales.continuing_sales_conditions?`\nAdditional sales conditions: ${sales.continuing_sales_conditions}`:''}`;
+    }else configuration.terms_summary+=`\nRoutine maintenance: ${routineMaintenanceTerms}`;
+  }
   return configuration;
 }
