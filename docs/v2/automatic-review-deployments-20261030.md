@@ -63,6 +63,33 @@ than a fabricated same-version baseline. Its records remain saved.
 - Both new functions use SECURITY INVOKER with empty search_path. Anonymous and
   authenticated roles have no execute permission; service_role does.
 
-Migration: `20261030064324_automatic_review_deployment_registration.sql`.
+Migration: `20261030081625_automatic_review_deployment_registration.sql`.
 QA: `C:/Users/Johan/Codex-Work/automatic-review-deployments-20261030/`.
-Live deployment and registration evidence will be appended after verification.
+## Verified live operation
+
+Source commit `6894caf3d883848e01712493e273405c4f4f42d1` built successfully as
+`dpl_CTQKrYahxGXGiXktTW5rrp1ExtYH`. Promotion and canonical alias mapping were
+verified. Public metadata returned 200 with all four correct course identities;
+an anonymous scheduled-job request returned 401. All five scheduled jobs are
+configured on the new deployment, including the unchanged four existing jobs.
+
+The real `vercel-cron/1.0` execution at **10:25:40 SAST, 30 October 2026** returned
+200 and automatically registered both open content rounds. VPSHR is revision 84,
+fingerprint `ec3b6a49faa2…`, with only LU9 reopened and twelve preserved units.
+Johan retains twelve coverage confirmations; Jorrie retains eight (his four prior
+outstanding units were already unconfirmed). Sixteen findings and two reports
+remain saved. Tiger is revision 38 with its older shared-engine change registered;
+all eight units need rechecking, with ten findings and one report preserved.
+
+For both rounds, the immediately preceding history snapshot matches the recorded
+pre-release document digest. Live SQL comparison confirms reports, commercial
+versions, reviewer identities, original finding payloads, discussion, attachments,
+implementation rounds and endorsements were retained. Exactly one system release
+registration exists per round. Seven release notices were sent, each on its first
+attempt: two to the VPSHR team and five to the Tiger team. Provider acceptance is
+verified; recipient inbox/opening is not claimed.
+
+The browser test tab was signed out, so no authenticated visual acceptance is
+claimed. Live registration, preservation and notification dispatch were verified
+through the scheduled execution, database history and outbox instead. The local
+migration filename matches the provider-applied version `20261030081625`.
