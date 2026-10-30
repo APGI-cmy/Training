@@ -5,8 +5,11 @@ import {ReviewForm} from "./ReviewForms";
 import {WorkflowSectionHeading} from "./WorkflowSectionStatus";
 import type {WorkflowStep} from "@/lib/publication-guide";
 import {correctionRecheckUnits} from "@/lib/course-correction-scope";
+import {CurrentReviewCorrections} from './CurrentReviewCorrections';
+import type {EndorsementTracking} from './ReviewEndorsementTracking';
 
-export function ReviewCorrections({round,hash,principal,step}:{round:ReviewRound;hash:string;principal:boolean;step?:WorkflowStep}) {
+export function ReviewCorrections({round,hash,principal,step,tracking}:{round:ReviewRound;hash:string;principal:boolean;step?:WorkflowStep;tracking?:EndorsementTracking}) {
+ if(round.document.reviewProcessVersion===3)return <CurrentReviewCorrections round={round} hash={hash} principal={principal} step={step} tracking={tracking}/>;
  const d=round.document,changed=hash!==round.fingerprint,revisions=d.contentRevisions??[];
  const issues=activeFindings(d).filter(f=>f.outcome!=="satisfied"&&f.blocking);
  const recheck=changed?correctionRecheckUnits(round,hash):revisions.at(-1)?.changedUnits??d.units.map(u=>u.slug);

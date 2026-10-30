@@ -69,6 +69,7 @@ export function implementationRounds(round:ReviewRound,f:ReviewFinding):Implemen
 }
 function materializeImplementationRounds(round:ReviewRound,f:ReviewFinding){const effective=implementationRounds(round,f);f.implementationRounds=f.implementationRounds?.length?f.implementationRounds.map(old=>effective.find(r=>r.id===old.id)??old):effective;}
 export function currentImplementation(round:ReviewRound,f:ReviewFinding){const r=implementationRounds(round,f).at(-1);return r&&r.findingAt===f.at&&r.fingerprint===round.fingerprint?r:undefined;}
+export function findingImplementationRecorded(round:ReviewRound,f:ReviewFinding){return f.outcome==='satisfied'||retainedClosure(round,f)||!!implementationRounds(round,f)[0];}
 export function currentEndorsements(round:ReviewRound,f:ReviewFinding){return (f.outcome==='satisfied'?f.workflowEndorsements??[]:currentImplementation(round,f)?.endorsements??[]).filter(e=>e.findingAt===f.at&&carriedVersion(round,f,e.fingerprint)).map(e=>e.fingerprint===round.fingerprint?e:{...e,fingerprint:round.fingerprint});}
 function independentEndorser(round:ReviewRound,f:ReviewFinding,email:string,userId:string){const writer=f.outcome==='satisfied'?{email:f.author,userId:f.userId}:currentImplementation(round,f);return !!writer&&writer.email!==email&&writer.userId!==userId;}
 export function hasPeerEndorsement(round:ReviewRound,f:ReviewFinding){
@@ -127,7 +128,7 @@ export function luReviewStages(round:ReviewRound,unit:string,recheckPending=fals
  const initialComplete=reviewers.length>=2&&reviewers.every(p=>p.complete),emptyDeemed=initialComplete&&reviewers.some(p=>p.deemed)&&findings.length===0;
  const reopens=findings.flatMap(f=>f.outcome==='satisfied'&&findingPhase(round,f)==='Reopened'?[{findingId:f.id,number:1}]:implementationRounds(round,f).filter(r=>r.decision?.decision==='reopen'||r.endorsementReopen).map(r=>({findingId:f.id,number:r.number})));
  return [{id:'initial' as const,label:'Initial review',done:initialComplete},
- {id:'implementation' as const,label:'Implementation feedback',done:emptyDeemed||findings.length>0&&findings.every(f=>f.outcome==='satisfied'||retainedClosure(round,f)||!!implementationRounds(round,f)[0])},
+ {id:'implementation' as const,label:'Implementation feedback',done:emptyDeemed||findings.length>0&&findings.every(f=>findingImplementationRecorded(round,f))},
  {id:'reopened' as const,label:'Reopened rounds',done:reopens.every(x=>['Closed','Awaiting endorsement'].includes(findingPhase(round,findings.find(f=>f.id===x.findingId)!))),rounds:[...new Set(reopens.map(r=>r.number))].sort((a,b)=>a-b)},
  {id:'endorsements' as const,label:'Endorsements',done:emptyDeemed||findings.length>0&&findings.every(f=>findingPhase(round,f)==='Closed')}];
 }

@@ -4,6 +4,13 @@ import {rows} from './company-structure';
 import {adminRest} from '@/server/supabase/admin-rest';
 import type {ReviewRound} from '@/lib/course-review';
 import {reviewResponseRequests,reviewNonresponseNotice} from '@/lib/review-nonresponse';
+import {reviewResponseProgress,type ResponseTrackingRow} from '@/lib/review-response-progress';
+
+export async function reviewResponseTracking(round:ReviewRound,email:string){
+ if(round.document.nonresponsePolicy?.version!==1)return {requests:[],unavailable:false};
+ try{const saved=await rows<ResponseTrackingRow>(`/rest/v1/course_review_response_requests?round_id=eq.${round.id}&select=request_key,state,notified_at,due_at`);return {requests:reviewResponseProgress(round,saved,email),unavailable:false};}
+ catch{return {requests:[],unavailable:true};}
+}
 type Mail={notification_key:string;recipient:string;kind:string;body:string;created_at:string};
 export async function queueReviewResponseRequests(rounds:ReviewRound[]){
  let queued=0;
