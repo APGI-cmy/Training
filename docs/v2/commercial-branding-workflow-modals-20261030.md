@@ -41,5 +41,35 @@ links were created only in this external build directory, outside OneDrive. No
 OneDrive source project, dependency link or symlink was changed by this task.
 
 No agreement was approved, review reset, task decision submitted or message sent
-while preparing this UI update. Hosted and authenticated browser verification will
-be recorded after release.
+while preparing or verifying this UI update.
+
+## Verified live release
+
+Source `4fb12ff01cdb182fc7c740ac5b3038f6ecdd33cf` is deployed as
+`dpl_EssbF5NSuE3qq2uHzvGSP4P1ChF1`. The hosted build is Ready and the canonical
+V2 alias points to that exact deployment. Public deployment metadata returns 200
+and all four course fingerprints match the preceding release; the unauthenticated
+deployment job remains protected with 401.
+
+Authenticated Johan browser checks confirmed:
+
+- VPSHR main sidebar summaries show commercial 2/5 and branding 1/2, with no
+  duplicated expanded commercial/branding substep lists.
+- Commercial tasks open in the modal; Jorrie's sign-off button navigates directly
+  to his saved status. The full proposal, previous versions and saved comments
+  remain accessible. A direct NKS commercial sign-off URL also opens the modal,
+  with seven tasks across its assigned reviewers.
+- The main branding label opens the separate branding modal. The exact Jorrie
+  reviewer destination shows his outstanding review alongside Johan's saved
+  approval; logo/certificate previews remain available.
+- Close workflow and Escape both dismiss a modal and return to its summary.
+
+Before/after database comparisons match the workflow, task-decision, finding and
+participant hashes and revisions for both VPSHR and NKS. The 14 existing changed
+Executive Assistant course files also retained their exact working-file hashes
+when the UI commit was integrated into the main worktree.
+
+Evidence in the external QA directory includes `live-commercial-workflow.png`,
+`live-branding-workflow.png`, `record-preservation.json`,
+`other-course-edits-preserved.json`, `release-tests.log`, `typecheck.log`,
+`candidate-status.json`, `live-status.json`, `alias.json` and `build.log`.
