@@ -2,6 +2,7 @@ import {formText} from './company-structure';
 import {percentageBps} from './commercial-planning';
 
 export const platformPartnershipDefaults={apgiShare:'50',srmsShare:'50',stripeCostPayer:'APGI',otherCostPayer:'SRMS',developmentFunder:'SRMS'} as const;
+export const internalCostAllocationTerms='Reimburse approved costs first: Stripe processing costs to APGI; other approved operating and development costs to SRMS. Split the remaining combined APGI-platform margin between APGI and SRMS using the agreed residual profit percentages (standard 50% each). Reconcile actual costs and development recovery before distributing profit; an expense already reimbursed or recovered must not be deducted or paid again. This internal allocation does not change the course-owner/platform split or the agreed capped development-recovery deduction.';
 export const platformJointOwnership='APGI platform identity: where a course is described as wholly owned by APGI, APGI is the public platform identity for equal joint ownership by APGI and SRMS, with each partner holding a 50% interest. This definition does not override a separately agreed transfer of course ownership to a client.';
 export const routineMaintenanceTerms='Routine course maintenance is included. Major future upgrades, redevelopment or additional course development must be agreed and costed separately before work begins.';
 export const continuingSalesClause=(client:string,alreadyOwned=false,apgiPermanent=false)=>apgiPermanent
@@ -29,6 +30,7 @@ export function internalDistributionConfiguration(form:FormData){
  const currency=formText(form,'currency');if(!/^[A-Z]{3}$/.test(currency))throw Error('Use a three-letter uppercase currency code.');
  return {internal_model_version:'2',currency,apgi_share:(apgi/100).toFixed(2),srms_share:(srms/100).toFixed(2),
   ownership_apgi_share:'50.00',ownership_srms_share:'50.00',stripe_cost_payer:'APGI',other_cost_payer:'SRMS',development_funder:'SRMS',
-  allocation_basis:'Approved costs and development recovery are accounted for separately from residual profit. Stripe cost responsibility belongs to APGI; all other operating and development cost responsibility belongs to SRMS.',
+  cost_reimbursement_order:'approved_costs_before_residual_profit',cost_reimbursement_terms:internalCostAllocationTerms,
+  allocation_basis:internalCostAllocationTerms,
   ownership_terms:platformJointOwnership,notes:formText(form,'notes',0,5000)||null};
 }

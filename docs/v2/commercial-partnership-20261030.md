@@ -11,7 +11,10 @@ The later instruction was: **keep the originally agreed sharing model**.
   New internal forms default to 50/50, preserve earlier saved draft percentages,
   and record equal ownership interests separately from residual-profit shares.
   Stripe cost responsibility is APGI; other operating/development cost responsibility
-  is SRMS. No additional reimbursement or payout calculation is activated.
+  is SRMS. Approved costs are reimbursed first to those companies; only the
+  remaining combined platform margin is divided 50/50. The saved internal terms
+  prevent a cost being reimbursed twice through cost/recovery and profit. This
+  release records the agreement policy; it does not activate live payments.
 - Course preparation and principal commercial views explain that the existing
   APGI percentage is the **combined platform** share. An APGI-only course's 100%
   platform share is not a claim that one company receives all residual profit.
@@ -39,24 +42,24 @@ The later instruction was: **keep the originally agreed sharing model**.
   saving a new version requires fresh joint sign-off. This cannot withdraw an
   already sent or accepted offer or reset negotiation counters.
 
-## Deliberately unresolved: additional founder/referral fee
+## Owner-confirmed final allocation
 
-The initial requested 50% founder's fee is ambiguous alongside the preserved
-20/80 platform/course-owner split. The owner rejected replacing the original
-model. A clarification is pending: on a cost-cleared $100 sale after development
-recovery ends, what are the final platform and course-owner amounts, and from
-which amount is the additional 50% taken? No additional founder's-fee field is
-applied to pricing, recovery, existing terms or payouts by this release.
+The owner explicitly withdrew the additional founder/referral fee: "Please ignore
+this founder fee option and remain with what was originally agreed". No additional
+founder's-fee field or deduction is included in pricing, recovery, terms or payouts.
 
 The original owner-sourced 20/80 and APGI-sourced 40/60 calculations, 25% recovery
 from the partner share, minimum ongoing income, cost administration, contingency
-and recovery cap remain unchanged. A separate question about how expense
-reimbursements relate to internal profit is also pending; cost responsibility is
-captured, without inventing a new settlement algorithm.
+and recovery cap remain unchanged. Internally, the owner confirmed reimbursement
+of approved costs first (Stripe to APGI, other operating/development to SRMS), then
+50/50 of the remaining combined platform margin. These exact internal allocation
+terms are shown and saved by the private internal distribution form. Existing
+approved proposals are not silently rewritten. Payment activation and automatic
+internal-company transfers are not part of this commercial-setup release.
 
 ## Validation
 
-977 release tests passed, one optional test skipped; TypeScript passed. Tests
+978 release tests passed, one optional test skipped; TypeScript passed. Tests
 cover equal-partnership defaults/validation, all three ownership conditions,
 continuing rights, original quote/share/recovery preservation, restricted/forged
 reciprocal selection, privacy, and a version-safe unsent-proposal revision.
