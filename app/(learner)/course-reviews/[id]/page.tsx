@@ -8,10 +8,9 @@ import {WorkflowFrame} from "@/components/reviews/WorkflowGuide";
 import {publicationGuide,findWorkflowStep} from "@/lib/publication-guide";
 import {WorkflowSectionHeading,WorkflowSectionStatus,WorkflowSectionNote} from "@/components/reviews/WorkflowSectionStatus";
 import {hasReviewTask,assignedTasks,reviewTaskLabels,companyBrandApproved,outstandingAssignedTasks} from "@/lib/review-tasks";
-import {ReviewTaskPanel} from "@/components/reviews/ReviewTaskPanel";
+import {ApprovalWorkspaces} from "@/components/reviews/ApprovalWorkspaces";
 import {ReviewCorrections} from "@/components/reviews/ReviewCorrections";
 import {ReviewManagement} from "@/components/reviews/ReviewManagement";
-import {PublicationProgress} from "@/components/reviews/PublicationProgress";
 import Link from "next/link";
 import {requireReview} from "@/server/services/course-reviews";
 import {rows} from "@/server/services/company-structure";
@@ -43,8 +42,7 @@ export default async function ReviewWorkspace({params}:{params:Promise<{id:strin
  </details>
  {!d.workflow&&(principal||d.terms.acceptor===email)?<section className="review-box"><h2>Commercial schedule — separate decision</h2><SummaryText commercial text={d.terms.text}/><p>{d.terms.partner?`Company signatory: ${d.terms.acceptor}. Decision: ${d.terms.decision??"Outstanding"}`:"APGI internal schedule. Content review does not alter the private APGI/SRMS agreement or activate prices and payments."}</p><SummaryText text={d.terms.reason}/>{editable&&d.terms.partner&&d.terms.acceptor===email&&!d.terms.decision?<ReviewForm id={id} operation="terms" label="Submit my company terms decision"><label><input name="confirm_terms" type="checkbox" required/> I have read this exact schedule and am authorised to decide for this company.</label><label>Decision<select name="decision"><option value="accepted">Accept this commercial schedule</option><option value="rejected">Reject — request revised terms</option></select></label><Comment label="Acceptance confirmation or reason for rejection"/></ReviewForm>:null}</section>:null}
  <ReviewCorrections round={round} hash={source.fingerprint} principal={principal} step={step("corrections")} tracking={responseTracking}/>
- <ReviewTaskPanel round={round} brand={source.brand} email={email} principal={principal} hash={source.fingerprint} guide={guide}/>
- <PublicationProgress round={round} principal={principal} email={email} hash={source.fingerprint} brandRevision={source.brand.brand_revision} guide={guide}/>
+ <ApprovalWorkspaces round={round} brand={source.brand} email={email} principal={principal} hash={source.fingerprint} guide={guide}/>
  <ReviewManagement invitationEmail={invitationEmail} round={round} principal={principal} email={email} mail={mail}/>
  <FinalContentClearance round={round} principal={principal} email={email} hash={source.fingerprint} guide={guide}/>{requester?<><section className="review-box" id="final-publication"><WorkflowSectionHeading title="Final publication for this company" step={step("publication")}/>{round.status==="published"?<p className="form-success">This exact reviewed release is published for the selected V2 company.</p>:<>{blockers.length?<ul>{blockers.map(b=><li key={b}>{b}</li>)}</ul>:<p className="form-success">All content-review and company acceptance checks are complete.</p>}<ReviewForm id={id} operation="publish" label="Publish reviewed release" disabled={blockers.length>0}><label><input name="confirm_release" type="checkbox" required disabled={blockers.length>0}/> I approve this exact course, brand and commercial schedule for V2 company publication. The applicable internal approvals remain in force. This does not activate payments or change V1.</label></ReviewForm></>}</section></>:null}
  {!requester?<section id="final-publication" className="review-box"><WorkflowSectionHeading title="Publication status" step={step("publication")}/><p>{round.status==="published"?"This reviewed release has been published.":"Publication remains pending. The requester performs final publication only after all required checks are complete."}</p></section>:null}

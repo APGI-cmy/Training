@@ -5,6 +5,7 @@ import {renderToStaticMarkup} from "react-dom/server";
 import {beforeEach,describe,it,expect,vi} from "vitest";
 import type {ReviewRound} from "@/lib/course-review";
 const m=vi.hoisted(()=>({access:vi.fn()}));
+vi.mock('next/navigation',()=>({usePathname:()=>'/course-reviews/example',useRouter:()=>({refresh:vi.fn()})}));
 vi.mock("next/link",()=>({default:({href,children}:{href:string;children:React.ReactNode})=><a href={href}>{children}</a>}));
 vi.mock("@/server/services/course-reviews",()=>({requireReview:m.access}));
 vi.mock("@/server/services/company-structure",()=>({rows:async()=>[]}));

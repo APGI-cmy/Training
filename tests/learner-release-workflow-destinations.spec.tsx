@@ -11,10 +11,10 @@ import {commercialReviewPath,commercialSignoffAnchor,commercialReviewerAnchor} f
 import {notificationRound,noticeVersion} from "./fixtures/review-notification";
 import {canProposeCommercial,readCommercialSuggestion} from "@/lib/commercial-feedback";
 describe("Commercial review navigation and saved feedback",()=>{
- it("makes the main commercial tracker label a navigation link, independently of its task expander",()=>{
+ it("makes the main commercial tracker a summary link and keeps its tasks in the modal",()=>{
   const r=notificationRound(),steps=publicationGuide(r,"hash",1,"jorrie.jordaan@apginc.ca"),html=renderToStaticMarkup(<WorkflowGuide steps={steps}/>);
   expect(html).toContain(`<a class="workflow-step-link" href="${commercialReviewPath(r.id)}">`);
-  expect(html).toContain("Show or hide tasks for step 4");
+  expect(html).not.toContain("Show or hide tasks for step 4");expect(html).toContain('approval tasks complete · Open workflow');
   expect(findWorkflowStep(steps,"signoff-jorrie.jordaan@apginc.ca")?.href).toBe(`${commercialReviewPath(r.id)}#commercial-signoff-jorrie`);
   expect(findWorkflowStep(steps,"price")?.href).toBe(`${commercialReviewPath(r.id)}#commercial-version`);
  });

@@ -3,3 +3,5 @@
 summary.workflow-section-heading{cursor:pointer}summary.workflow-section-heading::before{content:'▸';flex:none}details[open]>summary.workflow-section-heading::before{content:'▾'}
 .workflow-step[aria-current=step]>.workflow-step-link{outline:2px solid var(--accent);outline-offset:3px}.workflow-step>details>summary{padding:8px 2px;font-size:.75rem;font-weight:600;cursor:pointer}.workflow-step>.workflow-step-link{width:100%;text-decoration:none}
 .workflow-step{display:grid;align-content:start;gap:12px;min-width:0}.workflow-step>details{min-width:0}
+
+.workflow-step>.workflow-step-link:has(.workflow-approval-summary){display:grid;grid-template-columns:auto minmax(0,1fr)}.workflow-step-link>.workflow-approval-summary{grid-column:2;font-size:.72rem;margin:6px 0 0;font-weight:500}
