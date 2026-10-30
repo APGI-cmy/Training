@@ -61,4 +61,33 @@ separation, No/reopen/next response, explicit closure, clean-review waiver,
 missing confirmations, stale deployments, exact deadline binding, stopped timers,
 tracking visibility and overdue-without-deemed-result behaviour.
 
-Live deployment verification will be appended after release.
+## Verified live release
+
+Source `0480834c2d44b45e39671d0ce075774a643ee28a` built successfully as
+`dpl_BmxTMZUk82GADo1KfGyyt5mjzyFb`. Candidate and canonical public metadata were
+verified against all four previous course identities: every fingerprint remains
+unchanged. The canonical alias points to the new deployment. Anonymous job calls
+return 401; the five existing schedules remain configured.
+
+The authenticated Johan browser view was refreshed and inspected. Both sidebar
+Step 3 and the Changes implemented panel report Complete, with 8/8 implementation
+responses submitted, zero open/reopened corrections and 15 awaiting endorsements.
+Step 2 remains incomplete. The real deadline table was expanded and checked;
+after background reconciliation, all fifteen entries have successful notice dates
+and deadlines. No request remains labelled awaiting delivery. Native screenshot:
+`C:/Users/Johan/Codex-Work/review-summary-alignment-20261030/live-changes-implemented.png`.
+Other users were not impersonated; reviewer cases are covered by the shared
+projection and the multi-reviewer regression tests.
+
+The background run at 11:55 SAST linked the four newer requests and successfully
+sent one grouped notice to Jorrie at **11:55:43 SAST on 30 October 2026**. Their
+deadline is **11:55:43 SAST on 6 November 2026**. Existing current request deadlines
+remain **15:33 SAST on 5 November 2026**. SQL comparison against the pre-release
+request snapshot confirms every already-notified request retains its original
+notice/deadline timestamps. Provider sending acceptance is verified, not inbox
+delivery or reading.
+
+VPSHR remains revision 93, fingerprint `ec3b6a49faa2…`. Exact JSON digests confirm
+that findings (including responses and endorsements), participants/coverage,
+reports and commercial versions remain unchanged. No review data was reset and
+no human decision was supplied by this release.
