@@ -1,7 +1,7 @@
 import type {ReviewRound,ReviewFinding} from "./course-review";
 import {findingPhase} from './lu-review-workflow';
 
-export type ContentRevision = {fingerprint:string;previousFingerprint:string;at:string;email:string;userId:string;notes:string;deployment:string;changedUnits?:string[];preservedUnits?:string[]};
+export type ContentRevision = {fingerprint:string;previousFingerprint:string;at:string;email:string;userId:string|null;notes:string;deployment:string;changedUnits?:string[];preservedUnits?:string[];automatic?:boolean;deploymentId?:string};
 
 export function fixFinding(round:ReviewRound,finding:ReviewFinding,userId:string,at:string) {
  if(finding.outcome==="satisfied"||(finding.status!=="open"&&!(finding.status==="fixed"&&finding.fixedFingerprint!==round.fingerprint)))throw Error("Only an open issue can be marked implemented.");

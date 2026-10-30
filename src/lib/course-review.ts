@@ -88,6 +88,8 @@ export type ReviewChangeRequest = {
 };
 
 export type ReviewDocument = {
+  contentIdentity?:import('./course-deployment').CourseContentIdentity;
+  registeredDeployment?:import('./course-deployment').RegisteredDeployment;
 
   reviewProcessVersion?:3; designerEmail?:string; nonresponsePolicy?:import("./review-nonresponse").ReviewNonresponsePolicy; deemedEndorsements?:import("./review-nonresponse").DeemedEndorsement[];
   workflow?: PublicationWorkflow;
@@ -137,7 +139,7 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
 
   if (round.status !== "open") reasons.push("This round is no longer open.");
 
-  if (round.fingerprint !== currentFingerprint) reasons.push("Course content changed. Register the deployed correction in Changes implemented before continuing.");
+  if (round.fingerprint !== currentFingerprint) reasons.push("The changed course is awaiting automatic live-deployment registration. Refresh or check the deployment status before continuing.");
 
   const primaries = d.participants.filter(p => p.role === "primary" && hasReviewTask(p,"content") && p.state !== "declined");
 

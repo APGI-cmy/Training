@@ -31,6 +31,6 @@ export async function requireReviewCoursePreview(id: string) {
   const shell = getCourseShell(review.round.course_id);
   if (!shell) notFound();
   const base = `/course-reviews/${id}`;
-  const preview: CoursePreview = { scope: `review:${review.session.user.id}:${id}:${review.source.fingerprint}`, courseHref: `${base}/preview`, unitBaseHref: `${base}/units`, returnHref: `${base}#review-units`, returnLabel: "Back to review summary", notice: review.fresh ? undefined : "You are previewing the latest deployed course. Saved findings belong to the earlier registered review version. Johan or Jorrie must register the update in Changes implemented before findings or approvals can be saved. Existing evidence is retained." };
+  const preview: CoursePreview = { scope: `review:${review.session.user.id}:${id}:${review.source.fingerprint}`, courseHref: `${base}/preview`, unitBaseHref: `${base}/units`, returnHref: `${base}#review-units`, returnLabel: "Back to review summary", notice: review.fresh ? undefined : "You are previewing the latest deployed course. Saved findings belong to the earlier registered review version. The platform is automatically verifying and registering the live update before findings or approvals can be saved. Check Changes implemented for its status. Existing evidence is retained." };
   return { ...review, person, shell, preview };
 }

@@ -24,7 +24,7 @@ export async function publicationWorkflowAction(_:ReviewActionState,form:FormDat
 
  const id=validId(formText(form,"round_id",36,36)),access=await requireReview(id),{round,principal,email,session,fresh,source}=access,w=round.document.workflow,op=formText(form,"operation"),now=new Date().toISOString();
 
- if(!w||round.status!=="open"||!fresh)throw Error("This workflow is closed or its course content changed. Register the deployed correction in Changes implemented.");
+ if(!w||round.status!=="open"||!fresh)throw Error("This workflow is closed or its course content changed. The live deployment must finish automatic registration before workflow decisions can be saved.");
 
  round.document.brand={name:source.brand.name,revision:source.brand.brand_revision,color:source.brand.primary_color,logo:source.brand.logo_path};
  const v=currentCommercial(w);let mail:ReturnType<typeof reviewMail>=[],message="Saved to the publication workflow.";

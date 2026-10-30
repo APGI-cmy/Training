@@ -17,9 +17,9 @@ function render({fresh=false,email='johan.ras@apginc.ca',userId='johan',needed=t
 }
 describe('Implementation response availability',()=>{
  it('explains the registration blocker beside an open finding and links to the exact registration section',()=>{
-  const html=render();expect(html).toContain('new course package has not been registered');expect(html).toContain('Your finding is still saved');
+  const html=render();expect(html).toContain('live course update is awaiting automatic registration');expect(html).toContain('Your finding is still saved');
   expect(html).toContain('href="/course-reviews/11111111-1111-4111-8111-111111111111#changes-implemented"');
-  expect(html).toContain('does not submit that response');expect(html).not.toContain('<form');
+  expect(html).toContain('record the implementation response separately');expect(html).not.toContain('<form');
  });
  it('restores the numbered implementation form after registration',()=>{
   const html=render({fresh:true});expect(html).toContain('Submit implementation (1)');expect(html).toContain('name="finding_id" value="finding"');expect(html).not.toContain('has not been registered');

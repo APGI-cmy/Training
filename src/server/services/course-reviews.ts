@@ -22,6 +22,7 @@ import {queueReviewResponseRequests,processReviewNonresponses} from './review-no
 import {reviewNonresponseNotice} from '@/lib/review-nonresponse';
 
 import manifest from "@/data/course-review-manifest.json";
+import {ensureReviewDeployment,synchronizeCourseDeployments} from './course-deployments';
 
 
 import {deliverTransactionalEmail} from "./email/transactional-delivery";
@@ -81,11 +82,14 @@ export async function requireReview(id:string) {
 
  validId(id);const actor=await reviewSession(`/course-reviews/${id}`);
 
- const round=(await rows<ReviewRound>(`/rest/v1/course_review_rounds?id=eq.${id}&select=*&limit=1`))[0];
+ let round=(await rows<ReviewRound>(`/rest/v1/course_review_rounds?id=eq.${id}&select=*&limit=1`))[0];
 
  if(!round||(!actor.principal&&!round.document.participants.some(p=>p.email===actor.email)))throw Error("This review is available only to its assigned team. Sign in with the invited email address.");
 
  const source=round.document.workflow?await contentSource(round.course_id,round.organisation_id):await reviewSource(round.plan_id!);
+ const previous=round.fingerprint;
+ round=await ensureReviewDeployment(round,source.fingerprint);
+ if(previous!==round.fingerprint)try{await processReviewMail();}catch{/* Durable outbox retries. */}
 
  return {...actor,round,source,fresh:source.fingerprint===round.fingerprint};
 
@@ -132,7 +136,7 @@ export function claimReviewer(round:ReviewRound,email:string,userId:string){
 
 export function assertReviewWork(round:ReviewRound,fresh:boolean){
 
- if(!fresh)throw Error("The course content changed. Johan or Jorrie must register the deployed revision in Changes implemented; existing evidence remains available.");
+ if(!fresh)throw Error("The updated course is awaiting automatic live-deployment verification. Refresh to retry; existing evidence remains available.");
 
  if(!canWork(round))throw Error("This review is closed or overdue. The requester must extend the cutoff before more work can be submitted.");
 
@@ -184,6 +188,8 @@ export async function processReviewMail(){
 }
 
 export async function dailyReviewMail(){
+ const synchronized=await synchronizeCourseDeployments();
+ if(process.env.VERCEL&&(!synchronized.confirmed||synchronized.deferred))throw Error('Confirm the live deployment before processing review response timers.');
 
  let rounds=await rows<ReviewRound>("/rest/v1/course_review_rounds?status=eq.open&select=*&order=created_at.asc");
  const timed=rounds.some(r=>r.document.nonresponsePolicy?.version===1);let deemed=0;

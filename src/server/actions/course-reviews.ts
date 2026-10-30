@@ -1,5 +1,6 @@
 "use server";
 import {luReviewAction} from "./lu-review-workflow";
+import {deliveryIdentityForCourse} from '@/lib/course-deployment';
 import {assertApprovedCorrectionScope,correctionRecheckUnits} from "@/lib/course-correction-scope";
 import {commercialReviewPath} from "@/lib/review-navigation";
 import {canProposeCommercial,readCommercialSuggestion} from "@/lib/commercial-feedback";
@@ -96,6 +97,8 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
   const round:ReviewRound={id,plan_id:null,organisation_id:brand.id,course_id:course.slug,fingerprint:source.fingerprint,revision:1,status:"open",created_at:now,document:{reviewProcessVersion:3,designerEmail:normalizedEmail(formText(form,"designer_email")||session.user.email!),workflow:{version:2,stage:"content_review",designerName,designerCompany,ownerId,partner,partnerCompanyId:brand.slug!=="apgi"?brand.id:ownerId,partnerEmail:acceptor,commercials:[],counterOffers:0},title:course.title,brand:{name:brand.name,revision:brand.brand_revision,color:brand.primary_color,logo:brand.logo_path},requester:normalizedEmail(session.user.email!),requesterId:session.user.id,cutoff,units:course.units.map(u=>({slug:u.slug,title:u.title})),participants:people,reports:[],findings:[],events:[],terms:{text:"Commercial preparation follows the requester report. Final content clearance and joint APGI commercial approvals remain required before publication.",partner,acceptor}}};
 
   const prior=(await rows<ReviewRound>(`/rest/v1/course_review_rounds?organisation_id=eq.${brand.id}&course_id=eq.${course.slug}&select=*&order=created_at.desc&limit=1`))[0];
+  const identity=deliveryIdentityForCourse(course.id);
+  if(identity?.fingerprint===source.fingerprint)round.document.contentIdentity=identity;
 
   if(prior){round.document.findings=activeFindings(prior.document).filter(f=>f.status!=="closed").map(f=>({...f,status:"open",fixedBy:undefined,text:`Carried from review ${prior.id}:\n${f.text}`,replies:[...f.replies]}));}
 
@@ -128,6 +131,7 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
   const id=validId(text(form,"round_id")),access=await requireReview(id),{round,session,email,principal,fresh}=access,d=round.document;
 
   const op=text(form,"operation"),now=new Date().toISOString();let notice="Saved to the shared review.",mail= [] as ReturnType<typeof reviewMail>;
+  if(op==='retry_deployment_registration')return fresh?{success:'The live course version is registered. Your saved review work is retained.',href:`/course-reviews/${id}#review-process`}:{error:'Automatic registration is waiting for the confirmed live deployment. Please refresh shortly; saved work is retained.'};
 
   if(op==="register_content_revision"){
    if(!principal||!d.workflow||round.status!=="open")throw Error("Only Johan or Jorrie may register a corrected deployed course in an open workflow.");
