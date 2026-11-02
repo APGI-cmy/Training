@@ -1,9 +1,19 @@
 'use client';
-import {useState} from 'react';
+import {useState,useEffect} from 'react';
 import {stateLabel,type WatchdogCheck} from '@/lib/security-watchdog';
 import {watchdogScore,watchdogDomain,watchdogDomains} from '@/lib/watchdog-overview';
 type Trend={id:string;date:string;percent:number;passed:number;total:number};
-export function WatchdogOverview({checks,stale,trend,scope,runId}:{checks:WatchdogCheck[];stale:boolean;trend:Trend[];scope:string|null;runId?:string}){
+export function WatchdogOverview({checks,stale,trend,scope,runId,specialist=false}:{checks:WatchdogCheck[];stale:boolean;trend:Trend[];scope:string|null;runId?:string;specialist?:boolean}){
+ useEffect(()=>{
+  if(!specialist)return;
+  let frame=0;const focusEvidence=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{frame=requestAnimationFrame(()=>{
+   const id=location.hash.slice(1);if(id!=='watchdog-report'&&!id.startsWith('watchdog-check-'))return;
+   const target=document.getElementById(id),panel=document.getElementById('watchdog-specialist');
+   if(target&&panel instanceof HTMLDetailsElement){panel.open=true;target.scrollIntoView({block:'center'});}
+  });});};
+  focusEvidence();window.addEventListener('hashchange',focusEvidence);
+  return()=>{cancelAnimationFrame(frame);window.removeEventListener('hashchange',focusEvidence);};
+ },[specialist,runId]);
  const [filter,setFilter]=useState('findings');const score=watchdogScore(checks);
  const selected=checks.filter(c=>filter==='all'||filter==='findings'&&['failed','attention'].includes(c.state)||filter==='gaps'&&['not_tested','inconclusive'].includes(c.state)||watchdogDomain(c)===filter);
  const circumference=2*Math.PI*58;
