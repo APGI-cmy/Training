@@ -31,11 +31,19 @@ platform preview navigation and SCORM endpoints. TypeScript passed.
 
 The expanded course would exceed Vercel's 15,000 source-file limit together with
 the existing application/course files. The deployment therefore uses Vercel CLI's
-documented --archive=tgz convention: the committed Executive course subtree is
-packed into `.vercel/source.tgz.partN` objects; unchanged application and course
-objects reuse the previous deployment references. The build extracts the supplied
-files, then runs the normal media and course-identity checks. Source content stays
-in Git in unpacked form; no ZIP or generated large archive is committed.
+documented --archive=tgz convention. All application files, unchanged course
+files and both updated Executive units are included in 289 archive parts named
+`.vercel/source.tgz.partN`. The reconstructed archive was checked against all
+18,791 expected files, including package.json and package-lock.json. Unchanged
+course objects were checked against the previous deployment's exact file hashes.
+The build then runs the normal media and course-identity checks. Source content
+stays in Git in unpacked form; no ZIP or generated large archive is committed.
+
+The first candidate, `dpl_VFofrtyhhEUPBACWaBtQtmNJTwme`, failed before installation
+because combining archive parts with ordinary file references did not preserve
+the application files during extraction. It was never promoted. The corrected
+candidate includes everything in the archive and keeps automatic alias assignment
+disabled until its build and deployment identity are checked.
 
 QA and reproducible packaging/upload scripts are in
 `C:/Users/Johan/Codex-Work/ea-lu1-lu2-20261102/`. All temporary authoring/dependency
@@ -43,5 +51,34 @@ links are outside OneDrive. Local GitHub Desktop and the other worktree's pendin
 course edits are preserved. No Supabase review round exists for this private
 course as of the pre-deployment read-only check.
 
-Hosted build, alias, content checks and authenticated preview results will be
-recorded after release. Local checks do not establish learner or owner acceptance.
+## Hosted release evidence
+
+- Source commit: `7901fa353ba6d4191bff1b0662b099112cee4d19` on v2-development.
+- Successful deployment: `dpl_6W1D1QTtTeKuYk4g8FM1Bu33ZZZh`, READY.
+- Candidate: https://training-platform-v2-staging-l8v8v1963-rassie-ras-projects.vercel.app
+- Promoted canonical site: https://training-platform-v2-staging.vercel.app
+- Both the Vercel alias record and the canonical course-deployment endpoint
+  confirm that deployment and source commit.
+- Executive course fingerprint:
+  `a4a95393fc137092eafcc4a9e1f61f3beea3bc00d6221a4e9e40cf65848ec43b`.
+- VPSHR, Scannex and Tiger Kidnapping fingerprints exactly match the previous
+  live deployment. Their review content versions were not changed by this release.
+- Hosted checks passed: 17 complete resource hash comparisons, byte-range checks
+  for all 125 video objects, 12 narrator audio samples, two PDF resources, and
+  unauthenticated learner-state requests denied for both units: 158 checks total.
+- The hosted build verified V2 environment isolation, all 210 platform MP4 media
+  objects and four course review manifests, then compiled and passed TypeScript.
+
+Administrator preview:
+https://training-platform-v2-staging.vercel.app/admin/courses/executive-assistant-lu1-compatibility/preview
+
+The administrator preview requires the user's APGI sign-in. That authenticated
+browser check was not completed; sign-in remains required and the selected Edge
+browser became unavailable. No password was read or entered. Hosted resource and
+local integration checks do not establish owner, human-listening, representative
+learner, authenticated platform-state or certificate acceptance.
+
+Evidence is saved as full-archive-verification.json, full-deployment-state.json,
+full-build.log, candidate-status.json, live-alias.json, live-status.json and
+hosted-verification.json in the external QA directory above. No review records
+were reset and no course was published for learner enrolment.
