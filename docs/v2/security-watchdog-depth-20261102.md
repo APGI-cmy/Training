@@ -28,7 +28,7 @@ Johan's verified TOTP enrolment was confirmed. Jorrie had no verified factor at 
 ## Local verification
 
 - TypeScript: passed.
-- Watchdog unit/regression checks: 67 passed.
+- Watchdog unit/regression checks: 70 passed.
 - Learner release regression: 987 passed, one pre-existing skip.
 - Production dependency audit: zero vulnerabilities.
 - Next production build: passed; 210 course videos validated.
@@ -39,4 +39,26 @@ Johan's verified TOTP enrolment was confirmed. Jorrie had no verified factor at 
 
 This release does not claim exhaustive coverage of policy/certificate records, every server action, all external integrations, provider-wide outbound firewall/DLP, production-only payment/Viewer integrations, independent penetration testing or ISO certification. A real backup must be restored into an approved separate recovery environment and checked for completeness, permissions and recovery time; the small canary exercise is not a substitute. Provider settings were inspected, while rate-limit exhaustion and full browser/inbox recovery remain separate tests. These gaps remain visible in the denominator and specialist report.
 
-Live release identity, runtime result and final preservation checks will be appended after deployment verification.
+## Live release verified
+
+- Vercel deployment: `dpl_GgGJAMqvApCih4dPYNNhc1q6gvMo`.
+- Deployed application commit: `4b69ba9d4823efcdb001cf0543fa5a58e1c9dafb`.
+- Canonical V2 address: https://training-platform-v2-staging.vercel.app.
+- Current signed run: `5a55a1a1-741d-47e1-8a4a-881060992182`, completed 2 November 2026, 16:20 SAST.
+- **61/67 named checks passed (91%)**, zero failed, zero inconclusive, one attention item (one of the two principals still needs their own verified authenticator), five explicit untested areas.
+- All 22 new HTTP checks and the three provider password/recovery probes passed. Revoked synthetic enrolment lost access to the previously successful course-file URL.
+- Daily/changed-deployment monitoring completed the new run. The manual and automatic paths use the same runner. The database mutex, scheduler claim and interrupted-run sweeper now share a ten-minute stale-run window; request execution is capped at five minutes.
+- Final temporary identities, enrolments, message threads, canaries and storage objects: **all zero**. Real totals remain 28 users, 16 companies and 12 memberships.
+- Review rounds: three, unchanged digest `805c8c58104260ad5042deb61e10c9c2`; commerce settings: two, unchanged digest `21ed13ec61b393c9db9e8f3236a18fb4`.
+- Existing four course fingerprints match the previous release. No course package or review data was committed or reset.
+- Authenticated administrator browser opened the protected e-book and direct learning controls. The separate embedded-player check still showed a blank iframe in this automated browser, as observed in earlier platform testing; full embedded playback is not claimed as accepted by this security release.
+- PDF and signed JSON downloaded successfully in Edge. The JSON signature verified independently against retained trusted key `a08bdf54532bf8c3b4ab6932`. All six PDF pages were rendered and inspected; body text stays clear of the footer.
+- Earlier interrupted/failed test runs remain retained: the first fixture insert omitted the required message UUID; the second read the SDK error field instead of GoTrue's raw `error_code`. Both test defects were corrected and retested. The final password probes require the specific `length` and `pwned` rejection reasons, rather than treating any error as protection.
+
+Downloadable evidence is available in the live Watchdog dashboard. Local QA and downloaded copies are under `C:/Users/Johan/Codex-Work/watchdog-depth-20261102`; originals remain in Downloads. The final application source is committed and pushed to `v2-development`; this evidence-only documentation update does not require a new application deployment.
+
+## Recovery preparation and retained advisories
+
+The V2 provider dashboard lists daily physical backups from 26 October through 2 November; the latest observed is 2 November 2026, 07:46:53 UTC. It explicitly excludes Storage object contents. Database `pg_cron` is not enabled; application schedules are on Vercel. A full recovery drill must use a separate approved environment, keep app/email/payment integrations disconnected, restore the selected backup and independently recover/verify private Storage files. No paid recovery project was created and no existing project was restored in place.
+
+The final provider advisor has no disabled-leaked-password warning. Its remaining three callable definer helpers are existing own-actor role/invitation lookups; the new asset helper is outside the exposed API schema. The 74 RLS/no-policy notices refer to deliberately server-only tables with no ordinary client access. References: [definer helper review](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable), [RLS/no-policy notices](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy), [provider password controls](https://supabase.com/docs/guides/auth/password-security).
