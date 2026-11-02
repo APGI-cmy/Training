@@ -1,4 +1,5 @@
 import 'server-only';
+import {randomBytes} from 'node:crypto';
 import {adminRest} from '@/server/supabase/admin-rest';
 import {rows} from '@/server/services/company-structure';
 import {verifiedSessionClaims} from '@/server/auth/session-assurance';
@@ -32,6 +33,9 @@ export const additionalCheckNames=[
  {id:'mfa_enrolment',title:'Administrator authenticator enrolment'},
  {id:'scheduled_monitor',title:'Automatic security checks configured'},
  {id:'email_alarm',title:'External test alarm accepted by email provider'},
+ {id:'password_minimum',title:'Provider enforces a twelve-character minimum'},
+ {id:'password_compromised',title:'Provider rejects a known compromised password'},
+ {id:'password_recovery',title:'Synthetic recovery link works once and restores sign-in'},
 ];
 export async function additionalProbes(input:{runId:string;users:Identity[];scope:string|null;access:WatchdogAccess;check:Probe;checks:WatchdogCheck[]}){
  const {runId,users:[a,,c],scope,access,check,checks}=input;const object=fixtureObject(runId),image=fixtureImage();
@@ -73,6 +77,23 @@ export async function additionalProbes(input:{runId:string;users:Identity[];scop
   const r=await ordinary(`/rest/v1/v2_watchdog_canaries?id=eq.${saved.id}&select=marker`,a.session.accessToken);const actual=r.ok?await r.json():[];return actual.length===1&&actual[0].marker===saved.marker;
  });
  await check('email_fixture_block','Fictional test mailboxes cannot receive external email','synthetic_behaviour','The deployed email sender rejects example.invalid recipients before contacting the provider.',async()=>{if(!emailConfiguration())throw Error('Mail control unavailable');const result=await deliverTransactionalEmail({to:`watchdog-${runId}-1@example.invalid`,subject:'Synthetic recipient-denial probe',html:'Synthetic',text:'Synthetic',idempotencyKey:'watchdog-denial-'+runId,tracking:false});return !result.ok&&result.error==='EMAIL_DELIVERY_FAILED';});
+ // These changes affect only the freshly tagged disposable account. Credentials
+ // and recovery tokens remain in memory and never enter the signed evidence.
+ if(a.session.user.email!==`watchdog-${runId}-1@example.invalid`)throw Error('Synthetic recovery identity guard failed');
+ const updatePassword=(password:string)=>fetch(base+'/auth/v1/user',{method:'PUT',headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,authorization:`Bearer ${a.session.accessToken}`,'content-type':'application/json'},body:JSON.stringify({password}),cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)});
+ await check('password_minimum','Provider enforces a twelve-character minimum','synthetic_behaviour','A disposable account attempts a shorter random password. The provider must reject it as weak. No real password is examined or changed.',async()=>{const r=await updatePassword(randomBytes(5).toString('hex'));const v=await r.json();return r.status===422&&v.code==='weak_password';});
+ await check('password_compromised','Provider rejects a known compromised password','synthetic_behaviour','A public, deliberately compromised test string longer than the minimum is rejected with the provider’s pwned-password reason. Only the disposable identity is used.',async()=>{const r=await updatePassword('Password123!Password123!');const v=await r.json();return r.status===422&&v.code==='weak_password'&&Array.isArray(v.weak_password?.reasons)&&v.weak_password.reasons.includes('pwned');});
+ await check('password_recovery','Synthetic recovery link works once and restores sign-in','synthetic_behaviour','The provider creates a recovery link for the disposable mailbox without sending mail. Its token is verified, a new random password works, and reuse of the link fails. This does not test a real user’s inbox or the entire browser recovery form.',async()=>{
+  const generated=await adminRest('/auth/v1/admin/generate_link',{method:'POST',body:JSON.stringify({type:'recovery',email:a.session.user.email}),signal:AbortSignal.timeout(8000)});if(!generated.ok)throw Error('Synthetic recovery generation unavailable');
+  const value=await generated.json(),hash=value.hashed_token??value.properties?.hashed_token;
+  if(!hash||(value.user??value).id!==a.id)throw Error('Synthetic recovery identity mismatch');
+  const call=(path:string,body:unknown,token?:string)=>fetch(base+'/auth/v1/'+path,{method:'POST',headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,...(token?{authorization:`Bearer ${token}`} :{}),'content-type':'application/json'},body:JSON.stringify(body),cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)});
+  const verified=await call('verify',{type:'recovery',token_hash:hash});if(!verified.ok)return false;const recovery=await verified.json();if(recovery.user?.id!==a.id||!recovery.access_token)return false;
+  a.session.accessToken=recovery.access_token;
+  const password=randomBytes(32).toString('base64url')+'Aa9!';if(!(await updatePassword(password)).ok)return false;
+  const signed=await call('token?grant_type=password',{email:a.session.user.email,password});if(!signed.ok)return false;const signedValue=await signed.json();if(signedValue.user?.id!==a.id||!signedValue.access_token)return false;a.session.accessToken=signedValue.access_token;
+  const reused=await call('verify',{type:'recovery',token_hash:hash});return [400,401,403,422].includes(reused.status);
+ });
  const identity=await watchdogRpc<{administrators:number;mfaEnrolled:number}>('v2_watchdog_identity_counts',{p_actor:watchdogActorId(access),p_company:scope});
  checks.push({id:'mfa_enrolment',title:'Administrator authenticator enrolment',kind:'live_configuration',state:identity.administrators>0&&identity.mfaEnrolled===identity.administrators?'passed':'attention',detail:`${identity.mfaEnrolled} of ${identity.administrators} administrators in this scope have a verified authenticator. Enrolled accounts require the second factor at sign-in.`,action:identity.mfaEnrolled===identity.administrators?undefined:'Each administrator must privately enrol and verify their own authenticator in My account security.'});
  const monitors=await rows<{enabled:boolean}>(`/rest/v1/v2_watchdog_monitors?scope_key=eq.${scope??'platform'}&select=enabled&limit=1`);

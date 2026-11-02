@@ -3,10 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { ACTIVITY_COOKIE, sessionIsIdle, tokenNeedsRefresh } from "@/lib/session-activity";
 
 import { assertStagingIsolation } from "@/server/environment-isolation";
+import {courseAssetAllowed,courseAssetTarget} from '@/server/security/course-assets';
 
 const names = ["alp_access_token", "alp_refresh_token", "alp_user_id", ACTIVITY_COOKIE];
 
 export async function proxy(request: NextRequest) {
+
+  let decodedPath=request.nextUrl.pathname;
+  try{decodedPath=decodeURIComponent(decodedPath);}catch{/* Invalid course paths are denied below. */}
+  const target=decodedPath.startsWith('/courses/')?courseAssetTarget(request.nextUrl.pathname):null;
 
   const changed = new Map<string,string>();
 
@@ -14,11 +19,20 @@ export async function proxy(request: NextRequest) {
 
   const activity = request.cookies.get(ACTIVITY_COOKIE)?.value;
 
-  function finish(clear = false) {
+  async function finish(clear = false) {
 
     if (clear) names.forEach(name => request.cookies.delete(name));
 
     else changed.forEach((value,name)=>request.cookies.set(name,value));
+
+    if(target&&!target.publicCover){
+      const token=request.cookies.get(names[0])?.value;
+      if(!token||!['GET','HEAD'].includes(request.method)||!await courseAssetAllowed(token,target.courseId)){
+        const denied=new NextResponse(request.method==='HEAD'?null:'Course access is unavailable. Sign in and open the course through your learning or review workspace.',{status:403,headers:{'cache-control':'private, no-store','vary':'Cookie','x-content-type-options':'nosniff','content-type':'text/plain; charset=utf-8'}});
+        if(clear)names.forEach(name=>denied.cookies.delete(name));
+        return denied;
+      }
+    }
 
     const headers = new Headers(request.headers); headers.set("cookie",request.cookies.toString());
 
@@ -28,7 +42,8 @@ export async function proxy(request: NextRequest) {
 
     else changed.forEach((value,name)=>response.cookies.set(name,value,{httpOnly:true,sameSite:"lax",secure:process.env.NODE_ENV==="production",path:"/",maxAge:28800}));
 
-    if (access) response.headers.set("Cache-Control","private, no-store");
+    if (access||target&&!target.publicCover) response.headers.set("Cache-Control","private, no-store");
+    if(target&&!target.publicCover)response.headers.set('Vary','Cookie');
 
     return response;
 
@@ -66,5 +81,5 @@ export async function proxy(request: NextRequest) {
 
 }
 
-export const config = {matcher:["/((?!_next/static|_next/image|favicon.ico|assets/|published/|.*\\.(?:png|jpg|jpeg|webp|svg|mp4|mp3|pdf|css|js|woff2?)$).*)"]};
+export const config = {matcher:["/((?!_next/static|_next/image|favicon.ico).*)"]};
 

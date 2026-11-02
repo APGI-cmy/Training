@@ -1,4 +1,4 @@
-export const WATCHDOG_SUITE = 'apgi-watchdog-v2';
+export const WATCHDOG_SUITE = 'apgi-watchdog-v3';
 export type CheckState = 'passed'|'failed'|'attention'|'inconclusive'|'not_tested';
 export type WatchdogCheck = {id:string;title:string;state:CheckState;kind:'live_configuration'|'synthetic_behaviour'|'alarm_drill'|'manual';detail:string;action?:string};
 export type WatchdogPayload = {

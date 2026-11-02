@@ -6,7 +6,7 @@ export function watchdogScore(checks:WatchdogCheck[]){
  return {total,passed,findings,gaps,percent:total?Math.floor(100*passed/total):0,coverage:total?Math.floor(100*(passed+findings)/total):0};
 }
 export const watchdogDomains=[
- {id:'access',title:'People and company separation',matches:['profile','company','membership','canary','watchdog_scope','watchdog_report','viewer_only','business']},
+ {id:'access',title:'People and company separation',matches:['profile','company','membership','canary','watchdog_scope','watchdog_report','viewer_only','business','asset_','download_','export_','http_report','http_scorm','http_origin']},
  {id:'configuration',title:'Database and private information',matches:['rls_','destructive','private_storage','report_storage','raw_reports','storage','views','functions','data_api']},
  {id:'identity',title:'Account protection',matches:['mfa','session','password','identity']},
  {id:'operations',title:'Monitoring, alerts and recovery',matches:['alarm','cleanup','runner','restore','outbound','monitor','email','recovery','integrity']},

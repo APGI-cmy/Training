@@ -1,7 +1,9 @@
 import "server-only";
 import { getSupabaseRestUrl } from "@/server/auth/session";
+import {safeDatabasePath} from '@/server/security/outbound';
 
 export async function adminRest(path: string, init: RequestInit = {}) {
+  if(!safeDatabasePath(path))throw new Error('DATABASE_TARGET_REJECTED');
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const url = getSupabaseRestUrl(path);
 
@@ -17,6 +19,7 @@ export async function adminRest(path: string, init: RequestInit = {}) {
   return fetch(url, {
     ...init,
     headers,
-    cache: "no-store"
+    cache: "no-store",
+    redirect: "error"
   });
 }

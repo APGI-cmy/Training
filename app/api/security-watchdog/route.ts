@@ -5,7 +5,7 @@ import {runSecurityWatchdog} from '@/server/security-watchdog/runner';
 import {watchdogActions} from '@/lib/watchdog-overview';
 import {queueWatchdogResult,flushWatchdogAlerts} from '@/server/security-watchdog/operations';
 export const dynamic='force-dynamic';
-export const maxDuration=180;
+export const maxDuration=300;
 function scopeOf(value:unknown){return value===null||value==='platform'?null:watchdogId(String(value));}
 export async function GET(request:Request){
  try{const access=await watchdogAccess(),query=new URL(request.url).searchParams;

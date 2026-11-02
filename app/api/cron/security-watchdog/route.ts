@@ -1,7 +1,7 @@
 import {timingSafeEqual} from 'node:crypto';
 import {cleanInterruptedWatchdogRuns} from '@/server/security-watchdog/runner';
 import {runWatchdogSchedule} from '@/server/security-watchdog/scheduler';
-export const maxDuration=180;
+export const maxDuration=300;
 export async function GET(request:Request){
  const secret=process.env.CRON_SECRET,actual=Buffer.from(request.headers.get('authorization')??''),expected=Buffer.from(`Bearer ${secret??''}`);
  if(!secret||actual.length!==expected.length||!timingSafeEqual(actual,expected))return Response.json({error:'Unauthorized'},{status:401});

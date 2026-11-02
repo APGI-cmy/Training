@@ -8,6 +8,7 @@ vi.mock('@/server/services/platform-principals',()=>({isPlatformPrincipal:vi.fn(
 vi.mock('@/server/security-watchdog/store',()=>({watchdogRpc:vi.fn(),watchdogPatch:vi.fn(),watchdogEvidence:vi.fn(),watchdogDashboard:vi.fn()}));
 vi.mock('@/server/security-watchdog/signing',()=>({watchdogPublicKey:vi.fn(),signWatchdogReport:vi.fn(),verifyWatchdogReport:()=>true}));
 vi.mock('@/server/security-watchdog/additional-probes',async original=>{const actual=await original<typeof import('@/server/security-watchdog/additional-probes')>();return {...actual,additionalProbes:vi.fn(async()=>{})};});
+vi.mock('@/server/security-watchdog/http-probes',async original=>{const actual=await original<typeof import('@/server/security-watchdog/http-probes')>();return {...actual,httpProbes:vi.fn(async()=>{})};});
 import {adminRest} from '@/server/supabase/admin-rest';
 import {rows,requireCompanyForSession} from '@/server/services/company-structure';
 import {watchdogAccess,watchdogRun,WatchdogError,watchdogActorId} from '@/server/security-watchdog/access';

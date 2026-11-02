@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // The image optimiser must not become a public proxy for private course files.
+  images: {localPatterns:[{pathname:'/images/**'},{pathname:'/branding/**'}]},
   experimental: { serverActions: { bodySizeLimit: "4mb" } },
   outputFileTracingIncludes: {
     "/api/certificates/*": [
