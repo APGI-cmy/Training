@@ -1,0 +1,11 @@
+LU2 - online-test handover - 2026-11-02
+
+SCORM 2004 archive: LU2-professional-boundaries-review-SCORM2004-20261030.zip
+SHA256: 9a49eca48f83e4d87653a3c53126ad4f73c9a8f3daa31c2d68ebb22d592cb60a
+Launch: course/index.html
+
+The ZIP is retained here for SCORM import. It exceeds GitHub's 100 MiB single-file limit and is intentionally ignored by Git.
+For GitHub Desktop/Vercel, sync all the unpacked files, including .gitattributes and .gitignore. All individual package files are below 100 MiB.
+These nested LU1/LU2 launch paths must be mapped to the correct unit entries by the learning platform. Copying files does not register a course.
+This checkout is currently on main; confirm the intended V2 deployment branch before committing or pushing. No branch, catalogue registration, commit, push or deployment was performed by this handover.
+Local package validation does not establish authenticated progress, resume, pass/attendance or certificate acceptance on the hosted platform.

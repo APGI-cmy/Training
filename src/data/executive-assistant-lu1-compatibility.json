@@ -1,21 +1,21 @@
 {
   "id": "executive-assistant-lu1-compatibility",
   "slug": "executive-assistant-lu1-compatibility",
-  "title": "Executive Assistant Training Programme — LU1 compatibility test",
+  "title": "Executive Assistant Training Programme — LU1 and LU2 preview",
   "level": "STAGING TEST — not a released course",
-  "description": "A one-unit technical compatibility pilot of the web-native executive partnership course. No pass or attendance certificate is issued by this pilot.",
+  "description": "A two-unit private compatibility preview of the web-native Executive Assistant course. No pass or attendance certificate is issued by this preview.",
   "audience": "Invited technical reviewers and test learners",
-  "duration": "LU1 test only",
+  "duration": "2 learning units for testing",
   "sourceRoot": "/courses/Executive%20Assistant%20Training%20Programme",
   "catalogueVisibility": "client_specific",
   "publicationIssues": [
     "Compatibility pilot only: owner, independent, accessibility and authenticated staging acceptance remain pending.",
-    "Six selected Kokoro voices are still rendering; this frozen baseline uses the existing narration.",
+    "Both units include six narrator choices. Human listening, caption timing and authenticated staging acceptance remain separate checks.",
     "No certificate policy or learner enrolment is created by this file."
   ],
   "integrationNotes": [
-    "The welcome is separate: /courses/Executive%20Assistant%20Training%20Programme/introduction/index.html",
-    "The NKS Capital reading book is /courses/Executive%20Assistant%20Training%20Programme/course/ebook.html",
+    "The separate course welcome is /courses/Executive%20Assistant%20Training%20Programme/LU1/introduction/index.html",
+    "The NKS Capital reading books are available separately inside each learning unit.",
     "Use the normal administrator/reviewer preview; a direct static URL is not an authenticated learner session.",
     "Use the platform review workflow. The localhost review database and screenshots are excluded."
   ],
@@ -25,17 +25,40 @@
       "slug": "lu1",
       "order": 1,
       "title": "The executive partnership",
-      "subtitle": "Web-native LU1 compatibility pilot",
+      "subtitle": "Updated web-native LU1 compatibility preview",
       "duration": "Self-paced test",
-      "assetBase": "/courses/Executive%20Assistant%20Training%20Programme",
-      "publishedPath": "/courses/Executive%20Assistant%20Training%20Programme/course/ebook.html",
-      "scormPath": "/courses/Executive%20Assistant%20Training%20Programme/course/index.html",
+      "assetBase": "/courses/Executive%20Assistant%20Training%20Programme/LU1",
+      "publishedPath": "/courses/Executive%20Assistant%20Training%20Programme/LU1/course/ebook.html",
+      "scormPath": "/courses/Executive%20Assistant%20Training%20Programme/LU1/course/index.html",
       "objectives": [],
       "media": [
         {
           "kind": "embed",
-          "title": "Executive partnership pilot",
-          "src": "/courses/Executive%20Assistant%20Training%20Programme/course/index.html"
+          "title": "The executive partnership",
+          "src": "/courses/Executive%20Assistant%20Training%20Programme/LU1/course/index.html"
+        }
+      ],
+      "slides": [],
+      "quiz": [],
+      "survey": [],
+      "summary": []
+    },
+    {
+      "id": "ea-lu2-compatibility-unit-2",
+      "slug": "lu2",
+      "order": 2,
+      "title": "Professional boundaries, ethics and limits of authority",
+      "subtitle": "Web-native LU2 compatibility preview",
+      "duration": "Self-paced test",
+      "assetBase": "/courses/Executive%20Assistant%20Training%20Programme/LU2",
+      "publishedPath": "/courses/Executive%20Assistant%20Training%20Programme/LU2/course/ebook.html",
+      "scormPath": "/courses/Executive%20Assistant%20Training%20Programme/LU2/course/index.html",
+      "objectives": [],
+      "media": [
+        {
+          "kind": "embed",
+          "title": "Professional boundaries",
+          "src": "/courses/Executive%20Assistant%20Training%20Programme/LU2/course/index.html"
         }
       ],
       "slides": [],
@@ -44,5 +67,5 @@
       "summary": []
     }
   ],
-  "welcomePath": "/courses/Executive%20Assistant%20Training%20Programme/introduction/index.html"
+  "welcomePath": "/courses/Executive%20Assistant%20Training%20Programme/LU1/introduction/index.html"
 }
