@@ -83,8 +83,11 @@ export async function requireCompanyForSession(id:string,ownerOnly:boolean,sessi
     !(await ownMemberships(actor.session, ownerOnly)).some(
       (m) => m.organisation_id === id,
     )
-  )
+  ){
+    const synthetic=/^watchdog-[0-9a-f-]{36}-[123]@example\.invalid$/i.test(session.user.email??'');
+    await import('@/server/security-watchdog/events').then(m=>m.recordSecurityEvent({kind:'company_access_denied',actorId:session.user.id,synthetic})).catch(()=>{});
     throw new Error("You do not have access to this company.");
+  }
   const company = (
     await rows<CompanyRecord>(
       `/rest/v1/organisations?id=eq.${id}&is_active=eq.true&select=${companyFields}&limit=1`,

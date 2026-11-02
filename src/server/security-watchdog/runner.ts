@@ -5,9 +5,11 @@ import {adminRest} from '@/server/supabase/admin-rest';
 import {rows,requireCompanyForSession} from '@/server/services/company-structure';
 import type {AlpSession} from '@/server/auth/session';
 import {WATCHDOG_SUITE,summariseChecks,type WatchdogCheck,type WatchdogPayload,type WatchdogRun} from '@/lib/security-watchdog';
-import {watchdogAccess,checkWatchdogScope,watchdogRun,WatchdogError,type WatchdogAccess} from './access';
+import {watchdogAccess,checkWatchdogScope,watchdogRun,WatchdogError,watchdogActorId,type WatchdogAccess} from './access';
 import {watchdogRpc,watchdogPatch,watchdogEvidence,watchdogDashboard} from './store';
 import {signWatchdogReport,verifyWatchdogReport,watchdogPublicKey} from './signing';
+import {additionalProbes,additionalCheckNames,fixtureObject} from './additional-probes';
+import {expectedWatchdogChecks} from '@/lib/watchdog-overview';
 
 type InternalRun=WatchdogRun&{resources:Record<string,unknown>;reused?:boolean};
 type TestUser={id:string;session:AlpSession};
@@ -47,6 +49,8 @@ export async function cleanWatchdogFixtures(runId:string,users:TestUser[]=[]){
  for(const user of users){try{await fetch(origin+'/auth/v1/logout?scope=global',{method:'POST',headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,authorization:`Bearer ${user.session.accessToken}`},signal:AbortSignal.timeout(5000)});}catch{/* Deleting fixtures also removes every scoped data permission. */}}
  const resources=await watchdogRpc<{userIds:string[]}>('v2_watchdog_clean_fixtures',{p_run:runId});
  let complete=true;
+ const removed=await adminRest('/storage/v1/object/course-review-evidence',{method:'DELETE',body:JSON.stringify({prefixes:[fixtureObject(runId)]}),signal:AbortSignal.timeout(8000)});
+ if(!removed.ok&&removed.status!==404)complete=false;
  for(const id of resources.userIds){
   const r=await adminRest(`/auth/v1/admin/users/${id}`,{method:'DELETE',body:JSON.stringify({should_soft_delete:false}),signal:AbortSignal.timeout(8000)});
   if(!r.ok&&r.status!==404)complete=false;
@@ -61,12 +65,12 @@ export async function cleanInterruptedWatchdogRuns(){
  return {examined:old.length,cleaned};
 }
 
-export async function runSecurityWatchdog(access:WatchdogAccess,scope:string|null,requestId:string){
+export async function runSecurityWatchdog(access:WatchdogAccess,scope:string|null,requestId:string,trigger:'manual'|'scheduled'|'deployment'='manual'){
  assertStagingIsolation();checkWatchdogScope(access,scope);watchdogPublicKey();
  const scopeLabel=scope?(await rows<{name:string}>(`/rest/v1/organisations?id=eq.${scope}&is_active=eq.true&select=name&limit=1`))[0]?.name:'Whole platform';
  if(!scopeLabel)throw new WatchdogError('This company is unavailable.');
  await cleanInterruptedWatchdogRuns();
- const run=await watchdogRpc<InternalRun>('v2_watchdog_start',{p_actor:access.session.user.id,p_company:scope,p_request:requestId,p_deployment:watchdogDeployment()});
+ const run=await watchdogRpc<InternalRun>('v2_watchdog_start',{p_actor:watchdogActorId(access),p_company:scope,p_request:requestId,p_deployment:watchdogDeployment()});
  if(run.payload||run.state!=='running')return run;
  // A repeated in-flight idempotency key must not provision a second fixture set.
  if(run.reused||Object.keys(run.resources??{}).length)throw new WatchdogError('This security test is already running.',409);
@@ -81,7 +85,7 @@ export async function runSecurityWatchdog(access:WatchdogAccess,scope:string|nul
  };
  let cleanup=false;
  try{
-  const config=await watchdogRpc<{allPublicTablesRls:boolean;clientDestructiveGrantsPresent:boolean;watchdogRecordsServerOnly:boolean;privateEvidenceBucket:boolean;platformCounts:unknown}>('v2_watchdog_configuration',{p_actor:access.session.user.id,p_company:scope});
+  const config=await watchdogRpc<{allPublicTablesRls:boolean;clientDestructiveGrantsPresent:boolean;watchdogRecordsServerOnly:boolean;privateEvidenceBucket:boolean;platformCounts:unknown}>('v2_watchdog_configuration',{p_actor:watchdogActorId(access),p_company:scope});
   checks.push({id:'rls_configuration',title:'Database row-security configuration',kind:'live_configuration',state:config.allPublicTablesRls?'passed':'failed',detail:'Checked whether row-level security is enabled on public-schema tables. This configuration check alone does not prove each policy is correct.'});
   checks.push({id:'destructive_grants',title:'Client database privilege hardening',kind:'live_configuration',state:config.clientDestructiveGrantsPresent?'attention':'passed',detail:config.clientDestructiveGrantsPresent?'Client database roles retain TRUNCATE privileges on some tables. No destructive operation was attempted.':'No client-role TRUNCATE grants were found.',action:config.clientDestructiveGrantsPresent?'Review and remove unnecessary database privileges through a separately tested hardening change.':undefined});
   checks.push({id:'private_storage',title:'Review evidence storage is private',kind:'live_configuration',state:config.privateEvidenceBucket?'passed':'failed',detail:'Checked the privacy setting of the review-evidence bucket. Individual file download paths still need their own checks.'});
@@ -109,6 +113,7 @@ export async function runSecurityWatchdog(access:WatchdogAccess,scope:string|nul
   await check('watchdog_report','Report/export access is scoped on the server','synthetic_behaviour','A synthetic company administrator cannot retrieve this different-scope security run. JSON and PDF use the same report gate.',async()=>{try{await watchdogRun(actorA,run.id);return false;}catch(e){if(e instanceof WatchdogError&&e.status===404)return true;throw e;}});
   await check('raw_reports','Direct database access cannot bypass report permissions','synthetic_behaviour','A normal authenticated API caller cannot select security report rows directly.',async()=>{const r=await publicRequest(`/rest/v1/v2_watchdog_runs?id=eq.${run.id}&select=id`,a.session.accessToken);return r.status===401||r.status===403;});
   await check('viewer_only','Viewing-only company membership cannot run administrator checks','synthetic_behaviour','The synthetic company learner has no Watchdog administrator access.',async()=>{try{await watchdogAccess(c.session);return false;}catch(e){if(e instanceof WatchdogError&&e.status===403)return true;throw e;}});
+  await additionalProbes({runId:run.id,users:testUsers,scope,access,check,checks});
   await check('alarm','In-app test-alarm routing and receipt record','alarm_drill','A labelled drill message is recorded for the initiating administrator and platform principals, and is readable in the initiating administrator’s Watchdog inbox. Email/SMS delivery is not included.',async()=>{await watchdogRpc('v2_watchdog_notify',{p_run:run.id});const dashboard=await watchdogDashboard(access,scope);return dashboard.deliveries.some(d=>d.run_id===run.id);});
  }catch{checks.push({id:'runner',title:'Controlled test execution',state:'inconclusive',kind:'synthetic_behaviour',detail:'The full test sequence could not finish. Completed checks remain recorded; missing checks are not assumed to pass.',action:'Review the run and retry after service availability is restored.'});}
  finally{
@@ -118,17 +123,18 @@ export async function runSecurityWatchdog(access:WatchdogAccess,scope:string|nul
  const gaps:[string,string,string][]=[
  ['all_business_paths','Remaining business data paths','All learner records, payments, messages, files, exports, caches and background jobs have not yet been exhaustively exercised. The completed boundary probes are named above.'],
  ['outbound','External information-flow controls','No external exfiltration is attempted. Email recipient, AI-provider, network-egress and external DLP tests require separate controlled adapters.'],
- ['mfa','MFA and compromised-password enforcement','Provider-wide MFA and compromised-password enforcement have not been verified by this run. Review provider settings and record dated evidence.'],
+ ['mfa','Provider password and recovery settings','Authenticator enrolment and revoked sessions are tested separately. Compromised-password enforcement, recovery settings and login-rate policy still require provider-setting verification.'],
  ['restore','Backup restoration and recovery','A separate restoration exercise is required; this run does not restore or alter business data.'],
  ['independent','Independent ISO assessment','Organisational risk, policies, staff and supplier controls, independent audit and certification are outside an automated technical test.'],
  ];
  for(const [id,title,detail] of gaps)checks.push({id,title,detail,kind:'manual',state:'not_tested'});
- const stillAllowed=await watchdogRpc<boolean>('v2_watchdog_allowed',{p_actor:access.session.user.id,p_company:scope});
+ const stillAllowed=await watchdogRpc<boolean>('v2_watchdog_allowed',{p_actor:watchdogActorId(access),p_company:scope});
  if(!stillAllowed)checks.push({id:'permission_changed',title:'Operator permission changed during the run',kind:'live_configuration',state:'inconclusive',detail:'The operator no longer has access to this scope. Only authorised platform principals can review the retained run.'});
  const manual=stillAllowed?await watchdogEvidence(access,scope).catch(()=>[]):[];
- const payload:WatchdogPayload={version:1,runId:run.id,suite:WATCHDOG_SUITE,application:'APGI Training',environment:'v2-staging',scope:{companyId:scope,label:scopeLabel},initiatedBy:access.session.user.id,startedAt:run.created_at,finishedAt:new Date().toISOString(),deployment:run.deployment,commit:watchdogCommit(),policy:'Existing deployed database policies and server company guard; synthetic fixtures only',checks,cleanup,assurance:summariseChecks(checks),limitations:['Point-in-time evidence for the named checks, not proof that information has never leaked.','Synthetic tenants share the isolated V2 staging database; real customer content is not copied into the drill.','The in-app alarm path is tested. Continuous log collection, external alerts and independent evidence anchoring are not connected.','Canary-specific checks validate their own RLS rules. Existing profiles, membership policies and company server guard are separately exercised.','This report supports ISO-aligned evidence collection; it is not an ISO certificate or a complete assessment.'],manualEvidence:manual.map(e=>({controlId:e.control_id,disposition:e.disposition,reference:e.reference,recordedAt:e.created_at,expiresAt:e.expires_at}))};
+ const completeChecks=expectedWatchdogChecks(checks,[...[{"id":"rls_configuration","title":"Database row-security configuration"},{"id":"destructive_grants","title":"Client database privilege hardening"},{"id":"private_storage","title":"Review evidence storage is private"},{"id":"report_storage","title":"Security evidence storage is protected"},{"id":"own_profile","title":"Legitimate own-profile access"},{"id":"peer_profile","title":"Same-company profile privacy"},{"id":"foreign_profile","title":"Other-company profile privacy"},{"id":"own_company","title":"Legitimate company access"},{"id":"foreign_company","title":"Other-company access denied"},{"id":"own_membership","title":"Own membership access"},{"id":"foreign_membership","title":"Foreign membership privacy"},{"id":"own_canary","title":"Own synthetic record access"},{"id":"peer_canary","title":"Same-company record privacy"},{"id":"foreign_canary","title":"Other-company record privacy"},{"id":"anonymous_canary","title":"Anonymous record access denied"},{"id":"watchdog_scope","title":"Watchdog scope boundaries"},{"id":"watchdog_report","title":"Report and export boundaries"},{"id":"raw_reports","title":"Direct report database bypass denied"},{"id":"viewer_only","title":"Viewing-only role cannot administer"},{"id":"alarm","title":"In-app alarm routing"},{"id":"cleanup","title":"Temporary fixture cleanup"}],...additionalCheckNames]);
+ const payload:WatchdogPayload={version:1,runId:run.id,suite:WATCHDOG_SUITE,application:'APGI Training',environment:'v2-staging',scope:{companyId:scope,label:scopeLabel},initiatedBy:watchdogActorId(access),trigger,startedAt:run.created_at,finishedAt:new Date().toISOString(),deployment:run.deployment,commit:watchdogCommit(),policy:'Existing deployed database policies and server company guard; synthetic fixtures only',checks:completeChecks,cleanup,assurance:summariseChecks(completeChecks),limitations:['Point-in-time evidence for the named checks, not proof that information has never leaked.','Synthetic tenants share the isolated V2 staging database; real customer content is not copied into the drill.','In-app alarm routing is exercised. External provider acceptance is reported only when a separate alarm drill has evidence. Provider-wide firewall/log-drain and independent anchoring integrations remain separate.','Canary-specific checks validate their own RLS rules. Existing profiles, membership policies and company server guard are separately exercised.','This report supports ISO-aligned evidence collection; it is not an ISO certificate or a complete assessment.'],manualEvidence:manual.map(e=>({controlId:e.control_id,disposition:e.disposition,reference:e.reference,recordedAt:e.created_at,expiresAt:e.expires_at}))};
  const proof=signWatchdogReport(payload);
- await watchdogPatch(run.id,{payload,proof,state:!cleanup?'cleanup_pending':checks.some(c=>c.state==='inconclusive')?'inconclusive':'finished',finished_at:payload.finishedAt,fixtures_cleaned:cleanup});
+ await watchdogPatch(run.id,{payload,proof,state:!cleanup?'cleanup_pending':completeChecks.some(c=>c.state==='inconclusive')?'inconclusive':'finished',finished_at:payload.finishedAt,fixtures_cleaned:cleanup});
  await watchdogRpc('v2_watchdog_notify',{p_run:run.id});
  if(!stillAllowed)throw new WatchdogError('Your access to this company changed during the run. The security record is retained for authorised administrators.');
  const saved=await watchdogRun(access,run.id);

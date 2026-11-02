@@ -1,10 +1,11 @@
-export const WATCHDOG_SUITE = 'apgi-watchdog-v1';
+export const WATCHDOG_SUITE = 'apgi-watchdog-v2';
 export type CheckState = 'passed'|'failed'|'attention'|'inconclusive'|'not_tested';
 export type WatchdogCheck = {id:string;title:string;state:CheckState;kind:'live_configuration'|'synthetic_behaviour'|'alarm_drill'|'manual';detail:string;action?:string};
 export type WatchdogPayload = {
  version:1;runId:string;suite:string;application:string;environment:'v2-staging';
  scope:{companyId:string|null;label:string};initiatedBy:string;startedAt:string;finishedAt:string;
  deployment:string;commit:string;policy:'Existing deployed database policies and server company guard; synthetic fixtures only';
+ trigger?:'manual'|'scheduled'|'deployment';
  checks:WatchdogCheck[];cleanup:boolean;assurance:'needs_attention'|'partial'|'checked';
  limitations:string[];manualEvidence:{controlId:string;disposition:string;reference:string;recordedAt:string;expiresAt:string}[];
 };

@@ -1,4 +1,5 @@
 import { ACTIVITY_COOKIE, sessionIsIdle } from "@/lib/session-activity";
+import {activeVerifiedSession,requiresAccountMfa,type AccountFactor} from './session-assurance';
 
 import { cookies } from "next/headers";
 
@@ -15,6 +16,7 @@ const USER_COOKIE = "alp_user_id";
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 8;
 
 type AlpAuthUser = {
+  factors?: AccountFactor[];
 
   id: string;
 
@@ -143,6 +145,7 @@ export async function signInWithPassword(email: string, password: string) {
   const payload = (await response.json().catch(() => ({}))) as SupabaseTokenResponse;
 
   if (!response.ok || !payload.access_token || !payload.user?.id) {
+    await import('@/server/security-watchdog/events').then(m=>m.recordSecurityEvent({kind:'auth_failure',subject:email})).catch(()=>{});
 
     return {
 
@@ -205,6 +208,8 @@ export async function storeVerifiedSession(payload: SupabaseTokenResponse) {
 export async function signOut() {
 
   const cookieStore = await cookies();
+  const currentAccess=cookieStore.get(ACCESS_COOKIE)?.value;
+  if(currentAccess){try{const config=getSupabasePublicConfig(),headers=supabaseHeaders(currentAccess);if(config&&headers)await fetch(`${config.url.replace(/\/$/,'')}/auth/v1/logout?scope=local`,{method:'POST',headers,cache:'no-store',signal:AbortSignal.timeout(5000)});}catch{/* Clear local cookies even during a provider outage. */}}
 
   cookieStore.delete(ACCESS_COOKIE);
 
@@ -216,7 +221,7 @@ export async function signOut() {
 
 }
 
-export async function getCurrentSession(): Promise<AlpSession | null> {
+export async function getCurrentSession(options:{allowMfaChallenge?:boolean}={}): Promise<AlpSession | null> {
 
   const cookieStore = await cookies();
 
@@ -260,6 +265,8 @@ export async function getCurrentSession(): Promise<AlpSession | null> {
 
   const user = (await response.json().catch(() => ({}))) as AlpAuthUser;
   if (!user.id) return null;
+  if(!await activeVerifiedSession(accessToken,user.id))return null;
+  if(!options.allowMfaChallenge&&requiresAccountMfa(accessToken,user.id,user.factors))return null;
 
   return {
 
@@ -270,6 +277,7 @@ export async function getCurrentSession(): Promise<AlpSession | null> {
     user: {
 
       id: user.id,
+      factors: user.factors?.map(f=>({id:f.id,factor_type:f.factor_type,status:f.status,friendly_name:f.friendly_name})),
 
       email: user.email,
 

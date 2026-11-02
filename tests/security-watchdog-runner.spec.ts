@@ -7,9 +7,10 @@ vi.mock('@/server/auth/session',()=>({getCurrentSession:vi.fn(),getUserRoles:vi.
 vi.mock('@/server/services/platform-principals',()=>({isPlatformPrincipal:vi.fn()}));
 vi.mock('@/server/security-watchdog/store',()=>({watchdogRpc:vi.fn(),watchdogPatch:vi.fn(),watchdogEvidence:vi.fn(),watchdogDashboard:vi.fn()}));
 vi.mock('@/server/security-watchdog/signing',()=>({watchdogPublicKey:vi.fn(),signWatchdogReport:vi.fn(),verifyWatchdogReport:()=>true}));
+vi.mock('@/server/security-watchdog/additional-probes',async original=>{const actual=await original<typeof import('@/server/security-watchdog/additional-probes')>();return {...actual,additionalProbes:vi.fn(async()=>{})};});
 import {adminRest} from '@/server/supabase/admin-rest';
 import {rows,requireCompanyForSession} from '@/server/services/company-structure';
-import {watchdogAccess,watchdogRun,WatchdogError} from '@/server/security-watchdog/access';
+import {watchdogAccess,watchdogRun,WatchdogError,watchdogActorId} from '@/server/security-watchdog/access';
 import {watchdogRpc,watchdogPatch,watchdogEvidence,watchdogDashboard} from '@/server/security-watchdog/store';
 import {runSecurityWatchdog} from '@/server/security-watchdog/runner';
 import type {WatchdogPayload} from '@/lib/security-watchdog';
@@ -38,7 +39,7 @@ beforeEach(()=>{
  });
  vi.mocked(requireCompanyForSession).mockImplementation(async(id)=>{if(id===fixtureCompanies[0])return {company:{id}} as never;throw Error('You do not have access to this company.');});
  vi.mocked(watchdogAccess).mockImplementation(async(s)=>{if(s?.user.id==='fixture-3')throw new WatchdogError('No administrator scope');return {session:s!,principal:false,ownedCompanyIds:[fixtureCompanies[0]]};});
- vi.mocked(watchdogRun).mockImplementation(async(access)=>{if(access.session.user.id!=='operator')throw new WatchdogError('Unavailable',404);return {payload:patches.find(p=>p.payload)?.payload,proof:{}} as never;});
+ vi.mocked(watchdogRun).mockImplementation(async(access)=>{if(watchdogActorId(access)!=='operator')throw new WatchdogError('Unavailable',404);return {payload:patches.find(p=>p.payload)?.payload,proof:{}} as never;});
  vi.mocked(watchdogDashboard).mockResolvedValue({runs:[],deliveries:[{id:'delivery',run_id:runId,created_at:'now',read_at:null}],evidence:[]});
  vi.stubGlobal('fetch',vi.fn(async(input:string,init?:RequestInit)=>{
   const url=new URL(input),token=new Headers(init?.headers).get('authorization')?.replace('Bearer ','');
@@ -56,7 +57,7 @@ afterEach(()=>vi.unstubAllGlobals());
 const saved=()=>patches.find(p=>p.payload)?.payload as WatchdogPayload;
 describe('Watchdog controlled-run failure behavior',()=>{
  it('finishes adapter orchestration and strips credentials from evidence',async()=>{await runSecurityWatchdog(actor,null,runId);const p=saved();for(const control of ['own_profile','foreign_profile','foreign_company','peer_canary','foreign_canary','watchdog_report','alarm','cleanup'])expect(p.checks.find(c=>c.id===control)?.state).toBe('passed');expect(p.assurance).toBe('partial');expect(p.checks.some(c=>c.state==='not_tested')).toBe(true);expect(p.cleanup).toBe(true);expect(JSON.stringify(p)).not.toMatch(/fixture-1|operator-token|"access_token":|"password":/);expect(watchdogRpc).toHaveBeenCalledWith('v2_watchdog_clean_fixtures',{p_run:runId});});
- it('does not call denied profile probes when the positive control fails',async()=>{profilePositive=false;await runSecurityWatchdog(actor,null,runId);expect(saved().checks.find(c=>c.id==='own_profile')?.state).toBe('failed');expect(saved().checks.find(c=>c.id==='profile_negatives')?.state).toBe('inconclusive');expect(saved().checks.some(c=>c.id==='foreign_profile')).toBe(false);expect(saved().cleanup).toBe(true);});
+ it('does not call denied profile probes when the positive control fails',async()=>{profilePositive=false;await runSecurityWatchdog(actor,null,runId);expect(saved().checks.find(c=>c.id==='own_profile')?.state).toBe('failed');expect(saved().checks.find(c=>c.id==='profile_negatives')?.state).toBe('inconclusive');expect(saved().checks.find(c=>c.id==='foreign_profile')?.state).toBe('inconclusive');expect(saved().cleanup).toBe(true);});
  it('cleans and retains an inconclusive report when identity provisioning fails',async()=>{providerFailure=true;await runSecurityWatchdog(actor,null,runId);expect(saved().checks.find(c=>c.id==='runner')?.state).toBe('inconclusive');expect(saved().cleanup).toBe(true);expect(patches.find(p=>p.payload)?.state).toBe('inconclusive');});
  it('marks failed cleanup for the scheduled retry rather than claiming success',async()=>{cleanupFailure=true;await runSecurityWatchdog(actor,null,runId);expect(saved().cleanup).toBe(false);expect(saved().checks.find(c=>c.id==='cleanup')?.state).toBe('failed');expect(patches.find(p=>p.payload)?.state).toBe('cleanup_pending');});
  it('refuses to provision a second fixture set for an in-flight idempotency key',async()=>{vi.mocked(watchdogRpc).mockImplementation(async(name)=>name==='v2_watchdog_start'?{id:runId,state:'running',resources:{},reused:true} as never:[] as never);await expect(runSecurityWatchdog(actor,null,runId)).rejects.toMatchObject({status:409});expect(adminRest).not.toHaveBeenCalled();});

@@ -42,7 +42,7 @@ describe("Company and policy data boundaries", () => {
     );
     await expect(requireCompany(other)).rejects.toThrow("access");
     expect(
-      m.rest.mock.calls.every(([p]) => p.includes("organisation_memberships")),
+      m.rest.mock.calls.every(([p]) => (p.includes("organisation_memberships") || p === "/rest/v1/rpc/v2_watchdog_event")),
     ).toBe(true);
   });
   it("requires an owner membership for brand changes, not an ordinary learner membership", async () => {
@@ -59,7 +59,7 @@ describe("Company and policy data boundaries", () => {
     );
     expect(await contextualCompany(session, undefined, other)).toBeNull();
     expect(
-      m.rest.mock.calls.every(([p]) => p.includes("organisation_memberships")),
+      m.rest.mock.calls.every(([p]) => (p.includes("organisation_memberships") || p === "/rest/v1/rpc/v2_watchdog_event")),
     ).toBe(true);
   });
   it("denies an unassigned policy before fetching its document or file metadata", async () => {

@@ -1,6 +1,7 @@
 import 'server-only';
 import {PDFDocument,StandardFonts,rgb} from 'pdf-lib';
 import {stateLabel,type WatchdogPayload,type WatchdogProof} from '@/lib/security-watchdog';
+import {watchdogScore} from '@/lib/watchdog-overview';
 export async function watchdogPdf(payload:WatchdogPayload,proof:WatchdogProof,freshness:string){
  const pdf=await PDFDocument.create(),font=await pdf.embedFont(StandardFonts.Helvetica),bold=await pdf.embedFont(StandardFonts.HelveticaBold);
  const width=595.28,height=841.89,margin=48,ink=rgb(.07,.18,.28),teal=rgb(.08,.38,.44),grey=rgb(.35,.42,.48);
@@ -19,6 +20,12 @@ export async function watchdogPdf(payload:WatchdogPayload,proof:WatchdogProof,fr
  function heading(text:string){if(y<115)newPage();y-=10;line(text,13,true,teal);y-=3;}
  line('APGI SECURITY WATCHDOG',19,true);line('Point-in-time technical assurance report',11,false,grey);y-=10;
  paragraph('Scope: '+payload.scope.label,12,true);paragraph('Result: '+payload.assurance.replaceAll('_',' ')+' | Evidence '+freshness,11,true);
+ const score=watchdogScore(payload.checks);
+ paragraph(`${score.percent}% of named checks passed (${score.passed}/${score.total})`,13,true);
+ page.drawRectangle({x:margin,y:y-10,width:width-margin*2,height:9,color:rgb(.86,.9,.92)});
+ page.drawRectangle({x:margin,y:y-10,width:(width-margin*2)*score.percent/100,height:9,color:rgb(.12,.55,.37)});y-=28;
+ paragraph(`${score.findings} findings | ${score.gaps} gaps / not tested. This is test-suite evidence, not a percentage guarantee of security.`,9);
+ paragraph('Trigger: '+(payload.trigger??'manual'),9);
  paragraph('Finished: '+new Date(payload.finishedAt).toLocaleString('en-ZA',{timeZone:'Africa/Johannesburg'})+' SAST / '+payload.finishedAt+' UTC');
  paragraph('This report covers the named checks. It does not prove that information has never leaked and does not certify ISO compliance. Untested or inconclusive controls remain gaps.');
  heading('Run identity');paragraph('Report '+payload.runId);paragraph('Application '+payload.application+' | '+payload.environment+' | Suite '+payload.suite);paragraph('Deployment '+payload.deployment);paragraph('Source '+payload.commit);paragraph('Temporary fixture cleanup: '+(payload.cleanup?'completed':'follow-up required'));

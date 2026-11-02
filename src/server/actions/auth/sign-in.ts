@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getPortalEntryDestination } from "@/lib/auth/post-sign-in-destination";
 import { getCurrentSession, getUserRoles, signInWithPassword, signOut } from "@/server/auth/session";
 import { requireLearnerProfile } from "@/server/auth/learner-onboarding";
+import {requiresAccountMfa} from '@/server/auth/session-assurance';
 
 export type SignInState = {
   error?: string;
@@ -29,11 +30,12 @@ export async function signInAction(_state: SignInState, formData: FormData): Pro
     return { error: result.error };
   }
 
-  const session = await getCurrentSession();
+  const session = await getCurrentSession({allowMfaChallenge:true});
 
   if (!session) {
     redirect("/alp-sign-in");
   }
+  if(requiresAccountMfa(session.accessToken,session.user.id,session.user.factors))redirect('/account-security?verify=1');
 
   const roles = await getUserRoles(session.accessToken);
   await requireLearnerProfile(session, roles);

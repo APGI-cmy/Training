@@ -14,7 +14,8 @@ export async function watchdogAccess(verifiedSession?:AlpSession){
  if(!principal&&!owners.length&&!roles.includes('admin'))throw new WatchdogError('Security Watchdog is available to company administrators.');
  return {session,principal,ownedCompanyIds:owners.map(m=>m.organisation_id)};
 }
-export type WatchdogAccess=Awaited<ReturnType<typeof watchdogAccess>>;
+export type WatchdogAccess={principal:boolean;ownedCompanyIds:string[]}&({session:AlpSession;actorId?:never;automatic?:false}|{actorId:string;automatic:true;session?:never});
+export function watchdogActorId(access:WatchdogAccess){return access.session?access.session.user.id:access.actorId;}
 export function checkWatchdogScope(access:WatchdogAccess,scope:string|null){
  if(scope!==null)watchdogId(scope);
  if(!permittedWatchdogScope(access.principal,access.ownedCompanyIds,scope))throw new WatchdogError('This security scope is unavailable.');
@@ -27,7 +28,7 @@ export const watchdogRunFields='id,company_id,actor_id,state,created_at,finished
 export async function watchdogRun(access:WatchdogAccess,id:string){
  watchdogId(id);const run=(await rows<WatchdogRun>(`/rest/v1/v2_watchdog_runs?id=eq.${id}&select=${watchdogRunFields}&limit=1`))[0];
  if(!run||!permittedWatchdogScope(access.principal,access.ownedCompanyIds,run.company_id))throw new WatchdogError('This report is unavailable.',404);
- const current=await adminRest('/rest/v1/rpc/v2_watchdog_allowed',{method:'POST',body:JSON.stringify({p_actor:access.session.user.id,p_company:run.company_id})});
+ const current=await adminRest('/rest/v1/rpc/v2_watchdog_allowed',{method:'POST',body:JSON.stringify({p_actor:watchdogActorId(access),p_company:run.company_id})});
  if(!current.ok||(await current.json())!==true)throw new WatchdogError('This report is unavailable.',404);
  return run;
 }
