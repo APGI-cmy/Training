@@ -110,3 +110,39 @@ copy V2 identities, credentials or staging-only allowances into another app.
 The small synthetic restoration is not a substitute for the separate recovery
 drill. No new paid recovery resource, independent assessment, external DLP service
 or external log-retention provider was purchased or represented as completed.
+
+## Verified live release
+
+- Application source: `d07e802a55f17b8edc9b40d05d3f2d6b789194f2`.
+- Canonical deployment: `dpl_h8Ku4p5eyLCvDKBMkE8tXhPqhcLf`.
+- Signed run: `accf8b87-b320-490f-8cd2-9165fcac38ba`, completed 2 November
+  2026, 17:50:13 SAST. Suite v4: **69/75 named checks passed (92%)**, no failed
+  or inconclusive checks, one enrolment attention item and five explicit gaps.
+- Both new administrator MFA controls, the concurrent login budget, outbound
+  adapter, certificate refusal, paired WAF routes and private-file restoration
+  passed against the deployed application. MFA-enabled recovery passed using the
+  actual helper and a disposable provider identity; no real password was changed.
+- The provider security advisor returned zero current notices. This is a provider
+  configuration result, not an independent penetration test or ISO assessment.
+- All temporary identities, enrolments, message threads, canaries, files and
+  fixture counters are gone. Totals remain 28 users, 16 companies and 12 memberships.
+- Review rounds remain three with digest `805c8c58104260ad5042deb61e10c9c2`.
+  Commerce settings remain two with digest `21ed13ec61b393c9db9e8f3236a18fb4`.
+  All four course fingerprints match the previous deployment.
+- Local verification: typecheck, application build, outbound AST audit, 98 Watchdog
+  tests and 1,006 learner-release tests passed; one existing test stays skipped.
+  The production dependency audit reports no vulnerabilities.
+- The signed live evidence verifies against retained trusted key
+  `a08bdf54532bf8c3b4ab6932`. Its PDF rendering has seven visually checked pages
+  with all body text clear of the footer. The rendering uses the deployed source
+  generator and verified database evidence; it is not a newly authenticated export.
+- The owner's browser session expired. A sign-in request remains pending, so a
+  fresh authenticated dashboard/download check and the earlier embedded-player
+  observation remain unconfirmed. No course engine or package was altered here.
+
+Evidence and the recovery preparation are retained in
+`C:/Users/Johan/Codex-Work/watchdog-completion-20261102`. Database migrations
+`20261102151813` and `20261102154323` are applied in V2. The latter adds the
+expiry-cleanup index after the application build; it needs no new application
+deployment. The earlier LU1 line-ending-only workspace changes were neither
+committed nor included in the deployment archive.
