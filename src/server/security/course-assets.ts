@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import 'server-only';
 import {courses} from '@/lib/course-catalogue';
 import {getCourseCover} from '@/lib/course-covers';

@@ -1,6 +1,6 @@
 import {afterEach,describe,expect,it,vi} from 'vitest';
 import sharp from 'sharp';
-vi.mock('@/server/auth/session',()=>({getSupabaseRestUrl:(path:string)=>`https://example.invalid${path}`}));
+vi.mock('@/server/auth/session',()=>({getSupabaseRestUrl:(path:string)=>`https://eaaqgtdpvbxdgjxphjie.supabase.co${path}`}));
 import {uploadEmailImage} from '@/server/services/email-image-upload';
 const company='11111111-1111-4111-8111-111111111111';
 afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs();});

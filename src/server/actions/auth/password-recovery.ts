@@ -1,4 +1,5 @@
 "use server";
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 
 import { usesStagingMailCapture } from "@/server/environment-isolation";
 import { cookies } from "next/headers";
@@ -9,10 +10,12 @@ import { sendPasswordRecoveryEmail } from "@/server/services/email/send-password
 import { safeRecoveryNext } from "@/lib/auth/safe-recovery-next";
 import { claimAuthEmailBudget } from "@/server/services/auth-email-budget";
 import { recoverInvitedAccount } from "@/server/services/invitations/recover-invited-account";
+import {recoveryIdentity,stepUpRecovery} from '@/server/auth/recovery-mfa';
 
 export type PasswordRecoveryState = { error?: string; message?: string };
 const RECOVERY_COOKIE = "alp_recovery_token";
 const NEXT_COOKIE = "alp_recovery_next";
+const DEADLINE_COOKIE='alp_recovery_deadline';
 function recoveryMessage() {
   return usesStagingMailCapture()
     ? "If a test account exists, its reset link is available to your staging administrator in Test messages. No email is sent from Version 2 staging."
@@ -53,6 +56,7 @@ export async function beginPasswordReset(formData: FormData) {
   const cookieStore = await cookies();
   cookieStore.delete(RECOVERY_COOKIE);
   cookieStore.delete(NEXT_COOKIE);
+  cookieStore.delete(DEADLINE_COOKIE);
   let token: string | undefined;
   if (tokenHash && tokenHash.length <= 512 && verifyUrl && publicKey) {
     try {
@@ -66,7 +70,23 @@ export async function beginPasswordReset(formData: FormData) {
   const options = { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict" as const, path: "/", maxAge: 15 * 60 };
   cookieStore.set(RECOVERY_COOKIE, token, options);
   cookieStore.set(NEXT_COOKIE, next, options);
+  cookieStore.set(DEADLINE_COOKIE,String(Date.now()+900000),options);
   redirect("/reset-password");
+}
+
+export async function recoveryRequirement(){
+ const token=(await cookies()).get(RECOVERY_COOKIE)?.value;
+ if(!token)return {valid:false,needsMfa:false};
+ try{return {valid:true,needsMfa:(await recoveryIdentity(token)).needsMfa};}catch{return {valid:false,needsMfa:false};}
+}
+export async function verifyRecoveryAuthenticator(_state:PasswordRecoveryState,formData:FormData):Promise<PasswordRecoveryState>{
+ const store=await cookies(),token=store.get(RECOVERY_COOKIE)?.value;
+ if(!token)return {error:'Your reset session has expired. Request a fresh recovery email.'};
+ const deadline=Number(store.get(DEADLINE_COOKIE)?.value),remaining=Number.isFinite(deadline)&&deadline>0?Math.min(900,Math.floor((deadline-Date.now())/1000)):900;
+ if(remaining<=0)return {error:'Your reset session has expired. Request a fresh recovery email.'};
+ try{const upgraded=await stepUpRecovery(token,String(formData.get('code')??''));store.set(RECOVERY_COOKIE,upgraded,{httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'strict',path:'/',maxAge:remaining});}
+ catch(e){return {error:e instanceof Error?e.message:'Authenticator verification is temporarily unavailable.'};}
+ redirect('/reset-password');
 }
 
 export async function updateRecoveredPassword(_state: PasswordRecoveryState, formData: FormData): Promise<PasswordRecoveryState> {
@@ -83,11 +103,15 @@ export async function updateRecoveredPassword(_state: PasswordRecoveryState, for
   if (!token || !userUrl || !publicKey) return { error: "Your reset session has expired. Request a new password-reset email." };
   const authHeaders = { apikey: publicKey, authorization: `Bearer ${token}`, "content-type": "application/json" };
   try {
+    const identity=await recoveryIdentity(token);
+    if(identity.needsMfa)return {error:'Verify your authenticator on this recovery page before saving a new password. Reload this page to open the verification step.'};
     const updated = await fetch(userUrl, { method: "PUT", headers: authHeaders, body: JSON.stringify({ password }), cache: "no-store" });
     if (!updated.ok) {
+      if(updated.status===401){const failure=await updated.clone().json().catch(()=>({}));if(failure.error_code==='insufficient_aal')return {error:'Verify your authenticator on this recovery page before saving a new password. Reload this page to open the verification step.'};}
       if (updated.status === 401 || updated.status === 403) {
         cookieStore.delete(RECOVERY_COOKIE);
         cookieStore.delete(NEXT_COOKIE);
+        cookieStore.delete(DEADLINE_COOKIE);
         return { error: "Your reset session has expired. Request a new password-reset email." };
       }
       return { error: "The password could not be updated. Try a different password or request a new reset email." };
@@ -99,6 +123,7 @@ export async function updateRecoveredPassword(_state: PasswordRecoveryState, for
   }
   cookieStore.delete(RECOVERY_COOKIE);
   cookieStore.delete(NEXT_COOKIE);
+  cookieStore.delete(DEADLINE_COOKIE);
   await signOut();
   redirect(`/alp-sign-in?passwordReset=success&next=${encodeURIComponent(next)}`);
 }

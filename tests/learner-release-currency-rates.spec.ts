@@ -4,7 +4,7 @@ import { calculateServiceCosts,newServiceSelection,readServiceSelection,type Ser
 import { baselineRateCatalogue,readRateValues,validateRateValues } from "@/lib/service-rate-register";
 const mocks=vi.hoisted(()=>({principal:vi.fn(async()=>({})),isolation:vi.fn()}));
 vi.mock("@/server/services/platform-principals",()=>({requirePlatformPrincipal:mocks.principal}));
-vi.mock("@/server/environment-isolation",()=>({assertStagingIsolation:mocks.isolation}));
+vi.mock("@/server/environment-isolation",()=>({assertStagingIsolation:mocks.isolation,STAGING_DATABASE_REF:"eaaqgtdpvbxdgjxphjie",STAGING_ORIGIN:"https://training-platform-v2-staging.vercel.app"}));
 import { verifiedServiceExchange } from "@/server/services/currency-rates";
 import { GET } from "../app/api/admin/currency-rates/route";
 function feed(day=new Date().toISOString().slice(0,10)) {return {observations:[{d:day,FXUSDCAD:{v:"1.4196"},FXZARCAD:{v:"0.08589"},FXEURCAD:{v:"1.5912"},FXGBPCAD:{v:"1.8824"}}]};}

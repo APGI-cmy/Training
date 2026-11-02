@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import "server-only";
 import {requirePlatformPrincipal} from "./platform-principals";
 import {adminRest} from "@/server/supabase/admin-rest";

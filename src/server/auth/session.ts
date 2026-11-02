@@ -1,5 +1,7 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import { ACTIVITY_COOKIE, sessionIsIdle } from "@/lib/session-activity";
-import {activeVerifiedSession,requiresAccountMfa,type AccountFactor} from './session-assurance';
+import {verifiedSessionSecurity,sessionNeedsMfa,type AccountFactor} from './session-assurance';
+import {claimSignInBudget} from '@/server/security/auth-budget';
 
 import { cookies } from "next/headers";
 
@@ -27,6 +29,7 @@ type AlpAuthUser = {
 };
 
 export type AlpSession = {
+  security?: {privileged:boolean;enrolled:boolean;requiresMfa:boolean};
 
   accessToken: string;
 
@@ -115,6 +118,10 @@ export function getSupabaseRestUrl(path: string) {
 }
 
 export async function signInWithPassword(email: string, password: string) {
+
+  if(email.length>254||!email.trim()||!password||password.length>256)return {ok:false,error:'Enter your email address and password.'};
+  try{if(!await claimSignInBudget(email))return {ok:false,error:'Too many sign-in attempts. Please wait up to 15 minutes before trying again.'};}
+  catch{return {ok:false,error:'Sign-in protection is temporarily unavailable. Please try again shortly.'};}
 
   const config = getSupabasePublicConfig();
 
@@ -265,10 +272,12 @@ export async function getCurrentSession(options:{allowMfaChallenge?:boolean}={})
 
   const user = (await response.json().catch(() => ({}))) as AlpAuthUser;
   if (!user.id) return null;
-  if(!await activeVerifiedSession(accessToken,user.id))return null;
-  if(!options.allowMfaChallenge&&requiresAccountMfa(accessToken,user.id,user.factors))return null;
+  const status=await verifiedSessionSecurity(accessToken,user.id);if(!status.active)return null;
+  const requiresMfa=sessionNeedsMfa(accessToken,user.id,status);
+  if(!options.allowMfaChallenge&&requiresMfa)return null;
 
   return {
+    security:{privileged:status.privileged,enrolled:status.enrolled,requiresMfa},
 
     accessToken,
 
@@ -291,7 +300,7 @@ export async function getCurrentSession(options:{allowMfaChallenge?:boolean}={})
 
 export async function requireSession() {
 
-  const session = await getCurrentSession();
+  const session = await getCurrentSession({allowMfaChallenge:true});
 
   if (!session) {
 
@@ -299,6 +308,7 @@ export async function requireSession() {
 
   }
 
+  if(session.security?.requiresMfa)redirect('/account-security?verify=1');
   return session;
 
 }

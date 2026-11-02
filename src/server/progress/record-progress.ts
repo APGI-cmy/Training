@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import { getCourseBySlug } from "@/lib/courses";
 import { evaluateCompletionRule } from "@/lib/services/completion/evaluate-completion-rule";
 import { getLearnerProgress } from "@/lib/services/progress/get-learner-progress";

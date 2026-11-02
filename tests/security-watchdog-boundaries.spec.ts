@@ -12,7 +12,7 @@ import {proxy,config} from '../proxy';
 import {ACTIVITY_COOKIE,IDLE_TIMEOUT_MS} from '@/lib/session-activity';
 const path='/courses/Executive%20Assistant%20Training%20Programme/LU1/course/index.html';
 const origin='https://training-platform-v2-staging.vercel.app';
-beforeEach(()=>{vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY','public-fixture');vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-fixture');vi.stubEnv('ALP_ENVIRONMENT','v2-staging');vi.stubEnv('STAGING_RESEND_API_KEY','fixture');vi.stubEnv('STAGING_EMAIL_FROM','no_reply@apginc.ca');vi.stubEnv('NEXT_PUBLIC_APP_URL',origin);vi.stubGlobal('fetch',vi.fn(async()=>Response.json(true)));});
+beforeEach(()=>{vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY','public-fixture');vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-fixture');vi.stubEnv('ALP_ENVIRONMENT','v2-staging');vi.stubEnv('STAGING_RESEND_API_KEY','re_fixture');vi.stubEnv('STAGING_EMAIL_FROM','no_reply@apginc.ca');vi.stubEnv('NEXT_PUBLIC_APP_URL',origin);vi.stubGlobal('fetch',vi.fn(async()=>Response.json(true)));});
 afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs();});
 describe('direct course file boundary',()=>{
  it('covers entries, nested scripts, media and e-books without extension exemptions',()=>{for(const file of ['index.html','engine.js','ebook.html','assets/video.mp4','assets/audio.mp3','assets/slide.jpg','book.pdf'])expect(courseAssetTarget(path.replace('index.html',file))).toEqual({courseId:'executive-assistant-lu1-compatibility',publicCover:false});expect(config.matcher[0]).not.toContain('mp4');});

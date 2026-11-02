@@ -35,7 +35,7 @@ export async function signInAction(_state: SignInState, formData: FormData): Pro
   if (!session) {
     redirect("/alp-sign-in");
   }
-  if(requiresAccountMfa(session.accessToken,session.user.id,session.user.factors))redirect('/account-security?verify=1');
+  if(session.security?.requiresMfa||requiresAccountMfa(session.accessToken,session.user.id,session.user.factors))redirect('/account-security?verify=1');
 
   const roles = await getUserRoles(session.accessToken);
   await requireLearnerProfile(session, roles);

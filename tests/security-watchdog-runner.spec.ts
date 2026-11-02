@@ -1,4 +1,5 @@
 import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
+vi.mock('@/server/security-watchdog/hardening-probes',()=>({prepareFixtureMfa:vi.fn(),hardeningProbes:vi.fn(),hardeningCheckNames:[]}));
 vi.mock('@/server/environment-isolation',()=>({assertStagingIsolation:vi.fn(),STAGING_DATABASE_REF:'test-v2-only'}));
 vi.mock('@/server/supabase/admin-rest',()=>({adminRest:vi.fn()}));
 vi.mock('@/server/services/company-structure',()=>({rows:vi.fn(),requireCompanyForSession:vi.fn()}));

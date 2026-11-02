@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import { NextRequest, NextResponse } from "next/server";
 import { getCourseBySlug } from "@/lib/courses";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";

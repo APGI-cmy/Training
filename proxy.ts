@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import { NextRequest, NextResponse } from "next/server";
 
 import { ACTIVITY_COOKIE, sessionIsIdle, tokenNeedsRefresh } from "@/lib/session-activity";

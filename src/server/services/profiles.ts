@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import { getSupabaseRestUrl, type AlpSession } from "@/server/auth/session";
 
 export type AlpProfile = {

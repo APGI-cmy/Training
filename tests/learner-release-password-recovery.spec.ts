@@ -3,10 +3,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({ rest: vi.fn(), email: vi.fn(), invitation: vi.fn(), fetch: vi.fn(), signOut: vi.fn(), cookieGet: vi.fn(), cookieSet: vi.fn(), cookieDelete: vi.fn() }));
 vi.mock("next/headers", () => ({ cookies: async () => ({ get: mocks.cookieGet, set: mocks.cookieSet, delete: mocks.cookieDelete }) }));
 vi.mock("next/navigation", () => ({ redirect: (url: string) => { throw new Error(`REDIRECT:${url}`); } }));
-vi.mock("@/server/auth/session", () => ({ getSupabaseRestUrl: (path: string) => `https://auth.example.invalid${path}`, signOut: mocks.signOut }));
+vi.mock("@/server/auth/session", () => ({ getSupabaseRestUrl: (path: string) => `https://eaaqgtdpvbxdgjxphjie.supabase.co${path}`, signOut: mocks.signOut }));
 vi.mock("@/server/supabase/admin-rest", () => ({ adminRest: mocks.rest }));
 vi.mock("@/server/services/email/send-password-recovery", () => ({ sendPasswordRecoveryEmail: mocks.email }));
 vi.mock("@/server/services/invitations/recover-invited-account", () => ({ recoverInvitedAccount: mocks.invitation }));
+vi.mock('@/server/auth/recovery-mfa',()=>({recoveryIdentity:vi.fn(async()=>({user:{id:'learner'},needsMfa:false})),stepUpRecovery:vi.fn()}));
 import { requestPasswordRecovery, beginPasswordReset, updateRecoveredPassword } from "@/server/actions/auth/password-recovery";
 import { safeRecoveryNext } from "@/lib/auth/safe-recovery-next";
 
@@ -102,7 +103,7 @@ describe("Password recovery safeguards", () => {
     mocks.fetch.mockResolvedValue(Response.json({ id: "learner" }));
     await expect(updateRecoveredPassword({}, form({ password: "test-password-only", confirmation: "test-password-only", user_id: "other-user" }))).rejects.toThrow("REDIRECT:/alp-sign-in?passwordReset=success&next=%2Fdashboard");
     const [url, options] = mocks.fetch.mock.calls[0];
-    expect(url).toBe("https://auth.example.invalid/auth/v1/user");
+    expect(url).toBe("https://eaaqgtdpvbxdgjxphjie.supabase.co/auth/v1/user");
     expect(options.headers.authorization).toBe("Bearer verified-recovery-token");
     expect(JSON.parse(options.body)).toEqual({ password: "test-password-only" });
     expect(mocks.cookieDelete).toHaveBeenCalledWith("alp_recovery_token");

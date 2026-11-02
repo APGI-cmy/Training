@@ -4,7 +4,7 @@ import { ACTIVITY_COOKIE, IDLE_TIMEOUT_MS } from "@/lib/session-activity";
 import { getCurrentSession, signOut } from "@/server/auth/session";
 export async function POST(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin || request.headers.get("sec-fetch-site") === "cross-site") return NextResponse.json({error:"Same-origin activity required."},{status:403});
-  const session = await getCurrentSession();
+  const session = await getCurrentSession({allowMfaChallenge:true});
   if (!session) { await signOut(); return NextResponse.json({authenticated:false},{status:401,headers:{"Cache-Control":"no-store"}}); }
   const body = await request.json().catch(()=>({}));
   const store = await cookies();

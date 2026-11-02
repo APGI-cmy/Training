@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import "server-only";
 import { exchangeFeed, exchangeRate, parseExchangeFeed, validateExchangeQuote } from "@/lib/currency-rates";
 import type { ServiceSelection } from "@/lib/service-costs";

@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import { NextResponse } from "next/server";
 import { createHash } from "node:crypto";
 import { getCurrentSession, getSupabaseRestUrl } from "@/server/auth/session";

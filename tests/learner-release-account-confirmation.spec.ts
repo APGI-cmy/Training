@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({ rest: vi.fn(), email: vi.fn(), fetch: vi.fn(), store: vi.fn() }));
 vi.mock("next/navigation", () => ({ redirect: (url: string) => { throw new Error(`REDIRECT:${url}`); } }));
-vi.mock("@/server/auth/session", () => ({ getSupabaseRestUrl: (path: string) => `https://auth.example.invalid${path}`, storeVerifiedSession: mocks.store }));
+vi.mock("@/server/auth/session", () => ({ getSupabaseRestUrl: (path: string) => `https://eaaqgtdpvbxdgjxphjie.supabase.co${path}`, storeVerifiedSession: mocks.store }));
 vi.mock("@/server/supabase/admin-rest", () => ({ adminRest: mocks.rest }));
 vi.mock("@/server/services/email/send-account-confirmation", () => ({ sendAccountConfirmationEmail: mocks.email }));
 import { registerInvitedUser } from "@/server/actions/auth/register-invited-user";

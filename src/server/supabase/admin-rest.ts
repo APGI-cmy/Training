@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import "server-only";
 import { getSupabaseRestUrl } from "@/server/auth/session";
 import {safeDatabasePath} from '@/server/security/outbound';

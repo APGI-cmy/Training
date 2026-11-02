@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import 'server-only';
 import {randomBytes} from 'node:crypto';
 import {adminRest} from '@/server/supabase/admin-rest';
@@ -8,6 +9,9 @@ import {deliverTransactionalEmail,emailConfiguration} from '@/server/services/em
 import {watchdogRpc} from './store';
 import {watchdogActorId,type WatchdogAccess} from './access';
 import {syntheticTotp} from './synthetic-totp';
+import {stepUpRecoveredFixture} from './synthetic-mfa';
+import {verifiedSessionSecurity,sessionNeedsMfa} from '@/server/auth/session-assurance';
+import {restoreFixtureFile} from './hardening-probes';
 import {weakPasswordRejected} from './password-result';
 import type {AlpSession} from '@/server/auth/session';
 import type {WatchdogCheck} from '@/lib/security-watchdog';
@@ -18,6 +22,7 @@ export const fixtureObject=(id:string)=>`watchdog-synthetic/${id}/canary.png`;
 export const fixtureImage=()=>Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aZfoAAAAASUVORK5CYII=','base64');
 async function ordinary(path:string,token?:string){return fetch(base+path,{headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,...(token?{authorization:`Bearer ${token}`}:{})},cache:'no-store',signal:AbortSignal.timeout(8000)});}
 export const additionalCheckNames=[
+ {id:'storage_restore',title:'Synthetic private-file backup and hash-verified restore'},
  {id:'storage_positive',title:'Synthetic private file exists'},
  {id:'storage_anonymous',title:'Private file blocks anonymous direct access'},
  {id:'storage_foreign',title:'Private file blocks a normal unassigned user'},
@@ -43,6 +48,7 @@ export async function additionalProbes(input:{runId:string;users:Identity[];scop
  const file=await fetch(base+'/storage/v1/object/course-review-evidence/'+object,{method:'POST',headers:{apikey:process.env.SUPABASE_SERVICE_ROLE_KEY!,authorization:`Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,'content-type':'image/png','x-upsert':'false'},body:image,cache:'no-store',signal:AbortSignal.timeout(10000)});
  const exists=await check('storage_positive','Synthetic private file exists','synthetic_behaviour','The authorised server can read the harmless one-pixel PNG test file. The evidence bucket retains its PNG-only rule. No customer file is used.',async()=>{if(!file.ok)throw Error('Synthetic file provisioning unavailable');const r=await adminRest('/storage/v1/object/authenticated/course-review-evidence/'+object,{signal:AbortSignal.timeout(8000)});return r.ok&&Buffer.from(await r.arrayBuffer()).equals(image);});
  if(exists){
+  await check('storage_restore','Synthetic private-file backup and hash-verified restore','synthetic_behaviour','A disposable PNG is backed up in memory, deleted, confirmed absent, restored and checked against its SHA-256 hash. Customer files and full production backups are not used.',()=>restoreFixtureFile(runId,object,image));
   await check('storage_anonymous','Private file blocks anonymous direct access','synthetic_behaviour','The known test file is not available to an anonymous direct download.',async()=>{const r=await ordinary('/storage/v1/object/authenticated/course-review-evidence/'+object);return [400,401,403,404].includes(r.status);});
   await check('storage_foreign','Private file blocks a normal unassigned user','synthetic_behaviour','A normal synthetic user has no direct access to the private evidence file. Authorised application download routes require separate coverage.',async()=>{const r=await ordinary('/storage/v1/object/authenticated/course-review-evidence/'+object,a.session.accessToken);return [400,401,403,404].includes(r.status);});
  }
@@ -84,16 +90,18 @@ export async function additionalProbes(input:{runId:string;users:Identity[];scop
  const updatePassword=(password:string)=>fetch(base+'/auth/v1/user',{method:'PUT',headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,authorization:`Bearer ${a.session.accessToken}`,'content-type':'application/json'},body:JSON.stringify({password}),cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)});
  await check('password_minimum','Provider enforces a twelve-character minimum','synthetic_behaviour','A disposable account attempts a shorter random password. The provider must reject it as weak. No real password is examined or changed.',async()=>{const r=await updatePassword(randomBytes(5).toString('hex'));return weakPasswordRejected(r.status,await r.json(),'length');});
  await check('password_compromised','Provider rejects a known compromised password','synthetic_behaviour','A public, deliberately compromised test string longer than the minimum is rejected with the provider’s pwned-password reason. Only the disposable identity is used.',async()=>{const r=await updatePassword('Password123!Password123!');return weakPasswordRejected(r.status,await r.json(),'pwned');});
- await check('password_recovery','Synthetic recovery link works once and restores sign-in','synthetic_behaviour','The provider creates a recovery link for the disposable mailbox without sending mail. Its token is verified, a new random password works, and reuse of the link fails. This does not test a real user’s inbox or the entire browser recovery form.',async()=>{
+ await check('password_recovery','Synthetic recovery link works once and restores sign-in','synthetic_behaviour','The provider creates a recovery link for a disposable MFA-enabled account without sending mail. The deployed recovery helper verifies its authenticator before a new random password is accepted. A subsequent password-only sign-in still requires MFA; the recovery link cannot be reused. A real inbox and complete browser flow remain separate checks.',async()=>{
   const generated=await adminRest('/auth/v1/admin/generate_link',{method:'POST',body:JSON.stringify({type:'recovery',email:a.session.user.email}),signal:AbortSignal.timeout(8000)});if(!generated.ok)throw Error('Synthetic recovery generation unavailable');
   const value=await generated.json(),hash=value.hashed_token??value.properties?.hashed_token;
   if(!hash||(value.user??value).id!==a.id)throw Error('Synthetic recovery identity mismatch');
   const call=(path:string,body:unknown,token?:string)=>fetch(base+'/auth/v1/'+path,{method:'POST',headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,...(token?{authorization:`Bearer ${token}`} :{}),'content-type':'application/json'},body:JSON.stringify(body),cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)});
   const verified=await call('verify',{type:'recovery',token_hash:hash});if(!verified.ok)return false;const recovery=await verified.json();if(recovery.user?.id!==a.id||!recovery.access_token)return false;
   a.session.accessToken=recovery.access_token;
+  await stepUpRecoveredFixture(runId,a,runId);
   const password=randomBytes(32).toString('base64url')+'Aa9!';if(!(await updatePassword(password)).ok)return false;
   const signed=await call('token?grant_type=password',{email:a.session.user.email,password});if(!signed.ok)return false;const signedValue=await signed.json();if(signedValue.user?.id!==a.id||!signedValue.access_token)return false;a.session.accessToken=signedValue.access_token;
-  const reused=await call('verify',{type:'recovery',token_hash:hash});return [400,401,403,422].includes(reused.status);
+  const security=await verifiedSessionSecurity(a.session.accessToken,a.id);
+  const reused=await call('verify',{type:'recovery',token_hash:hash});return security.enrolled&&sessionNeedsMfa(a.session.accessToken,a.id,security)&&[400,401,403,422].includes(reused.status);
  });
  const identity=await watchdogRpc<{administrators:number;mfaEnrolled:number}>('v2_watchdog_identity_counts',{p_actor:watchdogActorId(access),p_company:scope});
  checks.push({id:'mfa_enrolment',title:'Administrator authenticator enrolment',kind:'live_configuration',state:identity.administrators>0&&identity.mfaEnrolled===identity.administrators?'passed':'attention',detail:`${identity.mfaEnrolled} of ${identity.administrators} administrators in this scope have a verified authenticator. Enrolled accounts require the second factor at sign-in.`,action:identity.mfaEnrolled===identity.administrators?undefined:'Each administrator must privately enrol and verify their own authenticator in My account security.'});

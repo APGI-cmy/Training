@@ -1,4 +1,5 @@
 "use server";
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import {internalDistributionConfiguration} from "@/lib/platform-partnership";
 import {attachCommercialPlan} from "@/server/services/publication-workflow";
 import { createHash, randomUUID } from "node:crypto";

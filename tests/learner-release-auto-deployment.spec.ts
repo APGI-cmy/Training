@@ -8,7 +8,7 @@ import scopes from '@/data/course-correction-scopes.json';
 const m=vi.hoisted(()=>({rpc:vi.fn(),rows:vi.fn(),isolation:vi.fn()}));
 vi.mock('@/server/supabase/admin-rest',()=>({adminRest:m.rpc}));
 vi.mock('@/server/services/company-structure',()=>({rows:m.rows}));
-vi.mock('@/server/environment-isolation',()=>({STAGING_PROJECT_ID:'prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf',STAGING_ORIGIN:'https://training-platform-v2-staging.vercel.app',assertStagingIsolation:m.isolation}));
+vi.mock('@/server/environment-isolation',()=>({STAGING_DATABASE_REF:'eaaqgtdpvbxdgjxphjie',STAGING_PROJECT_ID:'prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf',STAGING_ORIGIN:'https://training-platform-v2-staging.vercel.app',assertStagingIsolation:m.isolation}));
 import {runtimeDeployment,currentDeliveryStatus,ensureReviewDeployment,synchronizeCourseDeployments} from '@/server/services/course-deployments';
 const hash=(v:unknown)=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
 function changedRound(){const r=notificationRound(),scope=scopes.at(-1)!;r.id=scope.roundId;r.course_id=scope.courseId;r.fingerprint=scope.previousFingerprint;r.document.workflow!.version=2;return r;}

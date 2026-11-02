@@ -1,4 +1,6 @@
 import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
+vi.mock('@/server/security/auth-budget',()=>({claimSecurityBudget:vi.fn(async()=>true)}));
+vi.mock('@/server/security-watchdog/events',()=>({recordSecurityEvent:vi.fn()}));
 vi.mock('@/server/auth/session',()=>({getCurrentSession:vi.fn(),storeVerifiedSession:vi.fn()}));
 vi.mock('@/server/environment-isolation',()=>({assertStagingIsolation:vi.fn(),STAGING_DATABASE_REF:'v2-test'}));
 import {getCurrentSession,storeVerifiedSession} from '@/server/auth/session';

@@ -19,7 +19,7 @@ describe("First-learner release SCORM storage boundaries", () => {
   beforeEach(() => {
     vi.resetAllMocks(); vi.stubGlobal("fetch", mocks.fetch); vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "test-public-key");
     mocks.session.mockResolvedValue(session); mocks.access.mockResolvedValue({ canAccess: true });
-    mocks.url.mockImplementation((path: string) => `https://example.invalid${path}`);
+    mocks.url.mockImplementation((path: string) => `https://eaaqgtdpvbxdgjxphjie.supabase.co${path}`);
     mocks.fetch.mockResolvedValue(Response.json([]));
   });
 

@@ -17,6 +17,8 @@ const nextConfig: NextConfig = {
     return ["/:path*"].map((source) => ({
       source,
       headers: [
+        { key: "X-Content-Type-Options", value: "nosniff" },
+        { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
         { key: "Referrer-Policy", value: "no-referrer" },
         { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
       ],

@@ -4,7 +4,7 @@ import {IDLE_TIMEOUT_MS,ACTIVITY_COOKIE,sessionIsIdle,tokenNeedsRefresh} from "@
 const m=vi.hoisted(()=>({store:new Map<string,string>(),user:vi.fn(),out:vi.fn()}));
 vi.mock("next/headers",()=>({cookies:async()=>({get:(name:string)=>m.store.has(name)?{value:m.store.get(name)}:undefined,set:(name:string,value:string)=>m.store.set(name,value),delete:(name:string)=>m.store.delete(name)})}));
 vi.mock("@/server/auth/session",()=>({getCurrentSession:m.user,signOut:m.out}));
-vi.mock("@/server/environment-isolation",()=>({assertStagingIsolation:vi.fn()}));
+vi.mock("@/server/environment-isolation",()=>({assertStagingIsolation:vi.fn(),STAGING_DATABASE_REF:"eaaqgtdpvbxdgjxphjie",STAGING_ORIGIN:"https://training-platform-v2-staging.vercel.app"}));
 import {POST} from "../app/api/auth/activity/route";
 import {proxy} from "../proxy";
 const origin="https://training-platform-v2-staging.vercel.app";

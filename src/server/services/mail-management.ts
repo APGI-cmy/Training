@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import 'server-only';
 import {notificationSession} from './notifications';
 import {messageRpc} from './messages';

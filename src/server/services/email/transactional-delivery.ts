@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import "server-only";
 import { stagingEmailEnabled, STAGING_ORIGIN } from "@/server/environment-isolation";
 import {beginMailAttempt,finishMailAttempt,type MailTracking} from './delivery-ledger';

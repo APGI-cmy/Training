@@ -1,6 +1,6 @@
 import {beforeEach,describe,expect,it,vi} from "vitest";
 const m=vi.hoisted(()=>({fetch:vi.fn()}));
-vi.mock("@/server/auth/session",()=>({getSupabaseRestUrl:(path:string)=>`https://example.invalid${path}`}));
+vi.mock("@/server/auth/session",()=>({getSupabaseRestUrl:(path:string)=>`https://eaaqgtdpvbxdgjxphjie.supabase.co${path}`}));
 import {recordProgressForSession} from "@/server/progress/record-progress";
 const session={accessToken:"qa",user:{id:"learner",email:"learner@example.invalid"}};
 let rows:Record<string,unknown>[]=[];

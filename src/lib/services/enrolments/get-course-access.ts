@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import { getSupabaseRestUrl } from "@/server/auth/session";
 
 export type CourseEnrolmentStatus = "not_enrolled" | "pending" | "enrolled" | "revoked" | "unknown";

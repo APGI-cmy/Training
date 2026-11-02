@@ -6,7 +6,7 @@
   "scripts": {
     "test:watchdog": "vitest run --config vitest.watchdog.config.mts",
     "dev": "next dev",
-    "prebuild": "node --experimental-strip-types scripts/verify-environment-isolation.mjs && node scripts/verify-course-media.mjs && node scripts/course-review-manifest.mjs",
+    "prebuild": "node scripts/verify-server-outbound.mjs && node --experimental-strip-types scripts/verify-environment-isolation.mjs && node scripts/verify-course-media.mjs && node scripts/course-review-manifest.mjs",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
@@ -19,7 +19,8 @@
     "test:alp:red:static": "vitest run tests/qa-to-red/alp/governance-artifacts.spec.ts tests/qa-to-red/alp/architecture-inventory.spec.ts",
     "test:alp:red:integration": "vitest run tests/qa-to-red/alp --exclude tests/qa-to-red/alp/deployment-cwt.spec.ts",
     "test:alp:red:e2e": "vitest run tests/qa-to-red/alp/course-shell.spec.ts tests/qa-to-red/alp/assessment-submission.spec.ts tests/qa-to-red/alp/certificate.spec.ts",
-    "test:alp:red:cwt": "vitest run tests/qa-to-red/alp/deployment-cwt.spec.ts"
+    "test:alp:red:cwt": "vitest run tests/qa-to-red/alp/deployment-cwt.spec.ts",
+    "audit:outbound": "node scripts/verify-server-outbound.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-appstream": "^3.1146.0",

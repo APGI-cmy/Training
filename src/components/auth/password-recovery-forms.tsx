@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
-import { requestPasswordRecovery, updateRecoveredPassword, type PasswordRecoveryState } from "@/server/actions/auth/password-recovery";
+import { requestPasswordRecovery, updateRecoveredPassword, verifyRecoveryAuthenticator, type PasswordRecoveryState } from "@/server/actions/auth/password-recovery";
 
 const initialState: PasswordRecoveryState = {};
 
@@ -27,4 +27,9 @@ export function ResetPasswordForm({requestUrl = "/forgot-password"}: {requestUrl
     <button className="primary-button" type="submit" disabled={pending}>{pending ? "Saving password…" : "Save new password"}</button>
     <Link href={requestUrl}>Request a new recovery or setup email</Link>
   </form>;
+}
+
+export function RecoveryAuthenticatorForm({requestUrl}:{requestUrl:string}){
+ const [state,action,pending]=useActionState(verifyRecoveryAuthenticator,initialState);
+ return <form className="alp-form" action={action}><p>Your account has two-step verification. Enter your existing authenticator code before choosing a new password. This does not remove your authenticator or sign you into the platform.</p><label>Authenticator code<input type="text" name="code" autoComplete="one-time-code" inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6} required /></label>{state.error?<p className="form-error" role="alert">{state.error}</p>:null}<button className="primary-button" type="submit" disabled={pending}>{pending?'Verifying...':'Verify authenticator and continue'}</button><p>If you no longer have your authenticator, contact APGI support for a separate identity check.</p><Link href={requestUrl}>Request a fresh recovery email</Link></form>;
 }

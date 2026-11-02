@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import 'server-only';
 import {randomUUID} from 'node:crypto';
 import sharp from 'sharp';

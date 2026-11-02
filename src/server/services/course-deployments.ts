@@ -1,3 +1,4 @@
+import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import 'server-only';
 import {getCourseBySlug,getCourses} from '@/lib/courses';
 import {changedDeploymentUnits,deliveryIdentityForCourse,type RegisteredDeployment} from '@/lib/course-deployment';

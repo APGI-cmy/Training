@@ -1,0 +1,40 @@
+import {beforeEach,describe,expect,it,vi} from 'vitest';
+const m=vi.hoisted(()=>({session:vi.fn(),roles:vi.fn(),rest:vi.fn(),principal:vi.fn(),certificate:vi.fn(),authentic:vi.fn(),pdf:vi.fn()}));
+vi.mock('@/server/auth/session',()=>({requireSession:m.session,getUserRoles:m.roles}));
+vi.mock('@/server/supabase/admin-rest',()=>({adminRest:m.rest}));
+vi.mock('@/server/services/platform-principals',()=>({isPlatformPrincipal:m.principal}));
+vi.mock('@/server/certificates/records',()=>({certificateById:m.certificate}));
+vi.mock('@/server/certificates/authentication',()=>({authenticCertificate:m.authentic}));
+vi.mock('@/server/certificates/pdf',()=>({certificatePdf:m.pdf}));
+import {requirePolicy} from '@/server/services/company-structure';
+import {GET as certificateDownload} from '../app/api/certificates/[id]/route';
+const policy='11111111-1111-4111-8111-111111111111',company='22222222-2222-4222-8222-222222222222';
+let owner:boolean,assigned:boolean,revoked:boolean,visibility:'company'|'internal';
+beforeEach(()=>{vi.resetAllMocks();owner=false;assigned=false;revoked=false;visibility='company';m.session.mockResolvedValue({accessToken:'synthetic',user:{id:'synthetic-owner',email:'owner@example.invalid',email_confirmed_at:'yes'}});m.roles.mockResolvedValue([]);m.principal.mockResolvedValue(false);m.authentic.mockReturnValue(true);m.pdf.mockResolvedValue(new Uint8Array([37,80,68,70]));m.certificate.mockResolvedValue({id:policy,user_id:'synthetic-owner',status:'valid',certificate_number:'SYNTHETIC-VOID'});
+ m.rest.mockImplementation(async(path:string)=>{
+  if(path.includes('platform_policy_versions')&&path.includes('select=organisation_id'))return Response.json([{organisation_id:company,visibility}]);
+  if(path.includes('organisation_memberships'))return Response.json(path.includes('is_active=eq.false')?(revoked?[{organisation_id:company}]:[]):owner?[{organisation_id:company,membership_role:'owner',is_active:true,organisations:{is_active:true}}]:[]);
+  if(path.includes('policy_reviewers'))return Response.json(assigned?[{policy_id:policy}]:[]);
+  if(path.includes('platform_policy_versions')&&path.includes('select=*'))return Response.json([{id:policy,title:'Synthetic confidential policy'}]);
+  return Response.json([]);
+ });
+});
+const fetchedDocument=()=>m.rest.mock.calls.some(([path])=>path.includes('platform_policy_versions')&&path.includes('select=*'));
+const download=()=>certificateDownload(new Request('https://training-platform-v2-staging.vercel.app/api/certificates/'+policy),{params:Promise.resolve({id:policy})});
+describe('policy role and record access matrix',()=>{
+ it('permits a current company owner to read its policy',async()=>{owner=true;expect((await requirePolicy(policy)).policy.id).toBe(policy);expect(fetchedDocument()).toBe(true);});
+ it('permits an explicitly assigned reviewer without company ownership',async()=>{assigned=true;expect((await requirePolicy(policy)).policy.id).toBe(policy);});
+ it('denies an unassigned user before reading the full document',async()=>{await expect(requirePolicy(policy)).rejects.toThrow('access');expect(fetchedDocument()).toBe(false);});
+ it('does not let an old revoked ownership be bypassed by a reviewer assignment',async()=>{assigned=true;revoked=true;await expect(requirePolicy(policy)).rejects.toThrow('access');expect(fetchedDocument()).toBe(false);});
+ it.each(['admin','course_publisher','reviewer','learner'])('internal policy is not disclosed merely because of role %s',async role=>{visibility='internal';m.roles.mockResolvedValue([role]);owner=true;assigned=true;await expect(requirePolicy(policy)).rejects.toThrow('access');expect(fetchedDocument()).toBe(false);});
+ it('allows a verified principal to inspect the internal policy',async()=>{visibility='internal';m.roles.mockResolvedValue(['admin']);m.principal.mockResolvedValue(true);expect((await requirePolicy(policy)).policy.id).toBe(policy);});
+ it('never fetches policy metadata if authentication fails',async()=>{m.session.mockRejectedValue(Error('SIGN_IN'));await expect(requirePolicy(policy)).rejects.toThrow('SIGN_IN');expect(m.rest).not.toHaveBeenCalled();});
+});
+describe('certificate private download matrix',()=>{
+ it('renders an authentic valid own certificate with private response headers',async()=>{const r=await download();expect(r.status).toBe(200);expect(r.headers.get('cache-control')).toContain('no-store');expect(r.headers.get('x-content-type-options')).toBe('nosniff');expect(m.pdf).toHaveBeenCalledOnce();});
+ it.each(['learner','reviewer','course_publisher'])('role %s cannot read another user certificate',async role=>{m.roles.mockResolvedValue([role]);m.certificate.mockResolvedValue({user_id:'another-synthetic-user',status:'valid'});const r=await download();expect(r.status).toBe(404);expect(r.headers.get('cache-control')).toContain('no-store');expect(m.authentic).not.toHaveBeenCalled();expect(m.pdf).not.toHaveBeenCalled();});
+ it('permits an administrator under the existing administrative certificate policy',async()=>{m.roles.mockResolvedValue(['admin']);m.certificate.mockResolvedValue({user_id:'another-synthetic-user',status:'valid',certificate_number:'SYNTHETIC-VOID'});expect((await download()).status).toBe(200);});
+ it.each(['revoked','draft'])('does not render a certificate with status %s',async status=>{m.certificate.mockResolvedValue({user_id:'synthetic-owner',status});expect((await download()).status).toBe(409);expect(m.pdf).not.toHaveBeenCalled();});
+ it('does not render a tampered snapshot',async()=>{m.authentic.mockReturnValue(false);expect((await download()).status).toBe(409);expect(m.pdf).not.toHaveBeenCalled();});
+ it('requires sign-in before looking up any certificate',async()=>{m.session.mockRejectedValue(Error('SIGN_IN'));await expect(download()).rejects.toThrow('SIGN_IN');expect(m.certificate).not.toHaveBeenCalled();});
+});

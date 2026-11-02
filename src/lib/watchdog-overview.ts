@@ -9,6 +9,7 @@ export const watchdogDomains=[
  {id:'access',title:'People and company separation',matches:['profile','company','membership','canary','watchdog_scope','watchdog_report','viewer_only','business','asset_','download_','export_','http_report','http_scorm','http_origin']},
  {id:'configuration',title:'Database and private information',matches:['rls_','destructive','private_storage','report_storage','raw_reports','storage','views','functions','data_api']},
  {id:'identity',title:'Account protection',matches:['mfa','session','password','identity']},
+ {id:'network',title:'Network and outbound protection',matches:['edge_','outbound']},
  {id:'operations',title:'Monitoring, alerts and recovery',matches:['alarm','cleanup','runner','restore','outbound','monitor','email','recovery','integrity']},
  {id:'independent',title:'Independent assessment and full coverage',matches:['independent','all_business_paths','governance']},
 ] as const;
