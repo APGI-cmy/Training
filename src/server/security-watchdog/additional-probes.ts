@@ -12,7 +12,8 @@ import type {WatchdogCheck} from '@/lib/security-watchdog';
 export type Probe=(id:string,title:string,kind:WatchdogCheck['kind'],detail:string,test:()=>Promise<boolean>,action?:string)=>Promise<boolean>;
 type Identity={id:string;session:AlpSession};
 const base=`https://${STAGING_DATABASE_REF}.supabase.co`;
-export const fixtureObject=(id:string)=>`watchdog-synthetic/${id}/canary.txt`;
+export const fixtureObject=(id:string)=>`watchdog-synthetic/${id}/canary.png`;
+export const fixtureImage=()=>Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aZfoAAAAASUVORK5CYII=','base64');
 async function ordinary(path:string,token?:string){return fetch(base+path,{headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,...(token?{authorization:`Bearer ${token}`}:{})},cache:'no-store',signal:AbortSignal.timeout(8000)});}
 export const additionalCheckNames=[
  {id:'storage_positive',title:'Synthetic private file exists'},
@@ -33,9 +34,9 @@ export const additionalCheckNames=[
  {id:'email_alarm',title:'External test alarm accepted by email provider'},
 ];
 export async function additionalProbes(input:{runId:string;users:Identity[];scope:string|null;access:WatchdogAccess;check:Probe;checks:WatchdogCheck[]}){
- const {runId,users:[a,,c],scope,access,check,checks}=input;const object=fixtureObject(runId),marker='WATCHDOG-SYNTHETIC-FILE-'+runId;
- const file=await fetch(base+'/storage/v1/object/course-review-evidence/'+object,{method:'POST',headers:{apikey:process.env.SUPABASE_SERVICE_ROLE_KEY!,authorization:`Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,'content-type':'text/plain','x-upsert':'false'},body:marker,cache:'no-store',signal:AbortSignal.timeout(10000)});
- const exists=await check('storage_positive','Synthetic private file exists','synthetic_behaviour','The authorised server can read the fictional test file. No customer file is used.',async()=>{if(!file.ok)return false;const r=await adminRest('/storage/v1/object/authenticated/course-review-evidence/'+object,{signal:AbortSignal.timeout(8000)});return r.ok&&(await r.text())===marker;});
+ const {runId,users:[a,,c],scope,access,check,checks}=input;const object=fixtureObject(runId),image=fixtureImage();
+ const file=await fetch(base+'/storage/v1/object/course-review-evidence/'+object,{method:'POST',headers:{apikey:process.env.SUPABASE_SERVICE_ROLE_KEY!,authorization:`Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,'content-type':'image/png','x-upsert':'false'},body:image,cache:'no-store',signal:AbortSignal.timeout(10000)});
+ const exists=await check('storage_positive','Synthetic private file exists','synthetic_behaviour','The authorised server can read the harmless one-pixel PNG test file. The evidence bucket retains its PNG-only rule. No customer file is used.',async()=>{if(!file.ok)throw Error('Synthetic file provisioning unavailable');const r=await adminRest('/storage/v1/object/authenticated/course-review-evidence/'+object,{signal:AbortSignal.timeout(8000)});return r.ok&&Buffer.from(await r.arrayBuffer()).equals(image);});
  if(exists){
   await check('storage_anonymous','Private file blocks anonymous direct access','synthetic_behaviour','The known test file is not available to an anonymous direct download.',async()=>{const r=await ordinary('/storage/v1/object/authenticated/course-review-evidence/'+object);return [400,401,403,404].includes(r.status);});
   await check('storage_foreign','Private file blocks a normal unassigned user','synthetic_behaviour','A normal synthetic user has no direct access to the private evidence file. Authorised application download routes require separate coverage.',async()=>{const r=await ordinary('/storage/v1/object/authenticated/course-review-evidence/'+object,a.session.accessToken);return [400,401,403,404].includes(r.status);});

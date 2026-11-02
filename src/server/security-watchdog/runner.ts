@@ -49,7 +49,7 @@ export async function cleanWatchdogFixtures(runId:string,users:TestUser[]=[]){
  for(const user of users){try{await fetch(origin+'/auth/v1/logout?scope=global',{method:'POST',headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,authorization:`Bearer ${user.session.accessToken}`},signal:AbortSignal.timeout(5000)});}catch{/* Deleting fixtures also removes every scoped data permission. */}}
  const resources=await watchdogRpc<{userIds:string[]}>('v2_watchdog_clean_fixtures',{p_run:runId});
  let complete=true;
- const removed=await adminRest('/storage/v1/object/course-review-evidence',{method:'DELETE',body:JSON.stringify({prefixes:[fixtureObject(runId)]}),signal:AbortSignal.timeout(8000)});
+ const removed=await adminRest('/storage/v1/object/course-review-evidence',{method:'DELETE',body:JSON.stringify({prefixes:[fixtureObject(runId),`watchdog-synthetic/${runId}/canary.txt`]}),signal:AbortSignal.timeout(8000)});
  if(!removed.ok&&removed.status!==404)complete=false;
  for(const id of resources.userIds){
   const r=await adminRest(`/auth/v1/admin/users/${id}`,{method:'DELETE',body:JSON.stringify({should_soft_delete:false}),signal:AbortSignal.timeout(8000)});
