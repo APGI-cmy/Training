@@ -58,4 +58,3 @@ begin
  delete from public.organisations where id=any(companies) and slug like 'watchdog-'||p_run::text||'-%';
  return jsonb_build_object('userIds',users,'companyIds',companies);
 end $$;
-
