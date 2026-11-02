@@ -81,7 +81,7 @@ export function PresentationViewport({title,children,navigation}:{title:string;c
   <nav className="presentation-display-controls" aria-label="Presentation display controls">
    <strong>Presentation</strong>
    <button ref={enlargeButton} type="button" className="secondary-button" aria-controls={contentId} aria-expanded={expanded} onClick={()=>expanded?void close():setExpanded(true)}>{expanded?'Return to page':'Enlarge presentation'}</button>
-   <button type="button" className="primary-button presentation-fullscreen-toggle" disabled={pending} aria-controls={contentId} onClick={()=>void fullScreen()}>{fullscreen?'Exit full screen':'Full screen'}</button>
+   <button type="button" className="primary-button presentation-fullscreen-toggle" disabled={pending} aria-controls={contentId} title={fullscreen?'Leave browser full screen':expanded?'Return to page':'Full screen'} onClick={()=>expanded?void close():void fullScreen()}>{expanded?'Exit full screen':'Full screen'}</button>
    <span className="presentation-display-hint">{expanded?'Your place is kept when you return.':'Use the presentation controls for slides, audio, activities and quizzes.'}</span>
   </nav>
   {navigation?<div className="presentation-unit-navigation">{navigation}</div>:null}
