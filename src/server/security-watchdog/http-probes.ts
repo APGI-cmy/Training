@@ -9,7 +9,8 @@ import type {Probe} from './additional-probes';
 type Identity={id:string;session:AlpSession};
 const executive='/courses/Executive%20Assistant%20Training%20Programme/LU1/course/';
 export const httpCheckNames=[
- ...courses.map(c=>({id:'asset_anonymous_'+c.id,title:c.title+': anonymous package access blocked'})),
+ // Company-scoped reports must not disclose other clients' course names/IDs.
+ ...courses.map((_c,i)=>({id:'asset_anonymous_'+(i+1),title:'Registered package '+(i+1)+': anonymous access blocked'})),
  {id:'asset_enrolled',title:'Enrolled synthetic learner opens the course package'},
  {id:'asset_nested',title:'Nested course scripts and e-book retain authorised access'},
  {id:'asset_foreign',title:'Unenrolled user cannot reuse an enrolled learner’s file link'},
@@ -45,7 +46,7 @@ export async function httpProbes({runId,users:[a,b,c],companyIds,check}:{runId:s
  const task=(id:string,title:string,detail:string,test:()=>Promise<boolean>)=>check(id,title,'synthetic_behaviour',detail,test);
  // Independent negative probes run together, with the same bounded per-request
  // timeout. A network error remains inconclusive; it never counts as a denial.
- await Promise.all(courses.map(course=>task('asset_anonymous_'+course.id,course.title+': anonymous package access blocked','An anonymous HEAD request to the actual course package must be denied before any course content is returned.',async()=>{const unit=course.units[0];const r=await watchdogHttp(unit.scormPath??unit.trainingPath??unit.publishedPath,undefined,{method:'HEAD'});return r.status===403&&privateResponse(r);})));
+ await Promise.all(courses.map((course,i)=>task('asset_anonymous_'+(i+1),'Registered package '+(i+1)+': anonymous access blocked','An anonymous HEAD request to a registered package must be denied before any course content is returned. Client course identities are not included in this evidence.',async()=>{const unit=course.units[0];const r=await watchdogHttp(unit.scormPath??unit.trainingPath??unit.publishedPath,undefined,{method:'HEAD'});return r.status===403&&privateResponse(r);})));
  const asset=await task('asset_enrolled','Enrolled synthetic learner opens the course package','A freshly enrolled fictional learner receives HTTP 200 for the actual entry point, with private/no-store caching. HEAD reads no course content.',async()=>{const r=await watchdogHttp(executive+'index.html',a,{method:'HEAD'});return r.status===200&&privateResponse(r);});
  if(asset)await Promise.all([
   task('asset_nested','Nested course scripts and e-book retain authorised access','Authorised HEAD requests check a nested script and e-book. File type is never an authentication exemption.',async()=>{for(const file of ['engine.js','ebook.html']){const r=await watchdogHttp(executive+file,a,{method:'HEAD'});if(r.status!==200||!privateResponse(r))return false;}return true;}),
