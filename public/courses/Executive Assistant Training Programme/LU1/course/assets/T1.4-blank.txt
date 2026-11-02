@@ -1,0 +1,27 @@
+T1.4 Cover and handover record
+
+Use fictional or sanitised information. Proposed arrangements are not confirmed facts.
+
+Assignment and period
+[Your response]
+
+Current plan
+[Your response]
+
+Authority and individual access
+[Your response]
+
+Open work and owners
+[Your response]
+
+Accepted protective and service interfaces
+[Your response]
+
+Exceptions and fallback
+[Your response]
+
+Acceptance and notification
+[Your response]
+
+Closure or next accepted transfer
+[Your response]

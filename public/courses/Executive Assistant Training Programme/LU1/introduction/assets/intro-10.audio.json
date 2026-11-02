@@ -1,0 +1,66 @@
+{
+  "id": "intro-10",
+  "text": "Your progress and practice responses save while you work. If a save warning appears, keep the page open and seek help. We wish you the best as you complete the course, and we trust that it will be a valuable experience in your learning and development journey. When you are ready, select Begin Learning Unit One.",
+  "voice": "en-ZA-LeahNeural",
+  "src": "intro-10.mp3",
+  "captions": "intro-10.vtt",
+  "seconds": 21.0035833,
+  "sha256": "24b50afda4e88636df639ea20170d478a7156e820f156081e19e259d1bbd06c7",
+  "captionCues": [
+    {
+      "start": 0.06,
+      "end": 3.244,
+      "text": "Your progress and practice responses save while you work"
+    },
+    {
+      "start": 3.9050000000000007,
+      "end": 7.168000000000001,
+      "text": "If a save warning appears keep the page open"
+    },
+    {
+      "start": 7.221000000000002,
+      "end": 10.234,
+      "text": "and seek help We wish you the best as"
+    },
+    {
+      "start": 10.273000000000001,
+      "end": 12.694,
+      "text": "you complete the course and we trust that it"
+    },
+    {
+      "start": 12.76,
+      "end": 15.023000000000001,
+      "text": "will be a valuable experience in your learning and"
+    },
+    {
+      "start": 15.089,
+      "end": 19.352,
+      "text": "development journey When you are ready select Begin Learning"
+    },
+    {
+      "start": 19.418,
+      "end": 20.05,
+      "text": "Unit One"
+    }
+  ],
+  "wordStreamMatchesScript": true,
+  "fullDecodePassed": true,
+  "humanListeningApproval": "PENDING",
+  "reusedSource": {
+    "id": "scene-d258efce",
+    "path": "C:\\Users\\Johan\\OneDrive\\Documents\\ChatGPT\\Training Material Development\\Executive_assitants_Elearning\\web-native publishing process\\Scene review 0.4 - 2026-10-26\\course\\assets\\scene-audio\\scene-d258efce.mp3",
+    "sha256": "a02dbe5873e4c4d36af9869d9cce04d8003fece80c5a50cf582862b82293f641",
+    "captions": "C:\\Users\\Johan\\OneDrive\\Documents\\ChatGPT\\Training Material Development\\Executive_assitants_Elearning\\web-native publishing process\\Scene review 0.4 - 2026-10-26\\course\\assets\\scene-audio\\scene-d258efce.vtt",
+    "captionSha256": "b29b140c1d1a5aa20b2159d53ef753861affe794fa198edb25ea71b1e7380103",
+    "audioEditRanges": [
+      [
+        0,
+        3.65
+      ],
+      [
+        11.2,
+        28.554
+      ]
+    ]
+  }
+}

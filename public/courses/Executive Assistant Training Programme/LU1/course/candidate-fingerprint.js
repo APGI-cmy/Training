@@ -1,0 +1,1 @@
+window.LU1_CANDIDATE={"edition": "0.18-scene-visibility-six-voices", "fingerprint": "ca713248c445db6d3cf3276c7d4cc65c0e0172fe57a1229a20d2e834acfcb409", "independentAcceptance": false, "livePlatformAccepted": false, "narrationComplete": false, "narrationProductionComplete": true, "humanListeningApproval": "PENDING", "voiceCount": 6, "recordingsPerVoice": 541};

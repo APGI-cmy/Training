@@ -1,0 +1,1775 @@
+{
+  "videos": {
+    "D01": {
+      "id": "D01",
+      "src": "assets/video-neutral-20261028/D01-neutral-a1e0bdadb5df.mp4",
+      "poster": "assets/video-neutral-20261028/D01-neutral-a1e0bdadb5df.jpg",
+      "captions": "assets/video-neutral-20261028/D01-neutral-a1e0bdadb5df.vtt",
+      "transcript": "assets/video-neutral-20261028/D01-neutral-a1e0bdadb5df.txt",
+      "transcriptText": "Think of the executive and assistant as a working partnership. The executive sets the business direction. The assistant turns that direction into organised, dependable support.\n\nThe two work products named on screen are your destination: a working agreement and a priority decision brief. You will build them through the unit rather than just read about them.\n\nMeridian and its people are fictional. Practise making reasons visible, checking uncertainty and asking the right person. A course example does not give you workplace authority.",
+      "seconds": 38.187,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "The partnership",
+          "text": "Think of the executive and assistant as a working partnership. The executive sets the business direction. The assistant turns that direction into organised, dependable support.",
+          "start": 0,
+          "end": 13.133,
+          "narrationId": "scene-9b798e4e",
+          "sourceStart": 0,
+          "sourceEnd": 13.067,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Two useful products",
+          "text": "The two work products named on screen are your destination: a working agreement and a priority decision brief. You will build them through the unit rather than just read about them.",
+          "start": 13.133,
+          "end": 24.8,
+          "narrationId": "scene-c2bbb899",
+          "sourceStart": 13.067,
+          "sourceEnd": 25.067,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "A safe learning space",
+          "text": "Meridian and its people are fictional. Practise making reasons visible, checking uncertainty and asking the right person. A course example does not give you workplace authority.",
+          "start": 24.8,
+          "end": 38.0,
+          "narrationId": "scene-7de0b1b7",
+          "sourceStart": 25.067,
+          "sourceEnd": 38.667,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "1efca9748b4f0e808413ca35fba9904d045fdaa9f3f84ff8d8f20f64a743998f",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D01.mp4",
+      "originalVisualSourceSha256": "7eae3ade398acdfdfec7c50ef9dd369463c18e75ce0a11ddb8383863f08cac5e",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "planning-system",
+        "decision-writing"
+      ],
+      "visualSourceImageHashes": {
+        "planning-system": "529b82631eb419a501270763eef13d3ae443340944a32fe7078582ad99497cce",
+        "decision-writing": "1c685d9eb9d31b6aef2bec1c5cc568a992237da7f3e16aaa0413d5a5f7e1f533"
+      },
+      "preservedSource": "assets/video-leah/D01.mp4",
+      "preservedSourceSha256": "bf0664574e2c6c2e12e4bf607895fe45be2941a412f1e1822e5cbcc85c96edb9",
+      "audioPacketSha256": "d33f0e4f5ab8ffa6fc32b5f7a7fff477a32e592ad3d01da4ffec6ab8469ed9c7",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "planning-system",
+          "graphicCutaway": "direction-to-supported-work",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 6.96,
+          "selectionReason": "The spoken idea is translating direction into organised support. Show the planning system, not a generic photograph of two colleagues."
+        },
+        {
+          "beat": 2,
+          "imageId": "decision-writing",
+          "graphicCutaway": "two-work-products",
+          "photoVisibleStart": 13.133,
+          "photoVisibleEnd": 19.317,
+          "selectionReason": "The narrator names a working agreement and priority decision brief. Show the act of producing the brief, then expose two distinct labelled document surfaces."
+        },
+        {
+          "beat": 3,
+          "imageId": null,
+          "graphicCutaway": "fiction-and-authority-boundary",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "The message is a learning boundary, not a workplace event. Use a labelled fictional-case boundary and an actual-authority gate, without another person-at-desk photo."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D01-message-ee8809963c4f.mp4",
+      "sourceVideoPreservedSha256": "44fb16fbe8738e450d34f123c03cbe14d2cb2eeec4a54195ffffc621eaa94c66",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D02": {
+      "id": "D02",
+      "src": "assets/video-neutral-20261028/D02-neutral-14bd8a800a9c.mp4",
+      "poster": "assets/video-neutral-20261028/D02-neutral-14bd8a800a9c.jpg",
+      "captions": "assets/video-neutral-20261028/D02-neutral-14bd8a800a9c.vtt",
+      "transcript": "assets/video-neutral-20261028/D02-neutral-14bd8a800a9c.txt",
+      "transcriptText": "The first card represents Daniel’s incoming request. A supplier wants a morning slot, and a virtual client discussion may move to a physical lunch. The second card reminds us that these are not accepted changes.\n\nThe diary contains existing commitments. The supplier claims approval, but Daniel has not verified it. Accepted arrangements for the afternoon visit do not automatically cover lunch.\n\nBefore opening the guidance, write what Daniel can do now. Name two unknowns and identify whose decision or acceptance is still needed. You may improve this response later.",
+      "seconds": 42.496,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "07:40: a new request",
+          "text": "The first card represents Daniel’s incoming request. A supplier wants a morning slot, and a virtual client discussion may move to a physical lunch. The second card reminds us that these are not accepted changes.",
+          "start": 0,
+          "end": 15.4,
+          "narrationId": "scene-a7591c67",
+          "sourceStart": 0,
+          "sourceEnd": 16.0,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Known is not the same as confirmed",
+          "text": "The diary contains existing commitments. The supplier claims approval, but Daniel has not verified it. Accepted arrangements for the afternoon visit do not automatically cover lunch.",
+          "start": 15.4,
+          "end": 29.067,
+          "narrationId": "scene-3af09de9",
+          "sourceStart": 16.0,
+          "sourceEnd": 30.267,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Your first judgement",
+          "text": "Before opening the guidance, write what Daniel can do now. Name two unknowns and identify whose decision or acceptance is still needed. You may improve this response later.",
+          "start": 29.067,
+          "end": 42.333,
+          "narrationId": "scene-3a2b856b",
+          "sourceStart": 30.267,
+          "sourceEnd": 43.333,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "85cd5f60d6528fa88f5b6ac5b70be2559379437abd58d1ea48d21f0f5ddaa013",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D02.mp4",
+      "originalVisualSourceSha256": "ec17eaa3b5b718783bfcc36bf3e112a27daabea153e1fdece826384ab4f0de75",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "request-unknown"
+      ],
+      "visualSourceImageHashes": {
+        "request-unknown": "e27195f8637ea49ecddfd9f9c674824f105978158021fa4a522764cef0ca5267"
+      },
+      "preservedSource": "assets/video-leah/D02.mp4",
+      "preservedSourceSha256": "d8fc725cb606c1c47cbd27f631259e4e62695a9b67678b89f08eb1874f1017c2",
+      "audioPacketSha256": "6aea3256f8be6c81f9c48fb81a769ab407a674d212a89ad02a6ba799f4f48b8b",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "request-unknown",
+          "graphicCutaway": "request-not-accepted",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 8.162,
+          "selectionReason": "The message is a new request whose approval is unknown. The image must show an incoming request and visible unresolved checks, not a confirmed booking."
+        },
+        {
+          "beat": 2,
+          "imageId": null,
+          "graphicCutaway": "known-claimed-unknown",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Separate existing commitments, an unverified supplier claim and a proposed lunch. A precise evidence-status composition teaches the distinction without inventing an event."
+        },
+        {
+          "beat": 3,
+          "imageId": null,
+          "graphicCutaway": "first-judgement-prompts",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "This is the learner’s initial judgement. Show only useful-action/two-unknowns/decision-owner prompts; no illustrative answer or later case confirmation."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D02-message-983a5a3f9459.mp4",
+      "sourceVideoPreservedSha256": "d66aab882b470b9ea0778f93e20b443bd3c6a12eebef2f403c23300c3337b339",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D03": {
+      "id": "D03",
+      "src": "assets/video-neutral-20261028/D03-neutral-3aa41701a171.mp4",
+      "poster": "assets/video-neutral-20261028/D03-neutral-3aa41701a171.jpg",
+      "captions": "assets/video-neutral-20261028/D03-neutral-3aa41701a171.vtt",
+      "transcript": "assets/video-neutral-20261028/D03-neutral-3aa41701a171.txt",
+      "transcriptText": "Follow the three linked boxes. Sending invitations is an activity. A ready decision pack is an output. The intended outcome is a decision based on reliable information.\n\nThe input-owner cards make responsibility visible. An agreed deadline and a controlled document reference are more useful than assuming that somebody will send the paper.\n\nAt the review point, check the pack against the agreed requirements. A missing approval or paper remains an open gap. Do not describe the pack as ready because invitations were sent.",
+      "seconds": 38.827,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "Activity → output → outcome",
+          "text": "Follow the three linked boxes. Sending invitations is an activity. A ready decision pack is an output. The intended outcome is a decision based on reliable information.",
+          "start": 0,
+          "end": 14.333,
+          "narrationId": "scene-6872fd55",
+          "sourceStart": 0,
+          "sourceEnd": 13.933,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Who supplies what?",
+          "text": "The input-owner cards make responsibility visible. An agreed deadline and a controlled document reference are more useful than assuming that somebody will send the paper.",
+          "start": 14.333,
+          "end": 25.333,
+          "narrationId": "scene-1c2434a5",
+          "sourceStart": 13.933,
+          "sourceEnd": 25.2,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Readiness before the meeting",
+          "text": "At the review point, check the pack against the agreed requirements. A missing approval or paper remains an open gap. Do not describe the pack as ready because invitations were sent.",
+          "start": 25.333,
+          "end": 38.667,
+          "narrationId": "scene-8ade37c7",
+          "sourceStart": 25.2,
+          "sourceEnd": 39.067,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "248ece751a550a19f170da26d891d20cdbfa872ed90e56dff8f8c3784035cc29",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D03.mp4",
+      "originalVisualSourceSha256": "297d61bb3371bec6a8c787fa0428baba88d5e2dbb16c2f236fbd18dded42945b",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "ready-pack",
+        "finance-operations"
+      ],
+      "visualSourceImageHashes": {
+        "ready-pack": "c1d60730d8b17890430a14783b9ec921aa6d2a62897bbad191b16861895ba1b7",
+        "finance-operations": "7be73b0fe68631f9fd12440834c7639bb3976167825f88170e9b639a56163323"
+      },
+      "preservedSource": "assets/video-leah/D03.mp4",
+      "preservedSourceSha256": "1a7f32f7a8214df4baa0d748a1a6bc9849b884cf46d58aebfe0a54791b9eac96",
+      "audioPacketSha256": "4b83fdadfce86dbbc6fe5e94bb78ee8390b96d863f755fd9d588c4b11cd9c64a",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "ready-pack",
+          "graphicCutaway": "activity-output-outcome",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 7.596,
+          "selectionReason": "The image must make a current, usable decision pack tangible. It supports the spoken activity→output→business-outcome chain."
+        },
+        {
+          "beat": 2,
+          "imageId": "finance-operations",
+          "graphicCutaway": "input-owner-deadline-reference",
+          "photoVisibleStart": 14.333,
+          "photoVisibleEnd": 20.163,
+          "selectionReason": "The words concern who supplies what, deadlines and controlled references. The finance/operations contributors literally show distinct input owners. Do not use the new competing-reports image here: its source brief concerns a different two-report capacity exercise."
+        },
+        {
+          "beat": 3,
+          "imageId": null,
+          "graphicCutaway": "readiness-gap-review",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Show a readiness checkpoint with an approval or paper still missing, visibly open rather than silently completed."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D03-message-e546d51c1cbc.mp4",
+      "sourceVideoPreservedSha256": "1b8460b3b492bc8bd61c0e5781bf108e8c1c6ee5c26a90c64e2868e08e9030e1",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D04": {
+      "id": "D04",
+      "src": "assets/video-neutral-20261028/D04-neutral-60803b1fa8c5.mp4",
+      "poster": "assets/video-neutral-20261028/D04-neutral-60803b1fa8c5.jpg",
+      "captions": "assets/video-neutral-20261028/D04-neutral-60803b1fa8c5.vtt",
+      "transcript": "assets/video-neutral-20261028/D04-neutral-60803b1fa8c5.txt",
+      "transcriptText": "Compare the two ideas on screen: different roles and overlapping contributions. An assistant, office manager or chief of staff may contribute in different ways. These are not a universal ranking of jobs.\n\nNow compare actual delegation with its specific conditions. Technical ability and a senior-sounding title do not create permission to approve a payment or make a specialist decision.\n\nWhen a request crosses the actual mandate, identify the owner who can decide. Useful coordination can continue without pretending that authority has transferred.",
+      "seconds": 40.448,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "Compare contributions",
+          "text": "Compare the two ideas on screen: different roles and overlapping contributions. An assistant, office manager or chief of staff may contribute in different ways. These are not a universal ranking of jobs.",
+          "start": 0,
+          "end": 15.867,
+          "narrationId": "scene-74eefacb",
+          "sourceStart": 0,
+          "sourceEnd": 15.867,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Find the actual mandate",
+          "text": "Now compare actual delegation with its specific conditions. Technical ability and a senior-sounding title do not create permission to approve a payment or make a specialist decision.",
+          "start": 15.867,
+          "end": 28.733,
+          "narrationId": "scene-3bd65a3c",
+          "sourceStart": 15.867,
+          "sourceEnd": 28.4,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Name the boundary",
+          "text": "When a request crosses the actual mandate, identify the owner who can decide. Useful coordination can continue without pretending that authority has transferred.",
+          "start": 28.733,
+          "end": 40.267,
+          "narrationId": "scene-48655d3a",
+          "sourceStart": 28.4,
+          "sourceEnd": 40.267,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "b740b0822d25f7c7d2dee2610388d0d7c91b9f3cdc12a1c0f3f28bdf19757ffb",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D04.mp4",
+      "originalVisualSourceSha256": "0469fb0299e96edc3c9037ddaead5e4235e103173362c7ccca803fafdcf9c04d",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "role-boundaries",
+        "agreement-boundaries"
+      ],
+      "visualSourceImageHashes": {
+        "role-boundaries": "9eb1c5fc288b936531ecf141ec72c0c07471e39badf285d7f62d95cc58e203b2",
+        "agreement-boundaries": "2ac8adad972bb43b2bf221fb6b36a9358c1cef44d74150175fb70cbf9f00aaac"
+      },
+      "preservedSource": "assets/video-leah/D04.mp4",
+      "preservedSourceSha256": "6726875bd9b39cc1159a87847d60461deb1398eb22063aa8fb96417d1954ca1c",
+      "audioPacketSha256": "a835e107a86da64b8ecf6b6fdb6fcf5a20b6bd6a54be024e72ee85681296c8ff",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "role-boundaries",
+          "graphicCutaway": "different-contributions",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 8.41,
+          "selectionReason": "The narrator contrasts roles and overlapping contributions. A role-interface situation teaches this; a reused partnership portrait does not."
+        },
+        {
+          "beat": 2,
+          "imageId": "agreement-boundaries",
+          "graphicCutaway": "mandate-and-conditions",
+          "photoVisibleStart": 15.867,
+          "photoVisibleEnd": 22.686,
+          "selectionReason": "The spoken focus is actual delegation and its limits. Show the bounded agreement/mandate being checked, with no job title treated as authority."
+        },
+        {
+          "beat": 3,
+          "imageId": null,
+          "graphicCutaway": "scope-owner-gate",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Make the boundary and the person who may decide visible as a controlled route. Do not imply that useful coordination transfers authority."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D04-message-0c2c383bffec.mp4",
+      "sourceVideoPreservedSha256": "8f627211fff71be8167d9dc6220ce9682bde3699060ac25ddf17c340368f5493",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D05": {
+      "id": "D05",
+      "src": "assets/video-neutral-20261028/D05-neutral-39ac601a4cc9.mp4",
+      "poster": "assets/video-neutral-20261028/D05-neutral-39ac601a4cc9.jpg",
+      "captions": "assets/video-neutral-20261028/D05-neutral-39ac601a4cc9.vtt",
+      "transcript": "assets/video-neutral-20261028/D05-neutral-39ac601a4cc9.txt",
+      "transcriptText": "Follow the connected cards from objective and facts, through options, to the decision needed. Explain the conflict clearly so the person deciding can compare workable choices.\n\nNotice the separate labels: received, decided and completed. A read receipt proves neither approval nor completion. Record the actual decision and follow through on the agreed action.\n\nThe three action cards are supersede, correct and verify receipt. Mark the earlier message superseded rather than silently erasing it. Send the prominent correction, update the controlled record and check that affected people can act on the corrected information.",
+      "seconds": 45.184,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "Make a choice visible",
+          "text": "Follow the connected cards from objective and facts, through options, to the decision needed. Explain the conflict clearly so the person deciding can compare workable choices.",
+          "start": 0,
+          "end": 12.467,
+          "narrationId": "scene-1bfbe639",
+          "sourceStart": 0,
+          "sourceEnd": 12.933,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Three different states",
+          "text": "Notice the separate labels: received, decided and completed. A read receipt proves neither approval nor completion. Record the actual decision and follow through on the agreed action.",
+          "start": 12.467,
+          "end": 26.533,
+          "narrationId": "scene-437b05f5",
+          "sourceStart": 12.933,
+          "sourceEnd": 27.0,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Correct the record",
+          "text": "The three action cards are supersede, correct and verify receipt. Mark the earlier message superseded rather than silently erasing it. Send the prominent correction, update the controlled record and check that affected people can act on the corrected information.",
+          "start": 26.533,
+          "end": 45.0,
+          "narrationId": "scene-2332ffef",
+          "sourceStart": 27.0,
+          "sourceEnd": 45.533,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "f9c9d127e7c7e8884058bcef4fae45e2c0489509f25ac5e5fb67c5e617222583",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D05.mp4",
+      "originalVisualSourceSha256": "faaea43ea3f1ae6082938e302a4abdde320cde66b6d78844ec4622fc48d31cbf",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "options-comparison",
+        "message-correction"
+      ],
+      "visualSourceImageHashes": {
+        "options-comparison": "7d0f41cbd37a1e46d7880494e33f0d6f07056da56523e0afaeed9903b0683838",
+        "message-correction": "07dd8a4f5e32d515d34da8177cdda8f182a15530dcc3dd771cbd2fc0f796e29c"
+      },
+      "preservedSource": "assets/video-leah/D05.mp4",
+      "preservedSourceSha256": "b2dfec9e0029fd33fbbaf43434886960ac0bf91a221ae77303137b543918aa34",
+      "audioPacketSha256": "81cc1fbad929380d649e6d41110c0b9a8f5e6a2bc3b755244ee2bacd8b87d2f6",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "options-comparison",
+          "graphicCutaway": "objective-facts-options-decision",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 6.608,
+          "selectionReason": "The message is making a decision choice clear. Use a real options-comparison situation, with a concise connected message flow."
+        },
+        {
+          "beat": 2,
+          "imageId": null,
+          "graphicCutaway": "receipt-decision-completion",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Received, decided and completed are different evidence states. Show three separate states, not a new decorative character photograph or automatic transition."
+        },
+        {
+          "beat": 3,
+          "imageId": "message-correction",
+          "graphicCutaway": "superseded-current-receipt",
+          "photoVisibleStart": 26.533,
+          "photoVisibleEnd": 36.321,
+          "selectionReason": "The message is correcting an error openly. Show an earlier message being marked superseded, the corrected controlled record and verified receipt—not generic collaboration."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D05-message-055b392e8b18.mp4",
+      "sourceVideoPreservedSha256": "4315c78be1e4c0492b7a879b66bb17614186dd3befcdca50e80147237f150b60",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D06": {
+      "id": "D06",
+      "src": "assets/video-neutral-20261028/D06-neutral-8ffe09e12662.mp4",
+      "poster": "assets/video-neutral-20261028/D06-neutral-8ffe09e12662.jpg",
+      "captions": "assets/video-neutral-20261028/D06-neutral-8ffe09e12662.vtt",
+      "transcript": "assets/video-neutral-20261028/D06-neutral-8ffe09e12662.txt",
+      "transcriptText": "The four panels are separate checks. Being competent does not create authority. Having system access does not prove that the information is reliable or that enough capacity is available.\n\nThe record links a result to its scope, conditions, decision route, evidence and review point. This makes limits visible before the assistant accepts the work.\n\nThe cards distinguish an individual account from an approved delegation. Approved delegated access is not the same as sharing another person’s password. Use the organisation’s actual access controls.",
+      "seconds": 40.064,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "Four separate checks",
+          "text": "The four panels are separate checks. Being competent does not create authority. Having system access does not prove that the information is reliable or that enough capacity is available.",
+          "start": 0,
+          "end": 13.467,
+          "narrationId": "scene-fafa5b6d",
+          "sourceStart": 0,
+          "sourceEnd": 13.667,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Record the delegation",
+          "text": "The record links a result to its scope, conditions, decision route, evidence and review point. This makes limits visible before the assistant accepts the work.",
+          "start": 13.467,
+          "end": 25.4,
+          "narrationId": "scene-dd8d7ea4",
+          "sourceStart": 13.667,
+          "sourceEnd": 25.133,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Individual access",
+          "text": "The cards distinguish an individual account from an approved delegation. Approved delegated access is not the same as sharing another person’s password. Use the organisation’s actual access controls.",
+          "start": 25.4,
+          "end": 39.867,
+          "narrationId": "scene-5b9e56b0",
+          "sourceStart": 25.133,
+          "sourceEnd": 40.0,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "f3a81280776171011540f6258f9de675e4294d7086a8872621439859f11a27a1",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D06.mp4",
+      "originalVisualSourceSha256": "09976a7367ac01f2ee903844baf2a6062d9ac4b46764cc188b42979527d3af7a",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "four-conditions",
+        "privacy-screen"
+      ],
+      "visualSourceImageHashes": {
+        "four-conditions": "2f1f8a9bea7ed13fac3df9c44f0130ea09d0d56c247b6f45c117a82685f0f612",
+        "privacy-screen": "50a2c5febb537cd54fd15790f69581bfe0a8c9d315dae81066472f986a83360b"
+      },
+      "preservedSource": "assets/video-leah/D06.mp4",
+      "preservedSourceSha256": "7871836d09a2c96b3fc910413339ae3722c1409a70dc5281c9f8f0e6d1fb26b9",
+      "audioPacketSha256": "7159edd0a343f48378841346d2300d56dddaa770c7cfd031532d67c4460a96a2",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "four-conditions",
+          "graphicCutaway": "four-independent-checks",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 7.138,
+          "selectionReason": "The photo must depict checking competence, authority, information/access and capacity as distinct conditions, not confidence or seniority."
+        },
+        {
+          "beat": 2,
+          "imageId": null,
+          "graphicCutaway": "delegation-record",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Expose the actual six record fields: result, scope, conditions, decision route, evidence, review/expiry. This record is the taught object."
+        },
+        {
+          "beat": 3,
+          "imageId": "privacy-screen",
+          "graphicCutaway": "individual-account-and-delegation",
+          "photoVisibleStart": 25.4,
+          "photoVisibleEnd": 33.068,
+          "selectionReason": "The literal teaching point is individual access and approved delegation rather than password sharing. Use the confidential-screen context only for that access distinction."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D06-message-9ae26fda945c.mp4",
+      "sourceVideoPreservedSha256": "6f032a0c558189f35380afb1c0b8a361014b6157105ae6b172763e9b2c2b2f53",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D07": {
+      "id": "D07",
+      "src": "assets/video-neutral-20261028/D07-neutral-c67609c60c99.mp4",
+      "poster": "assets/video-neutral-20261028/D07-neutral-c67609c60c99.jpg",
+      "captions": "assets/video-neutral-20261028/D07-neutral-c67609c60c99.vtt",
+      "transcript": "assets/video-neutral-20261028/D07-neutral-c67609c60c99.txt",
+      "transcriptText": "The four cards show alternative responses, not a sequence you must follow. Start with the specific action and its actual delegation. Act within permission and conditions; otherwise seek approval, refer or decline and escalate.\n\nKey takeaway Choose act, seek approval, refer, or decline and escalate according to the exact action and its conditions. The fictional USD 2,000 ordering limit is conditional; it is not payment authority and cannot be bypassed by splitting purchases.\n\nThe two privacy cards emphasise the minimum information necessary and the approved recipient. Decline an unauthorised request for the full private diary, and explain the boundary through the approved route.",
+      "seconds": 49.195,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "Match action to permission",
+          "text": "The four cards show alternative responses, not a sequence you must follow. Start with the specific action and its actual delegation. Act within permission and conditions; otherwise seek approval, refer or decline and escalate.",
+          "start": 0,
+          "end": 17.067,
+          "narrationId": "scene-2d49ce4e",
+          "sourceStart": 0,
+          "sourceEnd": 17.467,
+          "voice": "en-ZA-LeahNeural",
+          "revisionSourceStart": 0,
+          "revisionSourceEnd": 17.067
+        },
+        {
+          "heading": "Ordering is not paying",
+          "text": "Key takeaway Choose act, seek approval, refer, or decline and escalate according to the exact action and its conditions. The fictional USD 2,000 ordering limit is conditional; it is not payment authority and cannot be bypassed by splitting purchases.",
+          "start": 17.067,
+          "end": 35.467,
+          "narrationId": "scene-f87d52bd",
+          "sourceStart": 17.467,
+          "sourceEnd": 30.533,
+          "voice": "en-ZA-LeahNeural",
+          "revisionSourceStart": 17.067,
+          "revisionSourceEnd": 30.467
+        },
+        {
+          "heading": "Protect private information",
+          "text": "The two privacy cards emphasise the minimum information necessary and the approved recipient. Decline an unauthorised request for the full private diary, and explain the boundary through the approved route.",
+          "start": 35.467,
+          "end": 49.0,
+          "narrationId": "scene-bb627e59",
+          "sourceStart": 30.533,
+          "sourceEnd": 44.533,
+          "voice": "en-ZA-LeahNeural",
+          "revisionSourceStart": 30.467,
+          "revisionSourceEnd": 44.0
+        }
+      ],
+      "sha256": "65dae773148d6d37f3d86118a5f5fb34df5e3aed6c012de199066903518014a0",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D07.mp4",
+      "originalVisualSourceSha256": "2cbe16531892199366335016a018d92629320037418065f1c568cd5c667ba6f6",
+      "currencyLocalisation": {
+        "currency": "USD",
+        "fictionalNumericLimit": 2000,
+        "exchangeRateConversion": false,
+        "oldVisual": "Fictional R2,000 limit",
+        "newVisual": "Fictional USD 2,000 limit"
+      },
+      "segmentSubstitution": {
+        "applied": true,
+        "segment": 2,
+        "reason": "Exact requested USD sentence unavailable after provider HTTP429; use complete verified updated D07 key-takeaway paragraph without word splicing",
+        "requestedTextStillPending": "The first example card has a fictional limit of two thousand US dollars. This is a meeting-consumables ordering limit, not payment authority. Do not split an order to evade the limit.",
+        "actualSpokenText": "Key takeaway Choose act, seek approval, refer, or decline and escalate according to the exact action and its conditions. The fictional USD 2,000 ordering limit is conditional; it is not payment authority and cannot be bypassed by splitting purchases.",
+        "humanAcceptance": "PENDING"
+      },
+      "revisionSource": "assets/video-leah/D07.mp4",
+      "revisionSourceSha256": "fc95110ffe7ca7d77b80d235e332581adedbd197ef469b756e8be7769a9f674c",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "purchase-limit"
+      ],
+      "visualSourceImageHashes": {
+        "purchase-limit": "86ded899d43a838de2bdf87135a67a5c5ac23ee8caf8601ee3dfa12ea98a84c7"
+      },
+      "preservedSource": "assets/video-usd-20261027/D07-USD-20261027-d7c0262a.mp4",
+      "preservedSourceSha256": "c87fbf3592de63a040f82344ceef14bd96a765b3b56a00ba62e21fda07ce88de",
+      "audioPacketSha256": "8ffe9e30f394f7e169ddef859409127085c8d5cde03b3cf8a8bb8ba8332eb03f",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": null,
+          "graphicCutaway": "alternative-action-routes",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Show act/seek approval/refer/decline-and-escalate as four alternatives chosen for the exact action and conditions, not as a sequence."
+        },
+        {
+          "beat": 2,
+          "imageId": "purchase-limit",
+          "graphicCutaway": "conditional-usd-ordering-limit",
+          "photoVisibleStart": 17.067,
+          "photoVisibleEnd": 26.819,
+          "selectionReason": "The message is a conditional fictional USD2,000 meeting-consumables ordering limit. The photo must show an order/limit check; the overlay states ordering≠paying and no purchase splitting."
+        },
+        {
+          "beat": 3,
+          "imageId": null,
+          "graphicCutaway": "minimum-disclosure",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "A redacted private record and approved-recipient route teach the minimum-necessary disclosure boundary. No actual private data or full diary is exposed."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D07-message-bee20b23a480.mp4",
+      "sourceVideoPreservedSha256": "2714aac160cc84eac2cf9ce021765f3832227eb6c937c654ff14f1a78367b1e5",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D08": {
+      "id": "D08",
+      "src": "assets/video-neutral-20261028/D08-neutral-f70e7c77dcd8.mp4",
+      "poster": "assets/video-neutral-20261028/D08-neutral-f70e7c77dcd8.jpg",
+      "captions": "assets/video-neutral-20261028/D08-neutral-f70e7c77dcd8.vtt",
+      "transcript": "assets/video-neutral-20261028/D08-neutral-f70e7c77dcd8.txt",
+      "transcriptText": "The teal bar runs from nine thirty to ten. Those thirty minutes are preparation time. They are not spare space simply because they appear before the decision meeting.\n\nNow compare the amber request from nine forty-five to ten fifteen. It takes the last fifteen minutes of preparation and the first fifteen minutes of the decision meeting.\n\nKeep the supplier slot labelled requested until the approval is verified. Show both conflicts when asking for a decision instead of hiding one behind a calendar change.",
+      "seconds": 35.115,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "Preparation is already allocated",
+          "text": "The teal bar runs from nine thirty to ten. Those thirty minutes are preparation time. They are not spare space simply because they appear before the decision meeting.",
+          "start": 0,
+          "end": 12.133,
+          "narrationId": "scene-cc8d1ae9",
+          "sourceStart": 0,
+          "sourceEnd": 12.133,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "One request, two collisions",
+          "text": "Now compare the amber request from nine forty-five to ten fifteen. It takes the last fifteen minutes of preparation and the first fifteen minutes of the decision meeting.",
+          "start": 12.133,
+          "end": 23.467,
+          "narrationId": "scene-e2a8cbfc",
+          "sourceStart": 12.133,
+          "sourceEnd": 23.8,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Do not turn a claim into a booking",
+          "text": "Keep the supplier slot labelled requested until the approval is verified. Show both conflicts when asking for a decision instead of hiding one behind a calendar change.",
+          "start": 23.467,
+          "end": 34.933,
+          "narrationId": "scene-5a9b3987",
+          "sourceStart": 23.8,
+          "sourceEnd": 35.733,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "e5e79bad769b50e6e60a0d11d2faee0c14531fec45cdf7f86dbfabd4130bc191",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D08.mp4",
+      "originalVisualSourceSha256": "aaac376b8019a0be37073cae19edddd4a8f0f7e63739174cbb7c52ea30a37b24",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "diary-conflict"
+      ],
+      "visualSourceImageHashes": {
+        "diary-conflict": "d0b3fd46786f648e7cd683c4ea2fe61e596278efef02ba3454625d0a4aa1dd3b"
+      },
+      "preservedSource": "assets/video-leah/D08.mp4",
+      "preservedSourceSha256": "67baa7511e29f1c5d956b5b5d3ac51f8d6d6b5b2eba898aa8fa97bc4c0520ff7",
+      "audioPacketSha256": "f68ca2b4e52349904588030813051279487edb2d35f009794a63b5d24bd0a1d2",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "diary-conflict",
+          "graphicCutaway": "allocated-preparation",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 6.43,
+          "selectionReason": "Use the diary planning view only because the words are about allocated preparation time. The overlay supplies the verified times, not generated image text."
+        },
+        {
+          "beat": 2,
+          "imageId": null,
+          "graphicCutaway": "two-calendar-collisions",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "The entire taught object is the exact timeline:09:30–10:00 preparation,10:00–10:45 decision meeting, REQUEST09:45–10:15; show both15-minute overlaps."
+        },
+        {
+          "beat": 3,
+          "imageId": null,
+          "graphicCutaway": "request-versus-confirmed-slot",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Use an unconfirmed request layer distinct from existing bookings. Preserve unverified approval; no green accepted booking is invented."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D08-message-d4e40ff39b11.mp4",
+      "sourceVideoPreservedSha256": "fefd626d482ae4167c23af510d4afb91c9021d41c0000034f810abbc37947c8a",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D09": {
+      "id": "D09",
+      "src": "assets/video-neutral-20261028/D09-neutral-98467dc4bd0e.mp4",
+      "poster": "assets/video-neutral-20261028/D09-neutral-98467dc4bd0e.jpg",
+      "captions": "assets/video-neutral-20261028/D09-neutral-98467dc4bd0e.vtt",
+      "transcript": "assets/video-neutral-20261028/D09-neutral-98467dc4bd0e.txt",
+      "transcriptText": "The three option cards introduce routes for exploration. One asks operations to handle the delivery-sequence discussion. Another asks for a later executive slot. Each has conditions.\n\nThe business decision, protective input and control-room acceptance are separate boxes. A preferred option is not ready until the relevant owners confirm their parts.\n\nA physical lunch is not merely a renamed virtual call. Location, travel, protection and monitoring scope may change. Check those conditions before making any promise.",
+      "seconds": 40.533,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "Explore options without committing",
+          "text": "The three option cards introduce routes for exploration. One asks operations to handle the delivery-sequence discussion. Another asks for a later executive slot. Each has conditions.",
+          "start": 0,
+          "end": 15.0,
+          "narrationId": "scene-7d159e01",
+          "sourceStart": 0,
+          "sourceEnd": 14.6,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Separate decision and acceptance",
+          "text": "The business decision, protective input and control-room acceptance are separate boxes. A preferred option is not ready until the relevant owners confirm their parts.",
+          "start": 15.0,
+          "end": 26.8,
+          "narrationId": "scene-77757349",
+          "sourceStart": 14.6,
+          "sourceEnd": 26.333,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Lunch changes the question",
+          "text": "A physical lunch is not merely a renamed virtual call. Location, travel, protection and monitoring scope may change. Check those conditions before making any promise.",
+          "start": 26.8,
+          "end": 40.333,
+          "narrationId": "scene-74b6b2c0",
+          "sourceStart": 26.333,
+          "sourceEnd": 39.8,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "7e5cdd29872bdafbb9ddbefcd764bc7fccfe1346d44495dbed1f3be6e4adacea",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D09.mp4",
+      "originalVisualSourceSha256": "dcbe9bedd6080aa7f2a2f7faa6d6f607ccc57071530ecbf0c168b826321b3ac2",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "options-comparison"
+      ],
+      "visualSourceImageHashes": {
+        "options-comparison": "7d0f41cbd37a1e46d7880494e33f0d6f07056da56523e0afaeed9903b0683838"
+      },
+      "preservedSource": "assets/video-leah/D09.mp4",
+      "preservedSourceSha256": "5750e61f2ac3918879f724add638d4e62545f80c7300afb28805c835a696f080",
+      "audioPacketSha256": "11b571ebea3590f580994b32a45954f13eeeb107375a443c2053891629284d93",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "options-comparison",
+          "graphicCutaway": "three-conditional-options",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 7.95,
+          "selectionReason": "This intentional second use is the same actual concept as D05: comparing feasible options. Present operations/later executive slot/authorised change as conditional, not successful outcomes."
+        },
+        {
+          "beat": 2,
+          "imageId": null,
+          "graphicCutaway": "three-separate-mandates",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "The words explicitly separate executive business decision, protective input and control-room acceptance. Use those exact three mandate lanes. Do not substitute the finance-doorway role image, which shows different participants and a different interface."
+        },
+        {
+          "beat": 3,
+          "imageId": null,
+          "graphicCutaway": "physical-lunch-scope",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Show the change from virtual to physical location as a scope diagram with travel/protection/monitoring questions still open. Do not illustrate a lunch as already arranged."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D09-message-7ed91e7c819c.mp4",
+      "sourceVideoPreservedSha256": "320372428d740c44b247a097c14da088a3eef0fe0523ed01ed7c073e14199f8a",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D10": {
+      "id": "D10",
+      "src": "assets/video-neutral-20261028/D10-neutral-b0a224cbbe9f.mp4",
+      "poster": "assets/video-neutral-20261028/D10-neutral-b0a224cbbe9f.jpg",
+      "captions": "assets/video-neutral-20261028/D10-neutral-b0a224cbbe9f.vtt",
+      "transcript": "assets/video-neutral-20261028/D10-neutral-b0a224cbbe9f.txt",
+      "transcriptText": "The brief starts with the result requested and the existing constraint. Put the supplier conflict beside the diary facts so the reader can see why a decision is needed.\n\nCompare feasible options, recommend one and explain why. Name the decision required. Then list unresolved approval and acceptance conditions rather than presenting them as settled facts.\n\nWrite your own first brief before opening the later case update. You will compare it with subsequent confirmed information, without pretending that you knew those later facts at the start.",
+      "seconds": 38.443,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "Build a short decision brief",
+          "text": "The brief starts with the result requested and the existing constraint. Put the supplier conflict beside the diary facts so the reader can see why a decision is needed.",
+          "start": 0,
+          "end": 11.067,
+          "narrationId": "scene-1bdc2bcf",
+          "sourceStart": 0,
+          "sourceEnd": 11.333,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Recommend with reasons",
+          "text": "Compare feasible options, recommend one and explain why. Name the decision required. Then list unresolved approval and acceptance conditions rather than presenting them as settled facts.",
+          "start": 11.067,
+          "end": 25.6,
+          "narrationId": "scene-f34d9d19",
+          "sourceStart": 11.333,
+          "sourceEnd": 25.2,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Keep your first version",
+          "text": "Write your own first brief before opening the later case update. You will compare it with subsequent confirmed information, without pretending that you knew those later facts at the start.",
+          "start": 25.6,
+          "end": 38.267,
+          "narrationId": "scene-7c5eb944",
+          "sourceStart": 25.2,
+          "sourceEnd": 37.867,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "b4fbc631fd48d95618c29ec84652efa8c9726934eee2566a641c56f4c6d8cfdf",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D10.mp4",
+      "originalVisualSourceSha256": "ec2981a19e8d8369424d9d3daa8c93b69a4ad0cf046942dadc1634074c5b2cfb",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "decision-writing"
+      ],
+      "visualSourceImageHashes": {
+        "decision-writing": "1c685d9eb9d31b6aef2bec1c5cc568a992237da7f3e16aaa0413d5a5f7e1f533"
+      },
+      "preservedSource": "assets/video-leah/D10.mp4",
+      "preservedSourceSha256": "ac784fce927d00626b8a7a40aa467da7310b793967ea7c38db1ea7a2c564c425",
+      "audioPacketSha256": "fa1a09a7c12f567cbf8c467dc8cc7fb6cdcf3aacca86a44b639cced0e56320a9",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "decision-writing",
+          "graphicCutaway": "result-constraint-brief",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 5.866,
+          "selectionReason": "The scene teaches writing the requested result and existing constraint into a brief. The image must show that writing action, not a generic partnership desk."
+        },
+        {
+          "beat": 2,
+          "imageId": null,
+          "graphicCutaway": "recommendation-reasons-conditions",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Use a working brief to reveal options/reasons, required decision and unresolved conditions. Do not present those conditions as accepted."
+        },
+        {
+          "beat": 3,
+          "imageId": null,
+          "graphicCutaway": "first-draft-before-later-evidence",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Make the retained first version visible, with later evidence still closed. No later case answer is shown."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D10-message-0dde2f59c82f.mp4",
+      "sourceVideoPreservedSha256": "e69bdd263212a19f03e99db59abe2b33c67cc415c35e7290aa75f99dae45f687",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D11": {
+      "id": "D11",
+      "src": "assets/video-neutral-20261028/D11-neutral-0fb1b10ebb6b.mp4",
+      "poster": "assets/video-neutral-20261028/D11-neutral-0fb1b10ebb6b.jpg",
+      "captions": "assets/video-neutral-20261028/D11-neutral-0fb1b10ebb6b.vtt",
+      "transcript": "assets/video-neutral-20261028/D11-neutral-0fb1b10ebb6b.txt",
+      "transcriptText": "These opening cards name roles and purpose, version and effective point. A usable agreement connects its sections rather than listing unlimited duties. Record when the arrangement takes effect.\n\nThe three cards separate arranging, approving and paying. Each needs its actual permission and conditions. Communication and privacy controls also identify appropriate channels and the minimum information needed.\n\nExplore all twelve worked clauses, including cover, concerns, confirmation and review. The blank tool groups them into eleven areas; do not lose a clause simply because the headings differ.",
+      "seconds": 44.331,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "A usable agreement",
+          "text": "These opening cards name roles and purpose, version and effective point. A usable agreement connects its sections rather than listing unlimited duties. Record when the arrangement takes effect.",
+          "start": 0,
+          "end": 14.6,
+          "narrationId": "scene-5dfd835b",
+          "sourceStart": 0,
+          "sourceEnd": 14.133,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Permission has boundaries",
+          "text": "The three cards separate arranging, approving and paying. Each needs its actual permission and conditions. Communication and privacy controls also identify appropriate channels and the minimum information needed.",
+          "start": 14.6,
+          "end": 29.8,
+          "narrationId": "scene-5414f86c",
+          "sourceStart": 14.133,
+          "sourceEnd": 29.533,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Twelve clauses, one working record",
+          "text": "Explore all twelve worked clauses, including cover, concerns, confirmation and review. The blank tool groups them into eleven areas; do not lose a clause simply because the headings differ.",
+          "start": 29.8,
+          "end": 44.133,
+          "narrationId": "scene-dfb2eafb",
+          "sourceStart": 29.533,
+          "sourceEnd": 43.733,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "3eb8430bc2da42e2851829147e915bda2085b5685aa0dabd066da6fd595f9368",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D11.mp4",
+      "originalVisualSourceSha256": "8bfead606a26bbc5b371ffc8f2dec380101803e355e39e0e4d286e1c847dd61b",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "agreement-boundaries"
+      ],
+      "visualSourceImageHashes": {
+        "agreement-boundaries": "2ac8adad972bb43b2bf221fb6b36a9358c1cef44d74150175fb70cbf9f00aaac"
+      },
+      "preservedSource": "assets/video-leah/D11.mp4",
+      "preservedSourceSha256": "9bf02a05cc3c41b0029ea3a7a68916979025006d2a541ea216cb20dc7e41f9c7",
+      "audioPacketSha256": "285cf2421ce4c72cfbdf3feeb163bf80473945ad8c5e13e71325e32050986db0",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "agreement-boundaries",
+          "graphicCutaway": "agreement-identity-effective-point",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 7.738,
+          "selectionReason": "The message is a usable bounded agreement with roles, purpose, version and effective point; the image is selected for that agreement-checking action."
+        },
+        {
+          "beat": 2,
+          "imageId": null,
+          "graphicCutaway": "arrange-approve-pay",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Separate three permissions—arrange, approve and pay—without implying that any one automatically grants the next."
+        },
+        {
+          "beat": 3,
+          "imageId": null,
+          "graphicCutaway": "twelve-to-eleven-crosswalk",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "The exact taught relationship is12worked clauses cross-referenced to11blank-tool areas. Show the complete crosswalk rather than reuse a photograph."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D11-message-98bc9278bbc7.mp4",
+      "sourceVideoPreservedSha256": "1663aeb04e6014df55d4d37bcddbc62a9a0851102404dce3018c0905d62e4141",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D12": {
+      "id": "D12",
+      "src": "assets/video-neutral-20261028/D12-neutral-35428be76627.mp4",
+      "poster": "assets/video-neutral-20261028/D12-neutral-35428be76627.jpg",
+      "captions": "assets/video-neutral-20261028/D12-neutral-35428be76627.vtt",
+      "transcript": "assets/video-neutral-20261028/D12-neutral-35428be76627.txt",
+      "transcriptText": "The first cards prompt you to question hidden assumptions and unclear ownership in a polished clause. Unlimited duties, assumed monitoring and automatic after-hours availability can leave ownership and capacity unresolved.\n\nThe repair cards ask who does what and what limits and acceptance apply. Explain your wording. Identifying an unknown is a useful finding, not a failure.\n\nFinally, try the agreement against a change in time or place. If the revised work exceeds the accepted scope, obtain the necessary decision or acceptance instead of relying on the old wording.",
+      "seconds": 41.344,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "A sentence can sound complete",
+          "text": "The first cards prompt you to question hidden assumptions and unclear ownership in a polished clause. Unlimited duties, assumed monitoring and automatic after-hours availability can leave ownership and capacity unresolved.",
+          "start": 0,
+          "end": 15.333,
+          "narrationId": "scene-7e7ef014",
+          "sourceStart": 0,
+          "sourceEnd": 15.333,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Repair a specific gap",
+          "text": "The repair cards ask who does what and what limits and acceptance apply. Explain your wording. Identifying an unknown is a useful finding, not a failure.",
+          "start": 15.333,
+          "end": 27.333,
+          "narrationId": "scene-11047a78",
+          "sourceStart": 15.333,
+          "sourceEnd": 27.733,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Test an ordinary change",
+          "text": "Finally, try the agreement against a change in time or place. If the revised work exceeds the accepted scope, obtain the necessary decision or acceptance instead of relying on the old wording.",
+          "start": 27.333,
+          "end": 41.133,
+          "narrationId": "scene-8f14350f",
+          "sourceStart": 27.733,
+          "sourceEnd": 41.867,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "466e5fbacd3048f09ecfdd3f6222e90cfbbb2c82059f91b845602909ca219507",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D12.mp4",
+      "originalVisualSourceSha256": "c9cb6bc2d52f15b21da9ab130538dbe4a4e4f3c8df9936d54ce5f86b06071d02",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "clause-review"
+      ],
+      "visualSourceImageHashes": {
+        "clause-review": "daf64680c9ed79a437feaa6e9473d4f37d668ab50d03acec8c4c4708cfaa8773"
+      },
+      "preservedSource": "assets/video-leah/D12.mp4",
+      "preservedSourceSha256": "60760efdd3704c158b05abf59a95693fea3a90fe84d10edaa0516846ce496054",
+      "audioPacketSha256": "301623195286725126eb5c48c1e008227b379d326cb93664feb358934f902f20",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "clause-review",
+          "graphicCutaway": "hidden-assumption-and-owner",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 8.126,
+          "selectionReason": "The image must depict finding a vague clause/hidden assumption and unclear owner, rather than a completed confident-looking agreement."
+        },
+        {
+          "beat": 2,
+          "imageId": null,
+          "graphicCutaway": "repair-who-what-limit-acceptance",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Teach the repair by exposing who does what, the limit and whose acceptance is needed. Identifying an unknown remains a useful finding."
+        },
+        {
+          "beat": 3,
+          "imageId": null,
+          "graphicCutaway": "ordinary-change-recheck",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Apply a time/place change to the agreed scope and show the required recheck. Do not invent permission after the change."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D12-message-7ee025a39aa6.mp4",
+      "sourceVideoPreservedSha256": "892d4cf0578efc7aa0ffd9f04bdae0d36d3fe1d0c0db637f0534bfe3001302fd",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D13": {
+      "id": "D13",
+      "src": "assets/video-neutral-20261028/D13-neutral-2d0f8cc56809.mp4",
+      "poster": "assets/video-neutral-20261028/D13-neutral-2d0f8cc56809.jpg",
+      "captions": "assets/video-neutral-20261028/D13-neutral-2d0f8cc56809.vtt",
+      "transcript": "assets/video-neutral-20261028/D13-neutral-2d0f8cc56809.txt",
+      "transcriptText": "The handover strip begins with a particular assignment and period. A deputy’s job title alone does not show that this work has been accepted.\n\nThe incoming owner needs competence, specific authority, individual access and the current work record. Show open actions, owners, deadlines and unresolved gaps.\n\nAdministrative cover and control-room monitoring are different lanes. Obtain the relevant acceptance in each lane, notify affected people and escalate any unaccepted gap.",
+      "seconds": 36.395,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "Define the cover",
+          "text": "The handover strip begins with a particular assignment and period. A deputy’s job title alone does not show that this work has been accepted.",
+          "start": 0,
+          "end": 10.0,
+          "narrationId": "scene-9642969a",
+          "sourceStart": 0,
+          "sourceEnd": 10.333,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Make the transfer usable",
+          "text": "The incoming owner needs competence, specific authority, individual access and the current work record. Show open actions, owners, deadlines and unresolved gaps.",
+          "start": 10.0,
+          "end": 23.733,
+          "narrationId": "scene-18ce4cb8",
+          "sourceStart": 10.333,
+          "sourceEnd": 23.2,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Keep interfaces separate",
+          "text": "Administrative cover and control-room monitoring are different lanes. Obtain the relevant acceptance in each lane, notify affected people and escalate any unaccepted gap.",
+          "start": 23.733,
+          "end": 36.2,
+          "narrationId": "scene-637954f7",
+          "sourceStart": 23.2,
+          "sourceEnd": 35.733,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "286656c1781b124a1dca1624680b38ce7cc9175b368bb0f1d43be643103e686d",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D13.mp4",
+      "originalVisualSourceSha256": "5641eaa5dab38697f755ebc0da4be1e90ea4ecb451769f0d2792a9fa0ae0f9ca",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "handover",
+        "control-room"
+      ],
+      "visualSourceImageHashes": {
+        "handover": "7a00c185762bafbe325673546ef9e9c05f57d98612a7b203437fb5a631544d58",
+        "control-room": "d963be0f2682b3e9b19d5e83732faf103ffb90e7ca119f71dc05e1f3edc43f49"
+      },
+      "preservedSource": "assets/video-leah/D13.mp4",
+      "preservedSourceSha256": "15a81fcf31bc616b523e7c43adbe247c719d6647cc9a9c2c519f281124e0dde2",
+      "audioPacketSha256": "2f5caca14adb0f7b8831f9a78627ed58436e4320e7682730cad38b56714d4e3f",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "handover",
+          "graphicCutaway": "assignment-period",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 5.3,
+          "selectionReason": "Existing handover photography is used only for the literal defined assignment and cover period being transferred."
+        },
+        {
+          "beat": 2,
+          "imageId": null,
+          "graphicCutaway": "usable-transfer-record",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Show competence/authority/access, current work, open actions, owners, deadlines and unresolved gaps as the transfer object—not another pan of the same handover photo."
+        },
+        {
+          "beat": 3,
+          "imageId": "control-room",
+          "graphicCutaway": "separate-service-acceptance",
+          "photoVisibleStart": 23.733,
+          "photoVisibleEnd": 30.341,
+          "selectionReason": "The narrator now discusses the independent room’s actual monitoring mandate. A control-room cutaway is relevant here; it must not imply inclusion in deputy cover."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D13-message-830eb41fcb02.mp4",
+      "sourceVideoPreservedSha256": "fe1ec785bd1e0ad044e0afaea0682f5c9f685a79a4f96f7d9f083c738de9bc84",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D14": {
+      "id": "D14",
+      "src": "assets/video-neutral-20261028/D14-neutral-d9043499c79d.mp4",
+      "poster": "assets/video-neutral-20261028/D14-neutral-d9043499c79d.jpg",
+      "captions": "assets/video-neutral-20261028/D14-neutral-d9043499c79d.vtt",
+      "transcript": "assets/video-neutral-20261028/D14-neutral-d9043499c79d.txt",
+      "transcriptText": "The two cards distinguish a named deputy from the acceptance still needed. Aisha’s name does not automatically confirm every assignment or an unlimited period of availability.\n\nLook for the agreed work, period, authority, access and explicit acceptance. Record limitations and open actions so the handover is usable rather than merely reassuring.\n\nThe separate room lane remains under its own service mandate and duty owner. Administrative handover does not create a control-room service guarantee.",
+      "seconds": 35.84,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "A name is only a start",
+          "text": "The two cards distinguish a named deputy from the acceptance still needed. Aisha’s name does not automatically confirm every assignment or an unlimited period of availability.",
+          "start": 0,
+          "end": 12.067,
+          "narrationId": "scene-e619480e",
+          "sourceStart": 0,
+          "sourceEnd": 12.133,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Check the evidence",
+          "text": "Look for the agreed work, period, authority, access and explicit acceptance. Record limitations and open actions so the handover is usable rather than merely reassuring.",
+          "start": 12.067,
+          "end": 25.333,
+          "narrationId": "scene-7d7eee15",
+          "sourceStart": 12.133,
+          "sourceEnd": 24.8,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Keep the room’s mandate separate",
+          "text": "The separate room lane remains under its own service mandate and duty owner. Administrative handover does not create a control-room service guarantee.",
+          "start": 25.333,
+          "end": 35.667,
+          "narrationId": "scene-44e62898",
+          "sourceStart": 24.8,
+          "sourceEnd": 35.467,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "36a5cc523faa0369bf9671c5988c3d0d7872136c7e602636f3aeb9cd672f3e98",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D14.mp4",
+      "originalVisualSourceSha256": "b64ae4d5c3c3e9641a586c038bb3b7c721b198179a0e55fbed3d6ae190e4db94",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "deputy-acceptance",
+        "aisha-deputy"
+      ],
+      "visualSourceImageHashes": {
+        "deputy-acceptance": "628eaa0b3e53d691b747b4c2ba3991e55c717c481ec0c66f06407ff3bae8bab1",
+        "aisha-deputy": "a7ffa0868b7d558aa32ec468563ebaadd3234aa29b8d1e9103372477703c2389"
+      },
+      "preservedSource": "assets/video-leah/D14.mp4",
+      "preservedSourceSha256": "6955b0c997eef07e0b48cf33b369d42801de9a27bc3480f670a26dd85d32de48",
+      "audioPacketSha256": "7f8f100e0bfc3dcb30ec4c84fe2f7c479b92e8160a5c535509c5b2d59500cf41",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "deputy-acceptance",
+          "graphicCutaway": "name-is-not-acceptance",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 6.396,
+          "selectionReason": "The new image must make the acceptance check visible. A named deputy alone is not evidence of accepting every assignment or unlimited availability."
+        },
+        {
+          "beat": 2,
+          "imageId": "aisha-deputy",
+          "graphicCutaway": "evidence-for-specific-cover",
+          "photoVisibleStart": 12.067,
+          "photoVisibleEnd": 19.098,
+          "selectionReason": "This is a literal Aisha/deputy evidence discussion, so the existing Aisha identity anchor is relevant. Keep scope, period, access and acceptance visible; do not imply automatic acceptance."
+        },
+        {
+          "beat": 3,
+          "imageId": null,
+          "graphicCutaway": "independent-room-mandate",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Use distinct administrative and monitoring mandate lanes. Do not repeat the room photo when the taught distinction can be shown precisely as a system boundary."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D14-message-648662a6dd79.mp4",
+      "sourceVideoPreservedSha256": "a48b479f371e2cba2f6e53092404ad0b3d07396524970201e65b57c9e239d598",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D15": {
+      "id": "D15",
+      "src": "assets/video-neutral-20261028/D15-neutral-e72302a6883c.mp4",
+      "poster": "assets/video-neutral-20261028/D15-neutral-e72302a6883c.jpg",
+      "captions": "assets/video-neutral-20261028/D15-neutral-e72302a6883c.vtt",
+      "transcript": "assets/video-neutral-20261028/D15-neutral-e72302a6883c.txt",
+      "transcriptText": "You have now reached the later update, after writing your first brief. Lindiwe keeps preparation, the decision meeting, the virtual client discussion and the private block. She authorises asking operations, rather than assuming operations has agreed.\n\nOperations then accepts its assignment, and the client confirms the original virtual arrangement. Finance supplies the approved paper; its version is checked before preparation. These are separate evidence events.\n\nThe afternoon visit stays within its accepted scope. Later, Aisha accepts a defined administrative cover period, while the assigned room duty holder separately confirms the relevant monitoring record.",
+      "seconds": 48.981,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "Now: later confirmed information",
+          "text": "You have now reached the later update, after writing your first brief. Lindiwe keeps preparation, the decision meeting, the virtual client discussion and the private block. She authorises asking operations, rather than assuming operations has agreed.",
+          "start": 0,
+          "end": 18.467,
+          "narrationId": "scene-aefd1091",
+          "sourceStart": 0,
+          "sourceEnd": 19.067,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Acceptance and version evidence",
+          "text": "Operations then accepts its assignment, and the client confirms the original virtual arrangement. Finance supplies the approved paper; its version is checked before preparation. These are separate evidence events.",
+          "start": 18.467,
+          "end": 34.333,
+          "narrationId": "scene-cb8e5800",
+          "sourceStart": 19.067,
+          "sourceEnd": 34.733,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Later accepted cover",
+          "text": "The afternoon visit stays within its accepted scope. Later, Aisha accepts a defined administrative cover period, while the assigned room duty holder separately confirms the relevant monitoring record.",
+          "start": 34.333,
+          "end": 48.8,
+          "narrationId": "scene-3c92efb1",
+          "sourceStart": 34.733,
+          "sourceEnd": 49.4,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "5b1781ff951667ae174748efbaed75bbc41d5db649320bcc88562031d0aaef28",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D15.mp4",
+      "originalVisualSourceSha256": "94c81b57b3fda2f716543482bb5ac23a6492a3e9df20ccbeff5c5a9d51a7b5ce",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "later-evidence",
+        "finance-operations",
+        "deputy-acceptance"
+      ],
+      "visualSourceImageHashes": {
+        "later-evidence": "ec2794f5491193d9c5882485a919f89e0c1e2f91fd4b85f20eea57f3d4489e88",
+        "finance-operations": "7be73b0fe68631f9fd12440834c7639bb3976167825f88170e9b639a56163323",
+        "deputy-acceptance": "628eaa0b3e53d691b747b4c2ba3991e55c717c481ec0c66f06407ff3bae8bab1"
+      },
+      "preservedSource": "assets/video-leah/D15.mp4",
+      "preservedSourceSha256": "c80bc5f96ffef1f9394c60f27346c50f27836baea8c465526f4412ba8c53739f",
+      "audioPacketSha256": "e7007b69a862ea1b8d800689e521efd53dbe508acfb295632cb6ebb0748aa6ad",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "later-evidence",
+          "graphicCutaway": "later-business-choice-and-permission",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 9.788,
+          "selectionReason": "This image is selected only for the gated later confirmed update. Show a later evidence-review context; the first-stage scenes must not use it."
+        },
+        {
+          "beat": 2,
+          "imageId": "finance-operations",
+          "graphicCutaway": "separate-confirmation-events",
+          "photoVisibleStart": 18.467,
+          "photoVisibleEnd": 26.876,
+          "selectionReason": "Finance and operations contributors are literally relevant to the accepted operation and approved/version-checked paper. Preserve client confirmation as a separate evidence event."
+        },
+        {
+          "beat": 3,
+          "imageId": "deputy-acceptance",
+          "graphicCutaway": "defined-accepted-cover",
+          "photoVisibleStart": 34.333,
+          "photoVisibleEnd": 42.001,
+          "selectionReason": "The second intentional use now concerns later defined acceptance. The overlay must distinguish accepted administrative cover from separately accepted monitoring, not imply one covers the other."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D15-message-27fbb2d636fd.mp4",
+      "sourceVideoPreservedSha256": "8907c76e2ca46a43f8786760f9c39d26fa6f79a85ba29925c11868c951a0dbb6",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    },
+    "D18": {
+      "id": "D18",
+      "src": "assets/video-neutral-20261028/D18-neutral-2deecc1119f8.mp4",
+      "poster": "assets/video-neutral-20261028/D18-neutral-2deecc1119f8.jpg",
+      "captions": "assets/video-neutral-20261028/D18-neutral-2deecc1119f8.vtt",
+      "transcript": "assets/video-neutral-20261028/D18-neutral-2deecc1119f8.txt",
+      "transcriptText": "Follow the cycle from purpose to agreement, work, review and revision. Ask whether the required result, authority, information and capacity remain clear as circumstances change.\n\nUse what happened in the case to improve your working agreement and decision brief. Make a change specific, obtain the right confirmations and communicate the current version.\n\nYour useful habit is to separate requests, decisions, actions and accepted arrangements. The next unit explores authority boundaries in greater depth; this unit does not replace workplace approval.",
+      "seconds": 41.813,
+      "fps": 15,
+      "resolution": [
+        1280,
+        720
+      ],
+      "segments": [
+        {
+          "heading": "A cycle, not a one-off form",
+          "text": "Follow the cycle from purpose to agreement, work, review and revision. Ask whether the required result, authority, information and capacity remain clear as circumstances change.",
+          "start": 0,
+          "end": 14.133,
+          "narrationId": "scene-af1a1909",
+          "sourceStart": 0,
+          "sourceEnd": 13.6,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Improve the working arrangement",
+          "text": "Use what happened in the case to improve your working agreement and decision brief. Make a change specific, obtain the right confirmations and communicate the current version.",
+          "start": 14.133,
+          "end": 26.467,
+          "narrationId": "scene-f970fd94",
+          "sourceStart": 13.6,
+          "sourceEnd": 25.533,
+          "voice": "en-ZA-LeahNeural"
+        },
+        {
+          "heading": "Carry the habit forward",
+          "text": "Your useful habit is to separate requests, decisions, actions and accepted arrangements. The next unit explores authority boundaries in greater depth; this unit does not replace workplace approval.",
+          "start": 26.467,
+          "end": 41.6,
+          "narrationId": "scene-bb20911a",
+          "sourceStart": 25.533,
+          "sourceEnd": 40.467,
+          "voice": "en-ZA-LeahNeural"
+        }
+      ],
+      "sha256": "022db299ec803ed7f7a84d28fd2b69aab48935af6bccafd10ba67b5ebf94f3bc",
+      "voice": {
+        "id": "en-ZA-LeahNeural",
+        "type": "South African English female neural voice",
+        "status": "GENERATED_FULL_DECODE_VERIFIED_LISTENING_PENDING",
+        "humanListeningApproval": "PENDING"
+      },
+      "status": "company_neutral_render_and_full_decode_verified",
+      "motion": "One exact-message photograph when relevant, cut to a taught-object graphic; no repeated couple photograph, generated moving-human footage or decorative image fallback",
+      "humanListeningApproval": "PENDING",
+      "captionTiming": "Generated Leah word positions shifted by retimed segment offsets",
+      "originalVisualSource": "assets/video/D18.mp4",
+      "originalVisualSourceSha256": "f7b44ce3f29a3b365400cadd7bf1bd2268b95a63b4f0c49c83dcbb0fb8e22cc9",
+      "visualEdition": "company-neutral20261028",
+      "visualSourceImages": [
+        "partnership-review",
+        "planning-system"
+      ],
+      "visualSourceImageHashes": {
+        "partnership-review": "8e735c152481aeba5251c4f7b8614618ff255457bcee7acc27d57fcaaf68bfcd",
+        "planning-system": "529b82631eb419a501270763eef13d3ae443340944a32fe7078582ad99497cce"
+      },
+      "preservedSource": "assets/video-leah/D18.mp4",
+      "preservedSourceSha256": "e9d3e1d1ea4c774805c7879a722f26892160431007becc7ad37c353ff0fc7ec0",
+      "audioPacketSha256": "bbf1e63499c15f9cc243d6d3a05ba8a164e0d9aa5df6742a43151f021b67f183",
+      "audioPacketsUnchanged": true,
+      "captionBytesUnchanged": true,
+      "storyboard": "Company-neutral video storyboards -2026-10-28.json",
+      "frameEvidenceCount": 9,
+      "humanVisualAndListeningApproval": "PENDING",
+      "messageSpecificBeatShots": [
+        {
+          "beat": 1,
+          "imageId": "partnership-review",
+          "graphicCutaway": "purpose-agree-work-review-revise",
+          "photoVisibleStart": 0,
+          "photoVisibleEnd": 7.49,
+          "selectionReason": "The image must show an actual review of the working partnership or changed arrangements, not the retired generic partnership photo. Animate a genuine review cycle."
+        },
+        {
+          "beat": 2,
+          "imageId": null,
+          "graphicCutaway": "specific-confirmed-current-revision",
+          "photoVisibleStart": null,
+          "photoVisibleEnd": null,
+          "selectionReason": "Show a specific versioned amendment, the right confirmations and communication of the current arrangement. This document change is the taught message."
+        },
+        {
+          "beat": 3,
+          "imageId": "planning-system",
+          "graphicCutaway": "request-decision-action-acceptance",
+          "photoVisibleStart": 26.467,
+          "photoVisibleEnd": 34.487,
+          "selectionReason": "The second use of the planning-system image is intentional: the closing habit is to keep request, decision, action and accepted arrangement distinct in a working system—not reuse the same couple."
+        }
+      ],
+      "sourceVideoPreserved": "assets/video-message-specific-20261027/D18-message-1a04c9089530.mp4",
+      "sourceVideoPreservedSha256": "dc417b6b6d7aad2a1e5d840ae26ee08715c2e48aa8dbd1f22d7aa3e6ddadc7f3",
+      "transcriptBytesUnchanged": true,
+      "fullDecodePassed": true,
+      "genericFallbackUsed": false,
+      "retiredPartnershipUses": 0,
+      "companyNeutral": true,
+      "neutralHeader": "EXECUTIVE PARTNERSHIP"
+    }
+  }
+}

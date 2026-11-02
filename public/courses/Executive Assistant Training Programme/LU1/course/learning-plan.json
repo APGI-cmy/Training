@@ -1,0 +1,1322 @@
+{
+  "edition": "0.3",
+  "date": "2026-10-25",
+  "course": "LU1 The executive partnership",
+  "guidance": {
+    "file": "Learning_Science_and_Instructional_Design_Research_Report.pdf",
+    "sha256": "6cac1531bb67bb2118b4361180036df6ad40030e4ffe0d392cdd8dcfd1a53943"
+  },
+  "sourceHash": "4339d7c8e5e8ffc2372c83de5e48752d4cb1886b33d2f4e26f0afd8ca55e88cc",
+  "originalLayoutHash": "5396266fa578bd84b74b71c9d5dd66986b4ff0e572f9340884620e24b8c695cd",
+  "learningOrder": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    18,
+    17
+  ],
+  "population": {
+    "roles": "Aspiring and experienced Executive Assistants and Personal Assistants",
+    "language": "English; design for learners who may use English as an additional language",
+    "measuredCEFR": "UNKNOWN - not assessed",
+    "measuredAdultLiteracy": "UNKNOWN - not assessed",
+    "pilotStatus": "Representative learner validation pending; no level inferred from role, nationality or schooling"
+  },
+  "scenes": {
+    "1": {
+      "title": "A busy diary can still hide an unready decision.",
+      "knownToNew": "You may already organise meetings and pass on messages. A full calendar does not tell us whether the right people have the right papers or whether a change was approved. This unit connects those familiar tasks into a reliable executive-support partnership.",
+      "bridge": "Start with what you already know, then follow Daniel through one fictional working day.",
+      "expected": "Prepare a usable working agreement and a reasoned priority brief; keep unconfirmed decisions visible.",
+      "source": [
+        "note",
+        "1.1"
+      ],
+      "outcomes": [
+        "EA-01.1",
+        "EA-01.2",
+        "EA-01.3",
+        "EA-01.4",
+        "EA-01.5"
+      ]
+    },
+    "2": {
+      "title": "A request is only the start of a coordinated arrangement.",
+      "knownToNew": "You may have received a message asking you to fit in one more meeting. Changing the diary immediately can make a request look confirmed and affect people who are using the old plan. We will first separate what Daniel knows from what he still needs to check.",
+      "bridge": "We have identified the unit destination. Now meet the problem before learning the method.",
+      "expected": "Name two unknowns, a useful immediate action and the person who must decide.",
+      "source": [
+        "1.1.1",
+        "1.1.4"
+      ],
+      "outcomes": [
+        "EA-01.3",
+        "EA-01.4"
+      ]
+    },
+    "3": {
+      "title": "Being busy is not the same as producing a useful result.",
+      "knownToNew": "Sending an invitation is familiar work. But the executive may need a decision-ready pack, not another calendar entry. If an input is missing, the invitation alone does not make the meeting ready. We will turn the business purpose into a support brief.",
+      "bridge": "You have separated known facts from assumptions. Next, define what the support must actually deliver.",
+      "expected": "Distinguish activity, output and outcome, and complete a brief using the supplied example.",
+      "source": [
+        "1.1.2",
+        "1.2.2",
+        "1.3",
+        "T1.1"
+      ],
+      "outcomes": [
+        "EA-01.1",
+        "EA-01.4"
+      ]
+    },
+    "4": {
+      "title": "Access to a senior person can be mistaken for authority.",
+      "knownToNew": "People may ask an assistant to decide because the assistant works close to the executive. That can be helpful access, but it does not transfer a finance, legal or protection mandate. We will compare actual responsibilities rather than rank job titles.",
+      "bridge": "We know the intended result. Now identify who may contribute and who must decide.",
+      "expected": "Explain which role owns the decision and what useful coordination remains with the EA.",
+      "source": [
+        "1.2",
+        "1.5.1"
+      ],
+      "outcomes": [
+        "EA-01.3"
+      ]
+    },
+    "5": {
+      "title": "A message can be received without being approved or completed.",
+      "knownToNew": "A read receipt can feel reassuring. Yet colleagues may still be waiting for a decision or working from an earlier attachment. We will connect clear status messages to the controlled record, so affected people know what they can act on.",
+      "bridge": "After identifying roles, follow the information moving between them.",
+      "expected": "Distinguish receipt, decision and completion; describe how to correct a message and its record.",
+      "source": [
+        "1.2.4",
+        "1.4",
+        "T1.5"
+      ],
+      "outcomes": [
+        "EA-01.2",
+        "EA-01.4",
+        "EA-01.5"
+      ]
+    },
+    "6": {
+      "title": "Knowing how to do something does not always mean you may do it.",
+      "knownToNew": "You may be able to edit a diary or a supplier record. The ability to use the system is different from permission to make the decision. We will use four separate checks before accepting work: competence, authority, information/access and capacity.",
+      "bridge": "Clear communication depends on an accurate claim about what you are able and permitted to do.",
+      "expected": "Explain the four checks in plain language and identify the missing condition in a new request.",
+      "source": [
+        "1.5.2",
+        "1.5.3",
+        "1.5.5"
+      ],
+      "outcomes": [
+        "EA-01.2",
+        "EA-01.3"
+      ]
+    },
+    "7": {
+      "title": "Not every request needs the same response.",
+      "knownToNew": "An everyday internal meeting change may be within an agreed delegation. A bank-detail change is a different decision, even if the same person can edit both records. We will choose a response to the exact action and its conditions.",
+      "bridge": "Apply the four checks from the previous activity to specific requests.",
+      "expected": "Choose act, seek approval, refer, or decline/escalate, and explain the deciding fact.",
+      "source": [
+        "1.5.4",
+        "1.7.3 clauses 4 and 5"
+      ],
+      "outcomes": [
+        "EA-01.2",
+        "EA-01.3"
+      ]
+    },
+    "8": {
+      "title": "A short appointment can overlap two different commitments.",
+      "knownToNew": "It is easy to spot that a diary is busy and still miss the exact loss of preparation. We will put the requested supplier time beside the existing blocks and identify both conflicts before recommending a change.",
+      "bridge": "The response must fit the facts. Now examine the timing evidence in the Monday case.",
+      "expected": "Identify each fifteen-minute overlap without changing a verified commitment or inventing approval.",
+      "source": [
+        "1.6.1",
+        "1.6.2"
+      ],
+      "outcomes": [
+        "EA-01.1",
+        "EA-01.4"
+      ]
+    },
+    "9": {
+      "title": "A useful recommendation can remain conditional.",
+      "knownToNew": "An assistant may want to say everything is arranged so that others can move on. If another owner has not accepted the work, that reassurance is misleading. We will compare workable options and make their outstanding conditions explicit.",
+      "bridge": "You have identified the conflict. Next, compare the options without pretending a decision has been made.",
+      "expected": "Recommend a feasible option, explain the consequence and identify what remains unconfirmed.",
+      "source": [
+        "1.3.4",
+        "1.6.2",
+        "1.6.3",
+        "1.6.5"
+      ],
+      "outcomes": [
+        "EA-01.3",
+        "EA-01.4"
+      ]
+    },
+    "10": {
+      "title": "A decision-maker needs a brief, not a pile of forwarded messages.",
+      "knownToNew": "Forwarding every message may leave the executive to reconstruct the whole problem. We will organise the request, constraints, alternatives, recommendation, decisions and unknowns into a short usable brief.",
+      "bridge": "Bring the earlier facts, role boundaries and options together in your first decision brief.",
+      "expected": "Write a six-part brief using only the starting facts, then compare it with the worked example.",
+      "source": [
+        "1.6.4",
+        "T1.3",
+        "Practice task"
+      ],
+      "outcomes": [
+        "EA-01.1",
+        "EA-01.3",
+        "EA-01.4"
+      ]
+    },
+    "11": {
+      "title": "An agreement is useful only if people can work from it.",
+      "knownToNew": "A signed-looking document can still hide who may decide, which information can be shared or who covers an absence. We will connect the partnership expectations to a practical working agreement, including the confirmations it depends on.",
+      "bridge": "The brief handles one decision. The working agreement makes repeated support more reliable.",
+      "expected": "Use the completed example and crosswalk to cover every essential agreement area.",
+      "source": [
+        "1.7",
+        "T1.2"
+      ],
+      "outcomes": [
+        "EA-01.1",
+        "EA-01.2",
+        "EA-01.3",
+        "EA-01.5"
+      ]
+    },
+    "12": {
+      "title": "Reassuring wording can hide an unlimited promise.",
+      "knownToNew": "A phrase such as all duties as required may sound cooperative but leave work, authority and availability unclear. We will identify these gaps and replace vague promises with defined conditions and named owners.",
+      "bridge": "You have seen a workable agreement. Now inspect one that only sounds complete.",
+      "expected": "Identify unsupported clauses and explain a bounded correction without inventing approval.",
+      "source": [
+        "1.7.4",
+        "1.7.5",
+        "Reflection 7"
+      ],
+      "outcomes": [
+        "EA-01.2",
+        "EA-01.3",
+        "EA-01.5"
+      ]
+    },
+    "13": {
+      "title": "A named deputy may still be unable to take over.",
+      "knownToNew": "You may have passed a task to a colleague and assumed it was covered. Without usable access, open-action details and explicit acceptance, the work can remain unowned. We will trace a complete handover and its separate service interfaces.",
+      "bridge": "Repairing the agreement is not enough; the arrangement must work when someone is absent.",
+      "expected": "Identify assignment, access, open work, separate service scope, acceptance and fallback.",
+      "source": [
+        "1.8",
+        "T1.4",
+        "T1.5"
+      ],
+      "outcomes": [
+        "EA-01.2",
+        "EA-01.5"
+      ]
+    },
+    "14": {
+      "title": "Availability and acceptance are different facts.",
+      "knownToNew": "A colleague may be listed as deputy and be available today, yet have accepted no particular assignment. We will test that distinction before seeing how the fictional case develops.",
+      "bridge": "Use the handover method to check whether a specific cover arrangement is actually accepted.",
+      "expected": "Explain the missing confirmation and a role-appropriate next step.",
+      "source": [
+        "1.8.3",
+        "1.8.4",
+        "Reflection 8"
+      ],
+      "outcomes": [
+        "EA-01.3",
+        "EA-01.5"
+      ]
+    },
+    "15": {
+      "title": "A later confirmation must not be written into an earlier decision.",
+      "knownToNew": "Once a problem is resolved, it can be hard to remember what was still unknown at the start. We will compare the later controlled record with the first brief and trace the decisions and evidence that closed each gap.",
+      "bridge": "Keep your original reasoning. Now reintegrate the parts using the later fictional update.",
+      "expected": "Distinguish what was known at 07:40 from later decisions, accepted work and closure evidence.",
+      "source": [
+        "1.9.1–1.9.6"
+      ],
+      "outcomes": [
+        "EA-01.1",
+        "EA-01.3",
+        "EA-01.4",
+        "EA-01.5"
+      ]
+    },
+    "16": {
+      "title": "A professional method must work beyond the example you watched.",
+      "knownToNew": "You have practised with Daniel’s Monday diary. Now the same principles need to help with a different kind of competing work. You will prepare an initial response before opening the comparison guidance and keep revisions separate.",
+      "bridge": "Move from the supported case to an open-reference, reduced-support practice task.",
+      "expected": "Produce a reasoned response and review it against explicit criteria; no assessor result is claimed.",
+      "source": [
+        "1.7.3",
+        "T1.1–T1.5",
+        "Practice task"
+      ],
+      "outcomes": [
+        "EA-01.1",
+        "EA-01.2",
+        "EA-01.3",
+        "EA-01.4",
+        "EA-01.5"
+      ]
+    },
+    "17": {
+      "title": "A knowledge check samples learning; it does not confer workplace authority.",
+      "knownToNew": "You have studied, practised and consolidated the unit. The ten-question check now samples the taught distinctions. Its score remains separate from work-product review, practical assessment and workplace competence.",
+      "bridge": "The recap comes before this check in the learning route. Use the approved attempt and feedback rules.",
+      "expected": "Answer ten questions under the retained profile; use the stated review route when needed.",
+      "source": [
+        "1.2–1.9",
+        "Practice guidance"
+      ],
+      "outcomes": [
+        "EA-01.1",
+        "EA-01.2",
+        "EA-01.3",
+        "EA-01.4",
+        "EA-01.5"
+      ]
+    },
+    "18": {
+      "title": "A partnership needs review, not just a first agreement.",
+      "knownToNew": "Even a useful agreement can become outdated when people, systems or work change. We will retrieve the main relationships, review the outputs and plan a later check so the learning is not left on this page.",
+      "bridge": "Bring purpose, authority, communication and accepted cover back into one system before the knowledge check.",
+      "expected": "Explain one improvement, attempt retrieval and plan how to revisit and transfer the learning.",
+      "source": [
+        "1.8.6",
+        "1.9.6",
+        "summary",
+        "T1.5"
+      ],
+      "outcomes": [
+        "EA-01.1",
+        "EA-01.2",
+        "EA-01.3",
+        "EA-01.4",
+        "EA-01.5"
+      ]
+    }
+  },
+  "toolExamples": {
+    "T1.1": [
+      "In this example, the responsible person needs to support a timely, informed decision on the service investment. This example uses the fictional Meridian starting case.",
+      "In this example, the responsible person needs to protect the 09:30–10:00 preparation and 10:00–10:45 decision meeting unless the authorised decision changes them.",
+      "The required deliverable is a controlled decision-ready pack with the agenda and current referenced papers. An unapproved financial appendix remains a readiness gap, not an approved input.",
+      "Lindiwe owns the executive decision. Finance and operations own their substantive submissions. Daniel coordinates the pack and follows up; he does not approve those papers.",
+      "In this example, the responsible person needs to propose a readiness review before 09:30 preparation; the exact review time still needs agreement. If an input is missing or unapproved, state its consequence and seek the necessary decision.",
+      "The 09:45–10:15 supplier request overlaps fifteen minutes of preparation and fifteen minutes of the decision meeting. Its approval is unverified; Daniel prepares options rather than silently absorbing the conflict."
+    ],
+    "T1.2": [
+      "MP-01, version 1.0: fictional executive support for Lindiwe by Daniel. Effective only after the required parties confirm. Review after the first working month and material changes; this is not a real signed agreement.",
+      "In this example, the responsible person needs to translate Lindiwe’s priorities into a programme, preparation, action register and review points. The Monday pack and preparation remain protected; substantive papers stay with their owners.",
+      "In this example, the responsible person needs to include diary coordination, correspondence, preparation, travel administration, supplier follow-up and administrative service interfaces. Exclude assumed legal, procurement, finance, public-statement or specialist decisions.",
+      "In this example, the responsible person needs to use approved delegated individual access. Private periods may show unavailability without personal explanations. Required restricted information follows the approved route; access is not permission to investigate or disclose.",
+      "Routine internal moves are permitted only within the stated conditions. Executive decision meetings, external visits and protected periods need the identified owner. Fictional R2,000 pre-approved consumables ordering is conditional, not payment authority; no splitting orders; finance verifies bank-detail changes.",
+      "In this example, the responsible person needs to agree the alignment rhythm, approved channels and fallback. Record material verbal decisions. Distinguish receipt, approval and completion; silence/read receipt is not approval.",
+      "In this example, the responsible person needs to limit distribution to the authorised need. Agreed personal administration depends on permission, scope, time and resources. Do not assume an investigator, family mediator or spokesperson role.",
+      "Lindiwe decides the business preference; Thandi owns protective input; the independent control room accepts its actual monitoring assignment. Daniel maintains status. A proposed lunch is not covered merely because the afternoon visit has accepted arrangements.",
+      "Fictional normal support is 08:00–17:00, not an employment recommendation. Aisha is deputy only for accepted periods with her own usable access. Monitoring scope is separate; do not assume permanent personal availability.",
+      "In this example, the responsible person needs to use the controlled concern route and an alternative organisational route where the concern involves the executive. Handover identifies open work and incoming acceptance. Escalate uncovered work to the designated owner; emergency help is not delayed for routine approval.",
+      "In this example, the responsible person needs to version amendments, obtain the appropriate confirmations and notify affected people. Executive/EA confirmation cannot replace finance, access or service-owner authority. All required approvals remain case-bound; no fictional signature is a real approval."
+    ],
+    "T1.3": [
+      "At 07:40 Lindiwe asks to fit in a supplier and move the virtual client discussion to a physical lunch. The supplier claims 09:45 approval; it is not verified.",
+      "Preparation 09:30–10:00 and decision meeting 10:00–10:45 conflict with the requested 09:45–10:15 slot by fifteen minutes each. Existing afternoon arrangements do not establish coverage for lunch.",
+      "In this example, the responsible person needs to consider an appropriately delegated/accepted operations discussion, a feasible later executive slot, or an expressly approved morning change. Check useful decision time and effects on participants. Retaining the virtual discussion is also a conditional recommendation.",
+      "A defensible starting recommendation is to preserve preparation and the decision meeting while checking whether operations can handle the supplier discussion. This is a proposed option, not the later confirmed outcome.",
+      "In this example, the responsible person needs to obtain Lindiwe’s business decision where required, the operations owner’s acceptance, Thandi’s protective input and any separate transport/monitoring acceptance for a physical change. Do not substitute one for another.",
+      "At 07:40 implementation is not confirmed. Retain the request as pending, log the decisions needed and update the controlled record only when evidence is obtained. Compare later confirmations separately in Activity 15."
+    ],
+    "T1.4": [
+      "This is an illustrative cover record prepared before acceptance. State the exact assignment and period before it can be accepted; these details are currently unconfirmed, not invented.",
+      "In this example, the responsible person needs to use the current controlled plan, not an earlier attachment. Link continuing commitments and changes; identify which version the incoming person must use.",
+      "The incoming deputy needs approved individual access and the actual delegated limits. Usable access and acceptance for this assignment must still be checked.",
+      "In this example, the responsible person needs to list open actions, decisions, deadlines and their appointed owners. An unresolved item remains open; naming a deputy does not close it.",
+      "In this example, the responsible person needs to record the actual protective and monitoring scope separately. Accepted afternoon arrangements do not automatically cover a different lunch or period.",
+      "If cover or a service assignment is not accepted, notify the designated owner/duty manager through the supplied organisational route. Do not assign indefinite cover to Daniel by default.",
+      "In this example, the responsible person needs to obtain explicit incoming acceptance and notify the affected people. At this pre-acceptance point it is recorded as outstanding; no fictional reply or signature is supplied.",
+      "In this example, the responsible person needs to close only after completion evidence or the next accepted transfer. This example deliberately records unresolved conditions instead of claiming a completed handover."
+    ],
+    "T1.5": [
+      "This review conversation uses the fictional case to show why the detail matters: identifying both diary overlaps makes the actual constraint visible rather than shortening preparation silently.",
+      "A supplier’s claimed approval could be mistaken for a confirmed booking. A read receipt could be mistaken for service acceptance. These are observed case risks, not accusations about real people.",
+      "Proposed improvement: Daniel maintains pending/confirmed status and identifies separate decision owners; each owner confirms only the part within their mandate.",
+      "In this example, the responsible person needs to agree a review point with the responsible parties. Look for current records, explicit decisions, accepted cover and fewer unresolved ownership gaps. No real approval or measured improvement is claimed by this worked example."
+    ]
+  },
+  "principles": [
+    {
+      "id": "P01",
+      "principle": "Known to unknown",
+      "guidanceSection": "3.1",
+      "activities": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "anchor": "scene",
+      "method": "Every activity starts with familiar work, a consequence and a bridge to the new idea. D01 includes a non-punitive prior-knowledge check.",
+      "status": "Implemented; learner validation pending",
+      "applicability": "Applicable",
+      "reason": "No exemption: relevant to novice and experienced EA learners.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P02",
+      "principle": "Simple to complex",
+      "guidanceSection": "3.2",
+      "activities": [
+        3,
+        7,
+        10,
+        16
+      ],
+      "anchor": "ls-worked-brief",
+      "method": "Full support brief → bounded classifications → six-part decision brief → reduced-support changed case.",
+      "status": "Implemented; learner validation pending",
+      "applicability": "Applicable",
+      "reason": "Task complexity and support are explicit; not based on elapsed time.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P03",
+      "principle": "Concrete to abstract",
+      "guidanceSection": "3.3",
+      "activities": [
+        3,
+        6,
+        7
+      ],
+      "anchor": "ls-concept",
+      "method": "Invitation/ready pack/decision example and access-versus-authority examples lead to the general distinction and a new request.",
+      "status": "Implemented; learner validation pending",
+      "applicability": "Applicable",
+      "reason": "Applicable; examples and non-examples use source-bound rules.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P04",
+      "principle": "Whole, parts and reintegration",
+      "guidanceSection": "3.4",
+      "activities": [
+        1,
+        4,
+        13,
+        15
+      ],
+      "anchor": "ls-system",
+      "method": "A source-bound system map introduces interfaces; role and handover activities examine parts; the later record reintegrates decisions and acceptance.",
+      "status": "Implemented; learner validation pending",
+      "applicability": "Applicable",
+      "reason": "No universal command hierarchy or assumed service mandate.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P05",
+      "principle": "Relationships and cause-and-effect",
+      "guidanceSection": "3.5",
+      "activities": [
+        1,
+        5,
+        8,
+        13
+      ],
+      "anchor": "ls-system",
+      "method": "Scene explanations state why a local action affects other owners. Diary conflicts and handover gaps require a consequence and an owner.",
+      "status": "Implemented; learner validation pending",
+      "applicability": "Applicable",
+      "reason": "Applicable throughout; no unsupported causal guarantee.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P06",
+      "principle": "Relevance and purpose",
+      "guidanceSection": "3.6",
+      "activities": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "anchor": "scene",
+      "method": "Each activity has a scene-setting problem, a logical bridge and What will be expected of you in this LU, with mapped outcomes.",
+      "status": "Implemented; learner validation pending",
+      "applicability": "Applicable",
+      "reason": "Applicable to every activity.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P07",
+      "principle": "Active cognitive participation",
+      "guidanceSection": "3.7",
+      "activities": [
+        1,
+        3,
+        7,
+        10,
+        16
+      ],
+      "anchor": "ls-diagnostic",
+      "method": "Predictions, completion tasks, reasons, decisions and revised attempts require more than opening panels.",
+      "status": "Implemented; learner validation pending",
+      "applicability": "Applicable",
+      "reason": "Acknowledgements remain distinct from responses and results.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P08",
+      "principle": "Manage cognitive load",
+      "guidanceSection": "3.8",
+      "activities": [
+        3,
+        6,
+        9
+      ],
+      "anchor": "scene",
+      "method": "Short scene text, named learning sections, segmented video with one transcript, progressive disclosure and relevant adjacent illustrations.",
+      "status": "Implemented; learner validation pending",
+      "applicability": "Applicable",
+      "reason": "Requires learner/assistive-technology validation, not a measured cognitive-load claim.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P09",
+      "principle": "Complementary media",
+      "guidanceSection": "3.9",
+      "activities": [
+        1,
+        3,
+        6,
+        8
+      ],
+      "anchor": "ls-media",
+      "method": "Retained image/video teaching with captions and one transcript; new learning text remains readable. Leah is the requested voice.",
+      "status": "Partly implemented: voice production/approval open",
+      "applicability": "Applicable",
+      "reason": "Not N/A: complete Leah production and listening are still required if the provider is unavailable.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P10",
+      "principle": "Modelling and guided practice",
+      "guidanceSection": "3.10",
+      "activities": [
+        3,
+        10,
+        11
+      ],
+      "anchor": "ls-worked-brief",
+      "method": "Completed tools T1.1–T1.5, explained purposes, annotated examples and a completion task precede reduced-support practice.",
+      "status": "Implemented; learner validation pending",
+      "applicability": "Applicable",
+      "reason": "Worked drafts clearly distinguish unknowns and proposals from confirmations.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P11",
+      "principle": "Theory and practical experience",
+      "guidanceSection": "3.11",
+      "activities": [
+        3,
+        7,
+        10,
+        16
+      ],
+      "anchor": "ls-independent",
+      "method": "Source principles are used to produce work products; every learning event has an eight-field exercise contract.",
+      "status": "Implemented as formative practice",
+      "applicability": "Applicable",
+      "reason": "Formal supervised workplace practical is outside this local developmental pilot; practice itself is relevant.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P12",
+      "principle": "Increasing complexity and fading support",
+      "guidanceSection": "3.12",
+      "activities": [
+        3,
+        10,
+        16
+      ],
+      "anchor": "ls-independent",
+      "method": "Show a full model, complete a missing element, write the Monday brief, then capture an initial changed-case response before comparison.",
+      "status": "Implemented; learner validation pending",
+      "applicability": "Applicable",
+      "reason": "Open-reference practice is labelled; no secure unassisted assessment claim.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P13",
+      "principle": "Feedback and correction",
+      "guidanceSection": "3.13",
+      "activities": [
+        1,
+        7,
+        12,
+        16
+      ],
+      "anchor": "ls-independent",
+      "method": "Criterion-based explanation, an initial-response record and a separate revision/reflection support correction. Approved quiz limits are unchanged.",
+      "status": "Implemented; learner validation pending",
+      "applicability": "Applicable",
+      "reason": "Free-text feedback is model/rubric comparison, not an AI or assessor score.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P14",
+      "principle": "Retrieval and spacing",
+      "guidanceSection": "3.14",
+      "activities": [
+        5,
+        8,
+        13,
+        18
+      ],
+      "anchor": "ls-retrieval",
+      "method": "Earlier concepts reappear after intervening activities. A learner-chosen later revisit records the actual interval and a fresh response.",
+      "status": "Partly implemented: delayed learner evidence pending",
+      "applicability": "Applicable",
+      "reason": "No automatic platform reminders or verified delayed retention. A same-session attempt is not described as spaced retention.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P15",
+      "principle": "Judgement and decision-making",
+      "guidanceSection": "3.15",
+      "activities": [
+        9,
+        10,
+        16
+      ],
+      "anchor": "ls-independent",
+      "method": "Learners explain alternatives, consequences, decision owners and uncertainty; more than one conditional recommendation may be defensible.",
+      "status": "Implemented; learner validation pending",
+      "applicability": "Applicable",
+      "reason": "Not a trick question or a single preferred writing style.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P16",
+      "principle": "Transfer to a new context",
+      "guidanceSection": "3.16",
+      "activities": [
+        16,
+        18
+      ],
+      "anchor": "ls-independent",
+      "method": "A competing-report/capacity case changes the work product and constraints, not only the names; learner explains the adapted decision.",
+      "status": "Implemented as a transfer opportunity; outcome unverified",
+      "applicability": "Applicable",
+      "reason": "Real workplace transfer and employer authorisation remain outside the prototype.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P17",
+      "principle": "Reflection and metacognition",
+      "guidanceSection": "3.17",
+      "activities": [
+        2,
+        10,
+        16,
+        18
+      ],
+      "anchor": "ls-reflection",
+      "method": "Initial reasoning, confidence/readiness prompts, criterion comparison and a specific next-step reflection are separate from acknowledgement.",
+      "status": "Implemented; learner validation pending",
+      "applicability": "Applicable",
+      "reason": "No invented response text or competence awarded for ticking a reflection box.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    },
+    {
+      "id": "P18",
+      "principle": "Outcome-aligned competence evidence",
+      "guidanceSection": "3.18",
+      "activities": [
+        16,
+        17
+      ],
+      "anchor": "ls-independent",
+      "method": "Outcome/evidence matrix distinguishes knowledge items from work-product criteria, transfer opportunity and future authorised assessor decisions.",
+      "status": "Partly implemented: formal competence verification outside pilot",
+      "applicability": "Applicable",
+      "reason": "A formative quiz and developmental drafts cannot certify operational competence. Owner/assessor and actual platform acceptance remain open.",
+      "AIcheck": "Pending executable checks",
+      "verification": "Producer checks recorded separately; independent verification and learner evidence are not implied."
+    }
+  ],
+  "components": [
+    {
+      "id": "LU01",
+      "component": "Orientation and relevance",
+      "section": "7.1",
+      "activities": [
+        1
+      ],
+      "anchor": "scene",
+      "status": "Mapped to implemented design; evidence limits apply"
+    },
+    {
+      "id": "LU02",
+      "component": "Measurable outcomes",
+      "section": "7.2",
+      "activities": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "anchor": "ls-expectations",
+      "status": "Mapped to implemented design; evidence limits apply"
+    },
+    {
+      "id": "LU03",
+      "component": "Prior knowledge",
+      "section": "7.3",
+      "activities": [
+        1,
+        2
+      ],
+      "anchor": "ls-diagnostic",
+      "status": "Mapped to implemented design; evidence limits apply"
+    },
+    {
+      "id": "LU04",
+      "component": "System context",
+      "section": "7.4",
+      "activities": [
+        1,
+        4,
+        13
+      ],
+      "anchor": "ls-system",
+      "status": "Mapped to implemented design; evidence limits apply"
+    },
+    {
+      "id": "LU05",
+      "component": "Unfamiliar concepts",
+      "section": "7.5",
+      "activities": [
+        6,
+        7
+      ],
+      "anchor": "ls-concept",
+      "status": "Mapped to implemented design; evidence limits apply"
+    },
+    {
+      "id": "LU06",
+      "component": "Structured explanation",
+      "section": "7.6",
+      "activities": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "anchor": "scene",
+      "status": "Mapped to implemented design; evidence limits apply"
+    },
+    {
+      "id": "LU07",
+      "component": "Demonstration",
+      "section": "7.7",
+      "activities": [
+        3,
+        10,
+        11
+      ],
+      "anchor": "ls-worked-brief",
+      "status": "Mapped to implemented design; evidence limits apply"
+    },
+    {
+      "id": "LU08",
+      "component": "Guided interaction",
+      "section": "7.8",
+      "activities": [
+        3,
+        7,
+        9
+      ],
+      "anchor": "ls-task",
+      "status": "Mapped to implemented design; evidence limits apply"
+    },
+    {
+      "id": "LU09",
+      "component": "Integrated practical application",
+      "section": "7.9",
+      "activities": [
+        10,
+        16
+      ],
+      "anchor": "ls-independent",
+      "status": "Mapped to implemented design; evidence limits apply"
+    },
+    {
+      "id": "LU10",
+      "component": "Reflection/feedback/correction",
+      "section": "7.10",
+      "activities": [
+        2,
+        10,
+        16
+      ],
+      "anchor": "ls-reflection",
+      "status": "Mapped to implemented design; evidence limits apply"
+    },
+    {
+      "id": "LU11",
+      "component": "Assessment",
+      "section": "7.11",
+      "activities": [
+        16,
+        17
+      ],
+      "anchor": "ls-expectations",
+      "status": "Mapped to implemented design; evidence limits apply"
+    },
+    {
+      "id": "LU12",
+      "component": "Consolidation/retention/transfer",
+      "section": "7.12",
+      "activities": [
+        18,
+        16
+      ],
+      "anchor": "ls-retrieval",
+      "status": "Mapped to implemented design; evidence limits apply"
+    }
+  ],
+  "quality": [
+    {
+      "id": "QA01",
+      "criterion": "Measurable outcomes",
+      "section": "10.1",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA02",
+      "criterion": "Prior knowledge/misconceptions",
+      "section": "10.2",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA03",
+      "criterion": "Known-to-unknown",
+      "section": "10.3",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA04",
+      "criterion": "Simple-to-complex",
+      "section": "10.4",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA05",
+      "criterion": "Systems",
+      "section": "10.5",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA06",
+      "criterion": "Workplace relevance",
+      "section": "10.6",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA07",
+      "criterion": "Examples/demonstrations",
+      "section": "10.7",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA08",
+      "criterion": "Multimedia",
+      "section": "10.8",
+      "status": "Partial / external validation remains",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA09",
+      "criterion": "Meaningful activity",
+      "section": "10.9",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA10",
+      "criterion": "Theory/practice",
+      "section": "10.10",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA11",
+      "criterion": "Corrective feedback",
+      "section": "10.11",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA12",
+      "criterion": "Independent performance",
+      "section": "10.12",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA13",
+      "criterion": "Retrieval/spacing",
+      "section": "10.13",
+      "status": "Partial / external validation remains",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA14",
+      "criterion": "Judgement/transfer",
+      "section": "10.14",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA15",
+      "criterion": "Valid assessment",
+      "section": "10.15",
+      "status": "Partial / external validation remains",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA16",
+      "criterion": "Safety-critical competencies",
+      "section": "10.16",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA17",
+      "criterion": "Accessibility",
+      "section": "10.17",
+      "status": "Partial / external validation remains",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    },
+    {
+      "id": "QA18",
+      "criterion": "Consolidation/progression",
+      "section": "10.18",
+      "status": "Not yet independently verified",
+      "evidence": "See principle map, exercise contracts, source/outcome crosswalk and Review verification records. No tick is treated as learner competence."
+    }
+  ],
+  "exceptions": [
+    {
+      "item": "Chain-of-custody worked example",
+      "decision": "Not applicable to LU1 content",
+      "reason": "The report uses it to demonstrate the method. LU1 teaches executive partnership, not evidence collection. The eight-stage method is instead applied to delegated authority."
+    },
+    {
+      "item": "Scannex native practical",
+      "decision": "Not applicable to this LU",
+      "reason": "LU1 has no screening-tool performance outcome. The non-substitution rule remains relevant to future Scannex designs."
+    },
+    {
+      "item": "All interaction types on every LU",
+      "decision": "Not required / select by learning purpose",
+      "reason": "Tabs, accordion, process, comparison, classification and reflection are used. A timeline, flashcard, drag-and-drop or branching engine is not added merely to tick a format box; retrieval and changed-case reasoning use accessible alternatives."
+    },
+    {
+      "item": "Formal workplace competence certification",
+      "decision": "Outside this developmental pilot; not an exemption from honest evidence",
+      "reason": "No authorised observation, assessor decision, identity assurance or employer authorisation is fabricated. P18 remains partial, not marked N/A."
+    },
+    {
+      "item": "Genuine moving-human video",
+      "decision": "Not selected / capability unverified",
+      "reason": "Saved choices permit scripted animation, moving graphics, editing and still-image assembly. Generative live-action capability is not claimed."
+    },
+    {
+      "item": "PIAAC/CEFR measured population level",
+      "decision": "Applicable; evidence unknown",
+      "reason": "Population profiling is required, but learner levels have not been assessed. Neither a job title nor schooling supplies a level."
+    },
+    {
+      "item": "Live platform database and LMS acceptance",
+      "decision": "Applicable future acceptance; not verified",
+      "reason": "Local SQLite review saving is not authenticated learning-platform integration. Target launch/resume/reporting and independent acceptance remain open."
+    }
+  ],
+  "exercises": [
+    {
+      "activity": 1,
+      "objective": "Prepare a usable working agreement and a reasoned priority brief; keep unconfirmed decisions visible.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "Prepare a usable working agreement and a reasoned priority brief; keep unconfirmed decisions visible.",
+      "criteria": "Your destination is a usable working agreement and a reasoned priority brief. Course examples are fictional and do not give you workplace authority.",
+      "feedback": "Your destination is a usable working agreement and a reasoned priority brief. Course examples are fictional and do not give you workplace authority.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 2,
+      "objective": "Name two unknowns, a useful immediate action and the person who must decide.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "At 07:40, what can Daniel do now? Record two unknowns and identify who must decide.",
+      "criteria": "Useful checking and preparation can proceed while approvals remain unknown. Do not turn a supplier’s claim, a lunch proposal or an assumed transport arrangement into a confirmation.",
+      "feedback": "Daniel can check the programme, verify the supplier request and prepare options. The supplier appointment, physical lunch, transport and revised monitoring are not confirmed. Lindiwe decides the business preference within her authority; Thandi owns protective input and the control room accepts its own monitoring scope.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 3,
+      "objective": "Distinguish activity, output and outcome, and complete a brief using the supplied example.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "What should Daniel deliver before the decision meeting, who supplies its inputs, and what would show it is ready?",
+      "criteria": "Readiness needs an agreed deliverable, named owners, a review point and reliable evidence. Invitations and draft papers alone do not prove that the decision pack is ready.",
+      "feedback": "Identify the intended business result, the ready-pack output, input/decision owners, a review before preparation and any missing or unapproved paper.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 4,
+      "objective": "Explain which role owns the decision and what useful coordination remains with the EA.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "A manager asks you to approve a supplier exception because you have direct executive access. What useful assistance can you provide without assuming approval authority?",
+      "criteria": "EA and PA roles can overlap. Executive access does not give you a chief-of-staff or specialist mandate. Refer a decision to its appointed owner while helping the legitimate task move forward.",
+      "feedback": "Find the appointed approver, prepare the reason and deadline, and route the request. Direct access does not grant approval authority. The role comparison is a conversation aid, not a universal hierarchy.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 5,
+      "objective": "Distinguish receipt, decision and completion; describe how to correct a message and its record.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "A colleague has read your corrected meeting message. What else would you check before saying the correction is complete?",
+      "criteria": "Receipt, decision and completion are different states. Correct the message and the controlled record, and confirm that affected people can act on the correction. Keep private explanations private.",
+      "feedback": "Check the controlled programme, make the earlier time clearly superseded, and obtain acknowledgement from people who must act. Reading is not proof of a decision or completed action.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 6,
+      "objective": "Explain the four checks in plain language and identify the missing condition in a new request.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "Daniel can edit a supplier record, but finance has not authorised the requested bank-detail change. Which check is missing, and what should he do next?",
+      "criteria": "Competence, authority, information and capacity are separate conditions. System access is not permission to approve a supplier bank-detail change.",
+      "feedback": "The missing condition is decision authority. Keep the change unconfirmed and refer the verification and approval to the appointed finance owner; technical access is not approval.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 7,
+      "objective": "Choose act, seek approval, refer, or decline/escalate, and explain the deciding fact.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "Choose one request above. Explain the fact that determines the response and the next useful action.",
+      "criteria": "Choose act, seek approval, refer, or decline and escalate according to the exact action and its conditions. The fictional R2,000 ordering limit is conditional; it is not payment authority and cannot be bypassed by splitting purchases.",
+      "feedback": "Use the exact delegation, limit or information control in that request. If another owner must decide, record the owner and unresolved status rather than abandoning the task.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 8,
+      "objective": "Identify each fifteen-minute overlap without changing a verified commitment or inventing approval.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "Write the two time conflicts separately. Why is confirming 09:45 not a routine diary adjustment?",
+      "criteria": "The supplier request overlaps 15 minutes of preparation and 15 minutes of the decision meeting. Both conflicts stay visible. The claimed approval is still unverified.",
+      "feedback": "09:45–10:00 displaces fifteen minutes of preparation; 10:00–10:15 displaces fifteen minutes of the decision meeting. The supplier’s claimed approval remains unverified.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 9,
+      "objective": "Recommend a feasible option, explain the consequence and identify what remains unconfirmed.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "Which option would you recommend to Lindiwe? Explain what it preserves, what it may change and which confirmations are still needed.",
+      "criteria": "A defensible option identifies what it preserves, its consequences and the conditions still outstanding. One person’s business approval does not supply another owner’s specialist decision or service acceptance.",
+      "feedback": "More than one option can be defensible. Give the conditions: business choice, the relevant owner’s acceptance and any separate protective, transport or monitoring decision. Do not invent a reply.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 10,
+      "objective": "Write a six-part brief using only the starting facts, then compare it with the worked example.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "Draft six parts: requested result; current constraints; feasible options; recommendation and reason; the decisions required; unresolved conditions. Use only the starting facts. Save or acknowledge your first draft before the later case update.",
+      "criteria": "A useful brief makes the result, constraints, options, recommendation, required decision and unresolved conditions clear. Keep the first brief separate from the later case confirmations.",
+      "feedback": "Identify both 15-minute overlaps. Separate Lindiwe’s business choice from Thandi’s protective input and control-room acceptance. A recommendation is not a decision, and a decision is not completed implementation. Do not invent a reply, transport approval or accepted coverage. Use T1.3 to retain the actual decision and closure evidence when available.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 11,
+      "objective": "Use the completed example and crosswalk to cover every essential agreement area.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "Which parts of the agreement depend on another owner’s confirmation? Give two examples and explain why Daniel cannot confirm them for that owner.",
+      "criteria": "A working agreement must help people act, not simply look signed. Check every worked clause against the tool fields, and identify the other owners whose confirmations are still needed.",
+      "feedback": "Examples include finance authority, individual information access and separately accepted protective/monitoring scope. An EA/executive agreement does not approve another owner’s mandate.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 12,
+      "objective": "Identify unsupported clauses and explain a bounded correction without inventing approval.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "Choose one defective clause. Rewrite it so the task, limit, owner and required confirmation are clear.",
+      "criteria": "Repair unlimited duties, assumed service coverage, invented payment authority and automatic after-hours availability. A precise limit or an honest unknown is better than an unsupported promise.",
+      "feedback": "Replace an unlimited duty or assumed coverage with a defined scope and actual decision/acceptance route. Recording an unresolved condition honestly is better than inventing a signed arrangement.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 13,
+      "objective": "Identify assignment, access, open work, separate service scope, acceptance and fallback.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "Aisha has been named as deputy, but no one has checked her access or obtained acceptance for this period. What is missing from the handover?",
+      "criteria": "A transfer needs a defined assignment, usable access and explicit acceptance. A sent attachment is not enough. Escalate an unaccepted gap without abandoning work or assuming unlimited personal availability.",
+      "feedback": "Specify work and period, usable individual access, open actions, separate service interfaces and incoming acceptance/notification. Escalate an unaccepted cover gap rather than silently closing it.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 14,
+      "objective": "Explain the missing confirmation and a role-appropriate next step.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "Before any later fictional update: Aisha is the appointed deputy, but acceptance of this assignment has not been supplied. What evidence is needed for transfer, and which responsibilities stay with the control room?",
+      "criteria": "Naming a deputy does not confirm acceptance of a particular assignment. Keep the deputy’s administrative role separate from the room’s accepted monitoring responsibilities.",
+      "feedback": "Define the assignment and period, competence, usable individual access, current plan, open actions, limits and the explicit incoming acceptance. The control room retains separately accepted monitoring and coordination under its mandate. If cover remains unaccepted, escalate the gap to the appointed owner; a deputy’s name alone is not a completed transfer.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 15,
+      "objective": "Distinguish what was known at 07:40 from later decisions, accepted work and closure evidence.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "Choose one change in the later record. What was unknown in the first brief, who decided, and what evidence now supports the updated status?",
+      "criteria": "The later record adds explicit business decisions, operations acceptance, client confirmation, paper verification and accepted cover. These developments must not be projected backwards into the starting facts.",
+      "feedback": "Keep the first brief intact. Distinguish the business decision, operations acceptance, checked paper version and later accepted administrative/monitoring assignments.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 16,
+      "objective": "Produce a reasoned response and review it against explicit criteria; no assessor result is claimed.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "Produce a reasoned response and review it against explicit criteria; no assessor result is claimed.",
+      "criteria": "A prepared draft is not a submission, an assessor decision or competence. Use fictional information, address all agreement areas and keep missing approvals visibly unconfirmed.",
+      "feedback": "A prepared draft is not a submission, an assessor decision or competence. Use fictional information, address all agreement areas and keep missing approvals visibly unconfirmed.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 17,
+      "objective": "Answer ten questions under the retained profile; use the stated review route when needed.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "Answer ten questions under the retained profile; use the stated review route when needed.",
+      "criteria": "This knowledge check is separate from unlimited ungraded practice. Its 80% pass mark is not the proposed course-wide 20/80 weighting. Practical evidence and final competence require their own review.",
+      "feedback": "This knowledge check is separate from unlimited ungraded practice. Its 80% pass mark is not the proposed course-wide 20/80 weighting. Practical evidence and final competence require their own review.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    },
+    {
+      "activity": 18,
+      "objective": "Explain one improvement, attempt retrieval and plan how to revisit and transfer the learning.",
+      "context": "Fictional Meridian/source-based learning practice; role authority unchanged. Activity 16 additionally uses a clearly labelled new fictional transfer case.",
+      "startingConditions": "Supplied source facts and worked examples; later confirmations withheld until the first brief/reflection at Activity 10.",
+      "task": "What would you improve in your agreement or brief, and what evidence would show the improvement helped?",
+      "criteria": "Keep purpose, authority, information, feasible priorities and accepted handover connected. Review the partnership when the work changes, and make one useful improvement to your draft.",
+      "feedback": "Name a specific gap and a bounded change with an owner and review point. Lower incident-report numbers or a completed checklist alone do not prove the partnership is sound.",
+      "debrief": "Explain which fact or assumption changed your response and which condition remains unconfirmed.",
+      "transfer": "Apply the relationship to the reduced-support competing-report case in Activity 16 and the later revisit in Activity 18.",
+      "claim": "Ungraded practice, not an assessor decision or workplace competence."
+    }
+  ],
+  "conceptMethod": [
+    {
+      "stage": 1,
+      "method": "Relevant problem",
+      "activities": [
+        2
+      ],
+      "evidence": "07:40 request and unresolved approvals"
+    },
+    {
+      "stage": 2,
+      "method": "Familiar bridge",
+      "activities": [
+        1,
+        6
+      ],
+      "evidence": "Editing a diary/record is familiar; access is not decision authority"
+    },
+    {
+      "stage": 3,
+      "method": "Define concept",
+      "activities": [
+        6
+      ],
+      "evidence": "Plain-English delegated authority definition"
+    },
+    {
+      "stage": 4,
+      "method": "System relationships",
+      "activities": [
+        1,
+        6
+      ],
+      "evidence": "Appointed owner, decision scope, information and consequences"
+    },
+    {
+      "stage": 5,
+      "method": "Correct and incorrect examples",
+      "activities": [
+        6
+      ],
+      "evidence": "Permitted routine internal move versus unauthorised bank-detail approval"
+    },
+    {
+      "stage": 6,
+      "method": "Guided practice",
+      "activities": [
+        7
+      ],
+      "evidence": "Four action classifications with supplied conditions"
+    },
+    {
+      "stage": 7,
+      "method": "Feedback and learner explanation",
+      "activities": [
+        7,
+        10
+      ],
+      "evidence": "Criteria feedback, reason and revision"
+    },
+    {
+      "stage": 8,
+      "method": "New context",
+      "activities": [
+        16
+      ],
+      "evidence": "Competing-report/capacity transfer exercise"
+    }
+  ]
+}

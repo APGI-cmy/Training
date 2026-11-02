@@ -1,0 +1,200 @@
+{
+  "edition": "0.6",
+  "generated": "2026-10-27",
+  "status": "message_specific_assets_ready",
+  "images": {
+    "executive-meeting": {
+      "src": "assets/learning-images/lindiwe-executive.png",
+      "alt": "Lindiwe reviews the evidence for a business decision; Daniel's administrative role does not transfer her authority.",
+      "characters": [
+        "Lindiwe"
+      ]
+    },
+    "daniel-desk": {
+      "src": "assets/learning-images/daniel-desk.png",
+      "alt": "Daniel checks the diary against the meeting pack so that preparation, inputs and timing fit together.",
+      "characters": [
+        "Daniel"
+      ]
+    },
+    "authority-review": {
+      "src": "assets/learning-images/thandi-protection.png",
+      "alt": "Thandi checks the protective arrangements separately from the executive's business preference.",
+      "characters": [
+        "Thandi"
+      ]
+    },
+    "aisha-deputy": {
+      "src": "assets/learning-images/aisha-deputy.png",
+      "alt": "Aisha reviews the specified cover assignment and the period she is being asked to accept.",
+      "characters": [
+        "Aisha"
+      ]
+    },
+    "finance-operations": {
+      "src": "assets/learning-images/finance-operations.png",
+      "alt": "Finance and operations check their separate papers together before Daniel assembles the decision pack.",
+      "characters": [
+        "Finance contributor",
+        "Operations contributor"
+      ]
+    },
+    "control-room": {
+      "src": "assets/learning-images/control-room.png",
+      "alt": "The independent control-room team checks its own service log and monitoring scope; involvement must be agreed for the assignment.",
+      "characters": [
+        "Control-room contributor1",
+        "Control-room contributor2"
+      ]
+    },
+    "partnership": {
+      "src": "assets/learning-images/partnership.png",
+      "alt": "Daniel presents the support brief to Lindiwe so that administrative planning serves her business purpose without replacing her decision.",
+      "characters": [
+        "Lindiwe",
+        "Daniel"
+      ]
+    },
+    "handover": {
+      "src": "assets/learning-images/handover.png",
+      "alt": "Daniel and Aisha check the specified duties, period and access together; naming a deputy alone does not establish accepted cover.",
+      "characters": [
+        "Daniel",
+        "Aisha"
+      ]
+    },
+    "privacy-screen": {
+      "src": "assets/learning-images/privacy-screen.png",
+      "alt": "Daniel protects private diary information while keeping legitimate administrative work moving.",
+      "characters": [
+        "Daniel"
+      ]
+    },
+    "diary-conflict": {
+      "src": "assets/learning-images/diary-conflict.png",
+      "alt": "Daniel cross-checks a paper planner and electronic diary. The precise fictional times are supplied in the adjacent teaching timeline, not in this illustrative image.",
+      "characters": [
+        "Daniel"
+      ]
+    },
+    "planning-system": {
+      "src": "assets/message-images/planning-system.png",
+      "alt": "Daniel and Lindiwe stand beside a wall of connected planning cards, discussing how work depends on other tasks.",
+      "characters": [
+        "Daniel",
+        "Lindiwe"
+      ]
+    },
+    "request-unknown": {
+      "src": "assets/message-images/request-unknown.png",
+      "alt": "Daniel pauses in the office lobby to examine an incoming request on his phone before making a commitment.",
+      "characters": [
+        "Daniel"
+      ]
+    },
+    "ready-pack": {
+      "src": "assets/message-images/ready-pack.png",
+      "alt": "Daniel's hands assemble a meeting pack with one document position still empty; a separate invitation lies beside it.",
+      "characters": [
+        "Daniel"
+      ]
+    },
+    "role-boundaries": {
+      "src": "assets/message-images/role-boundaries.png",
+      "alt": "Daniel consults the finance contributor at her office doorway while she checks her own folder.",
+      "characters": [
+        "Daniel"
+      ]
+    },
+    "message-correction": {
+      "src": "assets/message-images/message-correction.png",
+      "alt": "Daniel compares a muted previous document with a revised attachment and its accompanying message on his laptop.",
+      "characters": [
+        "Daniel"
+      ]
+    },
+    "four-conditions": {
+      "src": "assets/message-images/four-conditions.png",
+      "alt": "Daniel checks a folder at a worktop with a reference manual, an individual access card, a laptop and a capacity planner.",
+      "characters": [
+        "Daniel"
+      ]
+    },
+    "purchase-limit": {
+      "src": "assets/message-images/purchase-limit.png",
+      "alt": "Daniel checks a single supplies order beside a trolley of consumables in the storeroom.",
+      "characters": [
+        "Daniel"
+      ]
+    },
+    "options-comparison": {
+      "src": "assets/message-images/options-comparison.png",
+      "alt": "Daniel and Lindiwe compare three separate proposal sheets laid out side by side before any decision is confirmed.",
+      "characters": [
+        "Daniel",
+        "Lindiwe"
+      ]
+    },
+    "decision-writing": {
+      "src": "assets/message-images/decision-writing.png",
+      "alt": "Daniel composes a structured one-page priority brief, keeping source messages and a retained draft folder separate.",
+      "characters": [
+        "Daniel"
+      ]
+    },
+    "agreement-boundaries": {
+      "src": "assets/message-images/agreement-boundaries.png",
+      "alt": "Daniel indicates an uncompleted confirmation section in a divided working-agreement binder while Lindiwe checks a separate delegation folder; nobody signs.",
+      "characters": [
+        "Daniel",
+        "Lindiwe"
+      ]
+    },
+    "clause-review": {
+      "src": "assets/message-images/clause-review.png",
+      "alt": "Close-up of Daniel querying a vague clause and comparing it with a structured multi-field draft on a separate sheet; no approval is indicated.",
+      "characters": [
+        "Daniel (hands only)"
+      ]
+    },
+    "deputy-acceptance": {
+      "src": "assets/message-images/deputy-acceptance.png",
+      "alt": "Aisha checks an assignment sheet against her calendar while on a headset at her own workstation; her individual access card is visible and acceptance is not implied.",
+      "characters": [
+        "Aisha"
+      ]
+    },
+    "later-evidence": {
+      "src": "assets/message-images/later-evidence.png",
+      "alt": "Overhead view of Daniel keeping an earlier grey folder closed and separate from a current teal-tabbed folder with a referenced paper and attached message.",
+      "characters": [
+        "Daniel (hands only)"
+      ]
+    },
+    "competing-reports": {
+      "src": "assets/message-images/competing-reports.png",
+      "alt": "Daniel weighs two separate report folders and task cards against an open capacity planner, with no extra support present.",
+      "characters": [
+        "Daniel"
+      ]
+    },
+    "partnership-review": {
+      "src": "assets/message-images/partnership-review.png",
+      "alt": "Standing beside a simple review-cycle whiteboard, Daniel points to a work-product example while Lindiwe considers the evidence; no approval or promise is depicted.",
+      "characters": [
+        "Daniel",
+        "Lindiwe"
+      ]
+    }
+  },
+  "videoAliases": {
+    "incoming-request": "request-unknown",
+    "decision-brief": "decision-writing",
+    "agreement-review": "agreement-boundaries",
+    "team-reflection": "partnership-review"
+  },
+  "retiredImageIds": [
+    "partnership"
+  ],
+  "selectionRule": "No keyword/default photograph. Each image is selected from exact lesson text and has one UI placement. Role anchors illustrate only the selected named role. No photographs in quiz/outcomes/takeaways; later evidence stays gated."
+}
