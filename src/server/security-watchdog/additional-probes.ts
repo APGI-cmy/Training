@@ -8,6 +8,7 @@ import {deliverTransactionalEmail,emailConfiguration} from '@/server/services/em
 import {watchdogRpc} from './store';
 import {watchdogActorId,type WatchdogAccess} from './access';
 import {syntheticTotp} from './synthetic-totp';
+import {weakPasswordRejected} from './password-result';
 import type {AlpSession} from '@/server/auth/session';
 import type {WatchdogCheck} from '@/lib/security-watchdog';
 export type Probe=(id:string,title:string,kind:WatchdogCheck['kind'],detail:string,test:()=>Promise<boolean>,action?:string)=>Promise<boolean>;
@@ -81,8 +82,8 @@ export async function additionalProbes(input:{runId:string;users:Identity[];scop
  // and recovery tokens remain in memory and never enter the signed evidence.
  if(a.session.user.email!==`watchdog-${runId}-1@example.invalid`)throw Error('Synthetic recovery identity guard failed');
  const updatePassword=(password:string)=>fetch(base+'/auth/v1/user',{method:'PUT',headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,authorization:`Bearer ${a.session.accessToken}`,'content-type':'application/json'},body:JSON.stringify({password}),cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)});
- await check('password_minimum','Provider enforces a twelve-character minimum','synthetic_behaviour','A disposable account attempts a shorter random password. The provider must reject it as weak. No real password is examined or changed.',async()=>{const r=await updatePassword(randomBytes(5).toString('hex'));const v=await r.json();return r.status===422&&v.code==='weak_password';});
- await check('password_compromised','Provider rejects a known compromised password','synthetic_behaviour','A public, deliberately compromised test string longer than the minimum is rejected with the provider’s pwned-password reason. Only the disposable identity is used.',async()=>{const r=await updatePassword('Password123!Password123!');const v=await r.json();return r.status===422&&v.code==='weak_password'&&Array.isArray(v.weak_password?.reasons)&&v.weak_password.reasons.includes('pwned');});
+ await check('password_minimum','Provider enforces a twelve-character minimum','synthetic_behaviour','A disposable account attempts a shorter random password. The provider must reject it as weak. No real password is examined or changed.',async()=>{const r=await updatePassword(randomBytes(5).toString('hex'));return weakPasswordRejected(r.status,await r.json(),'length');});
+ await check('password_compromised','Provider rejects a known compromised password','synthetic_behaviour','A public, deliberately compromised test string longer than the minimum is rejected with the provider’s pwned-password reason. Only the disposable identity is used.',async()=>{const r=await updatePassword('Password123!Password123!');return weakPasswordRejected(r.status,await r.json(),'pwned');});
  await check('password_recovery','Synthetic recovery link works once and restores sign-in','synthetic_behaviour','The provider creates a recovery link for the disposable mailbox without sending mail. Its token is verified, a new random password works, and reuse of the link fails. This does not test a real user’s inbox or the entire browser recovery form.',async()=>{
   const generated=await adminRest('/auth/v1/admin/generate_link',{method:'POST',body:JSON.stringify({type:'recovery',email:a.session.user.email}),signal:AbortSignal.timeout(8000)});if(!generated.ok)throw Error('Synthetic recovery generation unavailable');
   const value=await generated.json(),hash=value.hashed_token??value.properties?.hashed_token;
