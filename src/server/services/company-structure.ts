@@ -71,7 +71,12 @@ export async function accessibleCompanies(
   );
 }
 export async function requireCompany(id: string, ownerOnly = true) {
-  const actor = await companyActor();
+  return requireCompanyForSession(id,ownerOnly,await requireSession());
+}
+// The same deployed guard is exercised by Watchdog with verified synthetic
+// sessions. This server-only entry point never accepts a client-supplied actor.
+export async function requireCompanyForSession(id:string,ownerOnly:boolean,session:AlpSession) {
+  const actor = await companyActor(session);
   validId(id);
   if (
     !actor.isAdmin &&

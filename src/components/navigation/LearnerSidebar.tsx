@@ -44,6 +44,7 @@ export async function LearnerSidebar() {
           ...(emailAdmin?[{href:'/messages/email-management',label:'Email management'},{href:'/messages/email-sets',label:'Email message sets'},{href:'/messages/image-library',label:'Image library'}]:[]),
           { href: "/company", label: "Company workspaces" },
           { href: "/policies", label: "Policies and reviews" },
+          ...(emailAdmin?[{href:'/security-watchdog',label:'Security Watchdog'}]:[]),
           { href: "/course-reviews", label: "Course reviews" },
         ] : []),
         ...(isAdmin ? [

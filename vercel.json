@@ -20,6 +20,10 @@
     {
       "path": "/api/cron/course-deployments",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/security-watchdog",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

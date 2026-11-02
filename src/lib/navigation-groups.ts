@@ -5,7 +5,7 @@ export function navigationGroups(items:NavigationItem[]) {
   {id:"publication",label:"Course publication",paths:["/admin/courses","/course-reviews","/admin/agreements","/admin/service-costs"]},
   {id:"companies",label:"Companies and branding",paths:["/company","/admin/companies","/admin/certificates"]},
   {id:"enrolment",label:"Learners and payments",paths:["/admin/learners","/admin/invitations","/admin/enrolments","/admin/assessments","/payments","/admin/payments/stripe","/admin/payments"]},
-  {id:"governance",label:"Policies and administration",paths:["/admin","/policies","/admin/policies"]},
+  {id:"governance",label:"Policies and administration",paths:["/admin","/policies","/admin/policies","/security-watchdog"]},
   {id:"messages",label:"Messages and support",paths:["/messages","/messages/email-management","/messages/email-sets","/messages/image-library","/admin/notifications","/admin/test-messages","/admin/email-templates"]}
  ];
  const extra=items.filter(i=>!['/dashboard','/profile'].includes(i.href)&&!definitions.some(g=>g.paths.includes(i.href)));
