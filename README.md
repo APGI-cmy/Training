@@ -19,8 +19,9 @@ from `6a0b875c8297d30623acd8002c753463e36bf6c9`, with 5 GB persistent disk
 `dsk-dbks263bc2fs73a7890g` at `/var/data` and `/health` monitoring.
 Base service/disk cost is $7 + $1.25 = $8.25/month before applicable taxes/usage.
 Vercel drain `drn_cFkS3JC8u0uWxE87` is enabled for the V2 project only, including
-its preview/production logs. Supabase activation is a separate private-credential
-handoff and must be verified in provider settings before claiming it is active.
+its preview/production logs. The owner completed the Supabase private-credential
+handoff; provider settings show its V2 destination saved, and real batches reached
+the receiver from 11:28 UTC. Both provider streams are activated.
 
 Vercel delivery requires both its separate Bearer token and a valid raw-body
 HMAC-SHA1 signature. Supabase delivery uses its own Bearer token; that provider
@@ -28,7 +29,11 @@ does not currently sign custom HTTP batches. Compression and input are bounded.
 Authenticated owner manifest/file export returns ciphertext and integrity-checked
 receipts, never decrypted records. There is no public archive listing.
 
-Eight unit tests and nine live receiver checks passed. A remote encrypted test
+Nine unit tests and nine live receiver checks passed. A bounded, serial encryption
+queue was added after one initial provider burst returned a busy/retry response.
+Seven local container checks verified twelve concurrent provider batches, six
+durable records per provider, non-root runtime and retry/unauthorised behaviour.
+A remote encrypted test
 batch was downloaded, decrypted in memory and checked for omitted personal fields.
 Its ciphertext digest remained identical after a real disk-backed redeployment.
 An encrypted OneDrive mirror was verified locally; that is not yet proof of a

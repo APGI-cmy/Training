@@ -6,6 +6,7 @@ import {join,sep} from 'node:path';
 import {spawn} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 export function allowedToken(actual,expected){const a=Buffer.from(actual??''),e=Buffer.from(expected??'');return e.length>=32&&a.length===e.length&&timingSafeEqual(a,e);}
+export function createArchiveQueue(limit=16){let pending=0,tail=Promise.resolve();return{run(task){if(pending>=limit)return Promise.reject(Error('ARCHIVE_QUEUE_FULL'));pending++;const job=tail.then(task);tail=job.catch(()=>{});return job.finally(()=>{pending--;});}};}
 const sources=new Set(['provider','auth_logs','auth_audit_logs','postgres_logs','storage_logs','edge_logs','edge_function_logs','function_edge_logs','realtime_logs','pgbouncer_logs','pooler_logs','postgrest_logs','supavisor_logs','build','edge','lambda','static','firewall','external','redirect']);
 const levels=new Set(['info','warn','warning','error','fatal','debug','trace','notice','panic','alert','critical','emergency','log']);
 const actions=new Set(['login','logout','token_refreshed','token_revoked','user_signedup','user_recovery_requested','user_updated','user_deleted','user_invited','user_reauthenticated','mfa_factor_enrolled','mfa_factor_unenrolled','mfa_challenge_verified']);
@@ -53,7 +54,7 @@ async function main(){
  await gpg(['--import'],await readFile('recovery-public-key.asc'));
  const keys=(await gpg(['--with-colons','--list-keys'],null)).toString();if(!keys.includes('fpr:::::::::'+fingerprint+':'))throw Error('ARCHIVE_KEY_MISMATCH');
  const encrypt=bytes=>gpg(['--trust-model','always','--recipient',fingerprint,'--cipher-algo','AES256','--compress-algo','zip','--encrypt'],bytes);
- let busy=false;
+ const queue=createArchiveQueue();let receiving=0;
  const server=http.createServer(async(req,res)=>{
   const finish=(status,value)=>{res.writeHead(status,{'content-type':'application/json','cache-control':'no-store','x-content-type-options':'nosniff'});res.end(JSON.stringify(value));};
   if(req.method==='GET'&&req.url==='/health'){try{await mkdir(root,{recursive:true});const s=await statfs(root);return finish(Number(s.bavail)*Number(s.bsize)>=64*1024*1024?200:503,{status:Number(s.bavail)*Number(s.bsize)>=64*1024*1024?'ready':'attention'});}catch{return finish(503,{status:'unavailable'});}}
@@ -68,11 +69,11 @@ async function main(){
   const provider=req.url==='/ingest/supabase'?'supabase':req.url==='/ingest/vercel'?'vercel':null;
   if(req.method!=='POST'||!provider)return finish(404,{error:'Unavailable'});
   if(!allowedToken(req.headers.authorization,'Bearer '+process.env[provider==='supabase'?'SUPABASE_DRAIN_TOKEN':'VERCEL_DRAIN_TOKEN']))return finish(401,{error:'Unauthorised'});
-  if(busy)return finish(503,{error:'Retry later'});busy=true;
+  if(receiving>=16)return finish(503,{error:'Retry later'});receiving++;
   try{const chunks=[];let size=0;for await(const chunk of req){size+=chunk.length;if(size>2*1024*1024)throw Error('BATCH_TOO_LARGE');chunks.push(chunk);}
    const bytes=Buffer.concat(chunks);if(provider==='vercel'&&!validVercelSignature(bytes,req.headers['x-vercel-signature'],process.env.VERCEL_SIGNATURE_SECRET))return finish(403,{error:'Signature verification failed'});
-   const records=decodeBody(bytes,req.headers['content-encoding']);await persistBatch({root,provider,records,encrypt});finish(200,{stored:true,events:records.length});
-  }catch{finish(503,{error:'Archive did not confirm persistence; retry delivery'});}finally{busy=false;}
+   const records=decodeBody(bytes,req.headers['content-encoding']);await queue.run(()=>persistBatch({root,provider,records,encrypt}));finish(200,{stored:true,events:records.length});
+  }catch{finish(503,{error:'Archive did not confirm persistence; retry delivery'});}finally{receiving--;}
  });server.requestTimeout=20000;server.headersTimeout=10000;server.listen(Number(process.env.PORT??10000),'0.0.0.0');
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)main().catch(()=>{console.error('Security archive startup failed; no payload or credential is logged.');process.exitCode=1;});
