@@ -60,8 +60,11 @@ The recovery copy has no connected Git application, database cron, foreign serve
 or external HTTP trigger. Its Watchdog schedules are disabled. Public signups,
 anonymous sign-ins and email sign-in are disabled after testing. Recovery legacy
 API-key headers are disabled. No application, email sender, payment, AI or Viewer
-integration was repointed. Legacy JWT signature retirement is distinct from
-disabling API-key headers and must be verified separately before reuse.
+integration was repointed. A recovery-only legacy key was briefly displayed in
+setup output. API-key header access was disabled immediately. The owner migrated
+and rotated the signing key, then revoked the previous HS256 key. The provider UI
+was checked after completion: the old key is listed under Revoked, with no
+previously used keys remaining. No working V2 or V1 credential was changed.
 
 ## External observations and notification drill
 
@@ -123,6 +126,40 @@ Learner release: 1,006 passed, one existing skip. Outbound destination audit and
 course-media validation passed. Course assets were not staged or regenerated from
 the nine pre-existing local line-ending changes. Deployed release verification is
 recorded separately after the candidate build and runtime checks finish.
+
+## Deployed release and acceptance
+
+- Released source: `115f6e291ed3315d15c7d1ac351f0659f4675d2b`.
+- Candidate `dpl_5f8ZNBTkCKevZzGoGSn4XojMyLNd` reached READY; its identity,
+  project and all four course fingerprints were verified before promotion.
+  The canonical V2 staging alias was then checked against that same release.
+- First live v5 run: `84377c25-252f-468f-ad45-7d5a523e3dc9`, completed
+  3 November 2026 at 07:40:12.647 UTC (09:40 SAST). There were 74 passed,
+  one attention (administrator authenticator enrolment), four not tested,
+  zero failed and zero inconclusive checks. Dashboard score: 93% of named checks.
+  Fixtures were cleaned; direct checks found zero Watchdog users, companies or
+  canaries remaining. This is a test-suite percentage, not a security guarantee.
+- Authenticated owner browser acceptance passed: current dashboard, scope,
+  named gaps, report links and independent security review brief. Signed JSON,
+  PDF and review-brief text downloads all saved successfully. The downloaded
+  JSON verified against the retained trusted Ed25519 key. All eight PDF pages
+  were rendered and visually inspected with no clipping or overlapping text.
+- Post-release inventory: all 135 table structures/access configurations and
+  application functions unchanged; 115 complete table data digests unchanged.
+  The 20 changed digests cover ordinary owner sign-in, scheduled daily review
+  notification queues, mail, security budgets, test runs and alert history.
+  The two new course review history entries are `daily_notification_queue`;
+  they are not erased findings or reset reviews. Financial, learner and
+  certificate table digests remain unchanged. Security advisors returned no
+  notices for either working V2 or recovery.
+- The outside-platform Render run completed at 07:44:40 UTC, all six checks
+  passed. Its observed release identity matched the promoted deployment and
+  commit above. Hourly scheduling and failure notifications remain enabled;
+  the temporary TEST ALARM command is no longer configured.
+- Runtime QA, encrypted recovery archives and redacted receipts are retained in
+  `C:/Users/Johan/Codex-Work/watchdog-recovery-20261103`. The encrypted archive's
+  Windows-account key dependency and the remaining continuity actions above
+  continue to apply.
 
 ## Provider references
 
