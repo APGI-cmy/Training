@@ -1,3 +1,4 @@
+import {SecurityAssuranceNotice} from "@/components/security-watchdog/SecurityAssuranceNotice";
 import {SessionActivity} from "@/components/auth/SessionActivity";
 import {Suspense} from "react";
 import {NotificationTargetMarkers} from "@/components/notifications/NotificationTargetMarkers";
@@ -24,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <SessionActivity/>
+        <SessionActivity/><SecurityAssuranceNotice/>
         <Suspense fallback={null}><NotificationTargetMarkers/></Suspense>
         <div role="note" style={{ background: "#ffe8a3", color: "#172b46", padding: "12px 20px", textAlign: "center", fontWeight: 700 }}>
           Version 2 test environment — separate accounts and test data. {stagingEmailEnabled() ? "Invitation and account emails are enabled. Payments and Viewer streaming are disabled." : "Email, payments and Viewer streaming are disabled."}
