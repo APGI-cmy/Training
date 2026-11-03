@@ -73,7 +73,8 @@ export async function partnerStripeAction(_previous:PaymentState,form:FormData):
   if(stripeRoute(country)==="alternative_required"){
    await write("/rest/v1/v2_stripe_partner_accounts?on_conflict=company_id",{company_id:companyId,owner_id:access.session.user.id,country,account_id:null,state:"alternative_required",updated_at:new Date().toISOString()});
    await paymentAudit(access.session.user.id,`alternative_provider_required:${companyId}`);
-   return {success:"This destination requires an approved alternative payment provider. Payouts remain on hold; APGI can see the request in the payment portal."};
+   revalidatePath(`/company/${companyId}/payments`);revalidatePath("/admin/payments/stripe");
+   return {success:"Your company’s receiving-route request is saved for APGI review. Jorrie must confirm an approved alternative payout arrangement for this destination before onboarding. This sandbox request does not collect bank details or move money."};
   }
   let account=existing?.account_id;
   if(!account){

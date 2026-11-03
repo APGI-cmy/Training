@@ -16,7 +16,7 @@ export async function personalStripeAction(_previous:PaymentState,form:FormData)
   if(!/^[A-Z]{2}$/.test(country))throw Error("Select a valid two-letter country code.");
   if(stripeRoute(country)==="alternative_required"){
    await write("/rest/v1/v2_stripe_personal_accounts?on_conflict=user_id",{user_id:id,country,account_id:null,state:"alternative_required",updated_at:new Date().toISOString()});
-   await paymentAudit(id,"personal_alternative_provider_requested");return {success:"An alternative provider is required for your destination. APGI can see the routing request. Funds remain held."};
+   await paymentAudit(id,"personal_alternative_provider_requested");revalidatePath("/payments");revalidatePath("/admin/payments/stripe");return {success:"Your receiving-route request is saved for APGI review. This destination is unavailable through the current Canadian Stripe Connect setup. Jorrie must confirm an approved payout arrangement before onboarding. No bank details were collected and no money was moved."};
   }
   let account=existing?.account_id;
   if(!account){

@@ -1,0 +1,24 @@
+import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
+vi.mock('@/server/security-watchdog/assurance',()=>({assuranceAccess:vi.fn()}));
+vi.mock('@/server/security/auth-budget',()=>({claimSecurityBudget:vi.fn()}));
+vi.mock('@/server/services/stripe-platform',()=>({paymentAudit:vi.fn()}));
+import {assuranceAccess} from '@/server/security-watchdog/assurance';
+import {claimSecurityBudget} from '@/server/security/auth-budget';
+import {paymentAudit} from '@/server/services/stripe-platform';
+import {WatchdogError} from '@/server/security-watchdog/access';
+import {POST} from '../app/api/security-assurance/payment-check/route';
+const actor='11111111-1111-4111-8111-111111111111';
+const request=(body:unknown={},headers:Record<string,string>={})=>new Request('https://fixture/api/security-assurance/payment-check',{method:'POST',headers:{origin:'https://fixture','content-type':'application/json',...headers},body:JSON.stringify(body)});
+beforeEach(()=>{vi.resetAllMocks();vi.mocked(assuranceAccess).mockResolvedValue({session:{accessToken:'PRIVATE-TOKEN',user:{id:actor}},scope:null,audience:'learner'} as never);vi.mocked(claimSecurityBudget).mockResolvedValue(true);vi.mocked(paymentAudit).mockResolvedValue();vi.stubEnv('ALP_STRIPE_SETUP_KEY',Buffer.alloc(32,9).toString('base64'));});
+afterEach(()=>vi.unstubAllEnvs());
+describe('fresh payment controls',()=>{
+ it('requires a current verified session before any counters or audit',async()=>{vi.mocked(assuranceAccess).mockRejectedValue(new WatchdogError('Sign in',401));expect((await POST(request())).status).toBe(401);expect(claimSecurityBudget).not.toHaveBeenCalled();expect(paymentAudit).not.toHaveBeenCalled();});
+ it('rejects foreign company scopes through the shared assurance access boundary',async()=>{vi.mocked(assuranceAccess).mockRejectedValue(new WatchdogError('Scope denied'));expect((await POST(request({scope:actor}))).status).toBe(403);expect(assuranceAccess).toHaveBeenCalledWith(actor);expect(claimSecurityBudget).not.toHaveBeenCalled();});
+ it('blocks missing or foreign origins before any access',async()=>{for(const origin of ['', 'https://evil.invalid'])expect((await POST(request({},{origin}))).status).toBe(403);expect(assuranceAccess).not.toHaveBeenCalled();});
+ it.each([null,[],1,'hello',{recipient:actor},{scope:123},{scope:''}])('rejects unsupported request shape %j',async body=>{expect((await POST(request(body))).status).toBe(400);expect(assuranceAccess).not.toHaveBeenCalled();});
+ it('bounds streamed bodies even without a length header and rejects wrong media type',async()=>{expect((await POST(request({scope:'x'.repeat(150)}))).status).toBe(400);expect((await POST(request({},{'content-type':'text/plain'}))).status).toBe(400);});
+ it('enforces actor-wide minute and hourly limits rather than caller-selected scope',async()=>{expect((await POST(request({scope:actor}))).status).toBe(200);expect(vi.mocked(claimSecurityBudget).mock.calls).toEqual([['payment-check-minute:'+actor,1,60],['payment-check-hour:'+actor,10,3600]]);vi.mocked(paymentAudit).mockClear();vi.mocked(claimSecurityBudget).mockResolvedValue(false);expect((await POST(request())).status).toBe(429);expect(paymentAudit).not.toHaveBeenCalled();});
+ it('fails closed without the shared budget or audit and conceals internal errors',async()=>{vi.mocked(claimSecurityBudget).mockRejectedValueOnce(Error('PRIVATE-DB-ERROR'));const a=await POST(request());expect(a.status).toBe(503);expect(await a.text()).not.toContain('PRIVATE-DB-ERROR');vi.mocked(paymentAudit).mockRejectedValueOnce(Error('PRIVATE-AUDIT'));const b=await POST(request());expect(b.status).toBe(503);expect(await b.text()).not.toContain('PRIVATE-AUDIT');});
+ it('runs five real validators now without network, identities, bank data or a Stripe payment',async()=>{const network=vi.spyOn(globalThis,'fetch');try{const r=await POST(request()),v=await r.json();expect(r.status).toBe(200);expect(r.headers.get('cache-control')).toContain('no-store');expect(r.headers.get('vary')).toBe('Cookie');expect(v.passed).toBe(5);expect(v.total).toBe(5);expect(v.checks).toHaveLength(5);expect(v.liveAcceptance).toBe('not_tested');expect(Math.abs(Date.now()-Date.parse(v.checkedAt))).toBeLessThan(2000);const text=JSON.stringify(v);expect(text).not.toContain(actor);expect(text).not.toContain('PRIVATE-TOKEN');expect(network).not.toHaveBeenCalled();expect(paymentAudit).toHaveBeenCalledWith(actor,'payment_security_check:5/5');}finally{network.mockRestore();}});
+ it('marks unavailable encryption configuration inconclusive rather than passing it',async()=>{vi.stubEnv('ALP_STRIPE_SETUP_KEY','');const v=await(await POST(request())).json();expect(v.passed).toBe(4);expect(v.total).toBe(5);expect(v.checks.at(-1).state).toBe('inconclusive');expect(JSON.stringify(v)).not.toContain('ALP_STRIPE_SETUP_KEY');});
+});
