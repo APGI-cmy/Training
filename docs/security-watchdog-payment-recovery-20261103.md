@@ -39,3 +39,18 @@ A separate Render log receiver is prepared with authentication, bounded input/de
 - ISO/IEC 27001: https://www.iso.org/standard/27001
 
 Release/deployment, final signed-suite counts and browser acceptance are appended only after verification.
+
+## Verified release
+
+- Deployed application commit: `ec316fabc0afeba72e4e98490604b87e28392350`.
+- Vercel deployment: `dpl_JEFEE3bmvDDVQmu5h27A4rC6ZMct`; canonical `https://training-platform-v2-staging.vercel.app`.
+- Signed v6 run: `950c38d4-a5fe-4cba-a49e-e7a090a58369`, completed 09:39:05.973 UTC / 11:39 SAST. 83/88 passed (94% by the dashboard's floor rule); one attention (remaining administrator MFA), four untested broad controls; zero failed/inconclusive; cleanup verified. Ed25519 signature verified against the previously retained trusted key, not a key supplied solely by the report.
+- Payment projection has 10 passed named controls out of 11, retaining live bank/provider acceptance as untested.
+- The separate hourly Render observer passed all six anonymous external checks against this exact release at 09:39:36.118 UTC; provider recorded successful completion at 09:39:39.890 UTC.
+- All four course fingerprints unchanged. A 100-table before/after read confirmed review, learner, commercial and payment data unchanged. Expected monitoring/mail/audit activity is recorded separately; no claim that every operational row was frozen.
+- TypeScript and hosted Next build passed; 141 Watchdog tests and the preceding 1,006 learner-release checks passed (one existing skip). Five receiver unit tests plus seven actual container checks passed. The receiver remains unactivated; its follow-up Unix line-ending correction affects the prepared service only, not the deployed Next application.
+- Working V2 and separate cloud-recovery security advisors returned no warnings.
+
+The complete source/course archive (18,908 unique files, 6,048,327,706 compressed bytes) was encrypted and its complete decrypted stream matched SHA-256 `cbcf6b8bec77188229c5384146e561dbc8134bb27ea1d7265cabe7585d9e8fba`. A separate encrypted source patch pins the final application version; extract it after the base archive. Provider-managed secrets are outside that source archive.
+
+Still awaiting owner action/evidence: main-admin browser sign-in for visual/download acceptance; separate password-manager recovery-key save; large application archive cloud-arrival and cloud-download recovery; approval before paid continuous log drains. Historical provider/application signing and authenticator-encryption secrets, live integration recovery, agreed recovery objectives and independent human acceptance remain separate. A stopped local recovery copy is isolated; the working system was never repointed.
