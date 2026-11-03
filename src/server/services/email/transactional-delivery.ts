@@ -23,7 +23,9 @@ export function emailConfiguration() {
 export function previewTransactionalEmail(input:{subject:string;html:string;text:string}){
  const staging=process.env.ALP_ENVIRONMENT==='v2-staging';
  const notice='VERSION 2 TEST ENVIRONMENT. This message concerns the separate Version 2 platform. It does not change your Version 1 account or course access. Use a separate Version 2 account with this email address.';
- return {subject:(staging?'[APGI V2 TEST] ':'')+input.subject,html:(staging?`<p><strong>${notice}</strong></p>`:'')+input.html,text:(staging?notice+'\n\n':'')+input.text};
+ const banner=`<div role="note" style="margin:0;padding:16px 24px;background:#fff5d6;color:#17324d;font:14px Arial,sans-serif;line-height:1.6"><strong>VERSION 2 TEST ENVIRONMENT</strong><p style="margin:8px 0 0">This message concerns the separate Version 2 platform. It does not change your Version 1 account or course access.</p><p style="margin:8px 0 0">Use a separate Version 2 account with this email address.</p></div>`;
+ const html=!staging?input.html:/<body\b[^>]*>/i.test(input.html)?input.html.replace(/(<body\b[^>]*>)/i,`$1${banner}`):banner+input.html;
+ return {subject:(staging?'[APGI V2 TEST] ':'')+input.subject,html,text:(staging?notice+'\n\n':'')+input.text};
 }
 export async function deliverTransactionalEmail(input:{to:string;subject:string;html:string;text:string;idempotencyKey:string;tracking?:MailTracking|false}) {
   const config=emailConfiguration();

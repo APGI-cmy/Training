@@ -3,7 +3,8 @@ import {getSupabaseRestUrl} from '@/server/auth/session';
 import {getCourseCover} from '@/lib/course-covers';
 import type {ReviewRound} from '@/lib/course-review';
 import {STAGING_ORIGIN} from '@/server/environment-isolation';
-import {escapeEmail} from './send-course-invitation';
+import {brandedEmail,escapeEmail} from './send-course-invitation';
+import {reviewEmailSections} from '@/lib/review-email-sections';
 import {reviewNonresponseNotice} from '@/lib/review-nonresponse';
 
 export function reviewInvitationNarrative(requester:string,perLu=false){
@@ -14,9 +15,14 @@ export function reviewInvitationNarrative(requester:string,perLu=false){
 export function renderReviewMessage(round:ReviewRound,message:{subject:string;body:string;kind?:string}){
  const d=round.document,e=escapeEmail,origin=process.env.NEXT_PUBLIC_APP_URL??STAGING_ORIGIN;
  const image=getCourseCover(round.course_id)?.src;
- const logo=d.brand.logo?getSupabaseRestUrl(`/storage/v1/object/public/alp-branding-assets/${d.brand.logo}`):`${origin}/branding/apgi-logo.png`;
+ const logo=d.brand.logo?getSupabaseRestUrl(`/storage/v1/object/public/alp-branding-assets/${d.brand.logo}`):/^apgi(?: training)?$/i.test(d.brand.name)?`${origin}/branding/apgi-logo.png`:null;
  const body=message.body.length>100000?message.body.slice(0,100000)+'\nFull committed report is available in the secure review workspace.':message.body;
  const join=body.split(/\s+/).find(s=>s.startsWith(`${origin}/course-reviews/${round.id}/join/`));
  const anchor=['review_change_requested','review_change_decided'].includes(message.kind??'')?'#manage-request':'';
- return {text:body,html:`<div style="max-width:640px;margin:auto;font:16px Arial;color:#102b47">${logo?`<img alt="${e(d.brand.name)}" width="150" src="${e(logo)}"/>`:''}<h2>${e(d.brand.name)}</h2>${image?`<img alt="Course" style="width:100%;max-height:180px;object-fit:cover" src="${e(origin+image)}"/>`:''}<h3>${e(d.title)}</h3><div style="white-space:pre-line">${e(body)}</div><p><a style="display:inline-block;padding:14px;background:${/^#[a-f0-9]{6}$/i.test(d.brand.color)?d.brand.color:'#102b47'};color:white" href="${e(origin)}/course-reviews/${round.id}${anchor}">Open course review</a></p>${join?`<p><a href="${e(join)}">First time on V2? Create your review account</a></p>`:''}<small>Hosted by APGI</small></div>`};
+ const lines=body.replace(/\nHosted by APGI\s*$/,'').split('\n');
+ const signIn=lines.find(line=>line.startsWith('Sign in with ')&&line.endsWith(`: ${origin}/course-reviews/${round.id}`));
+ const clean=lines.filter(line=>line!==signIn).join('\n');
+ const footer=(signIn?signIn.slice(0,signIn.indexOf(`: ${origin}/`))+'.':'Sign in with the email address this message was sent to.')+' Opening an email does not complete a review or approval.';
+ const html=brandedEmail({brand:d.brand.name,logo,color:d.brand.color,title:d.title,description:'',sections:reviewEmailSections(clean,d.title,message.kind),image:image?new URL(image,origin).toString():null,link:`${origin}/course-reviews/${round.id}${anchor}`,button:'Open course review',footer});
+ return {text:body,html:join?html.replace('<hr style=',`<p style="margin:18px 0;line-height:1.6"><a href="${e(join)}">First time on V2? Create your review account</a></p><hr style=`):html};
 }

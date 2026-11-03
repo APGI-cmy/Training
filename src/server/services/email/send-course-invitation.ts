@@ -1,4 +1,6 @@
 import "server-only";
+import {escapeEmail,formatEmailText,emailHeading} from "@/lib/email-format";
+export {escapeEmail} from "@/lib/email-format";
 import { createHash } from "node:crypto";
 import {
   deliverTransactionalEmail,
@@ -21,15 +23,6 @@ export type InvitationEmailInput = {
 export type InvitationEmailResult =
   | { ok: true; providerMessageId: string | null }
   | { ok: false; error: "EMAIL_NOT_CONFIGURED" | "EMAIL_DELIVERY_FAILED" };
-export function escapeEmail(value: string) {
-  return value.replace(
-    /[&<>'"]/g,
-    (c) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[
-        c
-      ] ?? c,
-  );
-}
 export function isInvitationDeliveryConfigured() {
   return Boolean(emailConfiguration());
 }
@@ -43,12 +36,14 @@ export function brandedEmail(input: {
   button: string;
   image?: string | null;
   footer: string;
+  sections?: {heading:string;body:string;items?:string[]}[];
 }) {
   const e = escapeEmail,
     color = /^#[0-9a-f]{6}$/i.test(input.color ?? "")
       ? input.color!
       : "#102b49";
-  return `<!doctype html><html><body style="margin:0;background:#edf3f7;font-family:Arial,sans-serif;color:#17324d"><table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td align="center" style="padding:28px 12px"><table role="presentation" width="600" style="width:100%;max-width:600px;background:white;border-radius:12px;overflow:hidden" cellspacing="0" cellpadding="0"><tr><td style="padding:24px;background:${color};color:white">${input.logo ? `<img src="${e(input.logo)}" alt="${e(input.brand)}" width="150" style="display:block;max-height:70px;object-fit:contain;margin-bottom:12px">` : ""}<strong style="font-size:20px">${e(input.brand)}</strong></td></tr>${input.image ? `<tr><td><img src="${e(input.image)}" alt="Course illustration" width="600" style="display:block;width:100%;height:auto"></td></tr>` : ""}<tr><td style="padding:26px"><h1 style="font-size:25px;line-height:1.3;margin:0 0 16px">${e(input.title)}</h1><p style="line-height:1.6">${e(input.description)}</p><p style="margin:25px 0"><a href="${e(input.link)}" style="display:inline-block;background:${color};color:white;text-decoration:none;padding:14px 20px;border-radius:6px;font-weight:bold">${e(input.button)}</a></p><p style="font-size:13px;line-height:1.6">${e(input.footer)}</p><hr style="border:0;border-top:1px solid #d6e1e8"><p style="font-size:12px;color:#557084">Hosted by APGI. If you were not expecting this message, you can ignore it.</p></td></tr></table></td></tr></table></body></html>`;
+  const sections=(input.sections??[]).map(section=>emailHeading(section.heading)+formatEmailText(section.body)+(section.items?.length?`<ul style="margin:0 0 20px;padding-left:28px">${section.items.map(value=>`<li style="margin:0 0 10px;line-height:1.65">${e(value)}</li>`).join('')}</ul>`:'')).join('');
+  return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta charset="utf-8"></head><body style="margin:0;padding:0;background:#edf3f7;font-family:Arial,sans-serif;color:#17324d"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td align="center" style="padding:24px 12px"><table role="presentation" width="760" style="width:100%;max-width:760px;background:#ffffff;border:1px solid #d6e1e8;border-radius:10px" cellspacing="0" cellpadding="0" border="0"><tr><td style="padding:26px;background:#ffffff;border-top:5px solid ${color};color:#102b47">${input.logo?`<img src="${e(input.logo)}" alt="${e(input.brand)} logo" width="150" style="display:block;width:150px;max-width:100%;height:auto;border:0;margin:0 0 18px">`:''}<p style="font:bold 24px Arial,sans-serif;line-height:1.4;margin:0">${e(input.brand)}</p></td></tr>${input.image?`<tr><td style="padding:0"><img src="${e(input.image)}" alt="${e(input.title)} — course illustration" width="760" style="display:block;width:100%;max-width:760px;height:auto;border:0"></td></tr>`:''}<tr><td style="padding:26px;font:16px Arial,sans-serif;line-height:1.65"><h1 style="font-size:25px;line-height:1.35;margin:0 0 20px;color:#102b47">${e(input.title)}</h1>${formatEmailText(input.description)}${sections}<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0"><tr><td bgcolor="${color}" style="border-radius:6px"><a href="${e(input.link)}" style="display:inline-block;background:${color};color:#ffffff;text-decoration:none;padding:14px 22px;border:1px solid ${color};border-radius:6px;font:bold 16px Arial,sans-serif;line-height:1.5">${e(input.button)}</a></td></tr></table><div style="font-size:14px;line-height:1.65">${formatEmailText(input.footer)}</div><hr style="border:0;border-top:1px solid #d6e1e8;margin:24px 0"><p style="font-size:12px;line-height:1.6;color:#557084;margin:0">Hosted by APGI. If you were not expecting this message, you can ignore it.</p></td></tr></table></td></tr></table></body></html>`;
 }
 export async function sendCourseInvitationEmail(
   input: InvitationEmailInput,
