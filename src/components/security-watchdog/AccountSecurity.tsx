@@ -2,7 +2,7 @@
 import {useState} from 'react';
 import {useRouter} from 'next/navigation';
 type Factor={id:string;status:string;friendly_name?:string};
-export function AccountSecurity({factors,mfaRequired}:{factors:Factor[];mfaRequired:boolean}){
+export function AccountSecurity({factors,mfaRequired,reauthenticate=false}:{factors:Factor[];mfaRequired:boolean;reauthenticate?:boolean}){
  const [setup,setSetup]=useState<{factorId:string;qr:string;secret:string}|null>(null),[code,setCode]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState('');const router=useRouter();
  const verified=factors.find(f=>f.status==='verified'),pending=factors.find(f=>f.status!=='verified');
  async function act(operation:string,factorId?:string){setBusy(true);setMessage('');try{const r=await fetch('/api/account-security',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operation,factorId,code})});const data=await r.json();if(!r.ok)throw Error(data.error);if(operation==='enrol')setSetup(data);else{setSetup(null);setCode('');setMessage(operation==='verify'?'Authenticator verified. Your account now requires its second factor when you sign in.':'Unfinished setup cancelled.');router.refresh();}}catch(e){setMessage(e instanceof Error?e.message:'The request could not finish.');}finally{setBusy(false);}}
@@ -10,7 +10,8 @@ export function AccountSecurity({factors,mfaRequired}:{factors:Factor[];mfaRequi
  {verified&&!mfaRequired?<p><strong>Authenticator enrolled and this session has completed the second factor.</strong></p>:null}
  {!verified&&!pending&&!setup?<button type="button" className="primary-button" disabled={busy} onClick={()=>void act('enrol')}>Set up my authenticator</button>:null}
  {setup?<div><p>Scan this QR code privately with your authenticator app.</p><img alt="Your private authenticator setup QR code" src={setup.qr.startsWith('data:')?setup.qr:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(setup.qr)} width="220" height="220"/><details><summary>Enter setup key manually instead</summary><code>{setup.secret}</code></details></div>:null}
- {(setup||verified&&mfaRequired)?<form onSubmit={e=>{e.preventDefault();void act('verify',setup?.factorId??verified?.id);}}><label>Authenticator code<input type="text" autoComplete="one-time-code" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} minLength={6} required value={code} onChange={e=>setCode(e.target.value)} /></label><button className="primary-button" disabled={busy}>{busy?'Verifying…':'Verify my authenticator'}</button></form>:null}
+ {reauthenticate&&verified?<p>Verify a fresh code before downloading the encrypted recovery package. Then <a href="/security-watchdog#recovery-secrets">return to the recovery download</a>.</p>:null}
+ {(setup||verified&&(mfaRequired||reauthenticate))?<form onSubmit={e=>{e.preventDefault();void act('verify',setup?.factorId??verified?.id);}}><label>Authenticator code<input type="text" autoComplete="one-time-code" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} minLength={6} required value={code} onChange={e=>setCode(e.target.value)} /></label><button className="primary-button" disabled={busy}>{busy?'Verifying…':'Verify my authenticator'}</button></form>:null}
  {pending||setup?<button type="button" className="secondary-button" disabled={busy} onClick={()=>void act('cancel',setup?.factorId??pending?.id)}>Cancel unfinished setup</button>:null}
  <p role="status" aria-live="polite">{message}</p><a href="/dashboard">Continue to my dashboard</a></section>;
 }
