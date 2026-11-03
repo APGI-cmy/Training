@@ -4,6 +4,7 @@ import {describe,it,expect,vi} from 'vitest';
 import {observe,observerOrigin} from '../scripts/watchdog-external-observer.mjs';
 const key='MCowBQYDK2VwAyEA3LKXpik3eIt/9dYqLpJfOVRenkk5aUsirLKGyUESzEU=';
 function fixture(url:string){const p=new URL(url).pathname,headers={'cache-control':'private, no-store'};
+ if(new URL(url).origin==='https://apgi-v2-security-log-archive.onrender.com'&&p==='/health')return Response.json({status:'ready'},{headers});
  if(p.endsWith('edge-control'))return new Response('APGI-WATCHDOG-EDGE-CONTROL',{headers});
  if(p.endsWith('edge-canary')||p.startsWith('/courses/'))return new Response(null,{status:403,headers});
  if(p.endsWith('course-deployment'))return Response.json({version:1,projectId:'prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf',deployment:{id:'dpl_test',commit:'a'.repeat(40)},courses:{course:'b'.repeat(64)}},{headers});
@@ -11,7 +12,8 @@ function fixture(url:string){const p=new URL(url).pathname,headers={'cache-contr
  return new Response(null,{status:401,headers});
 }
 describe('external observer fail-closed behaviour',()=>{
- it('checks known public controls without accounts, cookies or redirects',async()=>{const f=vi.fn(async(url,init)=>{expect(url.startsWith(observerOrigin+'/')).toBe(true);expect(init.redirect).toBe('error');expect(init.credentials).toBe('omit');expect(init.headers).not.toHaveProperty('authorization');expect(init.headers).not.toHaveProperty('cookie');return fixture(url);});const r=await observe({fetcher:f});expect(r.passed).toBe(true);expect(r.checks).toHaveLength(6);expect(f).toHaveBeenCalledTimes(6);});
+ it('checks known public controls without accounts, cookies or redirects',async()=>{const f=vi.fn(async(url,init)=>{expect([observerOrigin,'https://apgi-v2-security-log-archive.onrender.com']).toContain(new URL(url).origin);expect(init.redirect).toBe('error');expect(init.credentials).toBe('omit');expect(init.headers).not.toHaveProperty('authorization');expect(init.headers).not.toHaveProperty('cookie');return fixture(url);});const r=await observe({fetcher:f});expect(r.passed).toBe(true);expect(r.checks).toHaveLength(7);expect(f).toHaveBeenCalledTimes(7);});
+ it('fails archive health when the disk is full or unavailable',async()=>{const r=await observe({fetcher:async(url:string)=>url.endsWith('/health')?Response.json({status:'attention'},{status:503,headers:{'cache-control':'no-store'}}):fixture(url)});expect(r.passed).toBe(false);expect(r.checks.find((c:{id:string})=>c.id==='archive_health').state).toBe('failed');});
  it('reports a public private-course file as a failure',async()=>{const r=await observe({fetcher:async(url:string)=>url.includes('/courses/')?new Response(null,{status:200}):fixture(url)});expect(r.passed).toBe(false);expect(r.checks.find((c:{id:string})=>c.id==='private_course').state).toBe('failed');});
  it('does not treat a login page or generic 200 as availability',async()=>{const r=await observe({fetcher:async()=>new Response('<html>Sign in</html>')});expect(r.passed).toBe(false);expect(r.checks.every((c:{state:string})=>c.state!=='passed')).toBe(true);});
  it('does not count a transport failure as a successful access denial or log its details',async()=>{const r=await observe({fetcher:async()=>{throw Error('secret-provider-message');}});expect(r.passed).toBe(false);expect(r.checks.every((c:{state:string})=>c.state==='inconclusive')).toBe(true);expect(JSON.stringify(r)).not.toContain('secret-provider-message');});

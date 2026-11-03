@@ -4,6 +4,7 @@ import {pathToFileURL} from 'node:url';
 // A read-only adapter for V2. Adding another application requires a reviewed
 // adapter, not an arbitrary target URL supplied by a web request or environment.
 export const observerOrigin='https://training-platform-v2-staging.vercel.app';
+const archiveOrigin='https://apgi-v2-security-log-archive.onrender.com';
 const project='prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf';
 const trustedKey='MCowBQYDK2VwAyEA3LKXpik3eIt/9dYqLpJfOVRenkk5aUsirLKGyUESzEU=';
 const privatePath='/courses/Executive%20Assistant%20Training%20Programme/LU1/course/index.html';
@@ -14,6 +15,7 @@ const definitions=[
  {id:'private_api',path:'/api/security-watchdog',method:'GET'},
  {id:'release_identity',path:'/api/course-deployment',method:'GET'},
  {id:'trusted_key',path:'/api/security-watchdog/keys',method:'GET'},
+ {id:'archive_health',origin:archiveOrigin,path:'/health',method:'GET'},
 ];
 async function smallText(response){
  const reader=response.body?.getReader();if(!reader)return '';
@@ -28,11 +30,13 @@ export async function observe({fetcher=fetch,now=()=>new Date(),timeoutMs=10000}
  const checks=await Promise.all(definitions.map(async d=>{
   const started=performance.now();let status=null;
   try{
-   const response=await fetcher(observerOrigin+d.path,{method:d.method,redirect:'error',cache:'no-store',credentials:'omit',headers:{accept:d.id==='availability'?'text/plain':'application/json'},signal:AbortSignal.timeout(timeoutMs)});
+   const expectedOrigin=d.origin??observerOrigin;
+   const response=await fetcher(expectedOrigin+d.path,{method:d.method,redirect:'error',cache:'no-store',credentials:'omit',headers:{accept:d.id==='availability'?'text/plain':'application/json'},signal:AbortSignal.timeout(timeoutMs)});
    status=response.status;
-   if(response.redirected||response.url&&new URL(response.url).origin!==observerOrigin)throw Error('UNEXPECTED_ORIGIN');
+   if(response.redirected||response.url&&new URL(response.url).origin!==expectedOrigin)throw Error('UNEXPECTED_ORIGIN');
    let passed=false,metadata={};const noStore=/\bno-store\b/i.test(response.headers.get('cache-control')??'');
-   if(d.id==='availability')passed=status===200&&noStore&&await smallText(response)==='APGI-WATCHDOG-EDGE-CONTROL';
+   if(d.id==='archive_health')passed=status===200&&noStore&&json(await smallText(response))?.status==='ready';
+   else if(d.id==='availability')passed=status===200&&noStore&&await smallText(response)==='APGI-WATCHDOG-EDGE-CONTROL';
    else if(d.id==='edge_denial')passed=status===403;
    else if(d.id==='private_course')passed=status===403&&noStore;
    else if(d.id==='private_api')passed=status===401&&noStore;
@@ -50,7 +54,7 @@ export async function observe({fetcher=fetch,now=()=>new Date(),timeoutMs=10000}
    return {id:d.id,state:passed?'passed':'failed',status,durationMs:Math.round(performance.now()-started),...metadata};
   }catch{return {id:d.id,state:'inconclusive',status,durationMs:Math.round(performance.now()-started)};}
  }));
- return {version:1,suite:'apgi-external-observer-v1',origin:observerOrigin,startedAt,finishedAt:now().toISOString(),checks,passed:checks.every(c=>c.state==='passed'),limitations:['Anonymous read-only external observations; no customer data, accounts or credentials.','Provider logs identify this observer run; this JSON is not an authenticated Watchdog receipt.','No claim of independent penetration testing, uninterrupted monitoring, private-route positive controls or ISO certification.']};
+ return {version:1,suite:'apgi-external-observer-v1',origin:observerOrigin,startedAt,finishedAt:now().toISOString(),checks,passed:checks.every(c=>c.state==='passed'),limitations:['Anonymous read-only external observations; no customer data, accounts or credentials.','Archive health tests readiness, not provider delivery completeness or decryption.','Provider logs identify this observer run; this JSON is not an authenticated Watchdog receipt.','No claim of independent penetration testing, uninterrupted monitoring, private-route positive controls or ISO certification.']};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const result=await observe();console.log(JSON.stringify(result));process.exitCode=result.passed?0:1;
