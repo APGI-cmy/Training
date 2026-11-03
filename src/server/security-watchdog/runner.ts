@@ -13,6 +13,7 @@ import {additionalProbes,additionalCheckNames,fixtureObject} from './additional-
 import {expectedWatchdogChecks} from '@/lib/watchdog-overview';
 import {httpProbes,httpCheckNames} from './http-probes';
 import {prepareFixtureMfa,hardeningProbes,hardeningCheckNames} from './hardening-probes';
+import {recoveryDrillCheck} from './recovery-evidence';
 
 type InternalRun=WatchdogRun&{resources:Record<string,unknown>;reused?:boolean};
 type TestUser={id:string;session:AlpSession};
@@ -132,10 +133,10 @@ export async function runSecurityWatchdog(access:WatchdogAccess,scope:string|nul
  ['all_business_paths','Remaining business data paths','Live course-file, private-message attachment, company payment-export, SCORM rejection, background-job and webhook probes are named above. Policies, certificates, all server actions and production-only integrations still require complete role/record coverage.'],
  ['outbound','Remaining external information-flow controls','The sender validates a single mailbox, blocks fictional recipients and refuses provider redirects; privileged database requests are confined to their provider paths. The fixed-provider outbound adapter is checked above. Provider-wide network-egress enforcement, AI-provider and external DLP verification remain outstanding. No customer data is sent in a drill.'],
  ['mfa','Remaining provider identity controls','The named probes test minimum length, compromised-password rejection, synthetic one-time recovery, MFA and revoked sessions. Application attempt budgets are exercised with run-tagged concurrent claims. Browser end-to-end recovery, provider rate-limit operation and risk-based authentication still require separate verification.'],
- ['restore','Backup restoration and recovery','A separate restoration exercise is required; this run does not restore or alter business data.'],
- ['independent','Independent ISO assessment','Organisational risk, policies, staff and supplier controls, independent audit and certification are outside an automated technical test.'],
+ ['independent','Independent security and ISO review','Organisational risk, policies, staff and supplier controls, independent security review and certification are outside an automated technical test. Course review and learner competency decisions remain separate.'],
  ];
  for(const [id,title,detail] of gaps)checks.push({id,title,detail,kind:'manual',state:'not_tested'});
+ checks.push(recoveryDrillCheck(scope));
  const stillAllowed=await watchdogRpc<boolean>('v2_watchdog_allowed',{p_actor:watchdogActorId(access),p_company:scope});
  if(!stillAllowed)checks.push({id:'permission_changed',title:'Operator permission changed during the run',kind:'live_configuration',state:'inconclusive',detail:'The operator no longer has access to this scope. Only authorised platform principals can review the retained run.'});
  const manual=stillAllowed?await watchdogEvidence(access,scope).catch(()=>[]):[];

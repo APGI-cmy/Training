@@ -11,7 +11,7 @@ export const watchdogDomains=[
  {id:'identity',title:'Account protection',matches:['mfa','session','password','identity']},
  {id:'network',title:'Network and outbound protection',matches:['edge_','outbound']},
  {id:'operations',title:'Monitoring, alerts and recovery',matches:['alarm','cleanup','runner','restore','outbound','monitor','email','recovery','integrity']},
- {id:'independent',title:'Independent assessment and full coverage',matches:['independent','all_business_paths','governance']},
+ {id:'independent',title:'Independent security review and full coverage',matches:['independent','all_business_paths','governance']},
 ] as const;
 export function watchdogDomain(check:WatchdogCheck){return watchdogDomains.find(d=>d.matches.some(m=>check.id.includes(m)))?.id??'operations';}
 export const watchdogActions=[
@@ -21,7 +21,7 @@ export const watchdogActions=[
  {id:'monitoring',title:'Monitoring and alert response',description:'Confirm scheduled probes, instrumented security events, external delivery and incident escalation.',owner:'APGI administrators'},
  {id:'outbound',title:'Outbound information and suppliers',description:'Review email recipients, authorised external services, AI data handling and outbound restrictions.',owner:'APGI administrators'},
  {id:'recovery',title:'Backup restoration exercise',description:'Restore an approved backup into a separate recovery environment, verify it and record recovery time.',owner:'APGI operations'},
- {id:'independent_audit',title:'Independent security assessment',description:'Arrange an independent penetration test and retain findings and retest evidence.',owner:'Independent assessor'},
+ {id:'independent_audit',title:'Independent security review',description:'Arrange an independent security review and penetration test; retain findings and retest evidence. Course quality review and learner competency decisions remain separate.',owner:'Independent security reviewer'},
  {id:'governance',title:'Policies, people and ISO evidence',description:'Approve risks, responsibilities, supplier reviews, training and incident procedures; independent certification is separate.',owner:'APGI management'},
  {id:'production',title:'Production and integration verification',description:'Repeat checks against the approved production environment and its enabled integrations before release.',owner:'APGI release owner'},
  {id:'evidence_integrity',title:'Trusted evidence and key lifecycle',description:'Retain trusted verification keys, protect signing secrets and arrange independent log retention.',owner:'APGI operations'},

@@ -29,6 +29,10 @@ export const httpCheckNames=[
  {id:'http_jobs',title:'All six background-job endpoints reject missing credentials'},
  {id:'http_webhooks',title:'Unsigned email and payment events are rejected'},
  {id:'http_origin',title:'Off-site Watchdog writes are blocked'},
+ {id:'http_notifications',title:'Anonymous callers cannot read notification inboxes or receipts'},
+ {id:'http_policy',title:'Policy document route requires sign-in'},
+ {id:'http_certificate',title:'Certificate download route requires sign-in'},
+ {id:'http_account',title:'Account-security details require sign-in'},
 ];
 export function probeCookie(user:Identity){return `alp_access_token=${user.session.accessToken}; alp_user_id=${user.id}; ${ACTIVITY_COOKIE}=${Date.now()}`;}
 // Targets are code-owned paths on the fixed staging origin. No arbitrary URL,
@@ -72,6 +76,10 @@ export async function httpProbes({runId,users:[a,b,c],companyIds,check}:{runId:s
   task('http_jobs','All six background-job endpoints reject missing credentials','Every configured cron endpoint is requested without credentials. No background job may run.',async()=>{const responses=await Promise.all(['course-deployments','course-reviews','messages','security-watchdog','service-costs','stripe-settlements'].map(job=>watchdogHttp('/api/cron/'+job)));return responses.every(r=>r.status===401);}),
   task('http_webhooks','Unsigned email and payment events are rejected','Harmless empty events without provider signatures must be rejected before processing.',async()=>{const responses=await Promise.all(['/api/email/events','/api/stripe/webhook'].map(path=>watchdogHttp(path,undefined,{method:'POST',headers:{'content-type':'application/json'},body:'{}'})));return responses.every(r=>r.status===400||r.status===401||r.status===403);}),
   task('http_origin','Off-site Watchdog writes are blocked','An off-site request with a valid fictional sign-in must fail the same-origin check before any operation.',async()=>(await watchdogHttp('/api/security-watchdog',a,{method:'POST',headers:{origin:'https://watchdog.example.invalid','content-type':'application/json'},body:'{"operation":"run"}'})).status===403),
+  task('http_notifications','Anonymous callers cannot read notification inboxes or receipts','All three notification routes require sign-in and no-store caching before exposing inbox, sent-message or cross-reference metadata. This is an anonymous boundary check, not complete recipient-isolation coverage.',async()=>{const responses=await Promise.all(['/api/notifications','/api/notifications/sent','/api/notifications/targets'].map(p=>watchdogHttp(p)));return responses.every(r=>r.status===401&&privateResponse(r));}),
+  task('http_policy','Policy document route requires sign-in','An anonymous request is rejected before policy lookup. The run identifier is a nonexistent document identifier; no real policy is fetched. Authorised policy access and cross-company rules require separate positive and negative controls.',async()=>(await watchdogHttp('/api/policies/'+runId)).status===401),
+  task('http_certificate','Certificate download route requires sign-in','An anonymous download request must require sign-in. A generic 404 or transport error is not counted as authentication evidence. No certificate is issued or read.',async()=>{const r=await watchdogHttp('/api/certificates/'+runId);return r.status===401||[303,307].includes(r.status)&&new URL(r.headers.get('location')??'',STAGING_ORIGIN).pathname==='/alp-sign-in';}),
+  task('http_account','Account-security details require sign-in','The real account-security GET endpoint requires authentication and private/no-store caching. No factor or recovery operation is attempted.',async()=>{const r=await watchdogHttp('/api/account-security');return r.status===401&&privateResponse(r);}),
  ]);
  await watchdogRpc('v2_watchdog_business_fixtures',{p_run:runId,p_operation:'revoke'});
  if(asset)await task('asset_revoked','Revoked enrolment immediately loses direct-file access','After the synthetic enrolment is revoked, the previously successful course URL is denied using the same still-live sign-in.',async()=>(await watchdogHttp(executive+'index.html',a,{method:'HEAD'})).status===403);

@@ -21,6 +21,7 @@ beforeEach(()=>{
   if(url.pathname==='/api/scorm'||url.pathname.startsWith('/api/cron/'))return Response.json({},{status:401});
   if(url.pathname.endsWith('/webhook')||url.pathname.endsWith('/events'))return Response.json({},{status:400});
   if(url.pathname==='/api/security-watchdog')return Response.json({},{status:403});
+  if(url.pathname.startsWith('/api/notifications')||url.pathname.startsWith('/api/policies/')||url.pathname.startsWith('/api/certificates/')||url.pathname==='/api/account-security')return Response.json({},{status:401,headers:privateHeaders});
   throw Error('Unexpected test target');
  }));
 });

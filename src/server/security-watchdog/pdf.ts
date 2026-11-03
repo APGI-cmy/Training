@@ -35,7 +35,7 @@ export async function watchdogPdf(payload:WatchdogPayload,proof:WatchdogProof,fr
  heading('Management evidence references');
  if(!payload.manualEvidence.length)paragraph('No management evidence references were recorded for this scope when the test ran.');
  for(const e of payload.manualEvidence){paragraph(e.controlId+' - '+e.disposition,10,true);paragraph(e.reference);paragraph('Recorded '+e.recordedAt+' | Review by '+e.expiresAt,9);}
- paragraph('Administrator statements are self-reported. They do not mark technical tests passed or replace independent assessment.');
+ paragraph('Administrator statements are self-reported. They do not mark technical tests passed or replace an independent security review.');
  heading('Report integrity');paragraph('Stored report signature verified against the platform signing key at export. The PDF is a human-readable rendering; use the signed JSON for cryptographic verification.');paragraph('SHA-256 '+proof.digest,9);paragraph('Ed25519 key '+proof.keyId,9);paragraph('Trusted public key: https://training-platform-v2-staging.vercel.app/api/security-watchdog/keys',9);paragraph('Independent evidence anchoring and formal certification are separate controls.',9);
  const pages=pdf.getPages();pages.forEach((p,i)=>{p.drawLine({start:{x:margin,y:43},end:{x:width-margin,y:43},thickness:.5,color:rgb(.7,.78,.82)});p.drawText('APGI Watchdog | '+payload.runId.slice(0,8)+' | '+(i+1)+' / '+pages.length,{x:margin,y:27,size:8,font,color:grey});});
  pdf.setTitle('Security Watchdog - '+payload.scope.label);pdf.setAuthor('APGI Training');pdf.setSubject('Scoped technical evidence; not ISO certification');

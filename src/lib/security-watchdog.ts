@@ -1,4 +1,4 @@
-export const WATCHDOG_SUITE = 'apgi-watchdog-v4';
+export const WATCHDOG_SUITE = 'apgi-watchdog-v5';
 export type CheckState = 'passed'|'failed'|'attention'|'inconclusive'|'not_tested';
 export type WatchdogCheck = {id:string;title:string;state:CheckState;kind:'live_configuration'|'synthetic_behaviour'|'alarm_drill'|'manual';detail:string;action?:string};
 export type WatchdogPayload = {
@@ -18,7 +18,7 @@ export const manualControls=[
  {id:'recovery',title:'Backup restoration and continuity exercise'},
  {id:'policies_training',title:'Approved policies and staff training'},
  {id:'incident_response',title:'Incident response and external alert exercise'},
- {id:'independent_audit',title:'Independent assessment and management review'},
+ {id:'independent_audit',title:'Independent security review and management review'},
 ] as const;
 export function permittedWatchdogScope(principal:boolean,ownedCompanyIds:string[],scope:string|null){
  return scope===null?principal:principal||ownedCompanyIds.includes(scope);
