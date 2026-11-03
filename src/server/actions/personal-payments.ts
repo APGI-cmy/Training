@@ -1,4 +1,5 @@
 "use server";
+import {assertNoPaymentDetails} from "@/lib/payment-input";
 import {revalidatePath} from "next/cache";
 import {paymentPortalAccess} from "@/server/services/payment-reports";
 import {rows,write} from "@/server/services/company-structure";
@@ -8,7 +9,7 @@ import {STAGING_ORIGIN} from "@/server/environment-isolation";
 import type {PaymentState} from "./stripe-payments";
 export async function personalStripeAction(_previous:PaymentState,form:FormData):Promise<PaymentState>{
  try{
-  const {session}=await paymentPortalAccess(),id=session.user.id,refresh=form.get("operation")==="refresh";
+  assertNoPaymentDetails(form); const {session}=await paymentPortalAccess(),id=session.user.id,refresh=form.get("operation")==="refresh";
   if(!refresh&&form.get("payment_purpose")!=="on")throw Error("Confirm that these account details will be used for payment purposes only.");
   const existing=(await rows<{account_id:string|null;country:string;state:string}>(`/rest/v1/v2_stripe_personal_accounts?user_id=eq.${id}&select=account_id,country,state`))[0];
   const country=existing?.account_id?existing.country:String(form.get("country")??"").trim().toUpperCase();

@@ -1,4 +1,5 @@
 "use server";
+import {assertNoPaymentDetails} from "@/lib/payment-input";
 import {createHash,randomBytes} from "node:crypto";
 import {revalidatePath} from "next/cache";
 import {adminRest} from "@/server/supabase/admin-rest";
@@ -63,7 +64,7 @@ export async function requestStripeSetup(_previous:PaymentState,_form:FormData):
 
 export async function partnerStripeAction(_previous:PaymentState,form:FormData):Promise<PaymentState>{
  try{
-  const companyId=validId(text(form,"company")),access=await requireCompany(companyId);
+  assertNoPaymentDetails(form); const companyId=validId(text(form,"company")),access=await requireCompany(companyId);
   if(access.company.slug==="apgi")throw Error("APGI banking is managed through Jorrie’s private setup.");
   if(!(await ownMemberships(access.session,true)).some(m=>m.organisation_id===companyId))throw Error("Only this company’s assigned owner may connect its bank and Stripe account.");
   if(text(form,"operation")!=="refresh"&&form.get("payment_purpose")!=="on")throw Error("Confirm that the account details will be used for payment purposes only.");

@@ -1,0 +1,1 @@
+{"name":"apgi-security-log-archive","private":true,"version":"1.0.0","type":"module","engines":{"node":">=24 <25"},"scripts":{"start":"node receiver.mjs","test":"node --test receiver.test.mjs"}}

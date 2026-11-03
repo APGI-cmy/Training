@@ -16,6 +16,8 @@ beforeEach(()=>{
   if(url.pathname.startsWith('/courses/'))return new Response(null,{status:owner&&!revoked&&positive||foreign&&foreignLeak?200:403,headers:privateHeaders});
   if(url.pathname==='/_next/image')return new Response(null,{status:400});
   if(url.pathname.startsWith('/api/messages/attachments/'))return new Response(owner?'WATCHDOG-SYNTHETIC-'+runId:null,{status:owner?200:404,headers:privateHeaders});
+  if(url.pathname==='/api/payments/reports'&&url.searchParams.get('scope')==='self')return new Response('"user_id","country","state","updated_at"',{status:200,headers:privateHeaders});
+  if(url.pathname==='/api/security-assurance')return cookie?url.searchParams.has('scope')?Response.json({},{status:403,headers:privateHeaders}):Response.json({audience:'learner',overall:null,reportHref:'/security-assurance'},{headers:privateHeaders}):Response.json({},{status:401,headers:privateHeaders});
   if(url.pathname==='/api/payments/reports')return new Response(owner&&url.searchParams.get('scope')==='company-a'?'"id","buyer_id"':null,{status:owner&&url.searchParams.get('scope')==='company-a'?200:403,headers:privateHeaders});
   if(url.pathname.includes('/export'))return Response.json({},{status:404});
   if(url.pathname==='/api/scorm'||url.pathname.startsWith('/api/cron/'))return Response.json({},{status:401});

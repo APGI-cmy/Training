@@ -1,3 +1,4 @@
+import {PaymentAssurance} from "@/components/security-watchdog/PaymentAssurance";
 import Link from "next/link";
 import {requirePlatformPrincipal} from "@/server/services/platform-principals";
 import {setupStatus} from "@/server/services/stripe-platform";
@@ -17,7 +18,7 @@ export default async function StripePortal(){
   rows<StripeOrder>("/rest/v1/v2_stripe_orders?select=id,buyer_id,release_id,company_id,course_id,amount,currency,state,hold_reason,allocation&order=created_at.desc&limit=100")
  ]);
  const money=(n:number,currency:string)=>new Intl.NumberFormat("en-CA",{style:"currency",currency}).format(n/100);
- return <main className="admin-page"><header className="admin-page-header"><div><p className="eyebrow">APGI · Payments</p><h1>Stripe payment portal</h1><p>Canadian APGI account, partner onboarding and approved cost sharing.</p></div></header>
+ return <main className="admin-page"><header className="admin-page-header"><div><p className="eyebrow">APGI · Payments</p><h1>Stripe payment portal</h1><p>Canadian APGI account, partner onboarding and approved cost sharing.</p></div></header><PaymentAssurance/>
  <section className="admin-form-card"><h2>Setup progress</h2><ol><li>{status.requested?"✓":"○"} Jorrie’s private setup request — {status.mail_state==="accepted"?"email provider accepted":status.mail_state??"not sent"}.</li><li>{status.configured?"✓":"○"} Canadian Stripe sandbox — {status.configured?"connection verified":"waiting for Jorrie"}.</li><li>○ Partner onboarding and Stripe route approval — checked for each company.</li><li>○ End-to-end Stripe test payment — requires the sandbox connection and a published, approved course.</li><li>○ Live payment activation — a separate reviewed release.</li></ol><p><strong>V2 sandbox only.</strong> Live payments and bank payouts remain disabled. Test purchases grant no course access or certificates.</p>
  {session.user.email?.toLowerCase()===STRIPE_OWNER_EMAIL?<p><Link href="/admin/payments/stripe/private">Open my private APGI Stripe setup</Link></p>:<p>Jorrie alone can open APGI’s private connection page. APGI banking details are entered directly in Stripe and are never stored here.</p>}
  <PaymentForm action={requestStripeSetup} label={status.mail_state==="accepted"?"Check setup request":"Send Jorrie the private setup request"}/><p><Link href="/notifications">Notifications and read receipts</Link> · <Link href="/admin/payments?course=vpshr-level-0">Existing payment planning settings</Link></p></section>

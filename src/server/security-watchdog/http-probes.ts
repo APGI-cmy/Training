@@ -33,6 +33,10 @@ export const httpCheckNames=[
  {id:'http_policy',title:'Policy document route requires sign-in'},
  {id:'http_certificate',title:'Certificate download route requires sign-in'},
  {id:'http_account',title:'Account-security details require sign-in'},
+ {id:'payment_personal_report',title:'Personal payment exports expose scoped setup metadata'},
+ {id:'assurance_learner',title:'Learner assurance omits administrative security records'},
+ {id:'assurance_scope',title:'Company assurance refuses other-company diagnostics'},
+ {id:'assurance_anonymous',title:'Security assurance requires sign-in'},
 ];
 export function probeCookie(user:Identity){return `alp_access_token=${user.session.accessToken}; alp_user_id=${user.id}; ${ACTIVITY_COOKIE}=${Date.now()}`;}
 // Targets are code-owned paths on the fixed staging origin. No arbitrary URL,
@@ -80,6 +84,10 @@ export async function httpProbes({runId,users:[a,b,c],companyIds,check}:{runId:s
   task('http_policy','Policy document route requires sign-in','An anonymous request is rejected before policy lookup. The run identifier is a nonexistent document identifier; no real policy is fetched. Authorised policy access and cross-company rules require separate positive and negative controls.',async()=>(await watchdogHttp('/api/policies/'+runId)).status===401),
   task('http_certificate','Certificate download route requires sign-in','An anonymous download request must require sign-in. A generic 404 or transport error is not counted as authentication evidence. No certificate is issued or read.',async()=>{const r=await watchdogHttp('/api/certificates/'+runId);return r.status===401||[303,307].includes(r.status)&&new URL(r.headers.get('location')??'',STAGING_ORIGIN).pathname==='/alp-sign-in';}),
   task('http_account','Account-security details require sign-in','The real account-security GET endpoint requires authentication and private/no-store caching. No factor or recovery operation is attempted.',async()=>{const r=await watchdogHttp('/api/account-security');return r.status===401&&privateResponse(r);}),
+  task('payment_personal_report','Personal payment exports expose scoped setup metadata','The fictional owner can export its empty personal setup report. A forged recipient query is ignored; only the allowed setup-status columns are returned. No bank data is created or read.',async()=>{const responses=await Promise.all(['','&user_id='+b.id].map(q=>watchdogHttp('/api/payments/reports?scope=self&table=profiles'+q,a)));for(const r of responses){if(r.status!==200||!privateResponse(r)||(await r.text()).replace(/^\uFEFF/,'')!=='"user_id","country","state","updated_at"')return false;}return true;}),
+  task('assurance_learner','Learner assurance omits administrative security records','A signed-in fictional learner receives only the limited assurance projection, with no full platform score, raw checks, findings, actor IDs or company diagnostics.',async()=>{const r=await watchdogHttp('/api/security-assurance',c);if(r.status!==200||!privateResponse(r))return false;const v=await r.json();return v.audience==='learner'&&v.overall===null&&v.reportHref==='/security-assurance'&&!('payload'in v)&&!('proof'in v)&&!('runs'in v);}),
+  task('assurance_scope','Company assurance refuses other-company diagnostics','A fictional company owner cannot request whole-platform or the other company assurance report. Only the owner’s current verified scope is permitted.',async()=>{const responses=await Promise.all(['platform',companyIds[1]].map(s=>watchdogHttp('/api/security-assurance?scope='+s,a)));return responses.every(r=>r.status===403&&privateResponse(r));}),
+  task('assurance_anonymous','Security assurance requires sign-in','The limited payment assurance endpoint rejects anonymous callers instead of exposing account or technical metadata.',async()=>{const r=await watchdogHttp('/api/security-assurance');return r.status===401&&privateResponse(r);}),
  ]);
  await watchdogRpc('v2_watchdog_business_fixtures',{p_run:runId,p_operation:'revoke'});
  if(asset)await task('asset_revoked','Revoked enrolment immediately loses direct-file access','After the synthetic enrolment is revoked, the previously successful course URL is denied using the same still-live sign-in.',async()=>(await watchdogHttp(executive+'index.html',a,{method:'HEAD'})).status===403);
