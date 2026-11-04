@@ -14,3 +14,21 @@
 @media(max-width:760px){.lu-review-layout{grid-template-columns:minmax(0,1fr)}.lu-workflow{grid-template-columns:repeat(2,minmax(0,1fr))}.lu-workflow h3,.lu-workflow>p{grid-column:1/-1}.lu-dialog-heading{flex-wrap:wrap}.lu-review-dialog{padding:16px}.lu-workflow-step{height:100%}}@media(max-width:420px){.lu-workflow{grid-template-columns:minmax(0,1fr)}.lu-review-dialog{width:calc(100vw - 16px);padding:12px}.lu-review-dialog button{min-height:44px}}
 .lu-overview-item{display:flex;flex-direction:column;min-width:0}.lu-overview-item>.lu-open-button{width:100%;flex:1}
 .lu-pending{padding:12px 16px;margin:16px 0;border-left:4px solid #b87917;border-radius:6px;background:var(--surface-strong);color:var(--ink);font-weight:600}.lu-initial-status{margin:16px 0 24px}.lu-initial-status li{margin:8px 0}
+
+/* Separate coverage, responses, endorsements and publication; details work on touch and keyboard. */
+.review-progress-summary{scroll-margin-top:calc(var(--app-header-height,90px) + 20px)}
+.review-page .review-progress-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:12px;margin:18px 0}
+.review-page .review-progress-metrics>div{display:grid;align-content:start;gap:8px;border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0;background:var(--surface-strong)}
+.review-progress-metrics dt{font-weight:700;font-size:.95rem;line-height:1.5}
+.review-page .review-progress-metrics dd{margin:0;font-size:1.8rem;line-height:1.2}
+.review-progress-metrics p{margin:0;font-size:.85rem;line-height:1.5;overflow-wrap:anywhere}
+.review-progress-explanation{padding:14px 16px;border:1px solid var(--line);border-radius:8px}
+.review-progress-person{padding:8px 0;border-bottom:1px solid var(--line)}
+.review-progress-person h4{overflow-wrap:anywhere}
+.review-team-progress{min-width:0;max-width:50rem}
+.review-team-progress>p{margin:0 0 8px}
+.review-team-progress>p>span{display:block;font-size:.85rem;margin-top:4px}
+.review-team-progress details{margin:8px 0}
+.review-team-progress summary{font-size:.9rem;line-height:1.5}
+.review-team-progress details p,.review-team-progress details li{font-size:.9rem;line-height:1.6}
+.review-progress-explanation summary:focus-visible,.review-team-progress summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:3px}
