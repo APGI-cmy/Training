@@ -6,7 +6,8 @@ import {notificationTarget,type NotificationInbox,type PersonalNotification} fro
 import {presentNotification} from "@/lib/notification-presentation";
 import {reviewNotificationTasks,type ReviewTaskSource} from "@/lib/review-notification-tasks";
 import type {ReviewRound} from "@/lib/course-review";
-import {rows} from "./company-structure";
+import {rows,requirePolicy} from "./company-structure";
+import {presentPolicyNotification,type PolicyDecision} from "@/lib/policy-review";
 import {isPlatformPrincipal} from "./platform-principals";
 import {contentSource,reviewSource} from "./course-reviews";
 import {syncReviewMessages} from './review-message-sync';
@@ -25,6 +26,14 @@ const taskContext=cache(async(session:AlpSession)=>{
 });
 async function present(session:AlpSession,items:PersonalNotification[]):Promise<PersonalNotification[]>{
  const {principal,email,sources}=await taskContext(session),rounds=new Map(sources.map(s=>[s.round.id,s.round]));
+ const policyIds=[...new Set(items.filter(n=>n.source_type==="policy"&&n.source_id).map(n=>n.source_id!))];
+ const policies=new Map(await Promise.all(policyIds.map(async id=>{
+  try {
+   const {policy}=await requirePolicy(id);
+   const decisions=await rows<PolicyDecision>(`/rest/v1/policy_decisions?policy_id=eq.${id}&select=email,decision,reason,decided_at,content_hash`);
+   return [id,{policy,decisions}] as const;
+  } catch { return [id,null] as const; }
+ })));
  const missing=[...new Set(items.filter(n=>n.source_type==="review"&&n.source_id&&!rounds.has(n.source_id)).map(n=>n.source_id!))];
  if(missing.length){
   const earlier=await rows<ReviewRound>(`/rest/v1/course_review_rounds?id=in.(${missing.join(",")})&select=*`);
@@ -33,7 +42,9 @@ async function present(session:AlpSession,items:PersonalNotification[]):Promise<
  return items.map(n=>{
   const round=n.source_id?rounds.get(n.source_id):undefined;
   const sender=n.sender_email??round?.document.participants.find(p=>p.userId===n.actor_user_id)?.email??(round?.document.requesterId===n.actor_user_id?round.document.requester:undefined)??n.event?.actor??null;
-  return {...presentNotification(n,round,principal,email),recipient_email:n.recipient_email??email,sender_email:sender};
+  const policy=n.source_type==="policy"&&n.source_id?policies.get(n.source_id):null;
+  const notice=policy?presentPolicyNotification(n,policy.policy,policy.decisions,email):n;
+  return {...presentNotification(notice,round,principal,email),recipient_email:n.recipient_email??email,sender_email:sender};
  });
 }
 export const notificationInbox=cache(async(session:AlpSession,filter="all",offset=0,summary=false):Promise<NotificationInbox>=>{

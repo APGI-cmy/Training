@@ -25,6 +25,10 @@
 .company-course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 20px; margin-bottom: 24px; }
 .company-course-grid .course-card-cover { max-height: 160px; }
 .policy-body { white-space: pre-wrap; overflow-wrap: anywhere; }
+.policy-decision-form { align-items: start; }
+.policy-decision-form select { min-height: 48px; height: auto; }
+.policy-decision-confirm { display: flex !important; flex-direction: row !important; align-items: center; gap: 10px; }
+.policy-decision-confirm input[type="checkbox"] { width: auto; flex: 0 0 auto; }
 .policy-hash { overflow-wrap: anywhere; }
 .draft-fields { display: grid; gap: 8px; }
 .draft-fields > div { display: grid; grid-template-columns: minmax(130px, 1fr) minmax(0, 2fr); gap: 10px; }

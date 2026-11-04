@@ -3,7 +3,7 @@ import {commercialReviewPath,commercialSignoffAnchor} from "./review-navigation"
 import type {ReviewRound} from "./course-review";
 
 export function presentNotification(n:PersonalNotification,round?:ReviewRound,principal=false,viewerEmail=""):PersonalNotification{
- const result={...n,requirement:n.context?.requirement,resolved_at:n.context?.resolved_at};
+ const result={...n,requirement:n.requirement??n.context?.requirement,resolved_at:n.resolved_at??n.context?.resolved_at};
  const event=n.event,base=round?`/course-reviews/${round.id}`:undefined;
  if(base&&round){
   const course=round.document.title,current=round.document.workflow?.commercials.at(-1),offered=!!current?.offeredAt;

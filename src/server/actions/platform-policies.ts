@@ -4,6 +4,7 @@ import {internalDistributionConfiguration} from "@/lib/platform-partnership";
 import {attachCommercialPlan} from "@/server/services/publication-workflow";
 import { createHash, randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { POLICY_REASON_LIMIT, policyDecisionLabel, type PolicyDecision } from "@/lib/policy-review";
 import { requirePlatformPrincipal } from "@/server/services/platform-principals";
 import { requireSession, getSupabaseRestUrl } from "@/server/auth/session";
 import { adminRest } from "@/server/supabase/admin-rest";
@@ -170,7 +171,7 @@ export async function policyStructureAction(
       };
     }
     const id = validId(formText(form, "policy_id", 36, 36));
-    await requirePolicy(id);
+    const { policy } = await requirePolicy(id);
     if (op === "notify") {
       await requirePlatformPrincipal();
       const failed = await notifyPolicy(id);
@@ -187,7 +188,13 @@ export async function policyStructureAction(
       throw new Error(
         "Confirm that you reviewed this exact version before recording your decision.",
       );
-    const reason = formText(form, "reason", op === "reject" ? 3 : 0, 3000);
+    if (op !== "submit" && form.get("content_hash") !== policy.content_hash)
+      throw new Error("This policy version could not be confirmed. Reload the policy before deciding; keep a copy of your comments.");
+    const reason = String(form.get("reason") ?? "").trim();
+    if (reason.length > POLICY_REASON_LIMIT)
+      throw new Error(`Your response is too long. Keep it within ${POLICY_REASON_LIMIT.toLocaleString()} characters. It has not been saved.`);
+    if (op === "reject" && reason.length < 3)
+      throw new Error("Please explain the changes you require before rejecting this version.");
     const r = await adminRest("/rest/v1/rpc/v2_policy_review", {
       method: "POST",
       body: JSON.stringify({
@@ -197,16 +204,23 @@ export async function policyStructureAction(
         p_reason: reason,
       }),
     });
-    if (!r.ok)
+    if (!r.ok && op === "submit")
       throw new Error(
         "This decision could not be recorded. Check that this version is awaiting your decision and that you are a required reviewer.",
       );
-    const state = await r.json();
+    const state = r.ok ? await r.json() : policy.status;
+    if (op !== "submit") {
+      const saved = (await rows<PolicyDecision>(`/rest/v1/policy_decisions?policy_id=eq.${id}&email=eq.${encodeURIComponent(session.user.email!.toLowerCase())}&content_hash=eq.${policy.content_hash}&select=email,decision,reason,decided_at,content_hash&limit=1`))[0];
+      if (!saved || saved.decision !== op || saved.reason !== reason)
+        throw new Error("The save could not be confirmed. Check Required reviews before retrying. Your comments remain in this form.");
+    }
     const failed = op === "submit" ? await notifyPolicy(id) : 0;
     revalidatePath("/admin/policies");
     revalidatePath(`/policies/${id}`);
+    revalidatePath("/policies");
+    revalidatePath("/notifications");
     return {
-      success: `Policy ${state}.${failed ? " Some notification emails failed; use Retry notifications." : ""} Financial distributions remain inactive.`,
+      success: op === "submit" ? `Policy ${state}.${failed ? " Some notification emails failed; use Retry notifications." : ""} Financial distributions remain inactive.` : `${policyDecisionLabel(op)}. Your decision and comments are saved.${op === "reject" ? " A revised policy version is required." : ""} Financial distributions remain inactive.`,
     };
   } catch (error) {
     if (error instanceof Error && "digest" in error) throw error;

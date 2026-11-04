@@ -6,6 +6,8 @@ import { policySignatories } from "@/lib/company-structure";
 import { StructureForm } from "@/components/admin/StructureForm";
 import { policyStructureAction } from "@/server/actions/platform-policies";
 import { isPlatformPrincipal } from "@/server/services/platform-principals";
+import { PolicyDecisionForm } from "@/components/admin/PolicyDecisionForm";
+import { policyReviewerStatus } from "@/lib/policy-review";
 export default async function PolicyPage({
   params,
 }: {
@@ -41,7 +43,7 @@ export default async function PolicyPage({
   const canReview =
     p.status === "submitted" &&
     reviewers.some((r) => r.email === session.user.email?.toLowerCase()) &&
-    !decisions.some((d) => d.email === session.user.email?.toLowerCase());
+    !decisions.some((d) => d.email === session.user.email?.toLowerCase() && d.content_hash === p.content_hash);
   return (
     <main className="admin-page">
       <p className="eyebrow">Controlled policy version</p>
@@ -67,44 +69,21 @@ export default async function PolicyPage({
       </section>
       <section className="admin-form-card">
         <h2>Required reviews</h2>
+        {p.status === "rejected" ? <p className="form-error" role="status">This version was rejected. The saved reasons and proposed changes are shown below. Create a revised version for fresh review; this version is not approved.</p> : null}
         {reviewers.map((r) => {
-          const decision = decisions.find((d) => d.email === r.email);
+          const decision = decisions.find((d) => d.email === r.email && d.content_hash === p.content_hash);
           return (
             <article className="draft-summary" key={r.email}>
               <strong>{r.email}</strong>
               <span>
-                {decision
-                  ? `${decision.decision} · ${new Date(decision.decided_at).toLocaleString("en-ZA", { timeZone: "Africa/Johannesburg" })}`
-                  : "Awaiting decision"}
+                {policyReviewerStatus(p, decision)}{decision ? ` · ${new Date(decision.decided_at).toLocaleString("en-ZA", { timeZone: "Africa/Johannesburg" })} SAST` : ""}
               </span>
-              {decision?.reason ? <p>{decision.reason}</p> : null}
+              {decision?.reason ? <div><strong>Saved comments and proposed changes</strong><p className="policy-body">{decision.reason}</p></div> : null}
             </article>
           );
         })}
         {canReview ? (
-          <StructureForm
-            action={policyStructureAction}
-            label="Record my decision"
-          >
-            <input type="hidden" name="policy_id" value={id} />
-            <label className="admin-span-two">
-              <input type="checkbox" name="confirm_decision" required /> I
-              reviewed this exact version and confirm my selected decision.
-            </label>
-            <label>
-              My decision
-              <select name="operation">
-                <option value="approve">Approve this version</option>
-                <option value="reject">
-                  Reject and request reconfiguration
-                </option>
-              </select>
-            </label>
-            <label>
-              Reason (required for rejection)
-              <textarea name="reason" maxLength={3000} />
-            </label>
-          </StructureForm>
+          <PolicyDecisionForm policyId={id} contentHash={p.content_hash} />
         ) : null}
       </section>
       {canManage && p.status === "draft" ? (
