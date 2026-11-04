@@ -10,6 +10,7 @@ vi.mock("@/server/auth/learner-onboarding",()=>({requireLearnerProfile:vi.fn()})
 vi.mock("@/server/services/organisations/get-organisations",()=>({getAvailableCourseIds:m.available}));
 vi.mock("@/server/services/commerce/get-course-commerce",()=>({getCourseCommerceSettings:async()=>new Map()}));
 vi.mock("@/lib/services/enrolments/get-course-access",()=>({getCourseAccess:async({courseId}:{courseId:string})=>({status:m.enrolled&&courseId==="vpshr-level-0"?"enrolled":"not_enrolled"})}));
+vi.mock("@/server/services/course-card-images",()=>({getSavedCourseCardImages:async()=>({})}));
 import {getCatalogueReviews} from "@/server/services/organisations/get-catalogue-reviews";
 import CataloguePage from "../app/(learner)/catalogue/page";
 const course="tiger-kidnapping-telecommunications";
@@ -20,6 +21,10 @@ describe("Private reviews in the signed-in course catalogue",()=>{
  it("shows Tiger Kidnapping as under review with a review link rather than learner enrolment",async()=>{
   const html=renderToStaticMarkup(await CataloguePage({}));
   expect(html).toContain("Tiger Kidnapping in Telecommunications");expect(html).toContain("NKS Capital");expect(html).toContain("Status: Under review");expect(html).toContain("Commercial sign-off");expect(html).toContain('href="/course-reviews/review-id"');expect(html).not.toContain('href="/courses/tiger-kidnapping-telecommunications"');expect(html.match(/Enrol now/g)).toHaveLength(2);
+ });
+ it("shows every Course preview course to principals, without opening private previews to learners",async()=>{
+  m.principal.mockResolvedValue(true);let html=renderToStaticMarkup(await CataloguePage({}));expect(html).toContain('Executive Assistant Training Programme');expect(html).toContain('Status: Administrator preview');expect(html).toContain('href="/admin/courses/executive-assistant-lu1-compatibility/preview"');expect(html).not.toContain('href="/courses/executive-assistant-lu1-compatibility"');
+  m.principal.mockResolvedValue(false);html=renderToStaticMarkup(await CataloguePage({}));expect(html).not.toContain('Executive Assistant Training Programme');
  });
  it("keeps private review cards out of My learning and skips their lookup",async()=>{
   m.enrolled=true;const html=renderToStaticMarkup(await CataloguePage({searchParams:Promise.resolve({view:"my-learning"})}));

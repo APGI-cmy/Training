@@ -1,3 +1,4 @@
+import {getSavedCourseCardImages} from '@/server/services/course-card-images';
 import { LearnerDashboard } from "@/components/dashboard/LearnerDashboard";
 import { requireSession } from "@/server/auth/session";
 import { getDashboard } from "@/lib/services/dashboard/get-dashboard";
@@ -14,5 +15,5 @@ export default async function DashboardPage() {
   await requireLearnerProfile(session);
   const dashboard = await getDashboard(session);
 
-  return <LearnerDashboard dashboard={dashboard} />;
+  return <LearnerDashboard dashboard={dashboard} cardImages={await getSavedCourseCardImages()} />;
 }

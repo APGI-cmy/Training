@@ -1,3 +1,4 @@
+import {getSavedCourseCardImages} from '@/server/services/course-card-images';
 import Link from "next/link";
 import { getCourses } from "@/lib/courses";
 import { CourseCardCover } from "@/components/course/CourseCardCover";
@@ -6,7 +7,8 @@ export const metadata = {
   title: "Courses"
 };
 
-export default function CoursesPage() {
+export default async function CoursesPage() {
+  const cardImages=await getSavedCourseCardImages();
   const courses = getCourses().filter(course => course.catalogueVisibility !== "client_specific");
 
   return (
@@ -22,7 +24,7 @@ export default function CoursesPage() {
         <div className="content-inner card-grid">
           {courses.map((course) => (
             <article className="course-card course-card--visual" key={course.id}>
-              <CourseCardCover courseSlug={course.slug} />
+              <CourseCardCover courseSlug={course.slug} cover={cardImages[course.slug]} />
               <div className="course-card-body">
                 <span>{course.level}</span>
                 <h2>{course.title}</h2>

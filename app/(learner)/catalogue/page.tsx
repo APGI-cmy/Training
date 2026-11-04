@@ -1,3 +1,5 @@
+import {isPlatformPrincipal} from '@/server/services/platform-principals';
+import {getSavedCourseCardImages} from '@/server/services/course-card-images';
 import Link from "next/link";
 import { getCourses } from "@/lib/courses";
 import { defaultCourseCommerceSetting, formatCoursePrice, payableCoursePriceCents } from "@/lib/commerce";
@@ -48,7 +50,9 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
   const session = await requireSession();
   await requireLearnerProfile(session);
   const { view } = (await searchParams) ?? {};
+  const principal=view!=="my-learning"&&await isPlatformPrincipal(session);
   const courses = getCourses();
+ const cardImages=await getSavedCourseCardImages();
   const commerce = await getCourseCommerceSettings(courses.map((course) => course.slug));
   const [availableCourseIds, access, reviews] = await Promise.all([getAvailableCourseIds(session.user.id, courses.map((course) => course.id)), Promise.all(
     courses.map((course) =>
@@ -64,6 +68,7 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
   const entries = view === "my-learning"
     ? getMyLearningEntries(sourceEntries)
     : getCatalogueEntries(sourceEntries);
+  const adminPreviews=view==="my-learning"||!principal?[]:courses.filter(c=>!availableCourseIds.has(c.id)&&!reviews.has(c.id));
   const reviewCourses=view==="my-learning"?[]:courses.filter(course=>!availableCourseIds.has(course.id)&&reviews.has(course.id));
 
   return (
@@ -79,14 +84,14 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
       </header>
 
       <section className={`course-grid ${styles.grid}`} aria-label={view === "my-learning" ? "My learning courses" : "Available courses and assigned reviews"}>
-        {entries.length === 0 && reviewCourses.length===0 ? <p>No courses are currently linked to your learning profile.</p> : null}
+        {entries.length === 0 && reviewCourses.length===0 && adminPreviews.length===0 ? <p>No courses are currently linked to your learning profile.</p> : null}
         {entries.map(({ course, decision }) => {
           const state = stateLabels[decision.status];
           const pricing = commerce.get(course.slug) ?? defaultCourseCommerceSetting(course.slug);
 
           return (
             <article className={`course-card course-card--visual ${styles.card}`} key={course.id}>
-              <CourseCardCover courseSlug={course.slug} />
+              <CourseCardCover courseSlug={course.slug} cover={cardImages[course.slug]} />
               <div className="course-card-body">
               <p className="eyebrow">{course.level}</p>
               <h2>{course.title}</h2>
@@ -109,7 +114,8 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
             </article>
           );
         })}
-        {reviewCourses.map(course=><CatalogueReviewCard key={course.id} course={course} review={reviews.get(course.id)!}/>)}
+        {adminPreviews.map(course=><article className={`course-card course-card--visual ${styles.card}`} key={course.id}><CourseCardCover courseSlug={course.slug} cover={cardImages[course.slug]}/><div className="course-card-body"><p className="eyebrow">{course.level}</p><h2>{course.title}</h2><p>{course.description}</p><p><strong>Status: Administrator preview</strong><br/>Not yet available for learner enrolment.</p><Link className="button-link" href={`/admin/courses/${course.slug}/preview`}>Preview course</Link><Link className="button-link" href={`/course-reviews/new?course=${course.slug}`}>Start publication workflow</Link></div></article>)}
+        {reviewCourses.map(course=><CatalogueReviewCard key={course.id} course={course} review={reviews.get(course.id)!} cover={cardImages[course.slug]}/>)}
       </section>
     </main>
   );

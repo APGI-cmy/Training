@@ -8,14 +8,14 @@ import {getCourseCover} from '@/lib/course-covers';
 import type {EmailLibraryImage,EmailWorkspace} from '@/lib/email-sets';
 type Course={id:string;title:string};
 
-export function ImageLibraryPanel({company,images,courses,course='',value='',onUse}:{company:string;images:EmailLibraryImage[];courses:Course[];course?:string;value?:string;onUse?:(value:string)=>void}){
- const [selected,setSelected]=useState(value),[courseFilter,setCourseFilter]=useState(course),[purpose,setPurpose]=useState('email'),[search,setSearch]=useState(''),[includeShared,setIncludeShared]=useState(true),[added,setAdded]=useState<EmailLibraryImage[]>([]);
+export function ImageLibraryPanel({company,images,courses,course='',value='',onUse,initialPurpose='email',useLabel='Use selected image in this message'}:{company:string;images:EmailLibraryImage[];courses:Course[];course?:string;value?:string;onUse?:(value:string,image?:EmailLibraryImage)=>void;initialPurpose?:string;useLabel?:string}){
+ const [selected,setSelected]=useState(value),[courseFilter,setCourseFilter]=useState(course),[purpose,setPurpose]=useState(initialPurpose),[search,setSearch]=useState(''),[includeShared,setIncludeShared]=useState(true),[added,setAdded]=useState<EmailLibraryImage[]>([]);
  const [state,action,pending]=useActionState(emailSetAction,{});
  const router=useRouter();
  useEffect(()=>{if(state.image){setAdded(items=>[state.image!,...items.filter(item=>item.id!==state.image!.id)]);setSelected(state.image.url);router.refresh();}},[state.image,router]);
  function upload(event:FormEvent<HTMLFormElement>){event.preventDefault();const data=new FormData(event.currentTarget);startTransition(()=>action(data));}
  const all=[...added,...images.filter(image=>!added.some(item=>item.id===image.id))].filter(image=>image.organisation_id===company);
- const filtered=all.filter(image=>(!courseFilter||image.course_id===courseFilter)&&(purpose==='all'||image.purpose===purpose||image.purpose==='both')&&image.title.toLowerCase().includes(search.toLowerCase()));
+ const filtered=all.filter(image=>(!courseFilter||image.course_id===courseFilter||image.course_id===null)&&(purpose==='all'||image.purpose===purpose||image.purpose==='both')&&image.title.toLowerCase().includes(search.toLowerCase()));
  const preview=libraryImagePath(selected)??(selected==='course'?getCourseCover(courseFilter||course)?.src:selected.startsWith('https://')?selected:null);
  return <div className="image-library-panel"><p>Reuse images for a particular course, for emails, or for both. Your company uploads are separate from other companies. Shared neutral images are available to everyone.</p>
  <div className="email-filters"><label>Filter by course<select value={courseFilter} onChange={e=>setCourseFilter(e.target.value)}><option value="">All courses</option>{courses.map(c=><option key={c.id} value={c.id}>{c.title}</option>)}</select></label><label>Filter by use<select value={purpose} onChange={e=>setPurpose(e.target.value)}><option value="all">Courses and emails</option><option value="course">Course images (including both)</option><option value="email">Email images (including both)</option></select></label></div>
@@ -32,7 +32,7 @@ export function ImageLibraryPanel({company,images,courses,course='',value='',onU
  </form></details>
  <p className="email-note">Create an image: planned for Version 3. For now, upload existing course artwork or choose a shared image.</p>
  {preview?<figure className="email-selected-graphic"><img src={preview} alt="Selected image preview"/><figcaption>Selected image preview</figcaption></figure>:null}
- {onUse?<button type="button" disabled={!selected} onClick={()=>onUse(selected)}>Use selected image in this message</button>:null}
+ {onUse?<button type="button" disabled={!selected} onClick={()=>onUse(selected,all.find(image=>image.url===selected))}>{useLabel}</button>:null}
  </div>;
 }
 

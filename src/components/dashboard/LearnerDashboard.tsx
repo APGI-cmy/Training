@@ -3,7 +3,7 @@ import { ProgressIndicator } from "@/components/progress/ProgressIndicator";
 import { CourseCardCover } from "@/components/course/CourseCardCover";
 import type { LearnerDashboard as LearnerDashboardModel } from "@/lib/services/dashboard/get-dashboard";
 
-export function LearnerDashboard({ dashboard }: { dashboard: LearnerDashboardModel }) {
+export function LearnerDashboard({ dashboard,cardImages={} }: { dashboard: LearnerDashboardModel;cardImages?:Record<string,{src:string;alt:string}> }) {
   return (
     <main>
       <section className="page-masthead">
@@ -34,7 +34,7 @@ export function LearnerDashboard({ dashboard }: { dashboard: LearnerDashboardMod
             {dashboard.courses.length === 0 ? <p>You have no enrolled courses yet. If you are expecting a course invitation, contact your training administrator.</p> : null}
             {dashboard.courses.map((course) => (
               <article className="course-card course-card--visual" key={course.id}>
-                <CourseCardCover courseSlug={course.slug} />
+                <CourseCardCover courseSlug={course.slug} cover={cardImages[course.slug]} />
                 <div className="course-card-body">
                   <span>{course.level}</span>
                   <h3>{course.title}</h3>
