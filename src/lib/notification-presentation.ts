@@ -8,7 +8,10 @@ export function presentNotification(n:PersonalNotification,round?:ReviewRound,pr
  if(base&&round){
   const course=round.document.title,current=round.document.workflow?.commercials.at(-1),offered=!!current?.offeredAt;
   const commercial=commercialReviewPath(round.id),actor=event?.actor??"A reviewer";
-  if(n.context?.review_task){result.action_label="Open this required action";}
+  if(n.context?.review_task){
+   result.action_label=n.pending?"Open this required action":"View saved outcome";
+   if(!n.pending){result.message=`Concluded request — ${n.message}`;result.requirement="This request no longer needs a response for its recorded version. Open the workflow to see the saved decision or the replacement request. Earlier messages, comments and receipts remain in the history.";}
+  }
   else if(event){
    if(event.action==="task_decision"&&event.task_decision){
     const decision=event.task_decision,kind=decision.task==="commercials"?"Commercial":"Branding";

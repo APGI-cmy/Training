@@ -44,7 +44,7 @@ describe("Specific workflow notifications and their outcomes",()=>{
  it("does not generate a revise-pricing task for a saved version merely awaiting submission",()=>{
   const r=notificationRound();r.document.workflow!.stage="commercial_draft";delete r.document.workflow!.commercials[0].submittedAt;
   const tasks=reviewNotificationTasks({round:r,hash:"hash",brandRevision:1},"jorrie.jordaan@apginc.ca","jorrie",true);
-  expect(tasks.some(t=>t.key.includes(":pricing:"))).toBe(false);expect(tasks.some(t=>t.key.includes(":submit:"))).toBe(true);
+  expect(tasks.some(t=>t.key.includes(":pricing:"))).toBe(false);expect(tasks.some(t=>t.key.includes(":signoff:"))).toBe(true);expect(tasks.some(t=>t.key.includes(":submit:"))).toBe(false);
  });
  it("uses stable notification references instead of list position",()=>{expect(notificationReference(notice())).toBe("Notification 42");});
  it("opens a task-decision update at the saved comment, with its requirement explained",()=>{

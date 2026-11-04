@@ -66,10 +66,13 @@ export async function publicationWorkflowAction(_:ReviewActionState,form:FormDat
 
   const decision=formText(form,"decision");if(decision!=="approve"&&decision!=="reject")throw Error("Choose approve or reject.");if(form.get("confirm_terms")!=="on")throw Error("Confirm this exact commercial version.");
 
-  approveCommercial(w,{email,userId:session.user.id,at:now,decision,reason:formText(form,"reason",5,5000)},source.brand.brand_revision);
+  const reason=formText(form,"reason",5,20000),existing=v!.decisions.find(d=>d.email===email&&d.userId===session.user.id);
+  if(existing?.decision===decision&&existing.reason===reason)return {success:"This exact commercial decision and explanation are already committed."};
+  if(w.stage==="commercial_draft"&&!v!.submittedAt&&!v!.decisions.length){quoteCommercial(v!.configuration,v!.proposedPrice);v!.submittedAt=now;w.stage="apgi_approval";}
+  approveCommercial(w,{email,userId:session.user.id,at:now,decision,reason},source.brand.brand_revision);
 
   const assigned=round.document.participants.find(p=>p.email===email&&p.state!=="declined");
-  if(assigned){claimReviewer(round,email,session.user.id);if(assigned.tasks&&!hasReviewTask(assigned,"content"))assigned.state=outstandingAssignedTasks(round,assigned,source.brand.brand_revision).length?"active":"finished";}
+  if(assigned){claimReviewer(round,email,session.user.id);round.document.taskDecisions??=[];round.document.taskDecisions.push({id:crypto.randomUUID(),task:"commercials",target:v!.id,email,userId:session.user.id,at:now,decision:decision==="approve"?"approve":"changes",comment:reason});if(assigned.tasks&&!hasReviewTask(assigned,"content"))assigned.state=outstandingAssignedTasks(round,assigned,source.brand.brand_revision).length?"active":"finished";}
 
   mail=internalWorkflowMail(round,"commercial_decision",`${v!.id}:${email}`,`${email} recorded ${decision} for commercial version ${v!.id}. ${bothCommercialApprovals(v)?(w.partner?"Both approvals are complete. The partner offer may now be sent.":"The APGI course is awaiting explicit final publication."):"The other principal's independent decision remains required, unless a revision is needed."}`);
 
@@ -142,7 +145,7 @@ Status: ${w.stage}. Counter-offer responses used: ${w.counterOffers}/3.`);
 
  try{if(mail.length)await processReviewMail();}catch{/* Durable outbox retains pending delivery. */}
 
- revalidatePath(`/course-reviews/${id}`);revalidatePath(`/course-reviews/${id}/commercials`);revalidatePath("/course-reviews");revalidatePath(`/company/${round.organisation_id}`);return {success:message,...(["begin_commercials","revise_commercials"].includes(op)?{href:`/admin/courses/${round.course_id}/publish?review=${id}`}:{})};
+ revalidatePath(`/course-reviews/${id}`);revalidatePath(`/course-reviews/${id}/commercials`);revalidatePath("/course-reviews");revalidatePath("/notifications");revalidatePath(`/company/${round.organisation_id}`);return {success:message,...(["begin_commercials","revise_commercials"].includes(op)?{href:`/admin/courses/${round.course_id}/publish?review=${id}`}:{})};
 
  }catch(e){if(e instanceof Error&&"digest" in e)throw e;return {error:e instanceof Error?e.message:"Publication workflow could not be saved."};}
 

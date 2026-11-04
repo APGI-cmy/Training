@@ -32,3 +32,8 @@
 .review-team-progress summary{font-size:.9rem;line-height:1.5}
 .review-team-progress details p,.review-team-progress details li{font-size:.9rem;line-height:1.6}
 .review-progress-explanation summary:focus-visible,.review-team-progress summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:3px}
+
+.commercial-table-scroll { max-width:100%; overflow-x:auto; margin:16px 0; }
+.commercial-cost-breakdown table { width:100%; border-collapse:collapse; }
+.commercial-cost-breakdown caption { text-align:left; font-weight:700; margin-bottom:10px; }
+.commercial-cost-breakdown th,.commercial-cost-breakdown td { text-align:left; vertical-align:top; padding:12px; border-bottom:1px solid var(--border, #406076); }
