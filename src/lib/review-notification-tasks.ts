@@ -49,6 +49,10 @@ export function reviewNotificationTasks({round:r,hash,brandRevision}:ReviewTaskS
   }
  }
  if(principal){
+  for(const person of d.participants.filter(person=>person.state!=="declined")){
+   const change=v?taskDecision(d,person.email,"commercials",v.id):undefined;
+   if(change?.decision==="changes")add("commercial-review-changes",change.id,"Respond to requested commercial changes",`${person.email} requested changes to this exact commercial version. Read the saved explanation, address it in a revised proposal and obtain fresh decisions. Earlier decisions remain saved.`, `commercial-review-entry-${change.id}`,commercial);
+  }
   for(const request of d.requests??[])if(request.status==="pending")add("request",request.id,"Decide a review change request",`${request.requestedBy} requested ${request.kind}. Read the reason and record the APGI decision.`,`review-request-${request.id}`);
   if(v&&(w.stage==="apgi_approval"||w.stage==="commercial_draft"&&!v.submittedAt&&!v.decisions.length)&&!v.decisions.some(x=>x.email===email&&x.userId===userId))add("signoff",v.id,"Record your independent APGI commercial sign-off",`Read the full recorded commercial version. Approve it or reject it with the changes required. You can also save a non-binding counter-proposal in the discussion.${fresh?"":" The changed course deployment must be registered before formal sign-off is enabled."}`,commercialSignoffAnchor(email),commercial);
   if(["commercial_draft","negotiation"].includes(w.stage)&&(!v||v.decisions.some(x=>x.decision==="reject")||v.proposal))add("pricing",v?.id??"initial","Prepare the commercial revision",v?.decisions.some(x=>x.decision==="reject")?"A principal rejected the saved version. Read the recorded decision and proposals, revise the pricing assumptions and save a new version for fresh independent approval.":"Prepare or revise the pricing assumptions and save the exact commercial version. Saving does not send an offer or approve the terms.",v?"commercial-version":"commercial-pricing",commercial);
@@ -56,6 +60,10 @@ export function reviewNotificationTasks({round:r,hash,brandRevision}:ReviewTaskS
  }
  if(!principal&&p&&p.state!=="declined"&&v&&hasReviewTask(p,"commercials")&&(principal||v.offeredAt&&["partner_offer","ready_to_publish"].includes(w.stage))&&!taskDecision(d,email,"commercials",v.id)&&!commercialReviewApproved(d,email,userId))
   add("commercial-review",v.id,"Record your assigned commercial review",`Read the commercial proposal and record your assessment. Your saved comments remain visible in the commercial discussion. This assigned review is separate from the two APGI signatures.${fresh?"":" Formal decisions wait for deployment registration; discussion proposals can still be saved."}`,"assigned-commercial-review",commercial);
+ if(fresh&&(principal||email===w.partnerEmail))for(const person of d.participants.filter(person=>person.state!=="declined")){
+  const change=taskDecision(d,person.email,"branding",String(brandRevision));
+  if(change?.decision==="changes")add("branding-correction",change.id,"Address requested branding changes",`${person.email} requested changes to branding revision ${brandRevision}. Read the explanation and coordinate the correction with the authorised company owner. A new branding revision requires fresh review.`,"branding-review");
+ }
  if(fresh&&(p&&p.state!=="declined"&&hasReviewTask(p,"branding")||email===w.partnerEmail)&&!taskDecision(d,email,"branding",String(brandRevision)))
   add("branding",String(brandRevision),"Review the current company branding","Check the logo, colours, footer and sample certificate, then save approval or request changes for this exact branding revision.","branding-review");
  if(v&&email===w.partnerEmail&&w.stage==="partner_offer"&&companyBrandApproved(r,brandRevision)&&!v.acceptance)

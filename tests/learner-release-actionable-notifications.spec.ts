@@ -27,6 +27,17 @@ describe("Specific workflow notifications and their outcomes",()=>{
   r.document.workflow!.commercials.push({...r.document.workflow!.commercials[0],id:"new-version",decisions:[]});
   expect(reviewNotificationTasks({round:r,hash:"hash",brandRevision:1},"jorrie.jordaan@apginc.ca","jorrie",true).some(t=>t.key.includes(":signoff:new-version"))).toBe(true);
  });
+ it("keeps commercial change follow-up outstanding until the exact version or recorded decision changes",()=>{
+  const r=notificationRound();r.document.taskDecisions=[{id:"change-id",task:"commercials",target:noticeVersion,email:"jorrie.jordaan@apginc.ca",userId:"jorrie",at:"today",decision:"changes",comment:"Change the allocation."}];
+  const tasks=()=>reviewNotificationTasks({round:r,hash:"hash",brandRevision:1},"johan.ras@apginc.ca","johan",true);
+  expect(tasks().find(t=>t.key.includes(":commercial-review-changes:"))?.anchor).toBe("commercial-review-entry-change-id");
+  r.document.workflow!.commercials.push({...r.document.workflow!.commercials[0],id:"new",decisions:[]});expect(tasks().some(t=>t.key.includes(":commercial-review-changes:"))).toBe(false);
+ });
+ it("routes branding changes to a correction action and clears it after a new branding revision",()=>{
+  const r=notificationRound();r.document.taskDecisions=[{id:"brand-change",task:"branding",target:"1",email:"jorrie.jordaan@apginc.ca",userId:"jorrie",at:"today",decision:"changes",comment:"Change the logo."}];
+  expect(reviewNotificationTasks({round:r,hash:"hash",brandRevision:1},"johan.ras@apginc.ca","johan",true).some(t=>t.key.includes(":branding-correction:"))).toBe(true);
+  expect(reviewNotificationTasks({round:r,hash:"hash",brandRevision:2},"johan.ras@apginc.ca","johan",true).some(t=>t.key.includes(":branding-correction:"))).toBe(false);
+ });
  it("does not generate another reviewer's tasks or tasks for a closed round",()=>{
   const r=notificationRound();expect(reviewNotificationTasks({round:r,hash:"hash",brandRevision:1},"outsider@example.com","outsider",false)).toEqual([]);
   r.status="cancelled";expect(reviewNotificationTasks({round:r,hash:"hash",brandRevision:1},"jorrie.jordaan@apginc.ca","jorrie",true)).toEqual([]);
