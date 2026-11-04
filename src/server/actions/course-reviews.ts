@@ -366,7 +366,7 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
    if(!canProposeCommercial(round,email,principal))throw Error("Commercial discussion is available only to an APGI principal or an assigned reviewer of an offered version, within the review deadline.");
    if(!v||text(form,"version_id")!==v.id)throw Error("The commercial version changed. Reload before proposing a change.");
    if(d.participants.some(p=>p.email===email&&p.state!=="declined"))claimReviewer(round,email,session.user.id);
-   const suggestion={id:randomUUID(),versionId:v.id,email,userId:session.user.id,at:now,...readCommercialSuggestion(form)};
+   const suggestion={id:randomUUID(),versionId:v.id,email,userId:session.user.id,at:now,...readCommercialSuggestion(form,v.configuration)};
    d.commercialFeedback??=[];d.commercialFeedback.push(suggestion);
    reviewEvent(d,email,op,`Saved a discussion proposal for commercial version ${v.id}. This does not amend or approve the terms.`);
    notice="Your comment or counter-proposal is saved below for this exact version. No commercial terms or approval decisions were changed.";

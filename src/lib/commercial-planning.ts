@@ -101,7 +101,7 @@ export function courseOwnershipSummary(configuration: Record<string, string | nu
   return "";
 }
 export const sharingModelLabels: Record<SharingModel, string> = {
-  owner: "Course owner / partner — standard model",
+  owner: "Course owner / platform user — standard model",
   apgi: "APGI — standard model",
   tailored: "Tailored model",
 };

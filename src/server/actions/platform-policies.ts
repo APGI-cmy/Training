@@ -260,7 +260,7 @@ export async function saveCommercialDraft(
     if (org && (formText(form, "johan_share") || formText(form, "jorrie_share") || formText(form, "srms_share")))
       throw new Error("Partner agreements use the combined APGI share; internal distributions are separate.");
     const configuration = workspace === "course_plan" ? await coursePlanConfiguration(form)
-      : workspace === "cost_profile" ? planningCostConfiguration(form) : kind === "internal_distribution" && formText(form,"internal_model_version")==="2" ? internalDistributionConfiguration(form) : financialDraftConfiguration(form);
+      : workspace === "cost_profile" ? planningCostConfiguration(form) : kind === "internal_distribution" ? internalDistributionConfiguration(form) : financialDraftConfiguration(form);
     const saveKey = createHash("sha256").update(JSON.stringify({ actor:session.user.id,kind,org,course,configuration,title:formText(form,"title",3,150) })).digest("hex");
     const existing = await rows<{id:string}>(`/rest/v1/commercial_agreement_drafts?save_key=eq.${saveKey}&select=id&limit=1`);
     const id = existing[0]?.id ?? randomUUID();

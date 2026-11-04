@@ -1,0 +1,10 @@
+import React from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {describe,it,expect,vi} from 'vitest';
+import {notificationRound} from './fixtures/review-notification';
+vi.mock('@/components/reviews/ReviewForms',()=>({ReviewForm:({children}:{children:React.ReactNode})=><form>{children}</form>}));
+import {CommercialDiscussion} from '@/components/reviews/CommercialDiscussion';
+describe('Shareholders and platform users are separate concepts',()=>{
+ it('shows fixed 50/50 shareholder sides and retains an old incorrect suggestion only as unapplied history',()=>{const round=notificationRound(),v=round.document.workflow!.commercials[0];Object.assign(v.configuration,{agreement_scope:'apgi_course',apgi_share:'100',platform_user_share:'0'});round.document.commercialFeedback=[{id:'old',versionId:v.id,email:'johan.ras@apginc.ca',userId:'johan',at:'today',comment:'I am happy with this proposal as it stands',apgiShare:'0.02'}];const html=renderToStaticMarkup(<CommercialDiscussion round={round} email="johan.ras@apginc.ca" principal/>);expect(html).toContain('APGI — Jorrie');expect(html).toContain('SRMS — Johan');expect(html).toContain('50%');expect(html).toContain('both work for APGI');expect(html).not.toContain('name="proposal_apgi_share"');expect(html).not.toContain('Suggested APGI share (%)');expect(html).toContain('Earlier figure retained in history');expect(html).toContain('0.02%');expect(html).toContain('I am happy with this proposal as it stands');});
+ it('keeps a platform-user fee suggestion separate and does not expose the internal shareholder display to that user',()=>{const round=notificationRound();round.document.workflow!.commercials[0].offeredAt='today';const html=renderToStaticMarkup(<CommercialDiscussion round={round} email="reviewer@example.com" principal={false}/>);expect(html).toContain('platform user');expect(html).toContain('name="proposal_apgi_share"');expect(html).not.toContain('Shareholding and internal income');expect(html).not.toContain('SRMS');});
+});
