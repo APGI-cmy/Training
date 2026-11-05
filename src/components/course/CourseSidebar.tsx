@@ -14,7 +14,7 @@ export function CourseSidebar({
       <div>
         <p className="eyebrow">Course shell</p>
         <h2>Learning units</h2>
-        <p>Move through the seeded VPSHR Level 0 unit structure with W3 progress states.</p>
+        <p>Open a learning unit and see your saved progress.</p>
       </div>
       <nav aria-label="Learning unit navigation">
         <ol className="plain-list">
