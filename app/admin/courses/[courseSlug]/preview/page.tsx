@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { getCourseShell } from "@/lib/services/courses/get-course-shell";
@@ -36,7 +35,7 @@ export default async function AdminCoursePreviewPage({ params }: PageProps) {
       {course.slug === "scannex-training-programme" ? (
         <section className="admin-alert" aria-label="Scannex Viewer administration">
           <div><strong>Scannex Viewer capacity and cost control</strong><span>Configure Viewer learning units, access dates, enrolled-learner capacity and the cost tolerance.</span></div>
-          <Link className="primary-button" href={`/admin/courses/${course.slug}/viewer-lab`}>Manage Viewer</Link>
+          <a className="primary-button" href={`/admin/courses/${course.slug}/viewer-lab`}>Manage Viewer</a>
         </section>
       ) : null}
 
@@ -46,18 +45,18 @@ export default async function AdminCoursePreviewPage({ params }: PageProps) {
             <p className="eyebrow">{unit.kind === "summative_assessment" ? "Summative assessment" : unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}</p>
             <h2>{unit.title}</h2>
             <p>{unit.subtitle}</p>
-            <Link
+            <a
               className="button-link"
               href={`/admin/courses/${course.slug}/preview/${unit.slug}`}
             >
               Open preview
-            </Link>
+            </a>
           </article>
         ))}
       </section>
 
       <p>
-        <Link href="/admin/courses">Back to course previews</Link>
+        <a href="/admin/courses">Back to course previews</a>
       </p>
     </main>
   );

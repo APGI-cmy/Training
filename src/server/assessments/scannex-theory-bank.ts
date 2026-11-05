@@ -5,317 +5,675 @@ import type { ScannexTheoryAnswerState, ScannexTheoryQuestion } from "@/types/sc
 export const SCANNEX_THEORY_MAX_SCORE = 68;
 export const SCANNEX_PRACTICAL_MAX_SCORE = 32;
 export const SCANNEX_SUMMATIVE_PASS_MARK = 75;
-export const SCANNEX_THEORY_VERSION = "scannex-summative-v1";
+export const SCANNEX_THEORY_VERSION = "scannex-summative-v2-classroom-202611";
 
 type MarkedQuestion = ScannexTheoryQuestion & { correctOptionIds: string[] };
 
 const questions: MarkedQuestion[] = [
   {
-    id: "co-operation",
-    section: "Co-operation with different disciplines",
-    prompt: "The nature of the Scannex Viewer's job is such that it is conducted in isolation with no interaction with other security disciplines.",
-    instruction: "Choose one answer.",
-    marks: 2,
-    responseType: "single",
-    options: [{ id: "true", label: "True" }, { id: "false", label: "False" }],
-    correctOptionIds: ["false"]
+    "id": "practice-01",
+    "section": "LU1 — Why Scannex Is Needed — Knowledge Check",
+    "prompt": "Why can a correctly working metal detector provide no warning about a diamond?",
+    "instruction": "Choose one answer.",
+    "marks": 4,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "A diamond is non-metallic carbon."
+      },
+      {
+        "id": "b",
+        "label": "All diamonds have no financial value."
+      },
+      {
+        "id": "c",
+        "label": "A metal detector produces a full-body X-ray image."
+      },
+      {
+        "id": "d",
+        "label": "Every diamond is too large to conceal."
+      }
+    ],
+    "correctOptionIds": [
+      "a"
+    ]
   },
   {
-    id: "xray-versus-searching",
-    section: "Benefits of using Scannex",
-    prompt: "Which statement about x-ray scanning is true?",
-    instruction: "Choose one answer.",
-    marks: 4,
-    responseType: "single",
-    options: [
-      { id: "a", label: "X-ray scanning is more effective, especially if diamonds are hidden within the human body." },
-      { id: "b", label: "X-ray scanning clearly detects all diamonds with a visible halo on the Scannex image." },
-      { id: "c", label: "X-ray scanning is an infringement of a person's privacy." },
-      { id: "d", label: "Searching is the preferred method of detecting diamond theft because it is much safer than x-ray scanning." }
+    "id": "practice-02",
+    "section": "LU1 — The Scannex Operator Role — Knowledge Check",
+    "prompt": "A busy period creates pressure to skip an approved step. Which capability is most directly relevant?",
+    "instruction": "Choose one answer.",
+    "marks": 4,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "Procedural discipline."
+      },
+      {
+        "id": "b",
+        "label": "The physical size of a diamond."
+      },
+      {
+        "id": "c",
+        "label": "Historical discovery."
+      },
+      {
+        "id": "d",
+        "label": "Recovery effort."
+      }
     ],
-    correctOptionIds: ["a"]
+    "correctOptionIds": [
+      "a"
+    ]
   },
   {
-    id: "scannex-advantages",
-    section: "Benefits of using Scannex",
-    prompt: "Which are advantages of the Scannex system?",
-    instruction: "Select every correct response.",
-    marks: 4,
-    responseType: "multiple",
-    options: [
-      { id: "a", label: "It speeds up the search process." },
-      { id: "b", label: "It can operate in isolation with no human intervention." },
-      { id: "c", label: "It protects employees against potential blackmail, intimidation and coercion." },
-      { id: "d", label: "It assists in changing the behaviour of people working at the operation." }
+    "id": "practice-03",
+    "section": "LU1 — Diamond Value and Loss — Knowledge Check",
+    "prompt": "What investment contributes to recovering diamonds? Select all that apply.",
+    "instruction": "Select every correct response.",
+    "marks": 3,
+    "responseType": "multiple",
+    "options": [
+      {
+        "id": "a",
+        "label": "People."
+      },
+      {
+        "id": "b",
+        "label": "Equipment."
+      },
+      {
+        "id": "c",
+        "label": "Energy."
+      },
+      {
+        "id": "d",
+        "label": "Processing."
+      },
+      {
+        "id": "e",
+        "label": "No sustained work is required."
+      }
     ],
-    correctOptionIds: ["a", "c", "d"]
+    "correctOptionIds": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ]
   },
   {
-    id: "layout-scan-operator",
-    section: "Basic Scannex layout",
-    prompt: "For the Scan Operator, choose the correct statement.",
-    instruction: "Choose one answer.",
-    marks: 2,
-    responseType: "single",
-    options: [
-      { id: "a", label: "This is the person manning position number 1 on the Scannex layout." },
-      { id: "b", label: "This is the person manning position number 6 on the Scannex layout." }
+    "id": "practice-04",
+    "section": "LU2 — How Materials Appear in an X-ray Image — Knowledge Check",
+    "prompt": "Why do air-filled areas appear dark in the normal greyscale image?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "More X-rays reach the detector through air."
+      },
+      {
+        "id": "b",
+        "label": "No X-rays can pass through air."
+      },
+      {
+        "id": "c",
+        "label": "Air always appears brighter than bone."
+      },
+      {
+        "id": "d",
+        "label": "A dark area automatically proves concealment."
+      }
     ],
-    correctOptionIds: ["a"]
+    "correctOptionIds": [
+      "a"
+    ]
   },
   {
-    id: "layout-entry-door",
-    section: "Basic Scannex layout",
-    prompt: "For the Entry Door, choose the correct statement.",
-    instruction: "Choose one answer.",
-    marks: 2,
-    responseType: "single",
-    options: [
-      { id: "a", label: "This door provides entrance to the Scannex set-up." },
-      { id: "b", label: "This door provides entrance to the red area." }
+    "id": "practice-05",
+    "section": "LU2 — Five Layers of Scannex Safety — Knowledge Check",
+    "prompt": "Which combination supports dose accountability?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "Measure, control and record exposure."
+      },
+      {
+        "id": "b",
+        "label": "Guess exposure from the image’s appearance."
+      },
+      {
+        "id": "c",
+        "label": "Use queue length as the only control."
+      },
+      {
+        "id": "d",
+        "label": "Keep no exposure records."
+      }
     ],
-    correctOptionIds: ["a"]
+    "correctOptionIds": [
+      "a"
+    ]
   },
   {
-    id: "layout-scannex-cubicle",
-    section: "Basic Scannex layout",
-    prompt: "For the Scannex Cubicle / Full Body Scan, choose the correct statement.",
-    instruction: "Choose one answer.",
-    marks: 2,
-    responseType: "single",
-    options: [
-      { id: "a", label: "This is where individuals going through the Scannex system are searched." },
-      { id: "b", label: "This is where full x-ray body images are taken." }
+    "id": "practice-06",
+    "section": "LU3 — Safe Operating Discipline — Knowledge Check",
+    "prompt": "Select one or more correct answers:\n\nWhich habits should an operator apply on every shift? Select all that apply.",
+    "instruction": "Select every correct response.",
+    "marks": 3,
+    "responseType": "multiple",
+    "options": [
+      {
+        "id": "a",
+        "label": "Confirm authorisation and current QA status."
+      },
+      {
+        "id": "b",
+        "label": "Use approved settings and apply ALARA."
+      },
+      {
+        "id": "c",
+        "label": "Check exclusions discreetly."
+      },
+      {
+        "id": "d",
+        "label": "Stop use and report faults."
+      },
+      {
+        "id": "e",
+        "label": "Keep exposure and safety records accurate."
+      },
+      {
+        "id": "f",
+        "label": "Explain the process calmly and factually."
+      },
+      {
+        "id": "g",
+        "label": "Override controls when operational pressure is high."
+      }
     ],
-    correctOptionIds: ["b"]
+    "correctOptionIds": [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f"
+    ]
   },
   {
-    id: "layout-waiting-booth",
-    section: "Basic Scannex layout",
-    prompt: "For the Waiting Booth, choose the correct statement.",
-    instruction: "Choose one answer.",
-    marks: 2,
-    responseType: "single",
-    options: [
-      { id: "a", label: "This is where individuals going through the Scannex system are searched." },
-      { id: "b", label: "This is where people wait until they receive permission to exit the system." }
+    "id": "practice-07",
+    "section": "LU3 — Quality Assurance and Records — Knowledge Check",
+    "prompt": "Select the correct answer option:\n\nWhich statement correctly describes routine Scannex quality assurance?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "QA is needed only after a fault."
+      },
+      {
+        "id": "b",
+        "label": "The system is checked before first use and at least every three months, including image-quality checks using a suitable test phantom."
+      },
+      {
+        "id": "c",
+        "label": "QA is optional when the operator is experienced."
+      },
+      {
+        "id": "d",
+        "label": "QA is done only when an external auditor arrives."
+      }
     ],
-    correctOptionIds: ["a"]
+    "correctOptionIds": [
+      "b"
+    ]
   },
   {
-    id: "layout-viewer-station",
-    section: "Basic Scannex layout",
-    prompt: "For the Viewer Station, choose the correct statement.",
-    instruction: "Choose one answer.",
-    marks: 2,
-    responseType: "single",
-    options: [
-      { id: "a", label: "This is where the Scannex Viewer analyses scanned images." },
-      { id: "b", label: "This is the position from which the supervisor watches the entire operation." }
+    "id": "practice-08",
+    "section": "LU4 — The Legal and Human-Rights Framework — Knowledge Check",
+    "prompt": "What must be confirmed before a Scannex scan starts?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "The operator has time available."
+      },
+      {
+        "id": "b",
+        "label": "The applicable local law and approved procedure provide a lawful basis."
+      },
+      {
+        "id": "c",
+        "label": "The person looks unusual."
+      },
+      {
+        "id": "d",
+        "label": "A colleague is interested in the result."
+      }
     ],
-    correctOptionIds: ["a"]
+    "correctOptionIds": [
+      "b"
+    ]
   },
   {
-    id: "layout-supervisor-station",
-    section: "Basic Scannex layout",
-    prompt: "For the Supervisor Station, choose the correct statement.",
-    instruction: "Choose one answer.",
-    marks: 2,
-    responseType: "single",
-    options: [
-      { id: "a", label: "This is the position from which the supervisor watches the entire operation." },
-      { id: "b", label: "This is the position from which surveillance is conducted over the entire Scannex operation." }
+    "id": "practice-09",
+    "section": "LU4 — A Positive Indication: Lawful Response — Knowledge Check",
+    "prompt": "What should an operator do when a possible indication appears?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "Accuse the person immediately."
+      },
+      {
+        "id": "b",
+        "label": "Remain calm, preserve the relevant record and follow the approved process."
+      },
+      {
+        "id": "c",
+        "label": "Share the image with all staff."
+      },
+      {
+        "id": "d",
+        "label": "Destroy the image after viewing it."
+      }
     ],
-    correctOptionIds: ["a"]
+    "correctOptionIds": [
+      "b"
+    ]
   },
   {
-    id: "integrated-subsystems",
-    section: "Integrated sub-systems",
-    prompt: "Which are part of the integrated sub-system of Scannex?",
-    instruction: "Select every correct response.",
-    marks: 4,
-    responseType: "multiple",
-    options: [
-      { id: "a", label: "The access control system." },
-      { id: "b", label: "The x-ray dosage management system." },
-      { id: "c", label: "The alarm system." },
-      { id: "d", label: "The Scannex machine." }
+    "id": "practice-10",
+    "section": "LU5 — System Operation and Safety Glossary — Knowledge Check",
+    "prompt": "Which action is correct when a scanner has not been commissioned or formally released after maintenance?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "Use it only for low-risk scans."
+      },
+      {
+        "id": "b",
+        "label": "Keep it out of service until an authorised specialist has approved it."
+      },
+      {
+        "id": "c",
+        "label": "Ask the Viewer to operate it."
+      },
+      {
+        "id": "d",
+        "label": "Change the dose setting and run a test scan."
+      }
     ],
-    correctOptionIds: ["a", "b"]
+    "correctOptionIds": [
+      "b"
+    ]
   },
   {
-    id: "xray-technology",
-    section: "X-ray technology",
-    prompt: "Which statements about Scannex are true?",
-    instruction: "Select every correct response.",
-    marks: 4,
-    responseType: "multiple",
-    options: [
-      { id: "a", label: "Scannex is a high-dosage x-ray scanner." },
-      { id: "b", label: "Scannex produces a low-resolution digital image." },
-      { id: "c", label: "Scannex scans the whole body of a person within 30 seconds." },
-      { id: "d", label: "Scannex scanning is performed in a non-invasive manner." }
+    "id": "practice-11",
+    "section": "LU5 — Engineered Safety — Knowledge Check",
+    "prompt": "Which actions are correct when a fault indication appears? Select all that apply.",
+    "instruction": "Select every correct response.",
+    "marks": 3,
+    "responseType": "multiple",
+    "options": [
+      {
+        "id": "a",
+        "label": "Stop the process and report the fault."
+      },
+      {
+        "id": "b",
+        "label": "Keep the X-rays off until the authorised process clears the fault."
+      },
+      {
+        "id": "c",
+        "label": "Work around the fault if the person is waiting."
+      },
+      {
+        "id": "d",
+        "label": "Ask the operator to increase the dose."
+      }
     ],
-    correctOptionIds: ["c", "d"]
+    "correctOptionIds": [
+      "a",
+      "b"
+    ]
   },
   {
-    id: "xray-radiation",
-    section: "X-ray technology",
-    prompt: "Which statements about the x-ray radiation of Scannex are true?",
-    instruction: "Select every correct response.",
-    marks: 3,
-    responseType: "multiple",
-    options: [
-      { id: "a", label: "Exposure is low enough that an individual can be scanned daily." },
-      { id: "b", label: "Exposure is more than internationally accepted safety standards." },
-      { id: "c", label: "The x-ray management system will not allow 4.3 mSv per year to be exceeded." }
+    "id": "practice-12",
+    "section": "LU5 — Roles and Cubicle Safeguards — Knowledge Check",
+    "prompt": "Which cubicle controls support a safe and consistent scan? Select all that apply.",
+    "instruction": "Select every correct response.",
+    "marks": 3,
+    "responseType": "multiple",
+    "options": [
+      {
+        "id": "a",
+        "label": "A clutter-free standing area."
+      },
+      {
+        "id": "b",
+        "label": "No accessible moving parts."
+      },
+      {
+        "id": "c",
+        "label": "A fixed scan duration."
+      },
+      {
+        "id": "d",
+        "label": "Personal belongings placed around the scanner."
+      }
     ],
-    correctOptionIds: ["a", "c"]
+    "correctOptionIds": [
+      "a",
+      "b",
+      "c"
+    ]
   },
   {
-    id: "xray-exclusions",
-    section: "X-ray technology",
-    prompt: "Who should be excluded from x-ray scanning?",
-    instruction: "Select every correct response.",
-    marks: 3,
-    responseType: "multiple",
-    options: [
-      { id: "a", label: "People older than 40 years of age." },
-      { id: "b", label: "Pregnant women." },
-      { id: "c", label: "People under the age of 16." }
+    "id": "practice-13",
+    "section": "LU6 — Viewing System Glossary — Knowledge Check",
+    "prompt": "What is the purpose of a reference image?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "To replace the current scan image."
+      },
+      {
+        "id": "b",
+        "label": "To help distinguish an item already present from a newly introduced object."
+      },
+      {
+        "id": "c",
+        "label": "To change the scan dose."
+      },
+      {
+        "id": "d",
+        "label": "To identify the Viewer by name."
+      }
     ],
-    correctOptionIds: ["b", "c"]
+    "correctOptionIds": [
+      "b"
+    ]
   },
   {
-    id: "prohibited-items",
-    section: "Prevention and detection of pre-identified contraband",
-    prompt: "Which objects are not permitted to go into the mine at all?",
-    instruction: "Select every correct response.",
-    marks: 3,
-    responseType: "multiple",
-    options: [
-      { id: "a", label: "Knives." },
-      { id: "b", label: "A laptop and camera for which permission has been obtained." },
-      { id: "c", label: "A firearm." }
+    "id": "practice-14",
+    "section": "LU6 — Viewing Controls and Image Enhancement — Knowledge Check",
+    "prompt": "When an area looks doubtful in normal view, what is the best next action?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "Release the scan immediately."
+      },
+      {
+        "id": "b",
+        "label": "Inspect the area in more than one approved viewing mode and zoom level."
+      },
+      {
+        "id": "c",
+        "label": "Change the station configuration."
+      },
+      {
+        "id": "d",
+        "label": "Ask the Scan Operator to interpret the image."
+      }
     ],
-    correctOptionIds: ["a", "c"]
+    "correctOptionIds": [
+      "b"
+    ]
   },
   {
-    id: "permitted-items",
-    section: "Prevention and detection of pre-identified contraband",
-    prompt: "Which objects may go into the mine but may not be taken out?",
-    instruction: "Select every correct response.",
-    marks: 3,
-    responseType: "multiple",
-    options: [
-      { id: "a", label: "Medication." },
-      { id: "b", label: "A cell phone." },
-      { id: "c", label: "An apple or banana." }
+    "id": "practice-15",
+    "section": "LU7 — Image Interpretation Glossary — Knowledge Check",
+    "prompt": "What is the purpose of Automatic Diamond Detection, or ADD?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "To replace the Viewer’s judgement."
+      },
+      {
+        "id": "b",
+        "label": "To flag possible objects for the Viewer’s attention."
+      },
+      {
+        "id": "c",
+        "label": "To physically search a person."
+      },
+      {
+        "id": "d",
+        "label": "To change the X-ray dose."
+      }
     ],
-    correctOptionIds: ["a", "b", "c"]
+    "correctOptionIds": [
+      "b"
+    ]
   },
   {
-    id: "concealment-areas",
-    section: "Prevention and detection of pre-identified contraband",
-    prompt: "Which are basic areas or places on a person where contraband could be detected?",
-    instruction: "Select every correct response.",
-    marks: 4,
-    responseType: "multiple",
-    options: [
-      { id: "a", label: "Behind the button of a shirt." },
-      { id: "b", label: "Under the armpits." },
-      { id: "c", label: "Inside the sole of a shoe." },
-      { id: "d", label: "Inside the lungs after it has been swallowed." }
+    "id": "practice-16",
+    "section": "LU7 — A Disciplined Image Review — Knowledge Check",
+    "prompt": "What should the operator do before forming a judgement about a region of interest?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "Immediately escalate the image."
+      },
+      {
+        "id": "b",
+        "label": "Optimise brightness and contrast for the area being examined."
+      },
+      {
+        "id": "c",
+        "label": "Conduct a physical search."
+      },
+      {
+        "id": "d",
+        "label": "Ignore the region if it is faint."
+      }
     ],
-    correctOptionIds: ["a", "b", "c"]
+    "correctOptionIds": [
+      "b"
+    ]
   },
   {
-    id: "body-search-principles",
-    section: "Prevention and detection of pre-identified contraband",
-    prompt: "Which principles apply when conducting a body search?",
-    instruction: "Select every correct response.",
-    marks: 4,
-    responseType: "multiple",
-    options: [
-      { id: "a", label: "Remind the person of the permission given by signing their employment document." },
-      { id: "b", label: "Ask the person whether they want to go to the toilet." },
-      { id: "c", label: "Follow a systematic approach and pat the body from head to toe." },
-      { id: "d", label: "Ask the person whether they have anything to declare before the search commences." }
+    "id": "practice-17",
+    "section": "LU8 — Why Anatomy Matters — Knowledge Check",
+    "prompt": "Why does a Scannex operator study anatomy?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "To diagnose disease."
+      },
+      {
+        "id": "b",
+        "label": "To account for normal structures so unexplained anomalies can be assessed."
+      },
+      {
+        "id": "c",
+        "label": "To decide whether a physical search is lawful."
+      },
+      {
+        "id": "d",
+        "label": "To repair image-viewing equipment."
+      }
     ],
-    correctOptionIds: ["a", "c", "d"]
+    "correctOptionIds": [
+      "b"
+    ]
   },
   {
-    id: "viewing-system",
-    section: "Scannex Viewing System",
-    prompt: "Which statements about the functionality of the Scannex Viewing System are true?",
-    instruction: "Select every correct response.",
-    marks: 3,
-    responseType: "multiple",
-    options: [
-      { id: "a", label: "It gives more image-enhancement options to the viewer." },
-      { id: "b", label: "It is unable to compare previous images of a subject." },
-      { id: "c", label: "It has mouse and keyboard options for using the system." }
+    "id": "practice-18",
+    "section": "LU8 — Normal Anatomy That Can Mislead the Eye — Knowledge Check",
+    "prompt": "Which feature most strongly indicates normal vertebral anatomy rather than an isolated concealed object?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "A single uniform density unrelated to surrounding structures."
+      },
+      {
+        "id": "b",
+        "label": "A repeating, aligned pattern of pedicles and spinous processes down the spine."
+      },
+      {
+        "id": "c",
+        "label": "A density that has changed position along the digestive route."
+      },
+      {
+        "id": "d",
+        "label": "A feature outside the expected body anatomy."
+      }
     ],
-    correctOptionIds: ["a", "c"]
+    "correctOptionIds": [
+      "b"
+    ]
   },
   {
-    id: "material-density",
-    section: "Anomalies",
-    prompt: "Which statements about the density of materials are true?",
-    instruction: "Select every correct response.",
-    marks: 4,
-    responseType: "multiple",
-    options: [
-      { id: "a", label: "The denser the object, the less penetration and the better its visibility on a normal x-ray image." },
-      { id: "b", label: "Penetration through a low-density object, such as an organ, results in a light appearance on a normal x-ray image." },
-      { id: "c", label: "A high-density object, such as a belt buckle, appears white on a normal x-ray image." },
-      { id: "d", label: "The density and composition of diamonds differs vastly from that of the human skeleton." }
+    "id": "variation-01",
+    "section": "LU1 — The Scannex Operator Role — Knowledge Check",
+    "prompt": "A queue is growing and a colleague asks you to skip an approved screening step. What is the appropriate response?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "Keep the approved procedure and use the authorised escalation process for the delay."
+      },
+      {
+        "id": "b",
+        "label": "Skip the step for familiar employees."
+      },
+      {
+        "id": "c",
+        "label": "Ask the next person in the queue to decide."
+      },
+      {
+        "id": "d",
+        "label": "Stop keeping records until the queue clears."
+      }
     ],
-    correctOptionIds: ["a", "c"]
+    "correctOptionIds": [
+      "a"
+    ]
   },
   {
-    id: "diamond-concealment",
-    section: "Anomalies",
-    prompt: "Which areas can be used for diamond concealment?",
-    instruction: "Select every correct response.",
-    marks: 5,
-    responseType: "multiple",
-    options: [
-      { id: "a", label: "A nostril." },
-      { id: "b", label: "Under the tongue." },
-      { id: "c", label: "The kidneys." },
-      { id: "d", label: "The lungs." },
-      { id: "e", label: "Somewhere in the digestive tract." }
+    "id": "variation-02",
+    "section": "LU6 — Viewing Controls and Image Enhancement — Knowledge Check",
+    "prompt": "A region remains doubtful after your first look at the normal image. What should you do next?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "Review it using approved viewing modes and suitable zoom levels."
+      },
+      {
+        "id": "b",
+        "label": "Change the station configuration to remove the region."
+      },
+      {
+        "id": "c",
+        "label": "Release it because the first view was inconclusive."
+      },
+      {
+        "id": "d",
+        "label": "Ask the person being screened to interpret it."
+      }
     ],
-    correctOptionIds: ["a", "b", "e"]
+    "correctOptionIds": [
+      "a"
+    ]
   },
   {
-    id: "digestive-tract",
-    section: "Human anatomy",
-    prompt: "Which human-body system is relevant to tracing the route diamonds follow after being swallowed?",
-    instruction: "Choose one answer.",
-    marks: 3,
-    responseType: "single",
-    options: [
-      { id: "a", label: "The urinary tract." },
-      { id: "b", label: "The reproductive organs." },
-      { id: "c", label: "The digestive tract." }
+    "id": "variation-03",
+    "section": "LU7 — Image Interpretation Glossary — Knowledge Check",
+    "prompt": "ADD has highlighted a possible object. What does that mean for your work as the Viewer?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "It is a prompt for careful review; the Viewer still applies trained judgement and the approved process."
+      },
+      {
+        "id": "b",
+        "label": "ADD has proved theft."
+      },
+      {
+        "id": "c",
+        "label": "No further examination is required."
+      },
+      {
+        "id": "d",
+        "label": "The scan dose must be increased."
+      }
     ],
-    correctOptionIds: ["c"]
+    "correctOptionIds": [
+      "a"
+    ]
   },
   {
-    id: "anatomy-importance",
-    section: "Human anatomy",
-    prompt: "Why is the digestive tract important in x-ray scanning?",
-    instruction: "Choose one answer.",
-    marks: 3,
-    responseType: "single",
-    options: [
-      { id: "a", label: "They consist of the vital organs needed for breathing." },
-      { id: "b", label: "They indicate the route diamonds will follow through the human body after being swallowed." },
-      { id: "c", label: "They show organs in which it would be impossible to hide diamonds." }
+    "id": "variation-04",
+    "section": "LU8 — Why Anatomy Matters — Knowledge Check",
+    "prompt": "An image contains a structure in the expected anatomical position. Why does your anatomy training matter?",
+    "instruction": "Choose one answer.",
+    "marks": 3,
+    "responseType": "single",
+    "options": [
+      {
+        "id": "a",
+        "label": "It helps distinguish normal structures from unexplained anomalies without diagnosing disease."
+      },
+      {
+        "id": "b",
+        "label": "It authorises the Viewer to make a medical diagnosis."
+      },
+      {
+        "id": "c",
+        "label": "It removes the need for the approved screening process."
+      },
+      {
+        "id": "d",
+        "label": "It allows the Viewer to repair the scanner."
+      }
     ],
-    correctOptionIds: ["b"]
+    "correctOptionIds": [
+      "a"
+    ]
   }
 ];
 

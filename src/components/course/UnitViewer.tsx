@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { encodeAssetPath } from "@/lib/courses";
 import { ScormPlayer } from "@/components/course/ScormPlayer";
 import { UnitResources } from "@/components/course/UnitResources";
@@ -37,9 +36,9 @@ export function UnitViewer({
       {viewerAvailability?.appliesToUnit ? <ViewerLabNotice courseSlug={course.slug} unitSlug={unit.slug} availability={viewerAvailability} /> : null}
       <section className="unit-masthead">
         <div className="content-inner">
-          <Link className="back-link" href={`/learn/${course.slug}`}>
+          <a className="back-link" href={`/learn/${course.slug}`}>
             Back to course shell
-          </Link>
+          </a>
           <p className="eyebrow">{isPracticalAssessment ? "Summative assessment" : unit.order === 0 ? "Orientation" : `Learning Unit ${unit.order}`}</p>
           <h1>{unit.title}</h1>
           <p>{unit.subtitle}</p>
@@ -65,12 +64,12 @@ export function UnitViewer({
                   The final result requires 75% overall and an assessor-approved practical outcome. This is a controlled training assessment, not production Viewer access.
                 </p>
                 <div className="button-row">
-                  <Link className="primary-button" href={`/learn/${course.slug}/units/${unit.slug}/knowledge`}>
+                  <a className="primary-button" href={`/learn/${course.slug}/units/${unit.slug}/knowledge`}>
                     Start knowledge assessment
-                  </Link>
-                  <Link className="primary-button" href={unit.practicalAssessment.labPath}>
+                  </a>
+                  <a className="primary-button" href={unit.practicalAssessment.labPath}>
                     Open practical assessment
-                  </Link>
+                  </a>
                 </div>
               </section>
             ) : isScannexUnit ? (
@@ -87,7 +86,7 @@ export function UnitViewer({
                     <p>Open a separate, secure Windows session to practise the controls taught in this learning unit.</p>
                     <p className={viewerAvailability.canLaunch ? "resource-status" : "form-error"}>{viewerAvailability.message}</p>
                     <div className="button-row">
-                      {viewerAvailability.canLaunch ? <Link className="primary-button" href={`/learn/${course.slug}/units/${unit.slug}/viewer-lab`}>Prepare Viewer practice session</Link> : <button className="primary-button" type="button" disabled>Viewer unavailable</button>}
+                      {viewerAvailability.canLaunch ? <a className="primary-button" href={`/learn/${course.slug}/units/${unit.slug}/viewer-lab`}>Prepare Viewer practice session</a> : <button className="primary-button" type="button" disabled>Viewer unavailable</button>}
                     </div>
                   </section>
                 ) : null}
@@ -120,9 +119,9 @@ export function UnitViewer({
                   <a className="primary-button" href={originalHref} target="_blank" rel="noreferrer">
                     {isScannexUnit ? "Open e-book in a full window" : "Open expanded unit"}
                   </a>
-                  <Link className="secondary-button" href={`/courses/${course.slug}/${unit.slug}`}>
+                  <a className="secondary-button" href={`/courses/${course.slug}/${unit.slug}`}>
                     Open legacy responsive unit
-                  </Link>
+                  </a>
                 </div>
                 <form action={completeUnit}>
                   <button className="primary-button" type="submit" disabled={isCompleted}>
@@ -140,9 +139,9 @@ export function UnitViewer({
           <p className="eyebrow">Navigation</p>
           <div className="unit-navigation">
             {previous ? (
-              <Link className="secondary-button" href={`/learn/${course.slug}/units/${previous.slug}`}>
+              <a className="secondary-button" href={`/learn/${course.slug}/units/${previous.slug}`}>
                 Previous: {previous.title}
-              </Link>
+              </a>
             ) : <span />}
             {next ? (
               <a className="primary-button" href={`/learn/${course.slug}/units/${next.slug}`}>

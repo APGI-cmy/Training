@@ -100,6 +100,14 @@ export function ScormPlayer({
     else setLeaving(false);
   }
 
+  async function reloadActivity() {
+    if (leaving) return;
+    setLeaving(true);
+    const saved = await saveProgressRef.current?.() ?? true;
+    if (saved) window.location.reload();
+    else setLeaving(false);
+  }
+
   useEffect(() => {
     let active = true;
     const endpoint = `/api/scorm?courseSlug=${encodeURIComponent(courseSlug)}&unitSlug=${encodeURIComponent(unitSlug)}`;
@@ -194,9 +202,15 @@ export function ScormPlayer({
         </nav>
       ) : null}
       {!immersive && <p className="scorm-status" role="status">{status}</p>}
+      {ready && <p className="activity-recovery">
+        <button className="secondary-button" type="button" onClick={reloadActivity} disabled={leaving}>
+          {leaving ? "Saving…" : "Reload learning activity"}
+        </button>
+        {" "}If the presentation is blank, reload it here. Your saved progress is retained.
+      </p>}
       {ready ? (
         <figure className="media-item">
-          <iframe title={`${title} activities and quizzes`} src={launchSrc} allow="fullscreen" allowFullScreen />
+          <iframe key={`${courseSlug}:${unitSlug}:${launchSrc}`} title={`${title} activities and quizzes`} src={launchSrc} allow="fullscreen" allowFullScreen />
           {!immersive && (
             <figcaption>
               {mode === "preview"

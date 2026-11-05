@@ -1,4 +1,3 @@
-import Link from "next/link";
 
 export function UnitResources({
   eBookHref,
@@ -23,9 +22,9 @@ export function UnitResources({
           Open Scannex e-book
         </a>
         {activityAvailable && activityHref ? (
-          <Link className="primary-button" href={activityHref}>
+          <a className="primary-button" href={activityHref}>
             {activityLabel}
-          </Link>
+          </a>
         ) : activityAvailable ? (
           <span className="resource-status" role="status">
             Learning activity is open below. Use its own full-screen control for an expanded view.

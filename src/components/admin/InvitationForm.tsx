@@ -1,5 +1,6 @@
 "use client";
 
+import { classroomPacks } from "@/lib/namdeb-classroom";
 import { useActionState } from "react";
 import { createInvitationWithState, type CreateInvitationState } from "@/server/actions/invitations/create-invitation";
 
@@ -55,6 +56,13 @@ export function InvitationForm({
               <option value="complimentary_marketing">Complimentary marketing</option>
               <option value="internal_allocation">Internal allocation</option>
               <option value="other">Other</option>
+            </select>
+          </label>
+          <label className="admin-span-two">
+            <span>Classroom information and attachments (Scannex only)</span>
+            <select name="classroomPack" defaultValue="">
+              <option value="">Standard invitation — no classroom pack</option>
+              {Object.entries(classroomPacks).map(([id, pack]) => <option key={id} value={id}>{pack.label}</option>)}
             </select>
           </label>
           <label className="admin-span-two">

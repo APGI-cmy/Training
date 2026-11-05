@@ -5,6 +5,7 @@ import {
 } from "@aws-sdk/client-appstream";
 import type { ViewerLabConfig } from "@/lib/services/viewer-lab/viewer-lab-config";
 import { createViewerLabClient } from "@/lib/services/viewer-lab/create-viewer-lab-session";
+import { viewerFleetCapacity } from "./viewer-fleet-capacity";
 
 export type ViewerLabWarmupResult = {
   status: "ready" | "starting" | "unavailable";
@@ -27,22 +28,30 @@ export async function warmViewerLab({
     if (!fleet) return { status: "unavailable", message: "The Viewer environment could not be found. Please contact the training administrator." };
 
     if (fleet.State === "RUNNING") {
-      const currentCapacity = fleet.ComputeCapacityStatus?.Desired ?? 0;
-      if (currentCapacity !== desiredCapacity) {
+      const capacity = viewerFleetCapacity(fleet, desiredCapacity);
+      const currentCapacity = capacity.desired ?? 0;
+      if (currentCapacity < desiredCapacity) {
         await client.send(new UpdateFleetCommand({
           Name: config.fleetName,
-          ComputeCapacity: { DesiredInstances: desiredCapacity }
+          ComputeCapacity: capacity.multiSession ? { DesiredSessions: desiredCapacity } : { DesiredInstances: desiredCapacity }
         }));
       }
       return {
-        status: "ready",
-        message: currentCapacity < desiredCapacity
-          ? `Viewer capacity is increasing to ${desiredCapacity} places. A new place may take up to ${warmupMinutes} minutes.`
-          : "The Scannex Viewer is ready. Open it from the Viewer Lab panel when you need it."
+        status: capacity.ready ? "ready" : "starting",
+        message: capacity.ready
+          ? `AWS reports ${capacity.prepared} prepared Viewer places for a target of ${desiredCapacity}. Open the Viewer Lab when needed.`
+          : `Preparing ${desiredCapacity} Viewer places. AWS currently reports ${capacity.prepared ?? 'an unknown number of'} prepared places. Allow up to ${warmupMinutes} minutes and check again. A capacity target alone is not a readiness confirmation.`
       };
     }
 
     if (fleet.State === "STOPPED") {
+      const capacity = viewerFleetCapacity(fleet, desiredCapacity);
+      if ((capacity.desired ?? 0) < desiredCapacity) {
+        await client.send(new UpdateFleetCommand({
+          Name: config.fleetName,
+          ComputeCapacity: capacity.multiSession ? { DesiredSessions: desiredCapacity } : { DesiredInstances: desiredCapacity }
+        }));
+      }
       await client.send(new StartFleetCommand({ Name: config.fleetName }));
       return {
         status: "starting",

@@ -1,5 +1,6 @@
 "use server";
 
+import { getClassroomPack } from "@/lib/namdeb-classroom";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { getCourseBySlug } from "@/lib/courses";
@@ -17,6 +18,7 @@ export type InvitationInput = {
   reason: string;
   expiresAt: string;
   reference?: string;
+  classroomPack?: string;
   company?: string;
   organisationId?: string;
 };
@@ -39,6 +41,7 @@ function normaliseInput(input: InvitationInput): InvitationInput {
     reason: input.reason.trim(),
     expiresAt: input.expiresAt.trim(),
     reference: input.reference?.trim() || undefined,
+    classroomPack: input.classroomPack?.trim() || undefined,
     company: input.company?.trim() || undefined,
     organisationId: input.organisationId?.trim() || undefined
   };
@@ -46,6 +49,7 @@ function normaliseInput(input: InvitationInput): InvitationInput {
 
 function validateInput(input: InvitationInput) {
   const expiry = new Date(input.expiresAt);
+  if (input.classroomPack && (!getClassroomPack(input.classroomPack) || input.courseId !== "scannex-training-programme")) return "CLASSROOM_PACK_INVALID";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.recipientEmail) || !input.courseId || !input.expiresAt || !input.organisationId) return "INVITATION_FIELDS_REQUIRED";
   if (!invitationBases.has(input.basis)) return "INVITATION_BASIS_INVALID";
   if (!getCourseBySlug(input.courseId)) return "INVITATION_COURSE_INVALID";
@@ -186,7 +190,7 @@ export async function createAndSendInvitation(input: InvitationInput): Promise<C
       created_by: actor,
       status: "pending",
       organisation_id: organisation.id,
-      metadata: { reference: clean.reference ?? null, company: clean.company ?? null, organisation_id: organisation.id, referral_share_bps: organisation.default_referral_share_bps }
+      metadata: { classroom_pack: clean.classroomPack ?? null, reference: clean.reference ?? null, company: clean.company ?? null, organisation_id: organisation.id, referral_share_bps: organisation.default_referral_share_bps }
     })
   });
   if (!invitationResponse.ok) return { ok: false, error: "INVITATION_CREATE_FAILED" };
@@ -216,7 +220,8 @@ export async function createAndSendInvitation(input: InvitationInput): Promise<C
     recipientEmail: clean.recipientEmail,
     courseTitle: course?.title ?? clean.courseId,
     invitationToken: token,
-    expiresAt: clean.expiresAt
+    expiresAt: clean.expiresAt,
+    classroomPack: clean.classroomPack
   });
   if (!delivery.ok) {
     if (pendingResult.pendingEnrolmentCreated) await removeOwnedPendingEnrolment(pendingResult.recipientUserId, clean.courseId, invitationId);
@@ -247,6 +252,7 @@ export async function createInvitation(formData: FormData): Promise<CreateInvita
     basis: String(formData.get("basis") ?? "other"),
     reason: String(formData.get("reason") ?? ""),
     expiresAt: String(formData.get("expiresAt") ?? ""),
+    classroomPack: String(formData.get("classroomPack") ?? ""),
     reference: String(formData.get("reference") ?? ""),
     company: String(formData.get("company") ?? ""),
     organisationId: String(formData.get("organisationId") ?? "")
@@ -264,7 +270,8 @@ export async function createInvitationWithState(_previousState: CreateInvitation
       basis: String(formData.get("basis") ?? "other"),
       reason: String(formData.get("reason") ?? ""),
       expiresAt: String(formData.get("expiresAt") ?? ""),
-      reference: String(formData.get("reference") ?? ""),
+      classroomPack: String(formData.get("classroomPack") ?? ""),
+    reference: String(formData.get("reference") ?? ""),
       company: String(formData.get("company") ?? ""),
       organisationId: String(formData.get("organisationId") ?? "")
     });

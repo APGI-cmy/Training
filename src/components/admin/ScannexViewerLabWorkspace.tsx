@@ -53,6 +53,7 @@ export function ScannexViewerLabWorkspace({
         <article><strong>{formatCoursePrice(summary.trackedCostCents, currency)}</strong><span>tracked Viewer estimate this month</span></article>
         <article><strong>{formatCoursePrice(summary.budgetCents, currency)}</strong><span>cost allowance with tolerance</span></article>
       </section>
+      {settings.classroomLearnerCount ? <p className="resource-status">Classroom mode: all {settings.classroomLearnerCount} learners participate together (100%), with {settings.capacityBuffer} additional presenter/spare places. This target is not confirmation that AWS has prepared the places.</p> : null}
 
       <section className="admin-workspace-grid">
         <form action={action} className="admin-form-card">
@@ -74,7 +75,8 @@ export function ScannexViewerLabWorkspace({
             <label>Minimum ready places<input name="minimum_ready_capacity" type="number" min="0" max="1000" defaultValue={settings.minimumReadyCapacity} required /></label>
             <label>Maximum simultaneous places<input name="maximum_capacity" type="number" min="1" max="1000" defaultValue={settings.maximumCapacity} required /></label>
             <label>Expected simultaneous use (%)<input name="expected_concurrency_percent" type="number" min="1" max="100" step="0.01" defaultValue={(settings.expectedConcurrencyBps / 100).toFixed(2)} required /></label>
-            <label>Safety buffer (places)<input name="capacity_buffer" type="number" min="0" max="100" defaultValue={settings.capacityBuffer} required /></label>
+            <label>Classroom learners per group (blank for self-paced)<input name="classroom_learner_count" type="number" min="1" max="1000" defaultValue={settings.classroomLearnerCount ?? ''}/></label>
+            <label>Additional presenter/spare places<input name="capacity_buffer" type="number" min="0" max="100" defaultValue={settings.capacityBuffer} required /></label>
             <label>Warm-up notice (minutes)<input name="warmup_minutes" type="number" min="5" max="60" defaultValue={settings.warmupMinutes} required /></label>
           </div>
 

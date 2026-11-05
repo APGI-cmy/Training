@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ProgressIndicator } from "@/components/progress/ProgressIndicator";
 import type { CourseShell as CourseShellModel } from "@/lib/services/courses/get-course-shell";
 
@@ -17,9 +16,9 @@ export function CourseShell({
       <section className="course-masthead">
         <div className="content-inner course-masthead-grid">
           <div>
-            <Link className="back-link" href="/dashboard">
+            <a className="back-link" href="/dashboard">
               Back to dashboard
-            </Link>
+            </a>
             <p className="eyebrow">Learner course shell</p>
             <h1>{course.title}</h1>
             <p>{course.description}</p>
@@ -28,13 +27,13 @@ export function CourseShell({
             ) : null}
             <div className="button-row">
               {nextAction ? (
-                <Link className="primary-button" href={nextAction.href}>
+                <a className="primary-button" href={nextAction.href}>
                   {nextAction.label}
-                </Link>
+                </a>
               ) : firstUnit ? (
-                <Link className="primary-button" href={firstUnit.href}>
+                <a className="primary-button" href={firstUnit.href}>
                   Open first unit
-                </Link>
+                </a>
               ) : null}
             </div>
           </div>
@@ -59,11 +58,11 @@ export function CourseShell({
                 </div>
                 <h3>{unit.title}</h3>
                 <p>{unit.subtitle}</p>
-                <Link className="secondary-button" href={unit.href}>
+                <a className="secondary-button" href={unit.href}>
                   {unit.kind === "summative_assessment"
                     ? "Open assessment"
                     : unit.isCompleted ? "Review unit" : unit.isOpened ? "Continue unit" : "Open unit"}
-                </Link>
+                </a>
               </article>
             ))}
           </div>

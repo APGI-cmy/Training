@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { CourseShellUnit } from "@/lib/services/courses/get-course-shell";
 
 export function CourseSidebar({
@@ -25,12 +24,12 @@ export function CourseSidebar({
 
             return (
               <li key={unit.id}>
-                <Link
+                <a
                   aria-current={isActive ? "page" : undefined}
                   href={`/learn/${courseSlug}/units/${unit.slug}`}
                 >
                   {unit.kind === "summative_assessment" ? "Summative assessment" : unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}: {unit.title}
-                </Link>
+                </a>
                 <span> {status}</span>
                 {isActive ? <span> Current</span> : null}
               </li>

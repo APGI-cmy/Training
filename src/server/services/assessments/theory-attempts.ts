@@ -1,4 +1,5 @@
 import "server-only";
+import { SCANNEX_THEORY_VERSION } from "@/server/assessments/scannex-theory-bank";
 
 import { adminRest } from "@/server/supabase/admin-rest";
 
@@ -20,7 +21,7 @@ export type TheoryAttemptSummary = {
 
 export async function getLatestScannexTheoryAttempt(learnerId: string, courseId: string): Promise<TheoryAttemptSummary | null> {
   const response = await adminRest(
-    `/rest/v1/assessment_theory_attempts?select=id,score,max_score,passed,submitted_at&learner_user_id=eq.${encodeURIComponent(learnerId)}&course_id=eq.${encodeURIComponent(courseId)}&assessment_version=eq.scannex-summative-v1&order=submitted_at.desc&limit=1`
+    `/rest/v1/assessment_theory_attempts?select=id,score,max_score,passed,submitted_at&learner_user_id=eq.${encodeURIComponent(learnerId)}&course_id=eq.${encodeURIComponent(courseId)}&assessment_version=eq.${encodeURIComponent(SCANNEX_THEORY_VERSION)}&order=submitted_at.desc&limit=1`
   );
 
   if (!response.ok) return null;

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { encodeAssetPath } from "@/lib/courses";
@@ -47,7 +46,7 @@ export default async function AdminCourseUnitPreviewPage({ params }: PageProps) 
           <div className="preview-toolbar">
             <p>Use the same learning resources and navigation that learners receive. This preview never writes learner progress.</p>
             <div className="header-actions">
-              <Link className="primary-button" href={`${previewBase}/${unit.slug}/full`}>Open full-page preview</Link>
+              <a className="primary-button" href={`${previewBase}/${unit.slug}/full`}>Open full-page preview</a>
             </div>
           </div>
           {course.slug === "scannex-training-programme" && (
@@ -69,21 +68,21 @@ export default async function AdminCourseUnitPreviewPage({ params }: PageProps) 
 
           <nav className="unit-navigation" aria-label="Administrator preview navigation">
             {previous ? (
-              <Link className="secondary-button" href={`${previewBase}/${previous.slug}`}>
+              <a className="secondary-button" href={`${previewBase}/${previous.slug}`}>
                 Previous: {previous.title}
-              </Link>
+              </a>
             ) : <span />}
             {next ? (
-              <Link className="primary-button" href={`${previewBase}/${next.slug}`}>
+              <a className="primary-button" href={`${previewBase}/${next.slug}`}>
                 Next: {next.title}
-              </Link>
+              </a>
             ) : null}
           </nav>
         </div>
       </section>
 
       <p>
-        <Link href={previewBase}>Back to {course.title} preview</Link>
+        <a href={previewBase}>Back to {course.title} preview</a>
       </p>
     </main>
   );

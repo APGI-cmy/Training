@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { encodeAssetPath } from "@/lib/courses";
@@ -27,8 +26,8 @@ export default async function FullPageAdminPreview({ params }: PageProps) {
       <header className="admin-full-preview-header">
         <div><p className="eyebrow">Full-page administrator preview</p><h1>{unit.title}</h1><p>{course.title} · Preview only — no learner progress, enrolment or access events are written.</p></div>
         <div className="header-actions">
-          <Link className="secondary-button" href={previewHref}>Return to preview</Link>
-          <Link className="primary-button" href={`${previewHref}/presentation`} target="_blank" rel="noreferrer">Open presentation only</Link>
+          <a className="secondary-button" href={previewHref}>Return to preview</a>
+          <a className="primary-button" href={`${previewHref}/presentation`} target="_blank" rel="noreferrer">Open presentation only</a>
         </div>
       </header>
       <div className="admin-full-preview-content">

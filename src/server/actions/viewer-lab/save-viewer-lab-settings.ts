@@ -52,6 +52,10 @@ export async function saveViewerLabSettings(
   const expectedConcurrencyBps = integerValue(formData, "expected_concurrency_percent", 100);
   const capacityBuffer = integerValue(formData, "capacity_buffer");
   const warmupMinutes = integerValue(formData, "warmup_minutes");
+  const classroomValue = textValue(formData, "classroom_learner_count");
+  const classroomLearnerCount = classroomValue ? Number(classroomValue) : null;
+  if (classroomLearnerCount !== null && (!Number.isInteger(classroomLearnerCount) || classroomLearnerCount < 1 || classroomLearnerCount > 1000)) return { error: "Enter a classroom learner count from 1 to 1000, or leave it blank for self-paced use." };
+  if (classroomLearnerCount !== null && maximumCapacity < classroomLearnerCount + capacityBuffer) return { error: "Maximum places must cover every classroom learner plus the presenter/spare places." };
 
   if (!Number.isInteger(estimatedCostPerLearnerCents) || estimatedCostPerLearnerCents < 0 || estimatedCostPerLearnerCents > 100000) return { error: "Enter a valid estimated Viewer cost per learner." };
   if (!Number.isInteger(additionalSessionCostCents) || additionalSessionCostCents < 0 || additionalSessionCostCents > 100000) return { error: "Enter a valid additional session cost." };
@@ -76,7 +80,8 @@ export async function saveViewerLabSettings(
       tolerance_bps: toleranceBps,
       minimum_ready_capacity: minimumReadyCapacity,
       maximum_capacity: maximumCapacity,
-      expected_concurrency_bps: expectedConcurrencyBps,
+      expected_concurrency_bps: classroomLearnerCount ? 10000 : expectedConcurrencyBps,
+      classroom_learner_count: classroomLearnerCount,
       capacity_buffer: capacityBuffer,
       warmup_minutes: warmupMinutes,
       updated_by: session.user.id,
