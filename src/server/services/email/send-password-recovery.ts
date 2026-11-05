@@ -1,14 +1,13 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { safeRecoveryNext } from "@/lib/auth/safe-recovery-next";
+import { getApplicationUrl } from "@/server/services/application-url";
 
 export async function sendPasswordRecoveryEmail(email: string, tokenHash: string, next: string): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.EMAIL_FROM?.trim();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (!apiKey || !from || !appUrl || /[\r\n]/.test(email + from)) return false;
-  const origin = new URL(appUrl);
-  if (process.env.NODE_ENV === "production" && origin.protocol !== "https:") return false;
+  const origin = getApplicationUrl();
+  if (!apiKey || !from || !origin || /[\r\n]/.test(email + from)) return false;
   const recoveryUrl = new URL("/reset-password", origin);
   recoveryUrl.searchParams.set("token_hash", tokenHash);
   recoveryUrl.searchParams.set("next", safeRecoveryNext(next));

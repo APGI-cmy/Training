@@ -1,4 +1,5 @@
 import "server-only";
+import { getApplicationUrl } from "@/server/services/application-url";
 
 export type InvitationEmailInput = {
   invitationId: string;
@@ -22,27 +23,14 @@ function escapeHtml(value: string) {
   })[character] ?? character);
 }
 
-function getAppUrl() {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
-  if (!appUrl) return null;
-
-  try {
-    const parsed = new URL(appUrl);
-    if (process.env.NODE_ENV === "production" && parsed.protocol !== "https:") return null;
-    return parsed;
-  } catch {
-    return null;
-  }
-}
-
 export function isInvitationDeliveryConfigured() {
-  return Boolean(process.env.RESEND_API_KEY?.trim() && process.env.EMAIL_FROM?.trim() && getAppUrl());
+  return Boolean(process.env.RESEND_API_KEY?.trim() && process.env.EMAIL_FROM?.trim() && getApplicationUrl());
 }
 
 export async function sendCourseInvitationEmail(input: InvitationEmailInput): Promise<InvitationEmailResult> {
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.EMAIL_FROM?.trim();
-  const appUrl = getAppUrl();
+  const appUrl = getApplicationUrl();
 
   if (!apiKey || !from || !appUrl) return { ok: false, error: "EMAIL_NOT_CONFIGURED" };
   if (/[\r\n]/.test(from) || /[\r\n]/.test(input.recipientEmail)) return { ok: false, error: "EMAIL_DELIVERY_FAILED" };
