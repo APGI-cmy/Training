@@ -14,6 +14,7 @@ export type ViewerLabSettings = {
   expectedConcurrencyBps: number;
   capacityBuffer: number;
   warmupMinutes: number;
+  classroomLearnerCount?: number | null;
 };
 
 export const defaultViewerLabSettings: ViewerLabSettings = {
@@ -64,6 +65,8 @@ export function viewerCostAllowanceCents(settings: ViewerLabSettings) {
 }
 
 export function recommendedViewerCapacity(settings: ViewerLabSettings, activeEnrolments: number) {
-  const demand = Math.ceil(activeEnrolments * (settings.expectedConcurrencyBps / 10_000)) + settings.capacityBuffer;
+  const demand = settings.classroomLearnerCount
+    ? settings.classroomLearnerCount + settings.capacityBuffer
+    : Math.ceil(activeEnrolments * (settings.expectedConcurrencyBps / 10_000)) + settings.capacityBuffer;
   return Math.min(settings.maximumCapacity, Math.max(settings.minimumReadyCapacity, demand));
 }

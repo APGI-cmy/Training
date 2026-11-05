@@ -9,6 +9,7 @@ import {
   SCANNEX_THEORY_VERSION
 } from "@/server/assessments/scannex-theory-bank";
 import { requireSession } from "@/server/auth/session";
+import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { adminRest } from "@/server/supabase/admin-rest";
 import type { ScannexTheoryAnswerState } from "@/types/scannex-assessment";
 
@@ -50,6 +51,9 @@ export async function submitScannexTheoryAttempt(
   if (!course || course.id !== "scannex-training-programme" || !answers) {
     return { error: "The assessment could not be submitted. Please refresh the page and try again." };
   }
+
+  const access = await getCourseAccess({ accessToken: session.accessToken, userId: session.user.id, userEmail: session.user.email, courseId: course.id });
+  if (!access.canAccess) return { error: "An active Scannex enrolment is required to submit this assessment." };
 
   if (!hasAnswerForEveryScannexTheoryQuestion(answers)) {
     return { error: `Answer all ${getScannexTheoryQuestions().length} questions before submitting.` };

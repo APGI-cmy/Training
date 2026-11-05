@@ -31,6 +31,7 @@ type SettingsRow = {
   expected_concurrency_bps: number;
   capacity_buffer: number;
   warmup_minutes: number;
+  classroom_learner_count?: number | null;
 };
 
 function fromRow(row: SettingsRow): ViewerLabSettings {
@@ -47,14 +48,15 @@ function fromRow(row: SettingsRow): ViewerLabSettings {
     maximumCapacity: row.maximum_capacity,
     expectedConcurrencyBps: row.expected_concurrency_bps,
     capacityBuffer: row.capacity_buffer,
-    warmupMinutes: row.warmup_minutes
+    warmupMinutes: row.warmup_minutes,
+    classroomLearnerCount: row.classroom_learner_count ?? null
   };
 }
 
 export async function getViewerLabSettings(): Promise<ViewerLabSettings> {
   try {
     const response = await adminRest(
-      "/rest/v1/course_viewer_lab_settings?select=course_id,enabled,enabled_unit_slugs,access_opens_at,access_closes_at,estimated_cost_per_learner_cents,additional_session_cost_cents,tolerance_bps,minimum_ready_capacity,maximum_capacity,expected_concurrency_bps,capacity_buffer,warmup_minutes&course_id=eq.scannex-training-programme&limit=1"
+      "/rest/v1/course_viewer_lab_settings?select=course_id,enabled,enabled_unit_slugs,access_opens_at,access_closes_at,estimated_cost_per_learner_cents,additional_session_cost_cents,tolerance_bps,minimum_ready_capacity,maximum_capacity,expected_concurrency_bps,capacity_buffer,warmup_minutes,classroom_learner_count&course_id=eq.scannex-training-programme&limit=1"
     );
     if (!response.ok) return defaultViewerLabSettings;
     const rows = (await response.json()) as SettingsRow[];

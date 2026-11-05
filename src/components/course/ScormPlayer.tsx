@@ -100,6 +100,14 @@ export function ScormPlayer({
     else setLeaving(false);
   }
 
+  async function reloadActivity() {
+    if (leaving) return;
+    setLeaving(true);
+    const saved = await saveProgressRef.current?.() ?? true;
+    if (saved) window.location.reload();
+    else setLeaving(false);
+  }
+
   useEffect(() => {
     let active = true;
     const endpoint = `/api/scorm?courseSlug=${encodeURIComponent(courseSlug)}&unitSlug=${encodeURIComponent(unitSlug)}`;
@@ -144,10 +152,12 @@ export function ScormPlayer({
       if (!valuesRef.current) return true;
       if (active) setStatus("Saving your progress…");
       try {
+        const body = JSON.stringify({ courseSlug, unitSlug, attempt: toAttempt(valuesRef.current) });
         const response = await fetch(endpoint, {
           method: "PUT",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ courseSlug, unitSlug, attempt: toAttempt(valuesRef.current) })
+          body,
+          keepalive: new Blob([body]).size <= 60_000
         });
         if (active) setStatus(response.ok
           ? "Your progress is saved to your learner record."
@@ -171,11 +181,30 @@ export function ScormPlayer({
     };
 
     void load();
+    // Embedded SCORM runtimes need a fresh document on route changes. Finish
+    // their queued saves before following a same-tab link to that document.
+    let navigating = false;
+    const saveBeforeNavigation = (event: globalThis.MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      const anchor = event.target instanceof Element ? event.target.closest("a[href]") : null;
+      if (!(anchor instanceof HTMLAnchorElement) || anchor.download || (anchor.target && anchor.target !== "_self")) return;
+      const destination = new URL(anchor.href, window.location.href);
+      if (destination.origin !== window.location.origin || (destination.pathname === window.location.pathname && destination.search === window.location.search)) return;
+      event.preventDefault(); event.stopPropagation();
+      if (navigating) return;
+      navigating = true; setLeaving(true);
+      void save().then(saved => {
+        if (saved) window.location.assign(destination.href);
+        else { navigating = false; setLeaving(false); }
+      });
+    };
+    document.addEventListener("click", saveBeforeNavigation, true);
     const saveBeforeLeaving = () => { void save(); };
     window.addEventListener("pagehide", saveBeforeLeaving);
     return () => {
       active = false;
       saveProgressRef.current = null;
+      document.removeEventListener("click", saveBeforeNavigation, true);
       window.removeEventListener("pagehide", saveBeforeLeaving);
       void save();
       delete window.API_1484_11;
@@ -194,9 +223,15 @@ export function ScormPlayer({
         </nav>
       ) : null}
       {!immersive && <p className="scorm-status" role="status">{status}</p>}
+      {ready && <p className="activity-recovery">
+        <button className="secondary-button" type="button" onClick={reloadActivity} disabled={leaving}>
+          {leaving ? "Saving…" : "Reload learning activity"}
+        </button>
+        {" "}If the presentation is blank, reload it here. Your saved progress is retained.
+      </p>}
       {ready ? (
         <figure className="media-item">
-          <iframe title={`${title} activities and quizzes`} src={launchSrc} allow="fullscreen" allowFullScreen />
+          <iframe key={`${courseSlug}:${unitSlug}:${launchSrc}`} title={`${title} activities and quizzes`} src={launchSrc} allow="fullscreen" allowFullScreen />
           {!immersive && (
             <figcaption>
               {mode === "preview"

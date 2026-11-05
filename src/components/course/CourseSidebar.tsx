@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { CourseShellUnit } from "@/lib/services/courses/get-course-shell";
 
 export function CourseSidebar({
@@ -15,7 +14,7 @@ export function CourseSidebar({
       <div>
         <p className="eyebrow">Course shell</p>
         <h2>Learning units</h2>
-        <p>Move through the seeded VPSHR Level 0 unit structure with W3 progress states.</p>
+        <p>Open a learning unit and see your saved progress.</p>
       </div>
       <nav aria-label="Learning unit navigation">
         <ol className="plain-list">
@@ -25,12 +24,12 @@ export function CourseSidebar({
 
             return (
               <li key={unit.id}>
-                <Link
+                <a
                   aria-current={isActive ? "page" : undefined}
                   href={`/learn/${courseSlug}/units/${unit.slug}`}
                 >
                   {unit.kind === "summative_assessment" ? "Summative assessment" : unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}: {unit.title}
-                </Link>
+                </a>
                 <span> {status}</span>
                 {isActive ? <span> Current</span> : null}
               </li>

@@ -1,5 +1,6 @@
 "use client";
 
+import { getClassroomPack } from "@/lib/namdeb-classroom";
 import { useState, useTransition, type ChangeEvent } from "react";
 import { createBatchInvitations } from "@/server/actions/invitations/create-batch-invitations";
 import type { InvitationInput } from "@/server/actions/invitations/create-invitation";
@@ -173,7 +174,10 @@ function toInvitationRows(rows: string[][], allowedCourses: Set<string>, organis
     if (!recipientEmail || !courseId || !basis || !reason || !expiresAt || !organisationId || !allowedCourses.has(courseId)) {
       return { invitations: [], error: `Correct row ${index + 2}: every learner needs a recognised organisation_slug, valid course_slug, access_basis, reason and expires_at value.` };
     }
+    const classroomPack = value(row, "classroom_pack");
+    if (classroomPack && (!getClassroomPack(classroomPack) || courseId !== "scannex-training-programme")) return { invitations: [], error: `Correct the classroom_pack in row ${index + 2}.` };
     invitations.push({
+      classroomPack,
       rowNumber: index + 2,
       recipientEmail,
       courseId,

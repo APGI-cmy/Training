@@ -1,13 +1,12 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
+import { getApplicationUrl } from "@/server/services/application-url";
 
 export async function sendAccountConfirmationEmail(email: string, tokenHash: string): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const from = process.env.EMAIL_FROM?.trim();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (!apiKey || !from || !appUrl || /[\r\n]/.test(email + from)) return false;
-  const origin = new URL(appUrl);
-  if (process.env.NODE_ENV === "production" && origin.protocol !== "https:") return false;
+  const origin = getApplicationUrl();
+  if (!apiKey || !from || !origin || /[\r\n]/.test(email + from)) return false;
   const confirmationUrl = new URL("/confirm-account", origin);
   confirmationUrl.searchParams.set("token_hash", tokenHash);
   const url = confirmationUrl.toString();

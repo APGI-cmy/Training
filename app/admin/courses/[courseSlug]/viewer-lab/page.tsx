@@ -6,6 +6,7 @@ import { defaultCourseCommerceSetting } from "@/lib/commerce";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { getViewerLabCostSummary, getViewerLabSettings, SCANNEX_COURSE_ID } from "@/lib/services/viewer-lab/viewer-lab-settings";
 import { getCourseCommerceSettings } from "@/server/services/commerce/get-course-commerce";
+import { ViewerFleetReadiness } from "@/components/admin/ViewerFleetReadiness";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,14 @@ export default async function ScannexViewerLabAdminPage({ params }: { params: Pr
         <Link className="secondary-button" href={`/admin/courses/${courseSlug}/preview`}>Back to Scannex course</Link>
       </header>
       <ScannexViewerLabWorkspace settings={settings} summary={summary} units={course.units} baseCoursePriceCents={pricing.priceCents} currency={pricing.currency} />
+      <ViewerFleetReadiness />
+      <section className="admin-form-card">
+        <h2>Presenter connection</h2>
+        <p>After the classroom capacity check is ready, open your own Viewer connection here. It is separate from the ten learner connections and does not create learner progress or assessment results.</p>
+        <form method="post" action="/api/admin/scannex-presenter" target="_blank">
+          <button className="primary-button" type="submit">Open presenter Viewer</button>
+        </form>
+      </section>
     </main>
   );
 }

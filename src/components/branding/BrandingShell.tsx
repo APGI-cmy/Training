@@ -74,7 +74,10 @@ export function BrandingShell({ children, homeHref = "/" }: { children: ReactNod
         <ThemeToggle />
       </header>
       {children}
-      {branding ? <footer className="app-footer powered-by-footer">{branding.footerText}</footer> : null}
+      <footer className="app-footer powered-by-footer">
+        {branding ? <span>{branding.footerText}</span> : <span>APGI Training</span>}
+        <a href="https://legal.apgi.app/privacy">Privacy notice</a>
+      </footer>
     </CourseBrandingContext.Provider>
   );
 }
