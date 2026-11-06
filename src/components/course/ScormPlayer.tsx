@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { ActivityToolbar } from "@/components/course/ActivityToolbar";
 
 type ScormValues = Record<string, string>;
 
@@ -214,16 +215,10 @@ export function ScormPlayer({
   return (
     <section className={immersive ? "scorm-player-immersive" : undefined} aria-label={`${title} SCORM learning activity`}>
       {immersive && returnHref ? (
-        <nav className="activity-toolbar" aria-label="Learning activity navigation">
-          <a className="secondary-button" href={returnHref} onClick={returnToUnit} aria-disabled={leaving}>
-            <span aria-hidden="true">←</span> {leaving ? "Saving…" : "Back to unit"}
-          </a>
-          <p className="activity-save-status" role="status">{status}</p>
-          {resourceHref ? <a className="primary-button" href={resourceHref} target="_blank" rel="noreferrer">Open Scannex e-book</a> : null}
-        </nav>
+        <ActivityToolbar returnHref={returnHref} onReturn={returnToUnit} onReload={() => { void reloadActivity(); }} resourceHref={resourceHref} status={status} busy={leaving} />
       ) : null}
       {!immersive && <p className="scorm-status" role="status">{status}</p>}
-      {ready && <p className="activity-recovery">
+      {ready && !immersive && <p className="activity-recovery">
         <button className="secondary-button" type="button" onClick={reloadActivity} disabled={leaving}>
           {leaving ? "Saving…" : "Reload learning activity"}
         </button>
