@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import Link from "next/link";
+import { ActivityToolbar } from "@/components/course/ActivityToolbar";
 
 export function PresentationOnlyMode({
   children,
@@ -19,11 +19,12 @@ export function PresentationOnlyMode({
 
   return (
     <main className="admin-presentation-only" data-mode="presentation-only">
-      <nav className="activity-toolbar" aria-label="Preview navigation">
-        <Link className="secondary-button" href={returnHref}>← Back to unit preview</Link>
-        <p className="activity-save-status">Administrator preview</p>
-        {eBookHref ? <a className="primary-button" href={eBookHref} target="_blank" rel="noreferrer">Open e-book</a> : null}
-      </nav>
+      <ActivityToolbar
+        returnHref={returnHref}
+        resourceHref={eBookHref}
+        status="Administrator preview — learner progress is not recorded."
+        onReload={() => window.location.reload()}
+      />
       {children}
     </main>
   );
