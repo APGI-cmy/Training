@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { NextRequest } from "next/server";
 
 const mocks = vi.hoisted(() => ({ rest: vi.fn(), email: vi.fn(), fetch: vi.fn(), signOut: vi.fn(), cookieGet: vi.fn(), cookieSet: vi.fn(), cookieDelete: vi.fn() }));
 vi.mock("next/headers", () => ({ cookies: async () => ({ get: mocks.cookieGet, set: mocks.cookieSet, delete: mocks.cookieDelete }) }));
@@ -7,6 +8,7 @@ vi.mock("@/server/auth/session", () => ({ getSupabaseRestUrl: (path: string) => 
 vi.mock("@/server/supabase/admin-rest", () => ({ adminRest: mocks.rest }));
 vi.mock("@/server/services/email/send-password-recovery", () => ({ sendPasswordRecoveryEmail: mocks.email }));
 import { requestPasswordRecovery, beginPasswordReset, updateRecoveredPassword } from "@/server/actions/auth/password-recovery";
+import { POST as verifyPasswordReset } from "../app/reset-password/verify/route";
 import { safeRecoveryNext } from "@/lib/auth/safe-recovery-next";
 
 function form(values: Record<string, string>) {
@@ -59,6 +61,31 @@ describe("Password recovery safeguards", () => {
     await expect(beginPasswordReset(form({ token_hash: "valid-link", next: "/learn/scannex-training-programme" }))).rejects.toThrow("REDIRECT:/reset-password");
     expect(JSON.parse(mocks.fetch.mock.calls[0][1].body)).toEqual({ token_hash: "valid-link", type: "recovery" });
     expect(mocks.cookieSet).toHaveBeenCalledWith("alp_recovery_token", "recovery-token", expect.objectContaining({ httpOnly: true, sameSite: "strict", maxAge: 900 }));
+  });
+
+  it("uses a conventional POST to verify a link when a browser cannot provide a usable Origin header", async () => {
+    mocks.fetch.mockResolvedValue(Response.json({ access_token: "recovery-token", user: { id: "learner" } }));
+    const request = new NextRequest("https://training.apgi.app/reset-password/verify", {
+      method: "POST",
+      body: new URLSearchParams({ token_hash: "valid-link", next: "/learn/scannex-training-programme" })
+    });
+    const response = await verifyPasswordReset(request);
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe("https://training.apgi.app/reset-password");
+    expect(response.headers.get("set-cookie")).toContain("alp_recovery_token=recovery-token");
+    expect(response.headers.get("set-cookie")).toContain("alp_recovery_next=%2Flearn%2Fscannex-training-programme");
+  });
+
+  it("does not create recovery cookies for an expired link submitted to the conventional endpoint", async () => {
+    mocks.fetch.mockResolvedValue(Response.json({ msg: "expired" }, { status: 403 }));
+    const request = new NextRequest("https://training.apgi.app/reset-password/verify", {
+      method: "POST",
+      body: new URLSearchParams({ token_hash: "expired-link", next: "/dashboard" })
+    });
+    const response = await verifyPasswordReset(request);
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe("https://training.apgi.app/reset-password?error=invalid_link");
+    expect(response.headers.get("set-cookie")).toBeNull();
   });
 
   it("rejects password changes without a verified recovery cookie", async () => {
