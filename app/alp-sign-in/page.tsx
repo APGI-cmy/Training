@@ -8,6 +8,7 @@ export default async function AlpSignInPage({ searchParams }: { searchParams: Pr
     <main className="content-band">
       <div className="content-inner auth-panel">
         <h1>APGI sign in</h1>
+        <p>Use the password you chose for APGI Training. AWS Viewer access is separate. Signing in here does not start a timed Viewer session.</p>
         {passwordReset === "success" ? <p className="form-success" role="status">Your password has been updated. Sign in with your new password.</p> : null}
         <LoginForm returnTo={returnTo} />
         <p><Link href={`/forgot-password${returnTo ? `?next=${encodeURIComponent(returnTo)}` : ""}`}>Forgot password?</Link></p>

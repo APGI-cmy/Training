@@ -3,6 +3,7 @@ import { ViewerEndSessionInstructions } from "./ViewerEndSessionInstructions";
 export function ViewerStreamingNotice() {
   return <aside className="viewer-stream-notice" role="note" aria-label="Streaming connection notice">
       <strong>You are controlling a live streamed application</strong>
+      <p>Keep the APGI training portal open in your own computer&apos;s browser, outside the AWS streamed desktop. Start Viewer practice only when you are ready. The AWS countdown applies to the Viewer session, not to your APGI course login or enrolment.</p>
       <p>The Viewer runs securely on AWS and streams to your browser. A slow or unstable internet connection, weak Wi-Fi or mobile signal can delay control responses. Click once and allow the Viewer to respond before clicking again. A stable connection will make practice smoother.</p>
   </aside>;
 }

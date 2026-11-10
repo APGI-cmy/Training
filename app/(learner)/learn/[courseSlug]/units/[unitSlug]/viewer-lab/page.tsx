@@ -98,6 +98,7 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
                   action={`/learn/${course.slug}/units/${unit.slug}/viewer-lab/launch`}
                   method="post"
                   target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <button className="primary-button" type="submit">
                     Open Scannex Viewer in a new window

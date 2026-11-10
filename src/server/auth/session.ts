@@ -1,10 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-
-const ACCESS_COOKIE = "alp_access_token";
-const REFRESH_COOKIE = "alp_refresh_token";
-const USER_COOKIE = "alp_user_id";
-const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 8;
+import { ACCESS_COOKIE, REFRESH_COOKIE, USER_COOKIE, portalCookieOptions } from "./session-cookie-policy";
 
 type AlpAuthUser = {
   id: string;
@@ -103,13 +99,7 @@ export async function storeVerifiedSession(payload: SupabaseTokenResponse) {
   if (!payload.access_token || !payload.user?.id) throw new Error("INVALID_VERIFIED_SESSION");
 
   const cookieStore = await cookies();
-  const cookieOptions = {
-    httpOnly: true,
-    sameSite: "lax" as const,
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: COOKIE_MAX_AGE_SECONDS
-  };
+  const cookieOptions = portalCookieOptions();
 
   cookieStore.set(ACCESS_COOKIE, payload.access_token, cookieOptions);
 
@@ -158,12 +148,13 @@ export async function getCurrentSession(): Promise<AlpSession | null> {
   }
 
   const user = (await response.json().catch(() => ({}))) as AlpAuthUser;
+  if (!user.id) return null;
 
   return {
     accessToken,
     refreshToken,
     user: {
-      id: user.id ?? userId,
+      id: user.id,
       email: user.email,
       email_confirmed_at: user.email_confirmed_at
     }
