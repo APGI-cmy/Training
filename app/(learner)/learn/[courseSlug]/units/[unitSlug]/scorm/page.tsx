@@ -29,6 +29,7 @@ export default async function ScormLaunchPage({ params }: PageProps) {
     <ViewerUnitAccess userId={session.user.id} courseSlug={course.slug} unitSlug={unit.slug}>
     <main className="learner-scorm-full">
       <ScormPlayer
+        key={`${course.slug}:${unit.slug}`}
         courseSlug={course.slug}
         unitSlug={unit.slug}
         launchSrc={encodeAssetPath(unit.scormPath)}

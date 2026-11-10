@@ -66,4 +66,22 @@ describe("First-learner release SCORM storage boundaries", () => {
     expect((await PUT(request({ completion_status: "completed", success_status: "passed" }))).status).toBe(500);
     expect(mocks.progress).not.toHaveBeenCalled();
   });
+  it("does not disguise an unavailable saved attempt as a new learner", async () => {
+    mocks.fetch.mockResolvedValue(new Response("unavailable", { status: 500 }));
+    const response = await GET(new NextRequest("https://example.invalid/api/scorm?courseSlug=scannex-training-programme&unitSlug=lu1"));
+    expect(response.status).toBe(503);
+    expect(await response.json()).not.toHaveProperty("attempt");
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
+  });
+  it("restores the learner's exact saved position and resume payload", async () => {
+    const saved = { suspend_data: "package-specific-state", location: "slide-7", progress_measure: 0.3 };
+    mocks.fetch.mockResolvedValue(Response.json([saved]));
+    const response = await GET(new NextRequest("https://example.invalid/api/scorm?courseSlug=scannex-training-programme&unitSlug=lu1"));
+    expect(await response.json()).toEqual({ attempt: saved });
+    expect(mocks.fetch.mock.calls[0][0]).toContain("user_id=eq.actual-learner");
+  });
+  it("rejects oversized resume data rather than silently corrupting it", async () => {
+    expect((await PUT(request({ suspend_data: "x".repeat(65537) }))).status).toBe(422);
+    expect(mocks.fetch).not.toHaveBeenCalled();
+  });
 });

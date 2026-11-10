@@ -90,11 +90,14 @@ export async function GET(request: NextRequest) {
     `/rest/v1/scorm_attempts?select=completion_status,success_status,progress_measure,score_raw,score_scaled,score_min,score_max,suspend_data,location,total_time,interactions&user_id=eq.${resolved.session.user.id}&course_id=eq.${resolved.course.id}&unit_id=eq.${resolved.unit.id}&limit=1`
   );
   const requestHeaders = headers(resolved.session.accessToken);
-  if (!url || !requestHeaders) return NextResponse.json({ attempt: null });
+  const privateHeaders = { "Cache-Control": "private, no-store", Vary: "Cookie" };
+  if (!url || !requestHeaders) return NextResponse.json({ error: "Saved progress is unavailable. Please retry." }, { status: 503, headers: privateHeaders });
 
   const response = await fetch(url, { headers: requestHeaders, cache: "no-store" });
-  const rows = response.ok ? await response.json().catch(() => []) : [];
-  return NextResponse.json({ attempt: Array.isArray(rows) ? rows[0] ?? null : null });
+  if (!response.ok) return NextResponse.json({ error: "Saved progress could not be loaded. Please retry." }, { status: 503, headers: privateHeaders });
+  const rows = await response.json().catch(() => null);
+  if (!Array.isArray(rows)) return NextResponse.json({ error: "Saved progress could not be read. Please retry." }, { status: 502, headers: privateHeaders });
+  return NextResponse.json({ attempt: rows[0] ?? null }, { headers: privateHeaders });
 }
 
 export async function PUT(request: NextRequest) {
@@ -105,6 +108,9 @@ export async function PUT(request: NextRequest) {
   } | null;
   const resolved = await context(request, body?.courseSlug ?? "", body?.unitSlug ?? "");
   if (!resolved || !body?.attempt) return NextResponse.json({ error: "Not authorized" }, { status: 401 });
+  if (typeof body.attempt.suspend_data === "string" && body.attempt.suspend_data.length > 65536) {
+    return NextResponse.json({ error: "The activity resume data exceeds the supported size. Keep this page open and contact support." }, { status: 422 });
+  }
 
   const attempt = normalizeAttempt(body.attempt);
   const url = getSupabaseRestUrl("/rest/v1/scorm_attempts?on_conflict=user_id,course_id,unit_id");

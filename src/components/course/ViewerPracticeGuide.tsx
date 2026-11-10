@@ -37,13 +37,14 @@ export function ViewerPracticeGuide({ courseSlug, nextUnit, keepSession }: {
     </section>
     <section className="unit-resources" aria-labelledby="viewer-finish-heading">
       <p className="eyebrow">3 · Finish or continue</p>
-      <h2 id="viewer-finish-heading">{keepSession ? "Keep your session for the next unit" : "End the stream before your next unit"}</h2>
-      {keepSession ? <p>The next learning unit also uses the Viewer. Leave this streaming window open and continue with the same session. End it using the steps below when you finish practising.</p> : nextUnit ? <p>The next learning unit does not require the Viewer. You must end your streaming session before you can open it. The platform checks the session status with AWS.</p> : <p>End your streaming session when you finish practising, using the steps below.</p>}
+      <h2 id="viewer-finish-heading">Return to training with Viewer still open</h2>
+      <p>Keep your AWS streaming window open and switch to the APGI Training tab. You can open any learning unit or resume your last saved activity from course progress. End the stream only when you have finished using Viewer.</p>
+      <a className="primary-button" href={`/learn/${courseSlug}`}>Course progress &amp; all learning units</a>
+      <h3>When you have finished using Viewer</h3>
       <ViewerEndSessionInstructions />
       {nextUnit ? <div className="button-row"><a className="primary-button" href={`/learn/${courseSlug}/units/${nextUnit.slug}`}>
-        {keepSession ? `Continue: ${nextUnit.title}` : "Check session and continue"}
-      </a></div> : <p>When you have finished practising, end the streaming session before leaving the course.</p>}
-      <p className="disabled-guidance">If the check says the session is still running, confirm End session in the AWS window, wait a moment and check again. Your saved course progress is retained.</p>
+        Continue: {nextUnit.title}
+      </a></div> : null}
     </section>
   </>;
 }

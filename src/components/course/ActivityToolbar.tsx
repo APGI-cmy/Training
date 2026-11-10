@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState, type MouseEventHandler } from "react";
 
 /** Small return controls; the course keeps its own play and slide controls. */
-export function ActivityToolbar({ returnHref, onReturn, onReload, resourceHref, status, busy = false }: {
+export function ActivityToolbar({ returnHref, onReturn, onReload, resourceHref, courseHref, viewerHref, status, busy = false }: {
   returnHref: string;
   onReturn?: MouseEventHandler<HTMLAnchorElement>;
   onReload: () => void;
   resourceHref?: string;
+  courseHref?: string;
+  viewerHref?: string;
   status: string;
   busy?: boolean;
 }) {
@@ -37,7 +39,10 @@ export function ActivityToolbar({ returnHref, onReturn, onReload, resourceHref, 
       <a className="secondary-button" href={returnHref} onClick={onReturn} aria-disabled={busy}>
         {busy ? "Saving…" : "← Back"}
       </a>
+      {courseHref ? <a className="secondary-button" href={courseHref}>Course progress</a> : null}
+      {viewerHref ? <a className="secondary-button" href={viewerHref}>Viewer practice</a> : null}
       <span className="activity-live-status" role="status">{status}</span>
+      <small aria-hidden="true">{saveFailed ? "Save needs attention" : /saving/i.test(status) ? "Saving…" : /saved|restored/i.test(status) ? "Saved" : "Preparing…"}</small>
       {saveFailed ? <span className="activity-save-warning">Progress needs attention</span> : null}
       <div className="activity-toolbar-actions">
         <button className="secondary-button" type="button" onClick={() => { void toggleFullScreen(); }}>

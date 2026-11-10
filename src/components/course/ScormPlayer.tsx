@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ActivityToolbar } from "@/components/course/ActivityToolbar";
+import { createScormSaveQueue } from "@/lib/scorm-save-queue";
 
 type ScormValues = Record<string, string>;
 
@@ -111,6 +112,12 @@ export function ScormPlayer({
 
   useEffect(() => {
     let active = true;
+    let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
+    let requestSave: (() => Promise<boolean>) | undefined;
+    const scheduleSave = () => {
+      clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(() => { void requestSave?.(); }, 500);
+    };
     const endpoint = `/api/scorm?courseSlug=${encodeURIComponent(courseSlug)}&unitSlug=${encodeURIComponent(unitSlug)}`;
 
     const installApi = (saveProgress?: () => void) => {
@@ -122,6 +129,7 @@ export function ScormPlayer({
         SetValue: (key: string, value: string) => {
           if (!initialized || !valuesRef.current) return "false";
           valuesRef.current[key] = String(value ?? "");
+          if (mode === "learner") scheduleSave();
           return "true";
         },
         Commit: () => { saveProgress?.(); return "true"; },
@@ -144,16 +152,15 @@ export function ScormPlayer({
     }
 
     // Keep commits in order so an older request cannot overwrite the return save.
-    let saveQueue: Promise<boolean> = Promise.resolve(true);
+    let saveSnapshot: ((body: string) => Promise<boolean>) | undefined;
     const save = () => {
-      saveQueue = saveQueue.then(persistProgress);
-      return saveQueue;
+      if (!valuesRef.current || !saveSnapshot) return Promise.resolve(true);
+      return saveSnapshot(JSON.stringify({ courseSlug, unitSlug, attempt: toAttempt(valuesRef.current) }));
     };
-    const persistProgress = async () => {
-      if (!valuesRef.current) return true;
+    requestSave = save;
+    const persistProgress = async (body: string) => {
       if (active) setStatus("Saving your progress…");
       try {
-        const body = JSON.stringify({ courseSlug, unitSlug, attempt: toAttempt(valuesRef.current) });
         const response = await fetch(endpoint, {
           method: "PUT",
           headers: { "content-type": "application/json" },
@@ -172,13 +179,19 @@ export function ScormPlayer({
     saveProgressRef.current = save;
 
     const load = async () => {
-      const response = await fetch(endpoint, { cache: "no-store" });
-      const payload = response.ok ? await response.json() : { attempt: null };
-      if (!active) return;
-      valuesRef.current = initialValues(payload.attempt);
-      installApi(() => { void save(); });
-      setStatus("Your progress is saved to your learner record.");
-      setReady(true);
+      try {
+        const response = await fetch(endpoint, { cache: "no-store" });
+        if (!response.ok) throw new Error("PROGRESS_LOAD_FAILED");
+        const payload = await response.json();
+        if (!active) return;
+        valuesRef.current = initialValues(payload.attempt);
+        saveSnapshot = createScormSaveQueue(persistProgress, JSON.stringify({ courseSlug, unitSlug, attempt: toAttempt(valuesRef.current) }));
+        installApi(() => { void save(); });
+        setStatus(payload.attempt ? "Your saved progress has been restored. Continue where you left off." : "Your activity is ready. Progress will save automatically as you learn.");
+        setReady(true);
+      } catch {
+        if (active) setStatus("Your saved progress could not be loaded. Retry loading before continuing; your saved record has not been replaced.");
+      }
     };
 
     void load();
@@ -201,12 +214,20 @@ export function ScormPlayer({
     };
     document.addEventListener("click", saveBeforeNavigation, true);
     const saveBeforeLeaving = () => { void save(); };
+    const saveWhenHidden = () => { if (document.visibilityState === "hidden") void save(); };
+    const autosaveInterval = setInterval(saveBeforeLeaving, 5000);
+    document.addEventListener("visibilitychange", saveWhenHidden);
+    window.addEventListener("blur", saveBeforeLeaving);
     window.addEventListener("pagehide", saveBeforeLeaving);
     return () => {
       active = false;
       saveProgressRef.current = null;
       document.removeEventListener("click", saveBeforeNavigation, true);
+      document.removeEventListener("visibilitychange", saveWhenHidden);
+      window.removeEventListener("blur", saveBeforeLeaving);
       window.removeEventListener("pagehide", saveBeforeLeaving);
+      clearTimeout(autosaveTimer);
+      clearInterval(autosaveInterval);
       void save();
       delete window.API_1484_11;
     };
@@ -215,9 +236,16 @@ export function ScormPlayer({
   return (
     <section className={immersive ? "scorm-player-immersive" : undefined} aria-label={`${title} SCORM learning activity`}>
       {immersive && returnHref ? (
-        <ActivityToolbar returnHref={returnHref} onReturn={returnToUnit} onReload={() => { void reloadActivity(); }} resourceHref={resourceHref} status={status} busy={leaving} />
+        <ActivityToolbar returnHref={returnHref} onReturn={returnToUnit} onReload={() => { void reloadActivity(); }} resourceHref={resourceHref} status={status} busy={leaving}
+          courseHref={mode === "learner" ? `/learn/${courseSlug}` : undefined}
+          viewerHref={mode === "learner" && courseSlug === "scannex-training-programme" ? `/learn/${courseSlug}/units/lu6/viewer-lab?returnTo=${encodeURIComponent(`/learn/${courseSlug}/units/${unitSlug}/scorm`)}` : undefined} />
       ) : null}
       {!immersive && <p className="scorm-status" role="status">{status}</p>}
+      {!ready && mode === "learner" && status.includes("could not be loaded") ? <button className="secondary-button" onClick={() => window.location.reload()}>Retry loading saved progress</button> : null}
+      {!immersive && mode === "learner" && courseSlug === "scannex-training-programme" ? <div className="button-row">
+        <a className="secondary-button" href={`/learn/${courseSlug}`}>Course progress &amp; all learning units</a>
+        <a className="secondary-button" href={`/learn/${courseSlug}/units/lu6/viewer-lab?returnTo=${encodeURIComponent(`/learn/${courseSlug}/units/${unitSlug}`)}`}>Viewer practice — return to this unit</a>
+      </div> : null}
       {ready && !immersive && <p className="activity-recovery">
         <button className="secondary-button" type="button" onClick={reloadActivity} disabled={leaving}>
           {leaving ? "Saving…" : "Reload learning activity"}

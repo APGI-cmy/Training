@@ -94,6 +94,7 @@ export function UnitViewer({
             ) : null}
             {!isPracticalAssessment && scormLaunchSrc ? (
               <ScormPlayer
+                key={`${course.slug}:${unit.slug}`}
                 courseSlug={course.slug}
                 unitSlug={unit.slug}
                 launchSrc={scormLaunchSrc}

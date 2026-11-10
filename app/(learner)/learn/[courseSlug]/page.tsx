@@ -7,6 +7,7 @@ import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { getLearnerProgress } from "@/lib/services/progress/get-learner-progress";
 import { requireSession } from "@/server/auth/session";
 import { getCookieCompletedUnitIds } from "@/server/progress/progress-cookie";
+import { getCourseResume } from "@/lib/services/progress/get-course-resume";
 
 export const metadata = {
   title: "Course shell"
@@ -44,7 +45,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     return <CourseAccessDenied course={course} access={access} />;
   }
 
-  const [progress, cookieCompletedUnitIds] = await Promise.all([
+  const [progress, cookieCompletedUnitIds, resume] = await Promise.all([
     getLearnerProgress({
       accessToken: session.accessToken,
       userId: session.user.id,
@@ -53,7 +54,8 @@ export default async function Page({ params, searchParams }: PageProps) {
     getCookieCompletedUnitIds({
       userId: session.user.id,
       courseId: course.id
-    })
+    }),
+    getCourseResume(session.accessToken, session.user.id, course.slug)
   ]);
 
   cookieCompletedUnitIds.forEach((unitId) => {
@@ -67,5 +69,5 @@ export default async function Page({ params, searchParams }: PageProps) {
     notFound();
   }
 
-  return <CourseShell shell={shell} progressMessage={progressMessage} />;
+  return <CourseShell shell={shell} progressMessage={progressMessage} resume={resume} />;
 }

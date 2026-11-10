@@ -8,6 +8,8 @@ import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { isViewerLabConfigured } from "@/lib/services/viewer-lab/viewer-lab-config";
 import { evaluateViewerLabAvailability, getViewerLabSettings, SCANNEX_COURSE_ID } from "@/lib/services/viewer-lab/viewer-lab-settings";
 import { requireSession } from "@/server/auth/session";
+import { getCourseResume } from "@/lib/services/progress/get-course-resume";
+import { viewerReturnPath } from "@/lib/services/viewer-lab/viewer-return-path";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +20,7 @@ type PageProps = {
   }>;
   searchParams: Promise<{
     status?: string;
+    returnTo?: string;
   }>;
 };
 
@@ -33,7 +36,7 @@ const statusMessages: Record<string, string> = {
 export default async function ViewerLabPage({ params, searchParams }: PageProps) {
   const session = await requireSession();
   const { courseSlug, unitSlug } = await params;
-  const { status } = await searchParams;
+  const { status, returnTo } = await searchParams;
   const course = getCourseBySlug(courseSlug);
   const unit = course?.units.find((candidate) => candidate.slug === unitSlug);
   const settings = await getViewerLabSettings();
@@ -44,6 +47,8 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
   if (!course || !unit || (!isPracticeLab && !isSummativeLab)) {
     notFound();
   }
+  const resume = await getCourseResume(session.accessToken, session.user.id, course.slug);
+  const returnHref = viewerReturnPath(course.slug, returnTo) ?? resume?.href ?? `/learn/${course.slug}/units/${unit.slug}`;
 
   const access = await getCourseAccess({
     accessToken: session.accessToken,
@@ -66,11 +71,17 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
       <main>
         <section className="unit-masthead">
           <div className="content-inner">
-            <Link className="back-link" href={`/learn/${course.slug}/units/${unit.slug}`}>
-              Back to Learning Unit {unit.order}
+            <Link className="back-link" href={returnHref}>
+              Return to your learning activity
             </Link>
             <p className="eyebrow">Hosted practice environment</p>
             <h1>Scannex Viewer Lab</h1>
+            <div className="button-row">
+              <a className="primary-button" href={returnHref}>Return to training — keep Viewer open</a>
+              <a className="secondary-button" href={`/learn/${course.slug}`}>Course progress &amp; all learning units</a>
+              {resume ? <a className="secondary-button" href={resume.href}>Resume last saved activity</a> : null}
+            </div>
+            <p>Switch back to the training tab or use these links at any time. You do not need to end your AWS session to open another learning unit.</p>
             <p>Practise the controls covered in Learning Unit {unit.order} in the genuine Scannex Viewer using an isolated training session.</p>
           </div>
         </section>

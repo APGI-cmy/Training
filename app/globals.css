@@ -1678,7 +1678,7 @@ body:has(.admin-presentation-only) .learner-shell {
   align-items: center;
   justify-content: space-between;
   flex: 0 0 auto;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 6px;
   min-height: 36px;
   padding: 3px 6px;

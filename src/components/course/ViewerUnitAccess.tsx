@@ -1,13 +1,9 @@
 import type { ReactNode } from "react";
-import { getViewerSessionStatus } from "@/lib/services/viewer-lab/get-viewer-session-status";
-import { ViewerSessionGate } from "./ViewerSessionGate";
 
 export async function ViewerUnitAccess({ userId, courseSlug, unitSlug, children }: {
   userId: string; courseSlug: string; unitSlug: string; children: ReactNode;
 }) {
-  if (courseSlug !== "scannex-training-programme") return children;
-  const status = await getViewerSessionStatus(userId, unitSlug);
-  return <ViewerSessionGate courseSlug={courseSlug} unitSlug={unitSlug} initialStatus={status}>
-    {status.canProceed ? children : null}
-  </ViewerSessionGate>;
+  // Enrolment is checked by the page. An AWS session is independent of course
+  // navigation: learners may read any LU while their Viewer remains open.
+  return children;
 }

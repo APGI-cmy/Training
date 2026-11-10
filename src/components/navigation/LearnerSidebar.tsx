@@ -20,6 +20,7 @@ export async function LearnerSidebar() {
         <Link href="/dashboard">Dashboard</Link>
         <Link href="/catalogue">Course catalogue</Link>
         <Link href="/catalogue?view=my-learning">Enrolled courses</Link>
+        <a href="/learn/scannex-training-programme">Scannex course &amp; progress</a>
         <Link href="/profile">Profile</Link>
         {isAdmin ? <Link href="/admin">Administration</Link> : null}
         {isAdmin ? <Link href="/admin/learners">Learners</Link> : null}

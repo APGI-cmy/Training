@@ -1,12 +1,15 @@
 import { ProgressIndicator } from "@/components/progress/ProgressIndicator";
 import type { CourseShell as CourseShellModel } from "@/lib/services/courses/get-course-shell";
+import type { CourseResume } from "@/lib/services/progress/get-course-resume";
 
 export function CourseShell({
   shell,
-  progressMessage
+  progressMessage,
+  resume
 }: {
   shell: CourseShellModel;
   progressMessage?: string;
+  resume?: CourseResume | null;
 }) {
   const { course, units, firstUnit, completedUnits, nextAction } = shell;
   const showCompletionMessage = progressMessage === "unit-completed";
@@ -26,6 +29,7 @@ export function CourseShell({
               <p role="status">Unit marked complete. Progress has been updated.</p>
             ) : null}
             <div className="button-row">
+              {resume ? <a className="primary-button" href={resume.href}>Resume last saved activity</a> : null}
               {nextAction ? (
                 <a className="primary-button" href={nextAction.href}>
                   {nextAction.label}
@@ -36,6 +40,7 @@ export function CourseShell({
                 </a>
               ) : null}
             </div>
+            {resume ? <p>Last saved activity: {resume.title}. Your place within that activity is restored when you resume.</p> : null}
           </div>
           <ProgressIndicator completedUnits={completedUnits} totalUnits={units.length} />
         </div>
@@ -58,6 +63,7 @@ export function CourseShell({
                 </div>
                 <h3>{unit.title}</h3>
                 <p>{unit.subtitle}</p>
+                {resume?.units[unit.id] != null ? <p>Activity progress: {resume.units[unit.id]}% saved. This is separate from the unit pass requirement.</p> : null}
                 <a className="secondary-button" href={unit.href}>
                   {unit.kind === "summative_assessment"
                     ? "Open assessment"
