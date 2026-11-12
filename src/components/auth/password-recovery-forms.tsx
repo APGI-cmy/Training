@@ -12,7 +12,11 @@ export function ForgotPasswordForm({ next }: { next: string }) {
     <input type="hidden" name="next" value={next} />
     <label>Email<input type="email" name="email" autoComplete="email" required maxLength={254} /></label>
     {state.error ? <p className="form-error" role="alert">{state.error}</p> : null}
-    {state.message ? <p className="form-success" role="status">{state.message}</p> : null}
+    {state.message ? <div className="form-success" role="status">
+      <p><strong>Next step: open your email</strong></p>
+      <p>{state.message}</p>
+      <p>This page stays here. Continue using the button in your newest account email, then return to sign in after setting your password.</p>
+    </div> : null}
     <button className="primary-button" type="submit" disabled={pending}>{pending ? "Requesting email…" : "Send recovery or setup email"}</button>
     <Link href={`/alp-sign-in?next=${encodeURIComponent(next)}`}>Back to sign in</Link>
   </form>;
