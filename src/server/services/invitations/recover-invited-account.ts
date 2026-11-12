@@ -4,6 +4,7 @@ import { adminRest } from "@/server/supabase/admin-rest";
 import { getCourseBySlug } from "@/lib/courses";
 import { deliverStoredInvitation } from "./deliver-stored-invitation";
 import { usesStagingMailCapture } from "@/server/environment-isolation";
+import { recoverReviewAccount } from "./recover-review-account";
 
 type Invitation = {
   id: string; recipient_email: string; invited_role: "learner" | "admin" | "business_owner";
@@ -51,4 +52,6 @@ export async function recoverInvitedAccount(email: string): Promise<void> {
     if (!delivered.ok) throw new Error("INVITATION_RECOVERY_DELIVERY_FAILED");
     return;
   }
+  // Review-team invitations are stored separately from course enrolment invites.
+  await recoverReviewAccount(email);
 }

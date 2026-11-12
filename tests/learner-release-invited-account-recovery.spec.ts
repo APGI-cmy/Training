@@ -1,5 +1,6 @@
 import {afterEach,beforeEach,describe,it,expect,vi} from "vitest";
-const m=vi.hoisted(()=>({rest:vi.fn(),deliver:vi.fn()}));
+const m=vi.hoisted(()=>({rest:vi.fn(),deliver:vi.fn(),review:vi.fn()}));
+vi.mock("@/server/services/invitations/recover-review-account",()=>({recoverReviewAccount:m.review}));
 vi.mock("@/server/supabase/admin-rest",()=>({adminRest:m.rest}));
 vi.mock("@/server/services/invitations/deliver-stored-invitation",()=>({deliverStoredInvitation:m.deliver}));
 import {recoverInvitedAccount} from "@/server/services/invitations/recover-invited-account";
@@ -26,7 +27,7 @@ describe("Unfinished invitation account recovery",()=>{
   m.rest.mockResolvedValue(Response.json([{...row,...changed}]));await recoverInvitedAccount(email);
   expect(m.deliver).not.toHaveBeenCalled();expect(m.rest.mock.calls.some(([,i])=>i?.method==="PATCH")).toBe(false);
  });
- it("does nothing for an address with no active invitation",async()=>{m.rest.mockResolvedValue(Response.json([]));await expect(recoverInvitedAccount(email)).resolves.toBeUndefined();expect(m.deliver).not.toHaveBeenCalled();});
+ it("checks separate review invitations when there is no course invitation",async()=>{m.rest.mockResolvedValue(Response.json([]));await expect(recoverInvitedAccount(email)).resolves.toBeUndefined();expect(m.deliver).not.toHaveBeenCalled();expect(m.review).toHaveBeenCalledWith(email);});
  it("does not send for an inactive company",async()=>{m.rest.mockImplementation(async(p:string)=>Response.json(p.includes("organisations?")?[]:[row]));await recoverInvitedAccount(email);expect(m.deliver).not.toHaveBeenCalled();});
  it("honours a successful email sent in the last minute",async()=>{m.rest.mockImplementation(async(p:string)=>Response.json(p.includes("organisations?")?[{id:"org"}]:p.includes("course_invitation_events?")?[{id:"recent"}]:[row]));await recoverInvitedAccount(email);expect(m.deliver).not.toHaveBeenCalled();});
  it("does not send a stale link when a concurrent request wins",async()=>{m.rest.mockImplementation(async(p:string,i?:RequestInit)=>Response.json(i?.method==="PATCH"?[]:p.includes("organisations?")?[{id:"org"}]:p.includes("course_invitation_events?")?[]:[row]));await recoverInvitedAccount(email);expect(m.deliver).not.toHaveBeenCalled();});
