@@ -61,7 +61,7 @@ export async function assertCalculatorCoursesPublished(quote:CalculatorQuote){
   const source=await contentSource(c.courseId,quote.company_id);
   const edition=(await rows<{course_document:unknown}>(`/rest/v1/course_editions?id=eq.${validId(c.editionId)}&state=eq.ready&select=course_document&limit=1`))[0];
   if(source.fingerprint!==prior.round.fingerprint)throw Error('The current course has changes beyond its published review. Complete the exact content review before using a new calculator checkout.');
-  if(!edition||canonical(edition.course_document)!==canonical(source.course))throw Error('The stored edition differs from the reviewed course. Freeze and verify the approved edition before preparing its new checkout; earlier learner editions remain unchanged.');
+  if(!edition||canonical(edition.course_document)!==canonical(JSON.parse(JSON.stringify(source.course))))throw Error('The stored edition differs from the reviewed course. Freeze and verify the approved edition before preparing its new checkout; earlier learner editions remain unchanged.');
  }
 }
 export async function reconcileCalculatorOrder(order:CalculatorOrder){

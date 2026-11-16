@@ -15,6 +15,7 @@ describe('course calculator financial invariants',()=>{
  it('does not hide low-volume shortfall behind a minimum denominator',()=>{const q=calc({}, {newEnrolments:1,activeLearners:3});expect(q.platformCents).toBe(30050);expect(q.monthlyRecoveryDifferenceCents).toBe(0);expect(calc({},{activeLearners:300,newEnrolments:1}).monthlyRecoveryDifferenceCents).toBe(-29700);});
  it('automatically sums credits from the actual course editions',()=>expect(calc({route:'wallet',seats:10,courseCap:2},{},[course,{...course,id:'2',editionId:'2',hours:20}]).credits).toBe(6));
  it('uses explicit credit allowance with an approved eligible course set',()=>expect(calc({mode:'credits',credits:8,route:'wallet',seats:10},{},[{...course,hours:80}]).credits).toBe(8));
+ it('keeps a prepaid balance unallocated even when only one course is eligible',()=>expect(calc({route:'wallet',seats:10}).allocation).toBeNull());
  it('does not sell extra allowance which the course limit makes unusable',()=>expect(()=>calc({mode:'credits',credits:8,route:'wallet',seats:10})).toThrow(/allowance exceeds/));
  it('rejects extra allowance on a named course',()=>expect(()=>calc({mode:'credits',credits:8})).toThrow(/without extra/));
  it('rejects two learners on an individual purchase',()=>expect(()=>calc({seats:2})).toThrow(/exactly one/));
