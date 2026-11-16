@@ -12,11 +12,15 @@ export async function inventory(root) {
   for(const date of (await readdir(root)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)).sort()) {
     for(const provider of (await readdir(join(root,date))).sort()) {
       if(!['vercel','supabase'].includes(provider)) throw Error('UNEXPECTED_LEGACY_PROVIDER');
-      for(const file of (await readdir(join(root,date,provider))).sort()) {
-        if(!/^[a-f0-9]{64}\.pgp(?:\.receipt\.json|\.tmp)?$/.test(file)) throw Error('UNEXPECTED_LEGACY_FILE');
-        const path=`${date}/${provider}/${file}`,s=await lstat(join(root,path));
-        if(!s.isFile()||s.isSymbolicLink()) throw Error('UNSAFE_LEGACY_FILE');
-        result.push({path,mode:s.mode,mtime:s.mtimeMs,size:s.size});
+      const names=(await readdir(join(root,date,provider))).sort();
+      for(let i=0;i<names.length;i+=64) {
+        const batch=await Promise.all(names.slice(i,i+64).map(async file=>{
+          if(!/^[a-f0-9]{64}\.pgp(?:\.receipt\.json|\.tmp)?$/.test(file)) throw Error('UNEXPECTED_LEGACY_FILE');
+          const path=`${date}/${provider}/${file}`,s=await lstat(join(root,path));
+          if(!s.isFile()||s.isSymbolicLink()) throw Error('UNSAFE_LEGACY_FILE');
+          return {path,mode:s.mode,mtime:s.mtimeMs,size:s.size};
+        }));
+        result.push(...batch);
       }
     }
   }
@@ -100,18 +104,22 @@ export async function cleanup(root) {
     if(db.prepare('PRAGMA integrity_check').get().integrity_check!=='ok')throw Error('DATABASE_INTEGRITY_FAILED');
     const files=await inventory(root);
     // Global verification succeeds before any source consolidation begins.
-    for(const f of files) {
-      const row=db.prepare('SELECT bytes,sha256 FROM legacy_files WHERE path=?').get(f.path);
-      if(!row){retained++;continue;}
-      const bytes=await readFile(join(root,f.path));
-      if(!Buffer.from(row.bytes).equals(bytes)||sha(bytes)!==row.sha256)throw Error('LEGACY_COPY_MISMATCH');
+    for(let i=0;i<files.length;i+=8) {
+      await Promise.all(files.slice(i,i+8).map(async f=>{
+        const row=db.prepare('SELECT bytes,sha256 FROM legacy_files WHERE path=?').get(f.path);
+        if(!row){retained++;return;}
+        const bytes=await readFile(join(root,f.path));
+        if(!Buffer.from(row.bytes).equals(bytes)||sha(bytes)!==row.sha256)throw Error('LEGACY_COPY_MISMATCH');
+      }));
     }
-    for(const f of files) {
-      const row=db.prepare('SELECT sha256 FROM legacy_files WHERE path=?').get(f.path);
-      if(!row)continue;
-      if(sha(await readFile(join(root,f.path)))!==row.sha256)throw Error('LEGACY_SOURCE_CHANGED');
-      await unlink(join(root,f.path));removed++;
-      if(removed%25000===0)console.log(JSON.stringify({phase:'consolidate',files:removed}));
+    for(let i=0;i<files.length;i+=8) {
+      await Promise.all(files.slice(i,i+8).map(async f=>{
+        const row=db.prepare('SELECT sha256 FROM legacy_files WHERE path=?').get(f.path);
+        if(!row)return;
+        if(sha(await readFile(join(root,f.path)))!==row.sha256)throw Error('LEGACY_SOURCE_CHANGED');
+        await unlink(join(root,f.path));removed++;
+        if(removed%25000===0)console.log(JSON.stringify({phase:'consolidate',files:removed}));
+      }));
     }
     for(const d of new Set(files.map(f=>join(root,...f.path.split('/').slice(0,2)))))await syncDir(d);
     return {consolidatedFiles:removed,unmigratedFiles:retained,preservedFiles:db.prepare('SELECT count(*) AS n FROM legacy_files').get().n};
