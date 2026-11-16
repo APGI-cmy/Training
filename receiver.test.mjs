@@ -1,6 +1,6 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import {mkdtemp,readFile,writeFile,rm,readdir} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join} from 'node:path';import {gzipSync} from 'node:zlib';import{createHmac}from'node:crypto';
 import {database,closeDatabases,assessCapacity,storageProbe,sha} from './archive-store.mjs';
-import {prepare,cleanup,stageBootstrap,install,migrateRemaining} from './migrate-legacy.mjs';
+import {prepare,verifyPrepared,cleanup,stageBootstrap,install,migrateRemaining} from './migrate-legacy.mjs';
 import {mkdir,stat} from 'node:fs/promises';
 import {allowedToken,minimise,decodeBody,persistBatch,validVercelSignature,archiveManifest,readArchive,createArchiveQueue} from './receiver.mjs';
 
@@ -50,7 +50,7 @@ test('legacy migration preserves every ciphertext, receipt and orphan byte, rema
  const base=await mkdtemp(join(tmpdir(),'apgi-migrate-')),root=join(base,'archive'),candidate=join(base,'candidate.sqlite'),backup=join(base,'backup.json');
  try {
  const files=await legacyFixture(root,140),orphan=sha('orphan')+'.pgp.tmp';await writeFile(join(root,'2026-11-03','vercel',orphan),'ORPHAN-ENCRYPTED');
- const result=await prepare(root,candidate);assert.equal(result.files,281);
+ const result=await prepare(root,candidate);assert.equal(result.files,281);assert.equal((await verifyPrepared(root,candidate)).fullSourceVerification,'passed');
  const staged=await stageBootstrap(candidate,backup);
  await assert.rejects(install(root,candidate,backup,'incorrect'),/BACKUP_NOT_CONFIRMED/);
  assert.equal((await readdir(join(root,'2026-11-03','vercel'))).length,281);
