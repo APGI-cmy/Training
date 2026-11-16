@@ -50,12 +50,18 @@ export async function calculatorRpc<T>(name:string,body:Record<string,unknown>):
 }
 export async function assertCalculatorCoursesPublished(quote:CalculatorQuote){
  const {publishedPaymentSchedule}=await import('./stripe-settlement');
+ const {contentSource}=await import('./course-reviews');
+ const canonical=(value:unknown):string=>JSON.stringify(value&&typeof value==='object'?Array.isArray(value)?value.map(v=>JSON.parse(canonical(v))):Object.fromEntries(Object.entries(value).sort(([a],[b])=>a.localeCompare(b)).map(([key,v])=>[key,JSON.parse(canonical(v))])):value);
  for(const c of quote.courses){
   const offering=(await rows<{reviewed_release_id:string}>(`/rest/v1/organisation_offerings?organisation_id=eq.${quote.company_id}&course_id=eq.${encodeURIComponent(c.courseId)}&status=eq.published&select=reviewed_release_id&limit=1`))[0];
   if(!offering?.reviewed_release_id)throw Error('Each selected course must have a published, approved offering for this company.');
   const prior=await publishedPaymentSchedule(offering.reviewed_release_id,quote.company_id);
   if(prior.snapshot.ownerId!==c.ownerId)throw Error('The credit record owner differs from the published rights record. Verify ownership and prepare a corrected quote; a calculator entry cannot transfer course rights.');
   if(prior.snapshot.development>prior.snapshot.initialPaid)throw Error('This course has an existing development-recovery agreement. Its saved price and recovery stay in force; a separately approved replacement recovery schedule is required before using a new calculator checkout.');
+  const source=await contentSource(c.courseId,quote.company_id);
+  const edition=(await rows<{course_document:unknown}>(`/rest/v1/course_editions?id=eq.${validId(c.editionId)}&state=eq.ready&select=course_document&limit=1`))[0];
+  if(source.fingerprint!==prior.round.fingerprint)throw Error('The current course has changes beyond its published review. Complete the exact content review before using a new calculator checkout.');
+  if(!edition||canonical(edition.course_document)!==canonical(source.course))throw Error('The stored edition differs from the reviewed course. Freeze and verify the approved edition before preparing its new checkout; earlier learner editions remain unchanged.');
  }
 }
 export async function reconcileCalculatorOrder(order:CalculatorOrder){
