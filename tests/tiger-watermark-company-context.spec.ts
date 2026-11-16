@@ -1,0 +1,22 @@
+import {describe,it,expect,vi,beforeEach} from 'vitest';
+import {NextRequest} from 'next/server';
+const m=vi.hoisted(()=>({session:vi.fn(),actor:vi.fn(),company:vi.fn(),learner:vi.fn(),rest:vi.fn()}));
+vi.mock('@/server/auth/session',()=>({getCurrentSession:m.session,getSupabaseRestUrl:(p:string)=>`https://eaaqgtdpvbxdgjxphjie.supabase.co${p}`}));
+vi.mock('@/server/services/company-structure',()=>({contextualCompany:m.company,companyActor:m.actor}));
+vi.mock('@/server/services/organisations/get-organisations',()=>({getLearnerOrganisation:m.learner}));
+vi.mock('@/server/supabase/admin-rest',()=>({adminRest:m.rest}));
+import {GET} from '../app/api/branding/route';
+import {getLearnerOrganisationBranding} from '@/server/services/branding/course-branding';
+const id='11111111-1111-4111-8111-111111111111',other='22222222-2222-4222-8222-222222222222';
+const image=`organisations/${id}/watermarks/33333333-3333-4333-8333-333333333333.png`;
+const company={slug:'apgi',name:'APGI',logo_path:null,primary_color:'#0d2850',secondary_color:'#006b92',accent_color:'#4c95b0',pale_color:'#cce1e9',footer_text:'Hosted by APGI',is_active:true,watermarks:{platform:{kind:'image',imagePath:image,opacity:.07,text:''}}};
+const request=(query='')=>new NextRequest(`https://training-platform-v2-staging.vercel.app/api/branding${query}`);
+beforeEach(()=>{vi.clearAllMocks();m.session.mockResolvedValue({user:{id:'user'}});m.actor.mockResolvedValue({isAdmin:true});m.company.mockResolvedValue(company);m.learner.mockResolvedValue(null);m.rest.mockImplementation(async()=>new Response(JSON.stringify([company]),{status:200}));});
+describe('Saved watermarks follow the authorised company',()=>{
+ it('uses APGI watermarks in global administration rather than the selected client workspace',async()=>{m.company.mockResolvedValue({...company,slug:'client'});const response=await GET(request('?workspace=admin'));const {branding}=await response.json();expect(branding.brandName).toBe('APGI');expect(branding.watermarkUrl).toContain(image);expect(m.company).not.toHaveBeenCalled();expect(m.rest.mock.calls[0][0]).toContain('slug=eq.apgi&is_active=eq.true');expect(response.headers.get('cache-control')).toBe('no-store');});
+ it('does not expose administration branding through the admin selector to ordinary users',async()=>{m.actor.mockResolvedValue({isAdmin:false});expect((await (await GET(request('?workspace=admin'))).json()).branding).toBeNull();expect(m.rest).not.toHaveBeenCalled();});
+ it('does not read company data for anonymous visitors',async()=>{m.session.mockResolvedValue(null);expect((await (await GET(request())).json()).branding).toBeNull();expect(m.company).not.toHaveBeenCalled();expect(m.rest).not.toHaveBeenCalled();});
+ it('keeps each authorised company image separate without using a global APGI mark',async()=>{const otherImage=image.replaceAll(id,other);m.company.mockResolvedValue({...company,name:'Another company',slug:'other',watermarks:{platform:{kind:'image',text:'',opacity:.05,imagePath:otherImage}}});const {branding}=await (await GET(request(`?organisationId=${other}`))).json();expect(branding.brandName).toBe('Another company');expect(branding.watermarkUrl).toContain(otherImage);expect(branding.watermarkUrl).not.toContain(image);expect(m.company.mock.calls[0][2]).toBe(other);expect(m.rest).not.toHaveBeenCalled();});
+ it('fails closed when the company context is denied instead of falling back to another company',async()=>{m.company.mockRejectedValue(Error('Not allowed'));const response=await GET(request(`?organisationId=${other}`));expect(response.status).toBe(403);expect((await response.json()).branding).toBeNull();expect(m.learner).not.toHaveBeenCalled();});
+ it('includes APGI learner watermarks and suppresses inactive organisations',async()=>{m.learner.mockResolvedValue({slug:'apgi',name:'APGI',isActive:true,watermarks:company.watermarks});expect((await getLearnerOrganisationBranding('user'))?.watermark?.kind).toBe('image');m.learner.mockResolvedValue({slug:'client',isActive:false,watermarks:company.watermarks});expect(await getLearnerOrganisationBranding('user')).toBeNull();});
+});

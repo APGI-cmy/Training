@@ -1,0 +1,72 @@
+import {SidebarNotifications} from "@/components/notifications/SidebarNotifications";
+import {notificationInbox} from "@/server/services/notifications";
+import type {NotificationCounts} from "@/lib/notifications";
+import { SidebarNavigation } from "@/components/navigation/SidebarNavigation";
+import { SignOutControl } from "@/components/auth/sign-out-control";
+import { BrandingName } from "@/components/branding/BrandingName";
+import { getCurrentSession, getUserRoles } from "@/server/auth/session";
+import { isPlatformPrincipal } from "@/server/services/platform-principals";
+import {ownMemberships} from "@/server/services/company-structure";
+import {paymentPortalEligible} from "@/lib/payment-reports";
+
+export async function LearnerSidebar() {
+  const session = await getCurrentSession();
+  const roles = session ? await getUserRoles(session.accessToken) : [];
+  const isAdmin = roles.includes("admin");
+  const principal = isAdmin && session ? await isPlatformPrincipal(session) : false;
+  const emailAdmin=isAdmin||!!session?.user.email_confirmed_at&&(await ownMemberships(session,true)).length>0;
+  const paymentEligible=!!session?.user.email_confirmed_at&&paymentPortalEligible(roles,roles.some(r=>["admin","reviewer","course_publisher"].includes(r))?false:(await ownMemberships(session!,true)).length>0);
+
+  let noticeCounts:NotificationCounts|null=null;
+  if(session?.user.email_confirmed_at){try{const {unread,responses,attention}=await notificationInbox(session,"all",0,true);noticeCounts={unread,responses,attention};}catch{/* The workspace remains usable during notification outages. */}}
+
+  return (
+    <aside className="learner-sidebar" aria-label="Learner navigation">
+      <div>
+        <p className="sidebar-eyebrow">Workspace navigation</p>
+        <h2>
+          <BrandingName />
+        </h2>
+        <p className="sidebar-guidance">
+          Open a group, then choose the page you need.
+        </p>
+      </div>
+
+      {session?<SidebarNotifications initial={noticeCounts}/>:null}
+      <SidebarNavigation items={[
+        { href: "/dashboard", label: "Dashboard" },
+        { href: "/catalogue", label: "Course catalogue" },
+        { href: "/catalogue?view=my-learning", label: "Enrolled courses" },
+        { href: "/profile", label: "Profile" },
+        ...(paymentEligible?[{href:"/payments",label:"My payment portal"}]:[]),
+        ...(session ? [
+          { href: "/messages", label: "Messages and support" },
+          ...(emailAdmin?[{href:'/messages/email-management',label:'Email management'},{href:'/messages/email-sets',label:'Email message sets'},{href:'/messages/image-library',label:'Image library'}]:[]),
+          { href: "/company", label: "Company workspaces" },
+          { href: "/policies", label: "Policies and reviews" },
+          ...(emailAdmin?[{href:'/security-watchdog',label:'Security Watchdog'}]:[]),
+          { href: "/course-reviews", label: "Course reviews" },
+        ] : []),
+        ...(isAdmin ? [
+          { href: "/admin", label: "Administration" },
+          { href: "/admin/learners", label: "Learners" },
+          { href: "/admin/invitations", label: "Invitations" },
+          { href: "/admin/test-messages", label: "Test messages" },
+          { href: "/admin/certificates", label: "Certificate designs" },
+          { href: "/admin/enrolments", label: "Manage enrolments" },
+          { href: "/admin/assessments", label: "Scannex assessments" },
+          { href: "/admin/courses", label: "Course preview" },
+          ...(principal ? [{ href: "/admin/payments/stripe", label: "Stripe payment portal" }] : []),
+          ...(principal ? [{ href: "/admin/payments", label: "Payment planning" }] : []),
+          { href: "/admin/companies", label: "Companies and branding" },
+          { href: "/admin/policies", label: "Platform policies" },
+          ...(principal ? [{ href: "/admin/agreements", label: "Commercial drafts" }, { href: "/admin/service-costs", label: "Service cost register" }] : []),
+        ] : []),
+      ]} />
+
+      <div className="sidebar-actions">
+        <SignOutControl />
+      </div>
+    </aside>
+  );
+}

@@ -1,0 +1,45 @@
+import {describe,it,expect,beforeEach,vi} from 'vitest';
+import {accessHasExpired,byteRange,segmentRanges,freezeCoursePaths,discountedCents,validEditionPath,savedLearnerResponses} from '@/lib/course-editions';
+import {getCourseBySlug} from '@/lib/courses';
+const m=vi.hoisted(()=>({rows:vi.fn(),session:vi.fn(),roles:vi.fn(),fetch:vi.fn(),stripe:vi.fn(),rest:vi.fn(),manifest:vi.fn()}));
+vi.mock('@/server/services/course-edition-assets',()=>({editionAssetManifest:m.manifest}));
+vi.mock('@/server/services/company-structure',()=>({rows:m.rows}));
+vi.mock('@/server/auth/session',()=>({getCurrentSession:m.session,getUserRoles:m.roles,getSupabaseRestUrl:(p:string)=>'https://eaaqgtdpvbxdgjxphjie.supabase.co'+p}));
+vi.mock('@/server/security/provider-fetch',()=>({providerFetch:m.fetch}));
+vi.mock('@/server/services/stripe-platform',()=>({stripeRequest:m.stripe}));
+vi.mock('@/server/supabase/admin-rest',()=>({adminRest:m.rest}));
+import {getLearningCourse,canReadEditionAsset} from '@/server/services/course-editions';
+import {confirmPurchaseCheckout} from '@/server/services/course-purchases';
+import {GET} from '../app/api/editions/[edition]/assets/[...path]/route';
+const id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',course=getCourseBySlug('vpshr-level-0')!;
+const session={accessToken:'verified',user:{id:'owner'}};
+const edition={id,course_id:course.id,runtime_course_id:course.id,runtime_slug:course.slug,edition_number:1,state:'ready',course_document:{...course,title:'Frozen earlier title'},file_count:1,byte_count:6,content_hash:'a'.repeat(64),verified_at:'2026-11-05T00:00:00Z'};
+beforeEach(()=>{vi.resetAllMocks();m.session.mockResolvedValue(session);m.roles.mockResolvedValue([]);m.rows.mockResolvedValue([]);m.rest.mockResolvedValue(Response.json('entitlement'));});
+describe('Access expiry and immutable paths',()=>{
+ it('keeps an agreed future entitlement and expires exactly at its boundary',()=>{expect(accessHasExpired('2026-11-05T10:00:00Z',Date.parse('2026-11-05T09:59:59Z'))).toBe(false);expect(accessHasExpired('2026-11-05T10:00:00Z',Date.parse('2026-11-05T10:00:00Z'))).toBe(true);});
+ it('does not invent a deadline for a legacy enrolment; malformed dates fail closed',()=>{expect(accessHasExpired(null)).toBe(false);expect(accessHasExpired('not a date')).toBe(true);});
+ it('retains learner responses without disclosing stored answer keys',()=>{expect(savedLearnerResponses({'cmi.interactions.0.learner_response':'own answer','cmi.interactions.0.correct_responses.0.pattern':'answer key'})).toEqual({'cmi.interactions.0.learner_response':'own answer'});});
+ it('maps nested course assets without mutating source metadata or navigation',()=>{const frozen=freezeCoursePaths(course,id,1);expect(frozen.units[0].publishedPath).toContain(`/api/editions/${id}/assets/courses/`);expect(course.units[0].publishedPath).not.toContain('/api/editions/');expect(frozen.units[0].slug).toBe(course.units[0].slug);});
+ it.each([[['courses','..','secret']],[['courses','a%2fb']],[['courses','a\\b']],[['not-courses','index.html']]])('rejects an unsafe asset path %j',parts=>expect(validEditionPath(parts)).toBeNull());
+ it('uses the enrolled edition despite a changed current catalogue title',async()=>{m.rows.mockImplementation(async(p:string)=>p.includes('course_enrolments?')?[{edition_id:id}]:p.includes('course_editions?')?[edition]:[]);const actual=await getLearningCourse(course.slug,session);expect(actual?.title).toBe('Frozen earlier title');expect(actual?.editionId).toBe(id);expect(actual?.id).toBe(course.id);});
+ it('does not silently fall back to draft files if a pinned edition is missing',async()=>{m.rows.mockImplementation(async(p:string)=>p.includes('course_enrolments?')?[{edition_id:id}]:[]);await expect(getLearningCourse(course.slug,session)).rejects.toThrow('enrolled edition');});
+ it('propagates an edition-store outage instead of serving a mutable draft',async()=>{m.rows.mockRejectedValue(Error('unavailable'));await expect(getLearningCourse(course.slug,session)).rejects.toThrow('unavailable');});
+ it('does not let an expired enrolment read an edition asset',async()=>{m.rows.mockResolvedValue([{status:'enrolled',edition_id:id,access_expires_at:'2000-01-01'}]);expect(await canReadEditionAsset(session,edition,'/courses/vpshr-level-0/slide.html')).toBe(false);});
+ it('a book purchase grants only its exact listed files, not presentation or another edition',async()=>{m.rows.mockImplementation(async(p:string)=>p.includes('course_enrolments')?[]:[{ebook_paths:['/courses/vpshr-level-0/book.pdf']}]);expect(await canReadEditionAsset(session,edition,'/courses/vpshr-level-0/book.pdf')).toBe(true);expect(await canReadEditionAsset(session,edition,'/courses/vpshr-level-0/index.html')).toBe(false);expect(m.rows.mock.calls.every(([p])=>!String(p).includes('course_purchase_entitlements')||String(p).includes(`edition_id=eq.${id}`)&&String(p).includes('mode=eq.live'))).toBe(true);});
+});
+describe('Streamed private media ranges',()=>{
+ it('accepts standard and suffix ranges but rejects multiple or unsatisfiable ranges',()=>{expect(byteRange('bytes=2-4',6)).toMatchObject({start:2,end:4,partial:true});expect(byteRange('bytes=-2',6)).toMatchObject({start:4,end:5});expect(byteRange('bytes=9-',6)).toBeNull();expect(byteRange('bytes=0-1,4-5',6)).toBeNull();});
+ it('maps a video seek across immutable storage blocks',()=>{expect(segmentRanges([{block:'a'.repeat(64),offset:10,length:3},{block:'b'.repeat(64),offset:20,length:3}],2,4)).toEqual([{block:'a'.repeat(64),start:12,end:12},{block:'b'.repeat(64),start:20,end:21}]);});
+ it('rejects invalid or incomplete manifests',()=>{expect(()=>segmentRanges([{block:'a'.repeat(64),offset:0,length:2}],0,4)).toThrow('Incomplete');expect(()=>segmentRanges([{block:'https://wrong',offset:0,length:2}],0,1)).toThrow('Invalid');});
+ it('anonymous requests are denied before metadata or storage is read',async()=>{m.session.mockResolvedValue(null);expect((await GET(new Request('https://example.invalid'),{params:Promise.resolve({edition:id,path:['courses','vpshr-level-0','index.html']})})).status).toBe(403);expect(m.rows).not.toHaveBeenCalled();expect(m.fetch).not.toHaveBeenCalled();});
+ it('streams a ranged response with private caching and exact content range',async()=>{m.manifest.mockResolvedValue({byte_count:6,content_type:'video/mp4',segments:[{block:'a'.repeat(64),offset:10,length:6}]});m.fetch.mockResolvedValue(new Response('cde',{status:206,headers:{'content-range':'bytes 12-14/100'}}));const result=await GET(new Request('https://example.invalid',{headers:{range:'bytes=2-4'}}),{params:Promise.resolve({edition:id,path:['courses','vpshr-level-0','clip.mp4']})});expect(result.status).toBe(206);expect(result.headers.get('cache-control')).toBe('private, no-store');expect(result.headers.get('content-range')).toBe('bytes 2-4/6');expect(await result.text()).toBe('cde');});
+});
+describe('Purchase verification',()=>{
+ const order={id,buyer_id:'owner',edition_id:id,kind:'ebook',amount_cents:1000,currency:'USD',checkout_id:'cs_testOne',mode:'test',state:'checkout'};
+ const object={id:'cs_testOne',metadata:{apgi_purchase_order:id},amount_total:1000,currency:'usd',payment_status:'paid',payment_intent:'pi_testOne'};
+ const intent={id:'pi_testOne',livemode:false,amount:1000,currency:'usd',status:'succeeded',metadata:{apgi_purchase_order:id},latest_charge:{paid:true,captured:true,refunded:false,amount_refunded:0,disputed:false}};
+ it('calculates a discount in cents and enforces the approved floor',()=>{expect(discountedCents(10000,2500,7000)).toBe(7500);expect(()=>discountedCents(10000,2500,8000)).toThrow('approved minimum');});
+ it('does not grant an entitlement from a browser return or unpaid checkout',async()=>{m.rows.mockResolvedValue([order]);await expect(confirmPurchaseCheckout({...object,payment_status:'unpaid'},'evt_testOne')).rejects.toThrow('mismatch');expect(m.rest).not.toHaveBeenCalled();});
+ it('checks the payment intent independently before atomic fulfilment',async()=>{m.rows.mockResolvedValue([order]);m.stripe.mockResolvedValue(intent);await confirmPurchaseCheckout(object,'evt_testOne');const args=JSON.parse(m.rest.mock.calls[0][1].body);expect(args).toMatchObject({p_order:id,p_amount:1000,p_currency:'usd',p_live:false});});
+ it.each([{amount:999},{livemode:true},{metadata:{apgi_purchase_order:'another'}},{latest_charge:{...intent.latest_charge,refunded:true}}])('rejects mismatched, live, reassigned or refunded funds %j',async change=>{m.rows.mockResolvedValue([order]);m.stripe.mockResolvedValue({...intent,...change});await expect(confirmPurchaseCheckout(object,'evt_testOne')).rejects.toThrow('does not match');expect(m.rest).not.toHaveBeenCalled();});
+});

@@ -1,0 +1,200 @@
+{
+  "courseId": "tiger-kidnapping-telecommunications",
+  "version": "tiger-progression-1-2ee5c4d56ef89282",
+  "videoThreshold": 0.8,
+  "quizThreshold": 0.8,
+  "units": {
+    "lu1": {
+      "unitId": "tiger-telecom-lu-1",
+      "slideCount": 11,
+      "videoSlide": 2,
+      "duration": 75.0,
+      "videoSha256": "30b2ee6d709379137bb8bec3546b40c356ba60536534dbcb8a3d7aeb0b737743",
+      "quizSlide": 11,
+      "activities": [
+        {
+          "id": "TK-LU01-F01",
+          "slide": 3
+        },
+        {
+          "id": "TK-LU01-F02",
+          "slide": 4
+        },
+        {
+          "id": "TK-LU01-F03",
+          "slide": 5
+        },
+        {
+          "id": "TK-LU01-LA01",
+          "slide": 6
+        },
+        {
+          "id": "TK-LU01-LA02",
+          "slide": 7
+        },
+        {
+          "id": "TK-LU01-LA03",
+          "slide": 8
+        },
+        {
+          "id": "TK-LU01-LA04",
+          "slide": 9
+        },
+        {
+          "id": "TK-LU01-LA05",
+          "slide": 10
+        }
+      ]
+    },
+    "lu2": {
+      "unitId": "tiger-telecom-lu-2",
+      "slideCount": 5,
+      "videoSlide": 2,
+      "duration": 43.46,
+      "videoSha256": "5795c14ea69c9b0c664704d0b38fb0305f33169c16f3c35d539aded080bfcb2a",
+      "quizSlide": 5,
+      "activities": [
+        {
+          "id": "TK-LU02-LA01",
+          "slide": 3
+        },
+        {
+          "id": "TK-LU02-LA02",
+          "slide": 4
+        }
+      ]
+    },
+    "lu3": {
+      "unitId": "tiger-telecom-lu-3",
+      "slideCount": 5,
+      "videoSlide": 2,
+      "duration": 50.06,
+      "videoSha256": "0e0ce882fd06b9d5328b7ac1049cc8dc1b100e87680e1aa0f354f2732254609e",
+      "quizSlide": 5,
+      "activities": [
+        {
+          "id": "TK-LU03-LA01",
+          "slide": 3
+        },
+        {
+          "id": "TK-LU03-LA02",
+          "slide": 4
+        }
+      ]
+    },
+    "lu4": {
+      "unitId": "tiger-telecom-lu-4",
+      "slideCount": 7,
+      "videoSlide": 2,
+      "duration": 50.9,
+      "videoSha256": "16ff251b90aa856e23eb376a1cb8c5e621e2ecd2228e4eb92b86b2b3cdaf6dcd",
+      "quizSlide": 7,
+      "activities": [
+        {
+          "id": "TK-LU04-LA01",
+          "slide": 3
+        },
+        {
+          "id": "TK-LU04-LA02",
+          "slide": 4
+        },
+        {
+          "id": "TK-LU04-LA03",
+          "slide": 5
+        },
+        {
+          "id": "TK-LU04-LA01",
+          "slide": 6
+        }
+      ]
+    },
+    "lu5": {
+      "unitId": "tiger-telecom-lu-5",
+      "slideCount": 6,
+      "videoSlide": 2,
+      "duration": 49.2,
+      "videoSha256": "67d608c88e7703812e9bf1d4fa5d26a64be43e9e0f678f67563e795971b7f8d2",
+      "quizSlide": 6,
+      "activities": [
+        {
+          "id": "TK-LU05-LA01",
+          "slide": 3
+        },
+        {
+          "id": "TK-LU05-LA02",
+          "slide": 4
+        },
+        {
+          "id": "TK-LU05-LA03",
+          "slide": 5
+        }
+      ]
+    },
+    "lu6": {
+      "unitId": "tiger-telecom-lu-6",
+      "slideCount": 6,
+      "videoSlide": 2,
+      "duration": 55.3,
+      "videoSha256": "a4aa8c9b38088f3a2e60eb5a890df99ef321a01f7454d71b5fdeb97d4b0d97e9",
+      "quizSlide": 6,
+      "activities": [
+        {
+          "id": "TK-LU06-LA01",
+          "slide": 3
+        },
+        {
+          "id": "TK-LU06-LA02",
+          "slide": 4
+        },
+        {
+          "id": "TK-LU06-LA03",
+          "slide": 5
+        }
+      ]
+    },
+    "lu7": {
+      "unitId": "tiger-telecom-lu-7",
+      "slideCount": 6,
+      "videoSlide": 2,
+      "duration": 64.07,
+      "videoSha256": "2d55352fd4384b98beef000388138eeceaa95e5d9d04eb4be31100dd1dc3ff2b",
+      "quizSlide": 6,
+      "activities": [
+        {
+          "id": "TK-LU07-LA01",
+          "slide": 3
+        },
+        {
+          "id": "TK-LU07-LA02",
+          "slide": 4
+        },
+        {
+          "id": "TK-LU07-LA03",
+          "slide": 5
+        }
+      ]
+    },
+    "lu8": {
+      "unitId": "tiger-telecom-lu-8",
+      "slideCount": 6,
+      "videoSlide": 2,
+      "duration": 82.7,
+      "videoSha256": "f6883e3e568408eafaf308eb7e190d25ede0581e1962ecd341a01795166b7d38",
+      "quizSlide": 6,
+      "activities": [
+        {
+          "id": "TK-LU08-LA01",
+          "slide": 3
+        },
+        {
+          "id": "TK-LU08-LA02",
+          "slide": 4
+        },
+        {
+          "id": "TK-LU08-LA03",
+          "slide": 5
+        }
+      ]
+    }
+  }
+}

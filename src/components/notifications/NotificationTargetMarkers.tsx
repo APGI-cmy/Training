@@ -1,0 +1,52 @@
+"use client";
+import {useEffect,useRef,useState} from "react";
+import {createPortal} from "react-dom";
+import {usePathname,useSearchParams} from "next/navigation";
+import Link from "next/link";
+import {NotificationAddress} from "./NotificationAddress";
+import {NotificationReadReceipt} from "./NotificationReadReceipt";
+import {notificationReference,notificationHistoryLink,notificationTarget,type PersonalNotification} from "@/lib/notifications";
+import "./notification-markers.css";
+type Marker={notice:PersonalNotification;mount:HTMLElement};
+export function NotificationTargetMarkers(){
+ const pathname=usePathname(),selected=useSearchParams().get("notification"),[notices,setNotices]=useState<PersonalNotification[]>([]),[markers,setMarkers]=useState<Marker[]>([]);
+ const revealed=useRef<string|null>(null);
+ const [overview,setOverview]=useState<HTMLElement|null>(null);
+ useEffect(()=>{
+  if(notificationTarget(pathname)!==pathname||pathname==="/notifications"){setNotices([]);return;}
+  let stopped=false;let controller:AbortController|undefined;
+  async function refresh(){
+   controller?.abort();controller=new AbortController();
+   try{const query=new URLSearchParams({path:pathname});if(selected)query.set("notification",selected);
+    const response=await fetch(`/api/notifications/targets?${query}`,{cache:"no-store",signal:controller.signal});
+    if(!stopped&&response.ok)setNotices((await response.json()).items);
+   }catch{/* Keep the workflow usable if reference tracking is temporarily unavailable. */}
+  }
+  void refresh();const update=()=>void refresh();
+  window.addEventListener("apgi-notifications-changed",update);window.addEventListener("apgi-review-workspace-changed",update);window.addEventListener("focus",update);
+  return()=>{stopped=true;controller?.abort();window.removeEventListener("apgi-notifications-changed",update);window.removeEventListener("apgi-review-workspace-changed",update);window.removeEventListener("focus",update);};
+ },[pathname,selected]);
+ useEffect(()=>{
+  const mounted:Marker[]=[];
+  // The LU dialog has its own signed-in recipient inbox. Never place a
+  // personal action underneath another reviewer's finding or email heading.
+  const luWorkflow=!!document.querySelector('[data-lu-review-workflow]');
+  setOverview(luWorkflow?null:document.getElementById("review-process-notifications"));
+  for(const notice of notices){
+   const anchor=notice.target_path?.split("#")[1];
+   if(luWorkflow&&anchor&&/^(finding-|review-unit-)/.test(anchor))continue;
+   const target=anchor?document.getElementById(anchor):document.querySelector("main");
+   if(!target)continue;
+   const mount=document.createElement("div");mount.className="notification-reference-mount";
+   if(target instanceof HTMLDetailsElement)target.querySelector(":scope>summary")?.after(mount);else target.prepend(mount);
+   mounted.push({notice,mount});
+   if(notice.id===selected){for(let node:HTMLElement|null=target;node;node=node.parentElement)if(node instanceof HTMLDetailsElement)node.open=true;}
+  }
+  setMarkers(mounted);
+  const target=mounted.find(m=>m.notice.id===selected)?.mount;
+  const key=`${pathname}:${selected}`;
+  const frame=target&&revealed.current!==key?requestAnimationFrame(()=>{revealed.current=key;target.scrollIntoView({block:"start",behavior:"instant"});}):undefined;
+  return()=>{if(frame!==undefined)cancelAnimationFrame(frame);for(const marker of mounted)marker.mount.remove();};
+ },[notices,selected,pathname]);
+ return <>{overview?createPortal(<section aria-label="Your review notifications"><h3>Your notifications</h3>{notices.length?notices.map(notice=><article className="notification-reference" key={notice.id}><strong>{notificationReference(notice)} · {notice.pending?"Action required":"Update opened"}</strong><NotificationAddress recipient={notice.recipient_email} sender={notice.sender_email}/><p>{notice.message}</p><p className="notification-requirement">{notice.requirement}</p><a className="secondary-button" href={notice.target_path??"#review-process"}>Go to this review action</a><NotificationReadReceipt item={notice}/></article>):<p>No outstanding notifications for this page. Your review status and saved feedback are shown below.</p>}<Link href="/notifications">Open all notifications and tracking</Link></section>,overview):null}{markers.map(({notice,mount})=>createPortal(<aside className="notification-reference" aria-label={notificationReference(notice)}><strong>{notificationReference(notice)} · {notice.pending?"Your response is required":"Update opened"}</strong>{overview?<p><a href="#review-process-notifications">Read this requirement in Review process</a></p>:<><NotificationAddress recipient={notice.recipient_email} sender={notice.sender_email}/><p>{notice.message}</p><p className="notification-requirement">{notice.requirement}</p></>}<Link href={notificationHistoryLink(notice.id)}>View notification and its tracking history</Link><NotificationReadReceipt item={notice}/></aside>,mount,notice.id))}</>;
+}

@@ -1,0 +1,11 @@
+alter table public.v2_stripe_orders add column checked_at timestamptz;
+create index stripe_orders_retry on public.v2_stripe_orders(checked_at nulls first,created_at) where state in ('paid','held','allocated');
+create index stripe_orders_buyer_release on public.v2_stripe_orders(buyer_id,release_id,company_id,created_at desc);
+create index stripe_orders_release on public.v2_stripe_orders(release_id);
+create index stripe_audit_actor on public.v2_stripe_audit(actor_id);
+create index stripe_setup_owner on public.v2_stripe_private_setup(owner_id);
+create index stripe_request_actor on public.v2_stripe_setup_requests(requested_by);
+create index stripe_request_invitation on public.v2_stripe_setup_requests(invitation_id);
+create index stripe_partner_owner on public.v2_stripe_partner_accounts(owner_id);
+create index stripe_recovery_owner on public.v2_stripe_recovery_pools(owner_id);
+create index stripe_allocation_company on public.v2_stripe_allocations(company_id);

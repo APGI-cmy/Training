@@ -1,0 +1,36 @@
+"use server";
+
+import { requireAdmin } from "@/lib/auth/require-admin";
+import { createAndSendInvitation, type InvitationInput } from "@/server/actions/invitations/create-invitation";
+
+export type BatchInvitationResult = {
+  recipientEmail: string;
+  ok: boolean;
+  error?: string;
+  invitationUrl?: string;
+};
+
+export async function createBatchInvitations(input: { invitations: InvitationInput[] }) {
+  await requireAdmin();
+  const unique = new Set<string>();
+  const recipientResults: BatchInvitationResult[] = [];
+
+  for (const invitation of input.invitations.slice(0, 250)) {
+    if (invitation.role === "admin") { recipientResults.push({ recipientEmail: invitation.recipientEmail, ok: false, error: "ADMIN_INVITATIONS_REQUIRE_INDIVIDUAL_CONFIRMATION" }); continue; }
+    const recipientEmail = invitation.recipientEmail.trim().toLowerCase();
+    const duplicateKey = `${recipientEmail}:${invitation.courseId.trim()}`;
+    if (unique.has(duplicateKey)) {
+      recipientResults.push({ recipientEmail, ok: false, error: "DUPLICATE_IMPORT_ROW" });
+      continue;
+    }
+    unique.add(duplicateKey);
+    const result = await createAndSendInvitation(invitation);
+    recipientResults.push({ recipientEmail, ok: result.ok, error: result.error, invitationUrl: result.invitationUrl });
+  }
+
+  return {
+    recipientResults,
+    sent: recipientResults.filter((result) => result.ok).length,
+    failed: recipientResults.filter((result) => !result.ok).length
+  };
+}

@@ -1,0 +1,122 @@
+.learner-shell {
+  display: grid;
+  min-height: calc(100vh - var(--app-header-height));
+  grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
+}
+
+.learner-sidebar {
+  position: sticky;
+  top: var(--app-header-height);
+  display: flex;
+  height: calc(100vh - var(--app-header-height));
+  flex-direction: column;
+  gap: 24px;
+  align-self: start;
+  overflow-y: auto;
+  border-right: 1px solid var(--line);
+  padding: 28px 20px;
+  background: var(--surface);
+}
+
+.learner-sidebar h2 {
+  margin-bottom: 8px;
+  font-size: 1.45rem;
+}
+
+.sidebar-eyebrow {
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sidebar-guidance {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.sidebar-links {
+  display: grid;
+  gap: 8px;
+}
+
+.sidebar-links a {
+  display: grid;
+  gap: 2px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 11px 12px;
+  font-weight: 700;
+}
+
+.sidebar-links a:hover,
+.sidebar-links a:focus-visible {
+  border-color: var(--line);
+  background: var(--surface-strong);
+  text-decoration: none;
+}
+
+.sidebar-links small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.sidebar-links a[aria-current="page"] {
+  border-color: var(--accent);
+  background: var(--surface-strong);
+  box-shadow: inset 4px 0 0 var(--accent);
+  text-decoration: none;
+}
+
+.sidebar-actions {
+  margin-top: auto;
+}
+
+.sidebar-group{border:1px solid var(--line);border-radius:8px;overflow:clip}
+.sidebar-group>summary{padding:12px;cursor:pointer;font-weight:750;line-height:1.4}
+.sidebar-group>summary[data-active=true]{background:var(--surface-strong);border-left:4px solid var(--accent)}
+.sidebar-group>summary:focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
+.sidebar-submenu{display:grid;padding:4px 8px 8px 16px;gap:3px}
+.sidebar-submenu a{font-size:.9rem;padding:9px 10px;font-weight:600}
+
+.sidebar-actions form,
+.sidebar-actions button {
+  width: 100%;
+}
+
+.learner-content {
+  min-width: 0;
+}
+
+@media (max-width: 860px) {
+  .learner-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .learner-sidebar {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding: 18px;
+  }
+
+  .sidebar-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sidebar-actions {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .sidebar-links {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sidebar-notification-prompt{display:block;margin:0 0 10px;padding:13px;border:1px solid var(--line);border-radius:10px;background:var(--surface-strong);text-decoration:none}.sidebar-notification-prompt[aria-current=page]{outline:2px solid var(--accent)}.notification-prompt-title{display:flex;gap:9px;align-items:center}.notification-badge{margin-left:auto;min-width:26px;padding:3px 7px;border-radius:18px;background:#b42318;color:#fff;font-size:.8rem;font-weight:800;text-align:center}.sidebar-notification-prompt small{display:block;margin-top:8px;line-height:1.45}.sidebar-notification-prompt:focus-visible{outline:3px solid var(--accent);outline-offset:3px}

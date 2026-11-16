@@ -1,0 +1,21 @@
+import {beforeEach,afterEach,describe,expect,it,vi} from 'vitest';
+vi.mock('@/server/auth/session',()=>({getSupabaseRestUrl:(p:string)=>'https://eaaqgtdpvbxdgjxphjie.supabase.co'+p}));
+vi.mock('@/server/security/auth-budget',()=>({claimSecurityBudget:vi.fn(async()=>true)}));
+vi.mock('@/server/auth/session-assurance',async original=>({...await original<typeof import('@/server/auth/session-assurance')>(),activeVerifiedSession:vi.fn(async()=>true)}));
+import {recoveryIdentity,stepUpRecovery} from '@/server/auth/recovery-mfa';
+import {claimSecurityBudget} from '@/server/security/auth-budget';
+import {activeVerifiedSession} from '@/server/auth/session-assurance';
+const id='44fef034-d82f-4a78-b169-343a69ba0c1f',factor='54fef034-d82f-4a78-b169-343a69ba0c1f';
+const jwt=(aal:string)=>'h.'+Buffer.from(JSON.stringify({sub:id,session_id:id,aal})).toString('base64url')+'.s';
+const user={id,factors:[{id:factor,status:'verified',factor_type:'totp'}]};
+beforeEach(()=>{vi.clearAllMocks();vi.mocked(claimSecurityBudget).mockResolvedValue(true);vi.mocked(activeVerifiedSession).mockResolvedValue(true);vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY','synthetic-public-key');});
+afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs();});
+describe('MFA-enabled password recovery',()=>{
+ it('asks for the existing authenticator after provider verification of the recovery token',async()=>{vi.stubGlobal('fetch',vi.fn(async()=>Response.json(user)));expect((await recoveryIdentity(jwt('aal1'))).needsMfa).toBe(true);expect((await recoveryIdentity(jwt('aal2'))).needsMfa).toBe(false);});
+ it('rejects a revoked recovery session even when the provider still recognises its user',async()=>{vi.stubGlobal('fetch',vi.fn(async()=>Response.json(user)));vi.mocked(activeVerifiedSession).mockResolvedValue(false);await expect(recoveryIdentity(jwt('aal1'))).rejects.toThrow('expired');});
+ it('uses only the factor belonging to the recovered user and retains the AAL2 token only after identity matching',async()=>{const f=vi.fn().mockResolvedValueOnce(Response.json(user)).mockResolvedValueOnce(Response.json({id:'challenge'})).mockResolvedValueOnce(Response.json({user:{id},access_token:jwt('aal2')}));vi.stubGlobal('fetch',f);expect(await stepUpRecovery(jwt('aal1'),'123456')).toBe(jwt('aal2'));expect(String(f.mock.calls[1][0])).toContain('/factors/'+factor+'/challenge');expect(claimSecurityBudget).toHaveBeenCalledWith('mfa-verify:'+id,6,300,undefined);});
+ it('does not accept a token for another account or a response without step-up',async()=>{for(const value of [{user:{id:'foreign'},access_token:jwt('aal2')},{user:{id},access_token:jwt('aal1')}]){vi.stubGlobal('fetch',vi.fn().mockResolvedValueOnce(Response.json(user)).mockResolvedValueOnce(Response.json({id:'challenge'})).mockResolvedValueOnce(Response.json(value)));await expect(stepUpRecovery(jwt('aal1'),'123456')).rejects.toThrow('did not match');}});
+ it('stops before challenge and OTP submission if the shared attempt limit is reached',async()=>{const f=vi.fn(async()=>Response.json(user));vi.stubGlobal('fetch',f);vi.mocked(claimSecurityBudget).mockResolvedValue(false);await expect(stepUpRecovery(jwt('aal1'),'123456')).rejects.toThrow('Too many');expect(f).toHaveBeenCalledOnce();});
+ it('requires run-tagged synthetic identity before writing a fixture-tagged counter',async()=>{vi.stubGlobal('fetch',vi.fn(async()=>Response.json(user)));await expect(stepUpRecovery(jwt('aal1'),'123456',id)).rejects.toThrow('guard');expect(claimSecurityBudget).not.toHaveBeenCalled();});
+ it('does not send malformed codes to any provider',async()=>{vi.stubGlobal('fetch',vi.fn());await expect(stepUpRecovery(jwt('aal1'),'bad')).rejects.toThrow('six-digit');expect(fetch).not.toHaveBeenCalled();});
+});

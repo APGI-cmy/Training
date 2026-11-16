@@ -1,0 +1,27 @@
+import type {ReviewRound} from '@/lib/course-review';
+import {reviewGuidance} from '@/lib/review-guidance';
+import {currentImplementation,findingPhase} from '@/lib/lu-review-workflow';
+import type {WorkflowStep} from '@/lib/publication-guide';
+import type {ReviewNotificationTask} from '@/lib/review-notification-tasks';
+import {ReviewNonresponseStatus} from './ReviewNonresponseStatus';
+
+function Status({done}:{done:boolean}){return <span className="review-guidance-status" data-complete={done} aria-label={done?'Complete':'Outstanding'}>{done?'✓':'×'}</span>;}
+export function ReviewGuidance({round,email,userId,unit,steps=[],tasks=[],fresh=true}:{round:ReviewRound;email:string;userId:string;unit?:string;steps?:WorkflowStep[];tasks?:ReviewNotificationTask[];fresh?:boolean}){
+ const g=reviewGuidance(round,email,userId,unit),editable=fresh&&round.status==='open'&&Date.parse(round.document.cutoff)>Date.now();
+ const extra=tasks.filter(t=>!t.key.includes(':lu-'));
+ return <section className="review-guidance" id={unit?`lu-guidance-${unit}`:'review-guidance'} aria-label={unit?'Learning unit guidance':'Review guidance'}>
+  <h2>{unit?'Your next steps in this learning unit':'Review guidance — who did what, and what happens next'}</h2>
+  <div className="review-guidance-totals"><a href={`#${unit?'lu-'+unit:'review'}-history`}><strong>{g.people.filter(p=>!p.declined).length}</strong> assigned content reviewers</a><a href={`#${unit?'lu-'+unit:'review'}-history`}><strong>{g.issues.length}</strong> issues raised</a><a href={`#${unit?'lu-'+unit:'review'}-actions`}><strong>{g.awaiting.length}</strong> records awaiting endorsement</a><a href={`#${unit?'lu-'+unit:'review'}-history`}><strong>{g.closed.length}/{g.findings.length}</strong> review records closed</a></div>
+  <p>Signed in as <strong>{email}</strong>. Green ✓ means complete; red × means work remains. One eligible independent endorsement closes a record; a rejection reopens it.</p>
+  {steps.length?<details><summary>Course workflow — open the stage you need</summary><ol className="review-guidance-list">{steps.map(s=><li key={s.id}><Status done={s.done}/><div><a href={s.href}>{s.label}</a><p>{s.done?'Complete.':s.note||'Open this stage and complete the requested action.'}</p></div></li>)}</ol></details>:null}
+  <h3 id={`${unit?'lu-'+unit:'review'}-actions`}>What you need to do</h3>
+  {!editable?<p role="status">{!fresh?'The changed course must be registered before new decisions can be saved.':round.status!=='open'?'This review is closed. Its records remain available.':'The review cutoff has passed. Ask the requester for an extension.'}</p>:null}
+  <ol className="review-guidance-list">{g.initial.map(u=><li key={u.slug}><Status done={false}/><div><a href={`${g.base}/units/${u.slug}?feedback=1`}>{email}, review {u.title}</a><p>Save your finding or nothing-to-add declaration, then confirm that you reviewed the whole LU and its quizzes.</p></div></li>)}{g.actions.map(a=><li key={a.id}><Status done={false}/><div><p>{a.text}</p><a href={a.href}>Go to this {a.kind==='endorsement'?'endorsement':'implementation response'} →</a></div></li>)}{extra.map(t=><li key={t.key}><Status done={false}/><div><a href={`${t.path}#${t.anchor}`}>{t.title}</a><p style={{whiteSpace:'pre-line'}}>{t.requirement}</p></div></li>)}</ol>
+  {!g.initial.length&&!g.actions.length&&!extra.length?<p className="form-success"><Status done/> No action is currently assigned to you here. Other team members’ outstanding work is listed below; this does not mean the course is published.</p>:null}
+  <h3 id={`${unit?'lu-'+unit:'review'}-history`}>Reviewer history and shared findings</h3>
+  <p>Reviewers with saved submissions appear in order of their earliest retained finding or report. Coverage alone is not a submitted finding. A seven-day closure is shown separately and is not a personal approval.</p>
+  <ol className="review-guidance-list">{g.people.map(p=><li key={p.email}><Status done={p.complete}/><div><strong>{p.email}</strong><p>{p.first?`First saved submission: ${new Date(p.first).toLocaleString('en-ZA',{timeZone:'Africa/Johannesburg'})} SAST. `:'No saved finding or report yet. '}{p.issues.length} issues; {p.declarations.length} nothing-to-add declarations. {p.confirmed}/{g.units.length} LU coverage confirmations.{p.deemed?` ${p.deemed} LU reviews closed under the notified seven-day rule.`:''}{p.declined?' Review declined.':''}</p><details id={unit?undefined:`reviewer-${p.index}`}><summary>See {p.email}’s issues and review records ({p.records.length})</summary>{p.records.length?<ol className="review-guidance-list">{p.records.map(f=>{const phase=findingPhase(round,f),r=currentImplementation(round,f);return <li key={f.id}><Status done={phase==='Closed'}/><div><a href={`${g.base}#finding-${f.id}`}>{f.scope==='course'?'All LUs':f.unit.toUpperCase()} · {f.reference}</a><p>{f.comment||f.text}</p><p>{phase}.{r?` ${r.email} submitted response ${r.number}.`:''}{phase==='Awaiting endorsement'?' An eligible reviewer must check and endorse the record.':phase==='Open'||phase==='Reopened'?' The designer must submit an implementation response.':''}</p></div></li>;})}</ol>:<p>No issues have been submitted by this reviewer. This is not evidence of an actual review.</p>}</details></div></li>)}</ol>
+  <p><a className="secondary-button" href={`${g.base}/report`}>Download all review feedback and implementation notes</a> — opens as a printable report in your browser.</p>
+  <ReviewNonresponseStatus round={round} unit={unit}/>
+ </section>;
+}

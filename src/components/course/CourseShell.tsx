@@ -1,0 +1,83 @@
+import Link from "next/link";
+import { ProgressIndicator } from "@/components/progress/ProgressIndicator";
+import type { CourseShell as CourseShellModel } from "@/lib/services/courses/get-course-shell";
+
+export function CourseShell({
+  shell,
+  progressMessage,
+  backHref = "/dashboard",
+  backLabel = "Back to dashboard",
+  certificateHref
+}: {
+  shell: CourseShellModel;
+  progressMessage?: string;
+  backHref?: string;
+  backLabel?: string;
+  certificateHref?: string;
+}) {
+  const { course, units, firstUnit, completedUnits, nextAction } = shell;
+  const showCompletionMessage = progressMessage === "unit-completed";
+
+  return (
+    <main>
+      <section className="course-masthead">
+        <div className="content-inner course-masthead-grid">
+          <div>
+            <Link className="back-link" href={backHref}>
+              {backLabel}
+            </Link>
+            <p className="eyebrow">Learner course shell</p>
+            <h1>{course.title}</h1>
+            <p>{course.description}</p>
+            {course.editionId?<p>Edition {course.editionNumber} · <Link href={`/learn/${course.slug}/records`}>My results, saved assessments and e-book options</Link></p>:null}
+            {showCompletionMessage ? (
+              <p role="status">Unit marked complete. Progress has been updated.</p>
+            ) : null}
+            <div className="button-row">
+              {nextAction ? (
+                <Link className="primary-button" href={nextAction.href}>
+                  {nextAction.label}
+                </Link>
+              ) : firstUnit ? (
+                <Link className="primary-button" href={firstUnit.href}>
+                  Open first unit
+                </Link>
+              ) : null}
+            </div>
+          </div>
+          <ProgressIndicator completedUnits={completedUnits} totalUnits={units.length} />
+        </div>
+      </section>
+
+      <section className="content-band">
+        <div className="content-inner">
+          <p className="eyebrow">Learning units</p>
+          <h2>Choose where to continue</h2>
+          <p>
+            Select a learning unit or the final assessment. Required assessment results are recorded against your
+            learner account.
+          </p>
+          {progressMessage==='requirements'?<p role="status">Complete the earlier unit’s video, activity summaries and quiz before opening the next unit.</p>:null}
+          <div className="unit-grid">
+            {units.map((unit) => (
+              <article className="unit-card" key={unit.id}>
+                <div className="unit-card-header">
+                  <span>{unit.kind === "summative_assessment" ? "Summative assessment" : unit.order === 0 ? "Orientation" : `Unit ${unit.order}`}</span>
+                  <small>{unit.isCompleted ? "Completed" : unit.isOpened ? "Opened" : unit.duration}</small>
+                </div>
+                <h3>{unit.title}</h3>
+                <p>{unit.subtitle}</p>
+                {unit.isLocked?<p>Locked — complete and pass the earlier units first.</p>:<Link className="secondary-button" href={unit.href}>
+                  {unit.kind === "summative_assessment"
+                    ? "Open assessment"
+                    : unit.isCompleted ? "Review unit" : unit.isOpened ? "Continue unit" : "Open unit"}
+                </Link>}
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="content-band"><div className="content-inner notice-card"><h2>Finish your course</h2><p>When your required learning and assessment are complete, issue and download your numbered certificate.</p><Link className="primary-button" href={certificateHref ?? `/learn/${course.slug}/certificate`}>My course certificate</Link></div></section>
+    </main>
+  );
+}

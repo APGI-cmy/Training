@@ -1,0 +1,5 @@
+import {watermark,type Watermark} from '@/lib/watermarks';
+export function PlatformWatermark({value,logoUrl,imageUrl,preview=false}:{value?:Watermark;logoUrl?:string|null;imageUrl?:string|null;preview?:boolean}){
+ const w=watermark(value),src=w.kind==='image'?imageUrl:logoUrl;if(w.kind==='none'||(w.kind==='logo'||w.kind==='image')&&!src)return null;
+ return <div aria-hidden="true" data-platform-watermark className={preview?'platform-watermark-preview':'platform-watermark'} style={{position:preview?'absolute':'fixed',inset:preview?0:'var(--app-header-height,88px) 0 0 280px',display:'grid',placeItems:'center',pointerEvents:'none',userSelect:'none',zIndex:0,opacity:w.opacity,overflow:'hidden'}}>{w.kind==='logo'||w.kind==='image'?<img src={src!} alt="" style={w.kind==='image'?{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover'}:{width:'min(55vw,500px)',maxWidth:'80%',maxHeight:'65%',objectFit:'contain'}}/>:<span style={{fontSize:'clamp(24px,5vw,68px)',fontWeight:800,transform:'rotate(-25deg)',color:'var(--text)',maxWidth:'85%',textAlign:'center',overflowWrap:'anywhere'}}>{w.text}</span>}</div>;
+}

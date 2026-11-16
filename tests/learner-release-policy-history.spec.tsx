@@ -1,0 +1,24 @@
+import {describe,it,expect,vi,beforeEach} from "vitest";
+import {renderToStaticMarkup} from "react-dom/server";
+import {PolicyReviewHistory} from "@/components/admin/PolicyReviewHistory";
+import type {PolicyRecord} from "@/lib/company-structure";
+const m=vi.hoisted(()=>({history:vi.fn(),rows:vi.fn(),session:vi.fn()}));
+vi.mock("@/server/services/policy-history",()=>({policyHistory:m.history}));
+vi.mock("@/server/services/company-structure",()=>({rows:m.rows}));
+vi.mock("@/server/auth/session",()=>({requireSession:m.session}));
+vi.mock("@/server/services/platform-principals",()=>({isPlatformPrincipal:async()=>false}));
+vi.mock("@/components/admin/PolicyDecisionForm",()=>({PolicyDecisionForm:()=> <div>Independent decision form</div>}));
+vi.mock("@/components/admin/StructureForm",()=>({StructureForm:()=>null}));
+vi.mock("@/server/actions/platform-policies",()=>({policyStructureAction:vi.fn()}));
+import PolicyPage from "../app/(learner)/policies/[id]/page";
+const email="johan.ras@apginc.ca",at="2026-11-04T12:14:34Z",hash="a".repeat(64);
+const original={id:"old",status:"rejected",title:"Allocation",version_label:"Review draft v1",content_hash:hash,created_at:at,body:"Original terms",previous_version_id:null} as PolicyRecord;
+const decision={policy_id:"old",email,decision:"reject",reason:"Please add the 40% cost markup.\nKeep my detailed changes.",decided_at:at,content_hash:hash};
+beforeEach(()=>{m.session.mockResolvedValue({user:{email}});m.rows.mockResolvedValue([{email},{email:"jorrie.jordaan@apginc.ca"}]);m.history.mockResolvedValue({policy:original,session:{user:{email}},versions:[original],decisions:[decision],events:[]});});
+describe("Visible policy decision and revision audit",()=>{
+ it("shows Johan's saved rejection and full comments without asking for a repeat decision",async()=>{const html=renderToStaticMarkup(await PolicyPage({params:Promise.resolve({id:"old"})}));expect(html).toContain("Your decision on this version: Rejected");expect(html).toContain(decision.reason);expect(html).not.toContain("Independent decision form");expect(html).toContain('id="required-reviews"');expect(html).toContain('id="policy-history"');});
+ it("lets an unresponded reviewer read a rejection and independently respond",async()=>{m.history.mockResolvedValue({policy:original,session:{user:{email:"jorrie.jordaan@apginc.ca"}},versions:[original],decisions:[decision],events:[]});const html=renderToStaticMarkup(await PolicyPage({params:Promise.resolve({id:"old"})}));expect(html).toContain("Independent decision form");expect(html).toContain(decision.reason);expect(html).toContain("cannot override a recorded rejection");});
+ it("explains why a new version needs a decision and carries earlier rejection feedback visibly",async()=>{const revised={...original,id:"new",status:"submitted",version_label:"Review draft v2",content_hash:"b".repeat(64),previous_version_id:"old"};m.history.mockResolvedValue({policy:revised,session:{user:{email}},versions:[original,revised],decisions:[decision],events:[]});const html=renderToStaticMarkup(await PolicyPage({params:Promise.resolve({id:"new"})}));expect(html).toContain("This is a revised document");expect(html).toContain("Feedback that led to this revision");expect(html).toContain(decision.reason);expect(html).toContain("Independent decision form");expect(html).not.toContain("Your decision on this version: Rejected");});
+ it("shows a submitted successor without treating old feedback as a fresh decision",async()=>{m.history.mockResolvedValue({policy:original,session:{user:{email}},versions:[original],decisions:[decision],events:[],replacement:{id:"new",version_label:"Review draft v2"}});const html=renderToStaticMarkup(await PolicyPage({params:Promise.resolve({id:"old"})}));expect(html).toContain("This is an earlier version");expect(html).toContain("Open the revised version");expect(html).toContain(decision.reason);expect(html).not.toContain("Independent decision form");});
+ it("distinguishes recovered evidence and displays the saved version-bound response",()=>{const html=renderToStaticMarkup(<PolicyReviewHistory versions={[original]} decisions={[decision]} events={[{id:"event",subject_id:"old",actor_id:"johan",event_type:"policy_decision_recovered",occurred_at:at,detail:{capture_method:"Recovered with explicit permission"}}]}/>);expect(html).toContain("Earlier failed response recovered");expect(html).toContain("Recovered with explicit permission");expect(html).toContain(decision.reason);expect(html).toContain("14:14:34");});
+});

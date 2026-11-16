@@ -1,0 +1,6 @@
+{
+  "engine": "ebc6004ea65d534cde9a7554a8ed8144124717047f34cc84de305eb7b201bd12",
+  "previousEngine": "646be8d5cc62699a1c437e2436492c278a238ae9eccb7a088ee20442df31e8e8",
+  "legacySource": "d92c5ae0944f933b1dc55c6b5a12247ef0770aa085e1b42908412ac8be596399",
+  "note": "Exact Tiger-only learner progression adapter compatibility checkpoint. Authored course objects, quizzes and package bytes are unchanged. Preserve their current review identities and all decisions; record the Tiger runtime requirements separately under tiger-progression-1-2ee5c4d56ef89282. This release does not approve or endorse course findings. Any later unrecognised engine hash or changed package still invalidates identity normally."
+}

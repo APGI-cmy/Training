@@ -1,0 +1,26 @@
+import {beforeEach,describe,it,expect,vi} from 'vitest';
+vi.mock('@/server/auth/session',()=>({getCurrentSession:vi.fn()}));
+vi.mock('@/server/services/platform-principals',()=>({isPlatformPrincipal:vi.fn()}));
+vi.mock('@/server/services/company-structure',()=>({ownMemberships:vi.fn(),rows:vi.fn()}));
+vi.mock('@/server/security-watchdog/signing',()=>({verifyWatchdogReport:vi.fn()}));
+vi.mock('@/server/security-watchdog/runner',()=>({watchdogDeployment:()=> 'current'}));
+import {getCurrentSession} from '@/server/auth/session';
+import {isPlatformPrincipal} from '@/server/services/platform-principals';
+import {ownMemberships,rows} from '@/server/services/company-structure';
+import {verifyWatchdogReport} from '@/server/security-watchdog/signing';
+import {WATCHDOG_SUITE,type WatchdogRun,type WatchdogPayload} from '@/lib/security-watchdog';
+import {paymentAssuranceControls,projectAssurance} from '@/lib/security-assurance';
+import {GET} from '../app/api/security-assurance/route';
+const own='11111111-1111-4111-8111-111111111111',foreign='22222222-2222-4222-8222-222222222222';
+const payload=()=>({suite:WATCHDOG_SUITE,cleanup:true,finishedAt:new Date().toISOString(),checks:paymentAssuranceControls.map(c=>({...c,state:'passed',kind:'synthetic_behaviour',detail:'PRIVATE-DIAGNOSTIC'})),runId:foreign,deployment:'current',scope:{companyId:null,label:'PRIVATE-COMPANY'},initiatedBy:'PRIVATE-ACTOR'} as WatchdogPayload);
+const run=()=>({id:foreign,fixtures_cleaned:true,state:'finished',deployment:'current',created_at:new Date().toISOString(),payload:payload(),proof:{}} as WatchdogRun);
+beforeEach(()=>{vi.resetAllMocks();vi.mocked(getCurrentSession).mockResolvedValue({accessToken:'fixture',user:{id:own,email_confirmed_at:'yes'}});vi.mocked(isPlatformPrincipal).mockResolvedValue(false);vi.mocked(ownMemberships).mockResolvedValue([]);vi.mocked(rows).mockImplementation(async path=>path.includes('v2_watchdog_monitors')?[{enabled:true}]:[run()] as never);vi.mocked(verifyWatchdogReport).mockReturnValue(true);});
+describe('role-specific assurance projection',()=>{
+ it('requires current verified sign-in',async()=>{vi.mocked(getCurrentSession).mockResolvedValue(null);expect((await GET(new Request('https://fixture/api/security-assurance'))).status).toBe(401);});
+ it('refuses learner attempts to select company or global diagnostic scope',async()=>{for(const scope of [own,'platform'])expect((await GET(new Request('https://fixture/api/security-assurance?scope='+scope))).status).toBe(403);expect(rows).not.toHaveBeenCalled();});
+ it('returns a private learner summary without raw reports or the overall platform score',async()=>{const r=await GET(new Request('https://fixture/api/security-assurance')),v=await r.json(),text=JSON.stringify(v);expect(r.headers.get('cache-control')).toContain('no-store');expect(r.headers.get('vary')).toBe('Cookie');expect(v.audience).toBe('learner');expect(v.overall).toBeNull();expect(v.reportHref).toBe('/security-assurance');for(const secret of ['PRIVATE-DIAGNOSTIC','PRIVATE-ACTOR','PRIVATE-COMPANY',own,foreign])expect(text).not.toContain(secret);expect(v.payment.passed).toBe(10);expect(v.payment.total).toBe(11);expect(v.status).toBe('incomplete');});
+ it('selects company evidence only for an active owned company',async()=>{vi.mocked(ownMemberships).mockResolvedValue([{organisation_id:own,membership_role:'owner'}]);expect((await GET(new Request('https://fixture/api/security-assurance?scope='+foreign))).status).toBe(403);const r=await GET(new Request('https://fixture/api/security-assurance?scope='+own));expect((await r.json()).audience).toBe('company');expect(vi.mocked(rows).mock.calls.find(c=>c[0].includes('v2_watchdog_runs'))?.[0]).toContain('company_id=eq.'+own);});
+ it('gives a principal the complete score and protected report link',async()=>{vi.mocked(isPlatformPrincipal).mockResolvedValue(true);const r=await GET(new Request('https://fixture/api/security-assurance'));const v=await r.json();expect(v.overall.percent).toBe(100);expect(v.reportHref).toBe('/security-watchdog?scope=platform');expect(v.paymentMode).toBe('sandbox');});
+ it.each(['signature','stale','future','wrong_release','wrong_suite','cleanup'])('does not show current passes for %s evidence',async condition=>{const r=run();if(condition==='signature')vi.mocked(verifyWatchdogReport).mockReturnValue(false);if(condition==='stale')r.payload!.finishedAt=new Date(Date.now()-86400001).toISOString();if(condition==='future')r.payload!.finishedAt=new Date(Date.now()+60000).toISOString();if(condition==='wrong_release')r.deployment='old';if(condition==='wrong_suite')r.payload!.suite='old';if(condition==='cleanup')r.payload!.cleanup=false;vi.mocked(rows).mockResolvedValue([r]);const out=await(await GET(new Request('https://fixture/api/security-assurance'))).json();expect(out.current).toBe(false);expect(out.payment.passed).toBe(0);});
+ it('retains missing named checks as inconclusive',()=>{const p=payload();p.checks=[];const v=projectAssurance({audience:'learner',context:'fixture',event:null,phase:'finished',payload:p,trusted:true,current:true,reportHref:'/security-assurance'});expect(v.payment.passed).toBe(0);expect(v.payment.checks[0].state).toBe('inconclusive');});
+});

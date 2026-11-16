@@ -1,0 +1,52 @@
+{
+  "name": "apgi-training-platform",
+  "version": "2.0.0-dev.0",
+  "private": true,
+  "description": "Next.js learning platform for APGI VPSHR training content.",
+  "scripts": {
+    "test:watchdog": "vitest run --config vitest.watchdog.config.mts",
+    "dev": "next dev",
+    "prebuild": "node scripts/verify-server-outbound.mjs && node --experimental-strip-types scripts/verify-environment-isolation.mjs && node scripts/verify-course-media.mjs && node scripts/course-review-manifest.mjs",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test:learner-release": "vitest run --config vitest.release.config.mts",
+    "test:alp:red": "vitest run tests/qa-to-red/alp",
+    "test:alp:w4-2": "vitest run tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts tests/qa-to-red/alp/w4-2-migration-security.spec.ts tests/qa-to-red/alp/w4-2-browser-repair.spec.ts tests/qa-to-red/alp/batch3-stabilisation-red.spec.ts",
+    "test:alp:lm": "vitest run tests/qa-to-red/alp/w4-2-learner-management.spec.ts",
+    "test:alp:batch3": "vitest run tests/qa-to-red/alp/batch3-stabilisation-red.spec.ts",
+    "test:alp:w4-2:red": "vitest run tests/qa-to-red/alp/w4-2-enrolment-catalogue-red.spec.ts",
+    "test:alp:red:static": "vitest run tests/qa-to-red/alp/governance-artifacts.spec.ts tests/qa-to-red/alp/architecture-inventory.spec.ts",
+    "test:alp:red:integration": "vitest run tests/qa-to-red/alp --exclude tests/qa-to-red/alp/deployment-cwt.spec.ts",
+    "test:alp:red:e2e": "vitest run tests/qa-to-red/alp/course-shell.spec.ts tests/qa-to-red/alp/assessment-submission.spec.ts tests/qa-to-red/alp/certificate.spec.ts",
+    "test:alp:red:cwt": "vitest run tests/qa-to-red/alp/deployment-cwt.spec.ts",
+    "audit:outbound": "node scripts/verify-server-outbound.mjs"
+  },
+  "dependencies": {
+    "@aws-sdk/client-appstream": "^3.1146.0",
+    "@pdf-lib/fontkit": "1.1.1",
+    "@vercel/oidc-aws-credentials-provider": "^3.3.11",
+    "next": "16.4.4",
+    "openpgp": "6.3.2",
+    "pdf-lib": "1.17.1",
+    "qrcode": "1.5.4",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "sharp": "0.35.5"
+  },
+  "overrides": {
+    "postcss": "8.5.23",
+    "zod": "4.6.6"
+  },
+  "devDependencies": {
+    "@types/node": "25.9.1",
+    "@types/qrcode": "1.5.6",
+    "@types/react": "19.2.15",
+    "@types/react-dom": "19.2.3",
+    "typescript": "6.0.3",
+    "vitest": "^5.0.3"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

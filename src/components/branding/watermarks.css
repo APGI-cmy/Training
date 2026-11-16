@@ -1,0 +1,4 @@
+.watermark-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;padding:18px;border:1px solid var(--line);border-radius:8px;min-width:0}.watermark-fields label{display:grid;gap:8px;min-width:0}.watermark-fields p{grid-column:1/-1}.watermark-fields input,.watermark-fields select{width:100%;min-width:0}.watermark-platform-sample>h4,.watermark-platform-sample>p{position:relative;z-index:1}
+.certificate-preview{position:relative;z-index:1}
+@media(max-width:860px){.platform-watermark{inset:var(--app-header-height,88px) 0 0!important}}
+@media print{.platform-watermark{display:none!important}}

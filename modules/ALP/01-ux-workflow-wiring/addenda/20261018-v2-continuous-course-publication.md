@@ -1,0 +1,114 @@
+# V2 continuous course approval, commercial agreement and publication
+
+Design addendum 0.2 — 18 October 2026. Authorised by Johan's instruction to add the clarified workflow to the design artifacts and implement it. Supersedes the commercials-first sequence in Proposal 0.1. Existing APGI/SRMS and branded-partner policy PDFs remain separate and unchanged; this addendum does not sign an agreement or activate payments.
+
+## One workflow, separate gates
+
+1. **Draft and content review.** Start from Course preview. Record the course, current legal owner, publishing company and designer credits; no commercial plan is required. Request review by at least two full reviewers, including the requester, and optional peer checkers. Retain unit/quiz coverage, shared findings, private screenshots, reports, independent endorsements, deadlines, declines and audit records. Content approval requires current content, complete reports/endorsements and no unresolved blockers. Johan or Jorrie explicitly advances the content-approved version to commercial preparation.
+2. **Commercial preparation.** APGI prepares the cost-first price and proposed partner income after content approval. Save immutable commercial versions against that approved content. Earlier saved plans are retained; new versions must not overwrite them. Design credit does not transfer intellectual property.
+3. **Joint APGI commercial decision.** Both verified platform principals, Johan Ras and Jorrie Jordaan, must independently approve the exact current commercial version. A rejection returns preparation to APGI. No content endorsement substitutes for this decision. Editing a commercial version resets both commercial approvals. No external offer or partner invitation may be sent before both approvals.
+4. **Company offer and branding.** APGI-only offerings proceed to the final publication queue after both approvals. Partner offerings are sent to the nominated company owner only after both approvals. The owner receives company-scoped administration and onboarding, never global APGI administration. They can adjust their company logo, colours and certificate branding through the existing interface and must confirm the current brand revision. They see the combined APGI offer, not private APGI/SRMS internal distributions. Prior partner content acceptance is carried forward only if actually recorded for the same content; otherwise explicit partner content acceptance is required before final readiness.
+5. **Price-only partner editor.** Show the proposed gross fee, non-negotiable calculated minimum, cost provision, administration on costs only, development recovery, combined APGI income and partner income. The only directly editable commercial field is the gross learner fee. Reject values below the calculated minimum. Recalculate monetary amounts at every valid price; keep agreed rates and cost assumptions locked. Recovery is capped at the outstanding balance and retained from the cost-cleared pool before sharing, not added as a 25% surcharge. Forecasts are estimates, not charges or settlements.
+6. **Decline and negotiation.** Normal offer controls are Accept and Decline. Decline opens required reason choices: price too high, distribution unacceptable, recovery unacceptable, branding, other. Show applicable proposed price/share/recovery and explanation inputs. A proposal never edits an approved agreement. One negotiation round consists of a partner proposal and APGI's response. Up to three APGI counter-offer responses are allowed after the original offer. Each response is a new immutable commercial version and requires both APGI principals' approval before external delivery. Acceptance finishes negotiation. Rejection after the third response marks the negotiation Unresolved and blocks publication. Closing unresolved earlier requires an audited principal decision. Never silently reset the counter or treat silence as acceptance.
+7. **Ready and publish.** Current content approval, both current APGI commercial approvals, partner content/commercial acceptance where applicable, the approved fee and confirmed current branding place the offering automatically in the final publication queue. Only Johan or Jorrie explicitly publishes. Publication ends the wizard and opens the selected company offering for enrolment. Course/company/version identifiers are part of every decision. Content changes invalidate content approval and all dependent gates. Brand changes invalidate brand acceptance and publication readiness without requiring unrelated content to be reviewed again. Commercial changes invalidate commercial and partner acceptance; old versions remain history.
+8. **Company enrolment and payment boundary.** Company owners may manage only their company's learners and request APGI assistance. Their course access cannot be granted on an off-platform payment assertion or free/manual payment override. Invites and enrolment requests must use a platform-administered payment route; a bank transfer is eligible only if the platform explicitly supports and reconciles that route. APGI retains its separately authorised, audited external-payment/manual-allocation controls. V2's existing payments-disabled setting remains in force: do not enable real charges or fabricate payment confirmations. Company payment-dependent controls must clearly show their unavailable state until a supported route is enabled.
+
+## Communications and safety
+
+Queue authenticated links for reviewer invitations, submitted reports, peer decisions, content approval, APGI commercial requests/decisions, partner offers, rejections/proposals, counter-offers, unresolved status and publication readiness. Scope internal APGI commercial messages to the two principals; partner messages present APGI as one entity. Store failed/provider-accepted delivery status and deduplicate retries. Provider acceptance is not proof of inbox receipt.
+
+Daily reviewer reminders stop on task completion, decline or cutoff. The requester receives progress digests. Unfinished work is overdue and requires an explicit, reasoned extension. Expiry, email opening and report endorsement never approve or publish anything. Screenshots require a user-initiated browser permission or upload and are private to the assigned review team. No review writes learner grades or certificates. Native Scannex practical assessment remains supervised and assessor-controlled.
+
+## Acceptance evidence required
+
+- Start content review directly from Course preview without pricing or a saved plan; explicit empty states and resumable links.
+- Separate immutable content, commercial and branding versions with exact-version approvals, concurrent-write protection and audit history.
+- Reject an external offer after one principal's approval, stale approvals, self-substitution, unverified identities or cross-company access.
+- Validate pricing floors, fixed versus percentage costs, capped cost-first recovery, locked percentages and partner proposal isolation.
+- Check three counter-offer rounds, approval resets, company onboarding/branding return links and unresolved publication blocking.
+- Protect every publication path at the database and server; preserve V1, existing enrolments, earlier drafts and disabled V2 payment/Viewer modes.
+- Verify notification scoping/deduplication and fail-closed company payment controls with automated and isolated database/browser QA.
+
+When a partner owns a course published under APGI branding, that owner's commercial approval remains required. Their owner membership is bound to their own company, not APGI. They can review APGI's publishing brand but cannot edit APGI branding or settings. The publishing company and contracting partner are recorded separately.
+
+This file defines the implementation target. Deployment and verification evidence must be recorded separately; its existence alone does not demonstrate that any gate is live or approved.
+
+
+## 19 October 2026 — Review usability corrections
+
+- Coverage checkboxes reflect saved participant coverage after submission, navigation and reload. A persisted status is shown independently of the temporary save toast.
+- Reviewers may record explicit satisfaction with a slide/LU, quiz or available e-book. These are closed, non-blocking feedback records and do not substitute for complete LU/quiz coverage or full report submission.
+- A finding supports several categories, including e-book issues and additional named categories. Separate slide/question references remain separate findings.
+- Replacing the same author's feedback for an exact unit/reference requires confirmation. The original record, screenshot and discussion remain in history; another reviewer's feedback is never overwritten. Unresolved blocking findings must follow fix and independent verification before replacement.
+- LU pages provide persistent review-summary navigation plus previous/next LU controls and a finish/report link. Complete-unit coverage can be confirmed at the end of each LU.
+- E-book links use build-verified separate PDF resources; a presentation export is never labelled as an e-book. The current VPSHR package contains no separate e-book PDF; Scannex does.
+- The content-approval panel displays the saved feedback summary and actual unmet requirements. Approval controls remain disabled until the existing team, coverage, report, independent endorsement and blocker gates pass.
+- Submitting a full report displays a feedback acknowledgement. Final principal content approval displays the acknowledgement and continues to the course's commercial wizard. Neither operation bypasses independent review.
+- Reviewer scope can be content only or content plus commercials, recorded at invitation and editable by a principal with a reason during content review. Commercial scope never grants platform administration or substitutes for Johan/Jorrie joint sign-off or company-owner acceptance. Assigned commercial reviewers can comment on the offered public schedule, without seeing private APGI/SRMS terms.
+- Existing real round coverage, findings and approvals are preserved; V1 is excluded from this release.
+
+
+### 19 October 2026 — Combined declarations and evidence retention
+
+The feedback outcome selector is replaced by independent LU/slides, quiz and (where available) e-book satisfaction checkboxes. Several declarations may be saved together. An additional change/suggestion checkbox supports a positive declaration for one part alongside a correction for another. Selecting satisfaction never hides the comment, snapshot or image-upload controls; optional comments and images are retained with the declaration in the saved finding. Existing issue categories, replacement confirmation and audit history remain available. Closing and reopening the feedback panel retains its in-progress fields.
+
+The disabled content-approval checkbox/button is wrapped by a keyboard-focusable hover explanation. It states that all modules/quizzes, full submitted reports, independent endorsements and blocking-finding checks must be complete. Approval rules are unchanged.
+
+
+## Review usability and management requests — 19 October 2026
+
+- Session credentials renew while the user works. Human input in the main page and same-origin presentations, plus visible audio/video playback, counts as activity. A 30-minute inactivity limit remains; a warning appears two minutes before expiry. Timers and background network calls alone never renew inactivity. Session cookies remain HttpOnly and server actions retain verified identity/role checks.
+- Reopening feedback offers editing the latest saved finding or adding a separate finding. Saved comments, categories, declarations and evidence are restored. Several independent findings may use the same slide/question reference; keeping all requires an explicit choice. Editing retains earlier text and images, replies and immutable report versions. Unresolved blockers cannot be silently changed into satisfactory declarations.
+- Review workspace order: team, LU/quiz coverage, shared discussion, one summary and report confirmation, committed reports/independent checks, commercial preparation, management requests and final publication. The last LU returns to the summary anchor.
+- The requester may start commercial preparation after submitting their own complete LU/quiz report. Other reports, endorsements and content corrections may continue in parallel. Starting commercials is not final content clearance. Both APGI commercial signatures, current branding/owner acceptance, complete independently endorsed content reviews and resolved blockers remain mandatory for publication. Only the verified principal who initiated the round can clear final content and publish it. New findings/reopened reports and approved team/scope changes invalidate final content clearance without erasing commercials.
+- Any assigned reviewer can request an extension, an additional reviewer, replacement of themselves, or a scope change. Requests persist pending until Johan or Jorrie approves/rejects them. Either principal may approve their own request immediately in the form. New invitations and assignment changes occur only after approval. Decline acknowledgement belongs to the approval step. Decisions notify the proposer/requester/team; replacement invitations identify the replaced reviewer.
+- Provider acceptance is shown as 'Accepted by email provider'. The dedicated sending-only Resend key cannot retrieve delivery events (verified HTTP 401). No inbox-delivery claim is made and the previous 'inbox delivery unconfirmed' suffix is removed.
+- V1, financial allocation rules, disabled V2 payments, native Scannex practical assessments and course source assets remain outside this change.
+
+Verification: a disposable V2 review reopened the latest saved finding with comments/categories, edited it while retaining the earlier version and sibling finding, then saved a third finding under the same reference with a custom category and uploaded image. Three active findings, an earlier edit version and the original report were verified in storage/database. The browser then opened commercial preparation with an unresolved blocker and unfinished peer review; contentApproval remained absent and publication remained disabled. Commercial handoff wording does not imply final content approval, and the report acknowledgement is shown only on report submission.
+
+
+## Correction releases in the existing review — 20 October 2026
+
+The course designer applies fixes in iSpring, exports the corrected package, updates GitHub and deploys V2. The existing review then exposes **Changes implemented**. A verified APGI principal registers the deployed content fingerprint (derived on the server), release reference, correction notes and a current/extended future cutoff. Registration uses a locked compare-and-swap transaction with audit history and an email outbox. A stale review, unchanged hash or unverified/nonprincipal caller cannot register a correction.
+
+The round ID, saved findings, comments, images and historical reports/endorsements remain. Exact commercial configurations, prices, Johan/Jorrie decisions and counter-offer count are preserved. Final content clearance is removed. Previous partner acceptance is archived and the owner must reconfirm the changed content, branding and unchanged schedule; the previously chosen fee is offered as the starting value. This does not consume a negotiation round. It never publishes automatically.
+
+The current manifest identifies the whole course, so every nondeclined full reviewer rechecks all deployed LUs/quizzes and submits a new fingerprint-bound report with fresh independent endorsement. Earlier reports remain visible as history and cannot satisfy the new version. Reviewer reminders resume for reactivated assignments and still stop on completion, decline or cutoff; an overdue deadline requires an approved extension. Management requests remain available when the deployed content differs, so an expired deadline does not trap the correction workflow.
+
+All active publication-blocking findings reopen conservatively on each registered correction release. Each fix is recorded under **Comment or update finding → Changes implemented — request verification**, with the deployed fingerprint, fixer and date. A different assigned verified reviewer inspects the deployed material and selects **Verify and close finding**, recording their identity, date and fingerprint. Implementation and verification notify the team. A later revision invalidates this proof. UI, server actions and the final locked database publication transaction require current-version reports and independently verified blocking corrections; a bare closed flag is insufficient. Final requester content clearance, exact financial sign-offs, current company/brand acceptance and explicit final publication remain separate mandatory decisions. No real review is approved by this implementation work.
+
+V1, disabled V2 payment activation, course source packages and native Scannex assessments are unchanged.
+
+
+## 21 October 2026 — navigation and three review assignments
+
+The global sidebar groups existing authorised links into expandable workflow menus. The selected page remains highlighted. Sidebar groups do not carry progress indicators or grant additional permissions.
+
+Course publication has a separate, expandable guide beside the main content: course and review team; content review; corrections and independent verification; commercial preparation and joint APGI sign-off; branding review; final clearance and publication. Nested tasks link directly to their page or section. Saved evidence controls green ticks and red crosses; navigation cannot imply approval. On narrow screens the same guide sits above the content.
+
+Review assignments are independent checkboxes: Content, Commercials and Branding. A reviewer may hold any nonempty combination. At least two full content reviewers remain required, including the requester. A branding-only or commercial-only reviewer is not required to confirm learning-unit coverage or submit a content report. Existing legacy scope retains its prior meaning.
+
+Assigned branding decisions record the exact current branding revision, verified actor, decision and comments. The preview shows the current company identity, colours, footer and sample certificate. A platform-sharing company owner must explicitly approve the current branding before accepting its commercial offer. Another reviewer's branding approval cannot substitute for the owner. APGI's existing branding requires no additional reviewer unless assigned; final APGI branding confirmation remains in force. Branding changes invalidate approval for the earlier revision and require reconfirmation without losing the previous commercial acceptance or chosen fee in the audit history.
+
+An actual approval of the current financial version by the assigned principal, or current owner acceptance, fulfils that same person's commercial-review assignment. An explicit changes request remains pending. Assigned commercial review does not substitute for both Johan and Jorrie's independent financial signatures or the company owner's acceptance.
+
+Private publication checks enforce all explicit assignments and the owner's current branding approval alongside existing content fingerprints, correction verification, independent endorsements, verified identities and financial gates. Daily reminders track unfinished assigned tasks and stop at the cutoff. Correction registration resets content review evidence while retaining unrelated commercial/branding decisions. These changes apply to V2 only and do not publish any course.
+
+
+## 21 October 2026 — personal notification prompt and receipts
+
+Every signed-in, verified account has a prominent Notifications link above its grouped sidebar menus. The count includes each unread update or pending response once. The prompt separately shows unread and response counts, refreshes every 30 seconds while visible and on focus, and does not refresh the inactivity timestamp. An outage is shown as unavailable rather than a zero count.
+
+The personal inbox distinguishes ordinary updates, explicit acknowledgement requests and actions requiring their original workflow. Opening an update records its first read timestamp and opens a validated internal destination. Acknowledge receipt records a separate timestamp. Mark all as read changes only read state. None of these operations can approve a course, policy, branding, financial terms or publication. An action remains counted after reading until the underlying saved task is completed or no longer applicable; an overdue task does not become approved.
+
+Registered review participants and authorised APGI principals receive durable review updates, including findings, discussions, report submission, decisions and changes. Current task notices are seeded idempotently for existing reviews, policy assignments and company requests, including accounts that join after invitation. Additional event hooks cover company responses, policy decisions, owner invitation acceptance and issued certificates. Ordinary learner/admin invitation acceptances retain their existing notifications.
+
+The sender can view recent platform inbox delivery, read and acknowledgement receipts for their own updates. These are platform receipts, not email delivery/read claims. Existing email workflows remain separate.
+
+Notification data remains in private server-managed storage. The server supplies the verified account identity for every count, listing and receipt; clients cannot select another recipient. Required task state is derived from current workflow evidence. The legacy administrator notifications address redirects to the personal inbox. V1 and course content fingerprints remain unchanged.
+
+
+## 21 October 2026 — Stripe partner payment preparation
+
+The [Stripe partner payment design](20261021-v2-stripe-partner-payments.md) records the shared payment portal, Jorrie-only APGI setup, private company-owner banking onboarding, payment-purpose notice, approved commercial snapshots, cross-border eligibility holds, capped cost sharing and sandbox-only settlement wiring. Live payment activation remains a separate reviewed release.

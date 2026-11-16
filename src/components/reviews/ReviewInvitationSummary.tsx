@@ -1,0 +1,5 @@
+import Link from 'next/link';
+import {reviewEmailEditor,type ReviewInvitationEmailState} from '@/lib/review-invitation-email';
+export function ReviewInvitationSummary({state}:{state:ReviewInvitationEmailState}){
+ return <aside className={`review-box ${state.status==='blocked'?'form-error':''}`} aria-label="Review invitation email"><h3>Email used for review invitations</h3><p><strong>{state.status==='standard'?'Standard platform invitation':state.name}</strong>{state.revision?` · saved version ${state.revision}`:''}</p>{state.status==='blocked'?<p role="alert">{state.reason}</p>:state.status==='ready'?<p>Your enabled design, wording and image will be used. The assigned tasks, actual review cutoff and private joining instructions are added automatically.</p>:<p>No company review design is configured for this course. The standard platform invitation will be sent.</p>}<p><Link href={reviewEmailEditor(state)}>{state.status==='blocked'?'Open and enable the saved review email':'Preview or edit the review email'}</Link></p><p>Enabling an email does not send it. Previously sent emails stay unchanged; resending is a separate action.</p></aside>;
+}

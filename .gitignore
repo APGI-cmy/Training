@@ -1,0 +1,23 @@
+.vercel
+supabase/.temp/
+.env*.local
+node_modules
+.next
+out
+*.tsbuildinfo
+npm-debug.log*
+next-dev*.log
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# iSpring import archives remain local; Vercel serves the unpacked SCORM files.
+public/courses/Scannex Training Programme/**/LU * (SCORM).zip
+.env*
+
+# Governance documents belong in private policy storage, never the public repo.
+output/pdf/
+public/courses/Tiger kidnapping_telecommunications/**/*.zip
+
+# Original VPSHR SCORM archives stay in the authoring folders.
+public/courses/vpshr-level-0/**/*.zip
