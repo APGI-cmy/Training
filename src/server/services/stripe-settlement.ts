@@ -7,6 +7,7 @@ import {bothCommercialApprovals,currentCommercial,quoteCommercial,type Publicati
 import {moneyCents} from "@/lib/commercial-planning";
 import {stripeRoute} from "@/lib/stripe-payments";
 import {confirmPurchaseCheckout} from './course-purchases';
+import {confirmCalculatorCheckout,reconcileCalculatorOrder,calculatorRpc,type CalculatorOrder} from './course-calculator';
 import {reconcileStripeFee,StripeFeePending,type StripeFeeTransaction,type StripeFeeEvidence} from '@/lib/stripe-fee-reconciliation';
 import {stripeEventDigest} from '@/lib/stripe-event-digest';
 
@@ -92,6 +93,10 @@ export async function processStripeEvent(event:{id:string;type:string;livemode:b
  if(saved.state==="done")return;
  const obj=event.data.object;
  if(event.type==="checkout.session.completed"||event.type==="checkout.session.async_payment_succeeded"){
+  if((obj.metadata as Record<string,string>|undefined)?.apgi_calculator_order){
+   await confirmCalculatorCheckout(obj,event.id);
+   await write(`/rest/v1/v2_stripe_webhook_events?id=eq.${event.id}`,{state:'done',semantic_hash:semantic,completed_at:new Date().toISOString()},'PATCH');return;
+  }
   if((obj.metadata as Record<string,string>|undefined)?.apgi_purchase_order){
    await confirmPurchaseCheckout(obj,event.id);
    await write(`/rest/v1/v2_stripe_webhook_events?id=eq.${event.id}`,{state:'done',semantic_hash:semantic,completed_at:new Date().toISOString()},'PATCH');return;
@@ -107,6 +112,7 @@ export async function processStripeEvent(event:{id:string;type:string;livemode:b
   // Stripe to redeliver a correctly received payment just because fees are late.
   try{await settleStripeOrder(id,{attemptTransfers:false});}catch(error){await write(`/rest/v1/v2_stripe_orders?id=eq.${id}&state=in.(paid,held,allocated)`,{hold_reason:error instanceof Error?error.message:"Settlement requires attention."},"PATCH");}
  }else if(event.type==='charge.updated'&&typeof obj.payment_intent==='string'&&/^pi_[A-Za-z0-9]+$/.test(obj.payment_intent)){
+  for(const order of await rows<CalculatorOrder>(`/rest/v1/cc_orders?payment_intent=eq.${obj.payment_intent}&state=eq.funded&select=*`))await reconcileCalculatorOrder(order);
   const eligible=await rows<StripeOrder>(`/rest/v1/v2_stripe_orders?payment_intent=eq.${obj.payment_intent}&state=in.(paid,held,allocated)&select=*`);
   for(const order of eligible){try{await settleStripeOrder(order.id,{attemptTransfers:false});}catch(error){await write(`/rest/v1/v2_stripe_orders?id=eq.${order.id}`,{hold_reason:error instanceof Error?error.message:'Settlement requires attention.'},'PATCH');}}
  }else if(event.type==='checkout.session.expired'&&(obj.metadata as Record<string,string>|undefined)?.apgi_purchase_order){
@@ -120,6 +126,7 @@ export async function processStripeEvent(event:{id:string;type:string;livemode:b
  }else if(["charge.refunded","charge.dispute.created","charge.dispute.updated"].includes(event.type)){
   const intent=obj.payment_intent;
   if(typeof intent==="string"&&/^pi_[a-zA-Z0-9]+$/.test(intent)){
+   await calculatorRpc('cc_hold_payment',{p_intent:intent,p_event:event.id,p_refund:event.type==='charge.refunded'&&obj.refunded===true});
    const reversed=await adminRest('/rest/v1/rpc/v3_refund_course_purchase',{method:'POST',body:JSON.stringify({p_intent:intent})});if(!reversed.ok)throw Error('Purchase refund reconciliation requires retry.');
    const orders=await write(`/rest/v1/v2_stripe_orders?payment_intent=eq.${intent}`,{state:"reconciliation",hold_reason:"Refund or dispute: funds and development recovery require reconciliation; automatic transfers stopped."},"PATCH") as StripeOrder[];
    for(const o of orders)await write(`/rest/v1/v2_stripe_allocations?order_id=eq.${o.id}`,{state:"reconciliation"},"PATCH");

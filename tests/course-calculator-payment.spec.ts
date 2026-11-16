@@ -1,0 +1,22 @@
+import {beforeEach,describe,it,expect,vi} from 'vitest';
+const f=vi.hoisted(()=>({rows:vi.fn(),write:vi.fn(),stripe:vi.fn(),rest:vi.fn()}));
+vi.mock('@/server/services/company-structure',()=>({rows:f.rows,write:f.write,accessibleCompanies:vi.fn(),ownMemberships:vi.fn(),requireCompany:vi.fn()}));
+vi.mock('@/server/services/stripe-platform',()=>({stripeRequest:f.stripe}));
+vi.mock('@/server/supabase/admin-rest',()=>({adminRest:f.rest}));
+vi.mock('@/server/auth/session',()=>({requireSession:vi.fn()}));
+vi.mock('@/server/services/platform-principals',()=>({isPlatformPrincipal:vi.fn()}));
+import {confirmCalculatorCheckout,reconcileCalculatorOrder} from '@/server/services/course-calculator';
+const id='50000000-0000-4000-8000-000000000001';
+const order={id,quote_id:id,buyer_id:id,company_id:id,mode:'test' as const,state:'checkout',checkout_id:'cs_fixture',payment_intent:null,amount_cents:10000,currency:'USD',fee_evidence:null,hold_reason:null};
+const object={id:'cs_fixture',metadata:{apgi_calculator_order:id},amount_total:10000,currency:'usd',payment_status:'paid',payment_intent:'pi_fixture'};
+const pi={id:'pi_fixture',livemode:false,status:'succeeded',metadata:{apgi_calculator_order:id},amount:10000,currency:'usd',latest_charge:{id:'ch_fixture',paid:true,captured:true,refunded:false,amount_refunded:0,disputed:false,balance_transaction:null}};
+beforeEach(()=>{vi.resetAllMocks();f.rows.mockResolvedValue([order]);f.write.mockResolvedValue([]);f.stripe.mockResolvedValue(pi);f.rest.mockResolvedValue({ok:true,json:async()=>null});});
+describe('calculator sandbox receipt and settlement integration',()=>{
+ it('funds a verified test payment while fee evidence is delayed, retaining a hold',async()=>{await expect(confirmCalculatorCheckout(object,'evt_fixture')).resolves.toBeUndefined();expect(f.rest).toHaveBeenCalledWith('/rest/v1/rpc/cc_fund_order',expect.objectContaining({method:'POST',body:expect.stringContaining('"p_live":false')}));expect(f.write).toHaveBeenCalledWith(expect.stringContaining('cc_orders'),expect.objectContaining({hold_reason:expect.stringContaining('actual processor-fee record')}),'PATCH');});
+ it('acknowledges PostgREST void/204 commits without trying to parse an empty response',async()=>{const json=vi.fn();f.rest.mockResolvedValue({ok:true,status:204,json});await expect(confirmCalculatorCheckout(object,'evt_fixture')).resolves.toBeUndefined();expect(json).not.toHaveBeenCalled();});
+ it('rejects a live payment without crediting an allowance',async()=>{f.stripe.mockResolvedValue({...pi,livemode:true});await expect(confirmCalculatorCheckout(object,'evt_fixture')).rejects.toThrow(/sandbox payment/);expect(f.rest).not.toHaveBeenCalled();});
+ it('rejects amount, currency, checkout and intent substitution',async()=>{for(const change of [{amount_total:9999},{currency:'cad'},{id:'cs_other'}])await expect(confirmCalculatorCheckout({...object,...change},'evt_fixture')).rejects.toThrow(/confirmation mismatch/);f.stripe.mockResolvedValue({...pi,id:'pi_other'});await expect(confirmCalculatorCheckout(object,'evt_fixture')).rejects.toThrow(/sandbox payment/);expect(f.rest).not.toHaveBeenCalled();});
+ it('rejects a refunded or disputed payment before funding',async()=>{f.stripe.mockResolvedValue({...pi,latest_charge:{...pi.latest_charge,disputed:true}});await expect(confirmCalculatorCheckout(object,'evt_fixture')).rejects.toThrow();expect(f.rest).not.toHaveBeenCalled();});
+ it('records actual verified processor fees without moving money',async()=>{f.stripe.mockResolvedValue({...pi,latest_charge:{...pi.latest_charge,balance_transaction:{id:'txn_fixture',source:'ch_fixture',type:'charge',amount:10000,fee:390,net:9610,currency:'usd',exchange_rate:null}}});await reconcileCalculatorOrder({...order,state:'funded',payment_intent:pi.id});expect(f.write).toHaveBeenCalledWith(expect.stringContaining('cc_orders'),expect.objectContaining({fee_evidence:expect.objectContaining({processorFee:390}),hold_reason:null}),'PATCH');expect(f.stripe).not.toHaveBeenCalledWith(expect.stringContaining('transfer'),expect.anything());});
+ it('blocks test balances if reconciliation discovers a refund even before its webhook arrives',async()=>{f.stripe.mockResolvedValue({...pi,latest_charge:{...pi.latest_charge,refunded:true,amount_refunded:10000}});await reconcileCalculatorOrder({...order,state:'funded',payment_intent:pi.id});expect(f.rest).toHaveBeenCalledWith('/rest/v1/rpc/cc_hold_payment',expect.objectContaining({body:expect.stringContaining('"p_refund":true')}));});
+});

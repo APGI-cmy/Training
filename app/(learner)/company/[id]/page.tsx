@@ -83,6 +83,7 @@ export default async function CompanyPage({
         {returnTo ? <Link href={`${returnTo}${returnTo.includes("?")?"&":"?"}brand=${id}`}>Return to course preparation</Link> : null}
         <Link href="/company">Switch company</Link>
         {owner ? <Link href="/policies">Policies and reviews</Link> : null}
+        {owner ? <Link href={`/course-calculator?company=${id}`}>Course calculator and learning balances</Link> : null}
         {owner ? <Link href={`/company/${id}/payments`}>Payments and bank onboarding</Link> : null}
         {isAdmin ? <Link href="/admin/companies">All companies</Link> : null}
       </nav>

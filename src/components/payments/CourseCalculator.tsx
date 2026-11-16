@@ -1,0 +1,45 @@
+'use client';
+import {useState} from 'react';
+import {calculateCoursePrice,type CalculatorInput,type CostSchedule,type CreditCourse} from '@/lib/course-calculator';
+import {StructureForm} from '@/components/admin/StructureForm';
+import {saveCalculatorQuote} from '@/server/actions/course-calculator';
+
+export function CourseCalculator({company,costs,courses}:{company:{id:string;slug:string};costs:CostSchedule[];courses:CreditCourse[]}){
+ const [costId,setCostId]=useState(costs[0]?.id??''),[selected,setSelected]=useState<string[]>([]);
+ const [input,setInput]=useState<CalculatorInput>({mode:'courses',route:'individual',scope:'public',seats:1,months:3,credits:4,courseCap:1,driver:'credits',deliveryCents:0,deliveryEvidence:'',feeBearer:'platform',discount:false});
+ const cost=costs.find(c=>c.id===costId)??costs[0],effectiveCostId=cost?.id??'',chosen=courses.filter(c=>selected.includes(c.id));
+ let quote:ReturnType<typeof calculateCoursePrice>|undefined,error='';
+ try{if(cost)quote=calculateCoursePrice(input,cost,chosen,{id:company.id,isApgi:company.slug==='apgi'});else error='APGI must save a documented cost and rate version before a quote can be calculated. No assumed monthly cost has been inserted.';}catch(e){error=e instanceof Error?e.message:'Check the inputs.';}
+ function update<K extends keyof CalculatorInput>(key:K,value:CalculatorInput[K]){setInput(old=>({...old,[key]:value}));}
+ const money=(n:number)=>`${cost?.currency??'USD'} ${(n/100).toFixed(2)}`;
+ return <StructureForm action={saveCalculatorQuote} label="Save new quote for review">
+  <input type="hidden" name="company" value={company.id}/><input type="hidden" name="cost" value={effectiveCostId}/><input type="hidden" name="input" value={JSON.stringify(input)}/>
+  <label>Cost and rate version<select value={effectiveCostId} onChange={e=>{setCostId(e.target.value);setSelected([]);}}>{!costs.length?<option value="">APGI cost version needs to be configured</option>:null}{costs.map((c,i)=><option key={c.id} value={c.id}>{c.currency} · {i===0?'Latest version':c.id.slice(0,8)}</option>)}</select></label>
+  <label>Calculate using<select value={input.mode} onChange={e=>update('mode',e.target.value as CalculatorInput['mode'])}><option value="courses">Courses — add recorded credits automatically</option><option value="credits">Credits — enter the allowance</option></select></label>
+  <label>Course scope<select value={input.scope} onChange={e=>{update('scope',e.target.value as CalculatorInput['scope']);setSelected([]);}}><option value="public">Public</option><option value="industry">Industry specific</option><option value="client">Client specific</option></select></label>
+  <label>Purchase option<select value={input.route} onChange={e=>{const route=e.target.value as CalculatorInput['route'];setInput(old=>({...old,route,seats:route==='individual'?1:Math.max(10,old.seats),courseCap:['individual','seat_pack'].includes(route)?1:old.courseCap}));setSelected([]);}}><option value="individual">Individual named course</option><option value="seat_pack">Named-course learner places</option><option value="wallet">Learning wallet</option><option value="subscription">Prepaid platform subscription</option></select></label>
+  <label>Learner places<input type="number" min={input.route==='individual'?1:10} max={input.route==='individual'?1:10000} value={input.seats} onChange={e=>update('seats',Number(e.target.value))}/></label>
+  <label>Access term in months<input type="number" min="1" max="60" value={input.months} onChange={e=>update('months',Number(e.target.value))}/></label>
+  {input.mode==='credits'?<label>Internal credits per learner<input type="number" min="0.000001" step="0.000001" value={input.credits} onChange={e=>update('credits',Number(e.target.value))}/></label>:<p>Selected courses: <strong>{chosen.reduce((sum,c)=>sum+c.hours/10,0).toFixed(6).replace(/0+$/,'').replace(/\.$/,'')} internal credits per learner</strong>. These are workload measures, not an accredited award.</p>}
+  <label>Maximum courses per learner<input type="number" min="1" max={['individual','seat_pack'].includes(input.route)?1:1000} value={input.courseCap} onChange={e=>update('courseCap',Number(e.target.value))}/></label>
+  <fieldset className="admin-span-two"><legend>{input.mode==='courses'?'Choose courses':'Choose the eligible courses for this allowance'}</legend>
+   <label>Add a course<select value="" onChange={e=>{const id=e.target.value;if(id)setSelected(old=>['individual','seat_pack'].includes(input.route)?[id]:old.includes(id)?old:[...old,id]);}}><option value="">Choose an eligible course</option>{courses.filter(c=>c.currency===cost?.currency&&c.scope===input.scope).map(c=><option key={c.id} value={c.id}>{c.title} · {c.hours/10} internal credits</option>)}</select></label>
+   {chosen.map(c=><p key={c.id}><input type="hidden" name="courses" value={c.id}/>{c.title} · {c.hours/10} internal credits · {c.hours} learning hours <button type="button" className="secondary-button" onClick={()=>setSelected(old=>old.filter(id=>id!==c.id))}>Remove</button></p>)}
+   {!courses.some(c=>c.currency===cost?.currency&&c.scope===input.scope)?<p>No course in this scope/currency has a recorded workload and owner price yet. Ask APGI to complete the edition record; a value will not be guessed.</p>:null}
+  </fieldset>
+  <label>Course price method<select value={input.driver} onChange={e=>update('driver',e.target.value as CalculatorInput['driver'])}><option value="credits">Recorded credit rate and owner minimum</option><option value="cost_plus">Documented direct costs and target margin</option></select></label>
+  {input.driver==='cost_plus'?<><label>Your direct costs for all these places<input type="number" min="0.01" step="0.01" value={input.deliveryCents/100} onChange={e=>update('deliveryCents',Math.round(Number(e.target.value)*100))}/></label><label>Cost evidence or approved estimate<input value={input.deliveryEvidence} maxLength={1000} onChange={e=>update('deliveryEvidence',e.target.value)}/></label></>:null}
+  <label>Processing cost borne by<select value={input.feeBearer} onChange={e=>update('feeBearer',e.target.value as CalculatorInput['feeBearer'])}><option value="platform">Platform — included in its economics</option><option value="buyer">Buyer — subject to exact commercial approval</option></select></label>
+  <label><input type="checkbox" checked={input.discount} onChange={e=>update('discount',e.target.checked)}/> Apply volume commitment discount, subject to owner price and cost floors</label>
+  <div className="admin-span-two" aria-live="polite">
+   {error?<p>{error}</p>:null}
+   {quote?<section className="directory-card"><h3>Calculated quote — not an activated price</h3><dl className="draft-fields">
+    {[["Content",money(quote.contentCents)],["Platform cost recovery",money(quote.platformCents)],["Buyer processing charge",money(quote.buyerProcessingCents)],["Total before tax",money(quote.totalCents)],["Estimated processor cost",money(quote.estimatedProcessorCents)],["Actual discount after price floors",`${quote.effectiveDiscountBps/100}%`],["Credits per learner",String(quote.credits)]].map(([label,value])=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+   </dl>{quote.allocation?<p>Content allocation: owner {money(quote.allocation.owner)}; selling platform {money(quote.allocation.seller)}; APGI {money(quote.allocation.apgi)}. Where APGI fills more than one role its amounts are consolidated.</p>:<p>The prepaid content balance remains unallocated until each learner redeems an eligible course. Each redemption uses its owner's approved minimum and the correct owner/seller/APGI split.</p>}
+   <p>Recovery basis: {cost?.activeLearners} concurrently active learners; {cost?.newEnrolments} new paid enrolments/month; {input.months} months of access. Forecast monthly recovery difference: {money(quote.monthlyRecoveryDifferenceCents)}. A negative amount needs an explicit funding decision; a positive amount must not be treated as another incurred expense.</p>
+   {quote.requiresClientQuote?<p>Client group above 50: both principals must approve this exact group quote.</p>:null}
+   <p>Live payments remain disabled. Sandbox balances do not grant live course access. Tax and actual processor fees require their own reconciliation.</p>
+   </section>:null}
+  </div>
+ </StructureForm>;
+}

@@ -1,0 +1,18 @@
+import Link from 'next/link';
+import {requireSession} from '@/server/auth/session';
+import {rows} from '@/server/services/company-structure';
+import {calculatorRpc,type CalculatorSeat,type CalculatorOrder,type CalculatorQuote} from '@/server/services/course-calculator';
+import {StructureForm} from '@/components/admin/StructureForm';
+import {redeemCalculatorCourse} from '@/server/actions/course-calculator';
+export default async function LearningBalancesPage(){
+ const session=await requireSession();
+ const seats=await rows<CalculatorSeat>(`/rest/v1/cc_seats?learner_id=eq.${session.user.id}&select=*&order=expires_at.desc&limit=1000`);
+ const orders=seats.length?await rows<CalculatorOrder>(`/rest/v1/cc_orders?id=in.(${[...new Set(seats.map(s=>s.order_id))].join(',')})&select=*`):[];
+ const quotes=orders.length?await rows<CalculatorQuote>(`/rest/v1/cc_quotes?id=in.(${[...new Set(orders.map(s=>s.quote_id))].join(',')})&select=*`):[];
+ const events=seats.length?await rows<{seat_id:string;kind:string;units:number;amount_cents:number;created_at:string}>(`/rest/v1/cc_balance_events?seat_id=in.(${seats.map(s=>s.id).join(',')})&select=seat_id,kind,units,amount_cents,created_at&order=id.asc&limit=10000`):[];
+ const redemptions=seats.length?await rows<{seat_id:string;edition_id:string}>(`/rest/v1/cc_redemptions?seat_id=in.(${seats.map(s=>s.id).join(',')})&select=seat_id,edition_id`):[];
+ const balances=await calculatorRpc<{seat_id:string;remaining_units:number;remaining_cents:number;courses_used:number}[]>('cc_seat_balances',{p_actor:session.user.id,p_company:null});
+ return <main className="admin-page"><h1>My learning balances</h1><nav className="button-row"><Link href="/dashboard">Dashboard</Link><Link href="/course-calculator">Company calculator</Link></nav><p>These new calculator purchases are sandbox tests. They do not create live learning records, certificates or access. Live payments remain disabled.</p>{!seats.length?<p>No learning allowance has been assigned to your account.</p>:null}
+  {seats.map(s=>{const order=orders.find(o=>o.id===s.order_id),quote=quotes.find(q=>q.id===order?.quote_id),ledger=events.filter(e=>e.seat_id===s.id),b=balances.find(b=>b.seat_id===s.id),balance=b?.remaining_units??0,money=b?.remaining_cents??0,used=redemptions.filter(r=>r.seat_id===s.id),active=s.state==='active'&&order?.state==='funded'&&new Date(s.expires_at).getTime()>Date.now();return <section className="admin-form-card" key={s.id}><h2>Test place {s.position} · {quote?.input.route.replaceAll('_',' ')}</h2><p><strong>{balance/1e6} credits remaining</strong> · {b?.courses_used??0}/{s.course_limit} courses used · unallocated content balance {quote?.result.currency} {(money/100).toFixed(2)}</p><p>{active?'Available for test redemption':'Closed, expired or on hold'} · access ends {s.expires_at}. Earlier records and transaction history remain available.</p>{active&&quote?<StructureForm action={redeemCalculatorCourse} label="Redeem course in sandbox"><input type="hidden" name="seat" value={s.id}/><label>Eligible course<select name="edition">{quote.courses.filter(c=>!used.some(r=>r.edition_id===c.editionId)).map(c=><option key={c.editionId} value={c.editionId}>{c.title} · {c.hours/10} credits</option>)}</select></label></StructureForm>:null}<details><summary>Balance and course history (up to 10,000 entries)</summary>{ledger.map((e,i)=><p key={i}>{e.created_at} · {e.kind} · {e.units/1e6} credits · {quote?.result.currency} {(e.amount_cents/100).toFixed(2)}</p>)}{used.map(r=><p key={r.edition_id}>Course redeemed: {quote?.courses.find(c=>c.editionId===r.edition_id)?.title??r.edition_id}</p>)}</details></section>;})}
+ </main>;
+}
