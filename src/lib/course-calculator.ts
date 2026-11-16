@@ -52,7 +52,7 @@ export function calculateCoursePrice(input:CalculatorInput,cost:CostSchedule,cou
   if(recipientBps===0)throw Error('Cost-plus requires a defined recipient share.');
   // Direct cost is supplied explicitly, never inferred from an earlier price.
   const divisor=BigInt(recipientBps*(10000-cost.margins[input.scope]));
-  content=Math.max(content,Number((BigInt(input.deliveryCents)*BigInt(100000000)+divisor-BigInt(1))/divisor));
+  content=Math.max(priceFloor,Number((BigInt(input.deliveryCents)*BigInt(100000000)+divisor-BigInt(1))/divisor));
  }
  integer(content,'content charge',1,1000000000);
  // Monthly costs use concurrent active learners. Per-enrolment costs are charged once.
@@ -62,5 +62,5 @@ export function calculateCoursePrice(input:CalculatorInput,cost:CostSchedule,cou
  integer(total,'buyer total',1,1000000000);
  const estimatedProcessor=up(total*cost.processorBps,10000)+cost.processorFixedCents;
  const owner=courses.length===1?allocation(content,courses[0].ownerIsApgi,seller.isApgi,courses[0].ownerId===seller.id):null;
- return {version:CALCULATOR_VERSION,currency:cost.currency,units,credits:units/1e6,hours:units/100000,contentCents:content,platformCents:platform,buyerProcessingCents:total-subtotal,totalCents:total,estimatedProcessorCents:estimatedProcessor,estimatedPlatformNetCents:platform+(owner?.apgi??0)-(input.feeBearer==='platform'?estimatedProcessor:0),allocation:owner,recipientBps,effectiveDiscountBps:list?Math.max(0,Math.floor((list-content)*10000/list)):0,monthlyRecoveryAtForecastCents:up(cost.monthlyPoolCents*input.months*cost.newEnrolments,cost.activeLearners),monthlyRecoveryDifferenceCents:up(cost.monthlyPoolCents*input.months*cost.newEnrolments,cost.activeLearners)-cost.monthlyPoolCents,requiresClientQuote:input.scope==='client'&&input.seats>50,prepaid:['wallet','subscription'].includes(input.route),policyVersion:'APGI-COMM-PRICE-001/1.1-draft',taxIncluded:false};
+ return {version:CALCULATOR_VERSION,currency:cost.currency,units,credits:units/1e6,hours:units/100000,contentCents:content,platformCents:platform,buyerProcessingCents:total-subtotal,totalCents:total,estimatedProcessorCents:estimatedProcessor,estimatedPlatformNetCents:platform+(owner?.apgi??0)-(input.feeBearer==='platform'?estimatedProcessor:0),allocation:owner,recipientBps,effectiveDiscountBps:input.driver==='credits'&&list?Math.max(0,Math.floor((list-content)*10000/list)):0,monthlyRecoveryAtForecastCents:up(cost.monthlyPoolCents*input.months*cost.newEnrolments,cost.activeLearners),monthlyRecoveryDifferenceCents:up(cost.monthlyPoolCents*input.months*cost.newEnrolments,cost.activeLearners)-cost.monthlyPoolCents,requiresClientQuote:input.scope==='client'&&input.seats>50,prepaid:['wallet','subscription'].includes(input.route),policyVersion:'APGI-COMM-PRICE-001/1.1-draft',taxIncluded:false};
 }
