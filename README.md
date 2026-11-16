@@ -1,5 +1,56 @@
 # External V2 security metadata archive
 
+## Storage repair — 16 November 2026
+
+The previous two-files-per-batch layout exhausted all 327,680 filesystem inodes
+on the 5 GB disk while only 27% of its byte capacity was used. Version 2 stores
+encrypted batches and receipts in `archive.sqlite` using SQLite DELETE journaling
+and FULL synchronous transactions. An HTTP 200 is sent only after commit. No
+private recovery key, identities or original log bodies are added by this repair.
+The disk and paid service remain at their existing sizes.
+
+`migrate-legacy.mjs prepare ROOT CANDIDATE` copies every historical ciphertext,
+receipt and temporary artifact into `legacy_files`, retains original paths,
+hashes, mode and mtime, runs an integrity check, and compares every copied byte
+with the unchanged source. It also checks original receipt/ciphertext pairs.
+No source file is consolidated during preparation. `cleanup ROOT` first checks
+all source copies again and then consolidates only files whose identical bytes
+are already in the durable database. Export routes retain their existing scopes
+and verify ciphertext hashes for both legacy and new records.
+
+At zero free inodes, `stage CANDIDATE BACKUP` makes a small recoverable bootstrap
+backup of eight original files. Download and independently verify its SHA-256
+before `install ROOT CANDIDATE BACKUP CONFIRMED_BACKUP_SHA256`. Installation
+validates all eight copies before freeing those entries, durably copies the
+verified database onto the persistent disk, checks the whole database hash, and
+only then performs source consolidation. Retain that downloaded backup and the
+migration receipt. Do not restart or redeploy before installation finishes.
+Entrypoint migration imports any final legacy files before the new receiver starts.
+The legacy rows retain the exact original bytes; consolidation is not retention
+deletion. Full legacy layout restoration must use a destination with enough
+inodes, not the exhausted five-gigabyte filesystem. Do not roll back to the old
+file-only reader after migration; roll forward or restore from the database.
+
+Readiness now checks both byte capacity and inode capacity, and every minute
+performs real public-key encryption, synchronous commit and read-back verification.
+At 75% byte or inode usage (or under 512 MiB available), `/health` reports
+`attention` while ingestion continues. The existing independent hourly Render
+observer requires `status=ready`; a warning therefore fails its check and uses
+its existing failure notification setting without restarting a healthy receiver.
+Under 64 MiB or 128 free inodes, failed persistence, encryption failure or stale
+probe results return unavailable. Delivery errors record only allowlisted reason
+codes and provider names, never payloads or credentials. The authenticated owner
+`POST /admin/monitor-test` provides a two-minute warning-only drill; it does not
+change ingestion or any records. No automated retention deletion is enabled.
+
+Validation: `node --test receiver.test.mjs` checks migration preservation,
+integrity refusal, export pagination, bounded file count and warning thresholds.
+`node integration.test.mjs` tests the matching Linux container, actual GPG
+encryption, both providers, authentication, durable restart and warning drill.
+It uses disposable local test data only. Confirm production provider HTTP 200s,
+database integrity/counts, historical export hashes and the observer warning drill
+after the deployed repair; local checks alone do not prove release success.
+
 This separate receiver accepts authenticated Supabase/Vercel log batches, keeps
 only allowlisted timestamps, source, severity, status and action labels, encrypts
 them to the APGI recovery public key and acknowledges only persisted ciphertext.
