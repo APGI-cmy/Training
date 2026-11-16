@@ -1,6 +1,6 @@
 # External V2 security metadata archive
 
-## Storage repair — 16 November 2026
+## Storage repair â€” 16 November 2026
 
 The previous two-files-per-batch layout exhausted all 327,680 filesystem inodes
 on the 5 GB disk while only 27% of its byte capacity was used. Version 2 stores
@@ -18,7 +18,7 @@ all source copies again and then consolidates only files whose identical bytes
 are already in the durable database. Export routes retain their existing scopes
 and verify ciphertext hashes for both legacy and new records.
 
-At zero free inodes, `stage CANDIDATE BACKUP` makes a small recoverable bootstrap
+At zero free inodes, `stage ROOT CANDIDATE BACKUP` makes a small recoverable bootstrap
 backup of eight original files. Download and independently verify its SHA-256
 before `install ROOT CANDIDATE BACKUP CONFIRMED_BACKUP_SHA256`. Installation
 validates all eight copies before freeing those entries, durably copies the

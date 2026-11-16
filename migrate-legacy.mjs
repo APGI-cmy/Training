@@ -67,7 +67,7 @@ export async function prepare(root,candidate) {
 export async function stageBootstrap(candidate,stageFile) {
   const db=openDatabase(candidate,{readOnly:true});
   try {
-    const rows=db.prepare('SELECT * FROM legacy_files ORDER BY path LIMIT 8').all();
+    const rows=db.prepare('SELECT * FROM legacy_files ORDER BY length(bytes),path LIMIT 8').all();
     if(rows.length<8) throw Error('BOOTSTRAP_NOT_NEEDED');
     const backup=rows.map(r=>({...r,bytes:Buffer.from(r.bytes).toString('base64')}));
     await writeFile(stageFile,JSON.stringify({version:1,files:backup})+'\n',{flag:'wx',mode:0o600});await syncFile(stageFile);
