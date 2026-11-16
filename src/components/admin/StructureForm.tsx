@@ -7,11 +7,13 @@ export function StructureForm({
   children,
   label = "Save draft",
   className = "admin-form-grid",
+  disabled = false,
 }: {
   action: (state: StructureState, form: FormData) => Promise<StructureState>;
   children: ReactNode;
   label?: string;
   className?: string;
+  disabled?: boolean;
 }) {
   const [state, submit, pending] = useActionState(action, {});
   const router = useRouter();
@@ -22,7 +24,7 @@ export function StructureForm({
     <form action={submit} className={className}>
       {children}
       <div className="admin-span-two">
-        <button className="primary-button" disabled={pending}>
+        <button className="primary-button" disabled={pending || disabled}>
           {pending ? "Saving…" : label}
         </button>
         {state.error ? (
