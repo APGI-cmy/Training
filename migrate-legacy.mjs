@@ -7,16 +7,20 @@ import {createReadStream} from 'node:fs';
 import {pathToFileURL} from 'node:url';
 import {databasePath,openDatabase,sha} from './archive-store.mjs';
 
-export async function inventory(root) {
+export async function inventory(root,includeMetadata=true) {
   const result=[];
   for(const date of (await readdir(root)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)).sort()) {
     for(const provider of (await readdir(join(root,date))).sort()) {
       if(!['vercel','supabase'].includes(provider)) throw Error('UNEXPECTED_LEGACY_PROVIDER');
-      const names=(await readdir(join(root,date,provider))).sort();
+      const entries=await readdir(join(root,date,provider),{withFileTypes:true});
+      for(const e of entries)if(!e.isFile()||e.isSymbolicLink())throw Error('UNSAFE_LEGACY_FILE');
+      const names=entries.map(e=>e.name).sort();
       for(let i=0;i<names.length;i+=64) {
         const batch=await Promise.all(names.slice(i,i+64).map(async file=>{
           if(!/^[a-f0-9]{64}\.pgp(?:\.receipt\.json|\.tmp)?$/.test(file)) throw Error('UNEXPECTED_LEGACY_FILE');
-          const path=`${date}/${provider}/${file}`,s=await lstat(join(root,path));
+          const path=`${date}/${provider}/${file}`;
+          if(!includeMetadata)return {path};
+          const s=await lstat(join(root,path));
           if(!s.isFile()||s.isSymbolicLink()) throw Error('UNSAFE_LEGACY_FILE');
           return {path,mode:s.mode,mtime:s.mtimeMs,size:s.size};
         }));
@@ -30,7 +34,7 @@ async function syncFile(file) {const f=await open(file,process.platform==='win32
 async function syncDir(dir) {if(process.platform==='win32')return;const f=await open(dir,'r');try{await f.sync();}finally{await f.close();}}
 async function fileHash(file) {const h=createHash('sha256');for await(const b of createReadStream(file))h.update(b);return h.digest('hex');}
 export async function verifyPrepared(root,candidate) {
-  const files=await inventory(root),db=openDatabase(candidate,{readOnly:true}),manifest=createHash('sha256');let bytes=0,verified=0;
+  const files=await inventory(root,false),db=openDatabase(candidate,{readOnly:true}),manifest=createHash('sha256');let bytes=0,verified=0;
   try {
     if(db.prepare('PRAGMA integrity_check').get().integrity_check!=='ok')throw Error('DATABASE_INTEGRITY_FAILED');
     const expected=JSON.parse(db.prepare("SELECT value FROM archive_state WHERE key='legacy_migration'").get().value);
@@ -121,7 +125,7 @@ export async function cleanup(root) {
   root=await realpath(root);const db=openDatabase(databasePath(root),{readOnly:true});let removed=0,retained=0;
   try {
     if(db.prepare('PRAGMA integrity_check').get().integrity_check!=='ok')throw Error('DATABASE_INTEGRITY_FAILED');
-    const files=await inventory(root);
+    const files=await inventory(root,false);
     // Global verification succeeds before any source consolidation begins.
     for(let i=0;i<files.length;i+=8) {
       await Promise.all(files.slice(i,i+8).map(async f=>{
