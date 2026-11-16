@@ -35,7 +35,12 @@ export async function observe({fetcher=fetch,now=()=>new Date(),timeoutMs=10000}
    status=response.status;
    if(response.redirected||response.url&&new URL(response.url).origin!==expectedOrigin)throw Error('UNEXPECTED_ORIGIN');
    let passed=false,metadata={};const noStore=/\bno-store\b/i.test(response.headers.get('cache-control')??'');
-   if(d.id==='archive_health')passed=status===200&&noStore&&json(await smallText(response))?.status==='ready';
+   if(d.id==='archive_health'){
+    const data=json(await smallText(response)),checked=Date.parse(data?.checkedAt??'');
+    const fresh=Number.isFinite(checked)&&Date.now()-checked>=-30000&&Date.now()-checked<=180000;
+    passed=status===200&&noStore&&data?.version===2&&data.status==='ready'&&data.probe==='encrypted_write_read_verified'&&fresh&&data.bytesUsedPercent<75&&(data.filesUsedPercent===null||data.filesUsedPercent<75);
+    metadata={archiveState:['ready','attention','unavailable'].includes(data?.status)?data.status:'unknown',storageProbe:data?.probe==='encrypted_write_read_verified'?'passed':'failed',probeFresh:fresh,bytesUsedPercent:typeof data?.bytesUsedPercent==='number'?data.bytesUsedPercent:null,filesUsedPercent:typeof data?.filesUsedPercent==='number'?data.filesUsedPercent:null,warningDrill:data?.monitorTest===true};
+   }
    else if(d.id==='availability')passed=status===200&&noStore&&await smallText(response)==='APGI-WATCHDOG-EDGE-CONTROL';
    else if(d.id==='edge_denial')passed=status===403;
    else if(d.id==='private_course')passed=status===403&&noStore;
