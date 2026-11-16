@@ -54,6 +54,7 @@ export async function assertCalculatorCoursesPublished(quote:CalculatorQuote){
   const offering=(await rows<{reviewed_release_id:string}>(`/rest/v1/organisation_offerings?organisation_id=eq.${quote.company_id}&course_id=eq.${encodeURIComponent(c.courseId)}&status=eq.published&select=reviewed_release_id&limit=1`))[0];
   if(!offering?.reviewed_release_id)throw Error('Each selected course must have a published, approved offering for this company.');
   const prior=await publishedPaymentSchedule(offering.reviewed_release_id,quote.company_id);
+  if(prior.snapshot.ownerId!==c.ownerId)throw Error('The credit record owner differs from the published rights record. Verify ownership and prepare a corrected quote; a calculator entry cannot transfer course rights.');
   if(prior.snapshot.development>prior.snapshot.initialPaid)throw Error('This course has an existing development-recovery agreement. Its saved price and recovery stay in force; a separately approved replacement recovery schedule is required before using a new calculator checkout.');
  }
 }
