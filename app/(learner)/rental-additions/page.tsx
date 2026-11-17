@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import {requireSession} from '@/server/auth/session';
 import {notFound} from 'next/navigation';
 import {calculatorAccess,type CalculatorQuote} from '@/server/services/course-calculator';
 import {rows} from '@/server/services/company-structure';
@@ -6,6 +7,7 @@ import {publishedStructure} from '@/server/services/pricing-structures';
 import {StructureForm} from '@/components/admin/StructureForm';
 import {addRentalCourseQuote} from '@/server/actions/rental-additions';
 export default async function RentalAdditionsPage({searchParams}:{searchParams:Promise<{company?:string;order?:string}>}){
+ await requireSession();
  const p=await searchParams;let a;try{a=await calculatorAccess(p.company);}catch{notFound();}
  const orders=await rows<{id:string;quote_id:string}>(`/rest/v1/cc_orders?company_id=eq.${a.company.id}&mode=eq.test&state=eq.funded&select=id,quote_id&order=created_at.desc&limit=100`);
  const quotes=orders.length?await rows<CalculatorQuote>(`/rest/v1/cc_quotes?id=in.(${orders.map(o=>o.quote_id).join(',')})&select=*`):[];
