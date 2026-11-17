@@ -37,7 +37,7 @@ export async function LearnerSidebar() {
         { href: "/dashboard", label: "Dashboard" },
         { href: "/catalogue", label: "Course catalogue" },
         { href: "/catalogue?view=my-learning", label: "Enrolled courses" },
-        ...(session ? [{href:'/learning-balances',label:'My learning balances'}] : []),
+        ...(session ? [{href:'/learning-balances',label:'My learning balances'},{href:'/course-shop',label:'Learning options and test cart'}] : []),
         ...(principal||emailAdmin ? [{href:'/course-calculator',label:'Course calculator'}] : []),
         { href: "/profile", label: "Profile" },
         ...(paymentEligible?[{href:"/payments",label:"My payment portal"}]:[]),

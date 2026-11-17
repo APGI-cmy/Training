@@ -36,7 +36,7 @@ export async function calculatorCourses(companyId:string,principal:boolean){
  return {courses,editions,companies};
 }
 export async function calculatorPolicy(principal:boolean,actorId:string){
- const policy=(await rows<{id:string;version:string;body:string;body_hash:string}>('/rest/v1/cc_policy_versions?select=*&order=created_at.desc&limit=1'))[0];
+ const policy=(await rows<{id:string;version:string;body:string;body_hash:string}>(`/rest/v1/cc_policy_versions?version=eq.${encodeURIComponent(pricingPolicy.version)}&select=*&limit=1`))[0];
  if(policy)return policy;
  if(!principal)return null;
  return calculatorRpc<{id:string;version:string;body:string;body_hash:string}>('cc_prepare_policy',{p_actor:actorId,p_version:pricingPolicy.version,p_body:pricingPolicy.body,p_hash:createHash('sha256').update(pricingPolicy.body).digest('hex')});
@@ -65,7 +65,7 @@ export async function assertCalculatorCoursesPublished(quote:CalculatorQuote){
  }
 }
 export async function reconcileCalculatorOrder(order:CalculatorOrder){
- if(!order.payment_intent||order.mode!=='test'||order.state!=='funded')return;
+ if((order as CalculatorOrder&{batch_id?:string}).batch_id||!order.payment_intent||order.mode!=='test'||order.state!=='funded')return;
  try{
   const pi=await stripeRequest<{id:string;livemode:boolean;status:string;amount:number;currency:string;latest_charge:{id:string;paid:boolean;captured:boolean;refunded:boolean;amount_refunded:number;disputed:boolean;balance_transaction:StripeFeeTransaction|null}}>(`payment_intents/${order.payment_intent}?expand%5B%5D=latest_charge.balance_transaction`);
   if(pi.id!==order.payment_intent||pi.livemode!==false||pi.status!=='succeeded'||pi.amount!==order.amount_cents||pi.currency!==order.currency.toLowerCase()||!pi.latest_charge?.paid||!pi.latest_charge.captured)throw Error('Payment requires amount reconciliation.');
