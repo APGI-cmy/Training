@@ -40,23 +40,8 @@ export async function saveCourseCredits(_state:StructureState,form:FormData):Pro
   refresh();return {success:'A new workload/credit version is saved for this edition. Earlier prices, credit snapshots and learner results are preserved.'};
  }catch(error){return failed(error);}
 }
-export async function saveCalculatorQuote(_state:StructureState,form:FormData):Promise<StructureState>{
- try{
-  const access=await calculatorAccess(validId(text(form,'company'))),policy=await calculatorPolicy(access.principal,access.session.user.id);
-  if(!policy)throw Error('APGI must prepare the pricing-policy version first.');
-  if(!text(form,'cost'))throw Error('APGI must save a documented cost and rate version first.');
-  const stored=(await rows<{id:string;snapshot:CostSchedule}>(`/rest/v1/cc_cost_versions?id=eq.${validId(text(form,'cost'))}&select=*&limit=1`))[0];
-  if(!stored)throw Error('Choose a saved cost version.');
-  let input:CalculatorInput;try{input=JSON.parse(formText(form,'input',2,4000));}catch{throw Error('Check the calculator inputs.');}
-  const selected=form.getAll('courses');if(!selected.length||selected.some(x=>typeof x!=='string')||selected.length>100)throw Error('Choose up to 100 eligible course editions.');
-  const available=(await calculatorCourses(access.company.id,access.principal)).courses,courses=selected.map(id=>available.find(c=>c.id===id));
-  if(courses.some(c=>!c))throw Error('The available course records changed. Refresh and select them again.');
-  const verified=courses.filter(c=>!!c),s=stored.snapshot,cost:CostSchedule={id:stored.id,currency:s.currency,monthlyPoolCents:s.monthlyPoolCents,activeLearners:s.activeLearners,newEnrolments:s.newEnrolments,variableCents:s.variableCents,processorBps:s.processorBps,processorFixedCents:s.processorFixedCents,source:s.source,sourceDraftId:s.sourceDraftId,rates:s.rates,floors:s.floors,margins:s.margins};
-  const result=calculateCoursePrice(input,cost,verified,{id:access.company.id,isApgi:access.company.slug==='apgi'});
-  const body={company_id:access.company.id,policy_id:policy.id,created_by:access.session.user.id,input,result,courses:verified,cost_snapshot:cost};
-  const saved=(await write('/rest/v1/cc_quotes',{...body,fingerprint:createHash('sha256').update(JSON.stringify({...body,policyHash:policy.body_hash})).digest('hex')}))[0] as {id:string};
-  refresh();return {success:'Versioned quote saved for review. No saved course price was changed and no payment was made.',link:`/course-calculator?company=${access.company.id}#quote-${saved.id}`};
- }catch(error){return failed(error);}
+export async function saveCalculatorQuote(_state:StructureState,_form:FormData):Promise<StructureState>{
+ return {error:'Prepare a proposal in the current four-option pricing workflow. Earlier quotes remain retained for history.'};
 }
 export async function calculatorDecision(_state:StructureState,form:FormData):Promise<StructureState>{
  try{const {session}=await requirePlatformPrincipal(),kind=text(form,'kind'),id=validId(text(form,'record')),decision=text(form,'decision'),reason=text(form,'reason');

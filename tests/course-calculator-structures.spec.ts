@@ -1,7 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import {defaultStructure,quoteStructure,validateStructure,ROUTES} from '@/lib/pricing-structures';
+import {legacyDefaultStructure as defaultStructure,quoteStructure,validateStructure,ROUTES} from '@/lib/pricing-structures';
 import {calculateCoursePrice,type CostSchedule,type CreditCourse} from '@/lib/course-calculator';
 const cost:CostSchedule={id:'cost',currency:'USD',monthlyPoolCents:76035,activeLearners:30,newEnrolments:10,variableCents:25,processorBps:370,processorFixedCents:22,source:'Documented planning basis',sourceDraftId:'source',rates:{public:250,industry:750,client:1500},floors:{public:500,industry:2500,client:5000},margins:{public:2500,industry:4000,client:5500}};
 const course:CreditCourse={id:'credit',editionId:'edition',courseId:'course',title:'Example',ownerId:'owner',ownerIsApgi:false,scope:'public',hours:100,minimumCents:0,currency:'USD',evidence:'Supported workload'};

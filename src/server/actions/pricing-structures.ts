@@ -5,30 +5,32 @@ import {quoteStructure,validateStructure,type PricingStructure,STRUCTURE_VERSION
 import {calculatorAccess,calculatorCourses,calculatorPolicy,calculatorRpc,assertCalculatorCoursesPublished} from '@/server/services/course-calculator';
 import {requirePlatformPrincipal} from '@/server/services/platform-principals';
 import {rows,write} from '@/server/services/company-structure';
-import {cartQuotes,pricingFingerprint,publishedStructure,shopAccess,verifyStructureQuote,shareableCost,type PurchaseBatch} from '@/server/services/pricing-structures';
+import {cartQuotes,pricingFingerprint,publishedStructure,shopAccess,verifyStructureQuote,shareableCost,type PurchaseBatch,type PriceRecord} from '@/server/services/pricing-structures';
 import {type CostSchedule,type PurchaseRoute} from '@/lib/course-calculator';
 import {stripeVault,stripeRequest} from '@/server/services/stripe-platform';
 import {stripeRedirect} from '@/lib/stripe-payments';
+import pricingPolicy from '@/data/course-pricing-policy.json';
 import {STAGING_ORIGIN} from '@/server/environment-isolation';
 const field=(f:FormData,k:string)=>{const v=f.get(k);if(typeof v!=='string'||v.length>100000)throw Error('Check the form.');return v;};
 const failure=(e:unknown):StructureState=>({error:e instanceof Error?e.message:'This change could not be saved.'});
 function refresh(){for(const p of ['/course-calculator','/course-shop','/course-cart','/learning-balances'])revalidatePath(p);}
 export async function savePricingStructure(_:StructureState,f:FormData):Promise<StructureState>{try{
  const a=await calculatorAccess(validId(field(f,'company'))),raw=JSON.parse(field(f,'document')) as PricingStructure;
+ if(raw.version!==STRUCTURE_VERSION)throw Error('The pricing model changed. Refresh and prepare a new proposal; earlier records remain retained.');
  const cost=(await rows<{id:string;snapshot:CostSchedule}>(`/rest/v1/cc_cost_versions?id=eq.${validId(raw.cost.id)}&select=id,snapshot&limit=1`))[0];if(!cost)throw Error('Choose a recorded platform cost version.');
  if(!['USD','CAD','ZAR'].includes(cost.snapshot.currency))throw Error('Unsupported cost currency.');
  const latest=(await rows<{id:string}>(`/rest/v1/cc_cost_versions?snapshot->>currency=eq.${cost.snapshot.currency}&select=id&order=created_at.desc&limit=1`))[0];
  if(latest?.id!==cost.id)throw Error('The central platform cost version changed. Refresh before preparing a new structure. Existing approved structures retain their frozen basis.');
  const available=(await calculatorCourses(a.company.id,a.principal)).courses;
  const courses=raw.courses.map(c=>available.find(v=>v.id===c.id));if(courses.some(c=>!c))throw Error('Course records changed. Refresh before saving.');
- const s:PricingStructure={version:STRUCTURE_VERSION,mode:raw.mode,company:{id:a.company.id,isApgi:a.company.slug==='apgi'},cost:shareableCost(cost.id,cost.snapshot),courses:courses.filter(c=>!!c),paymentMethod:raw.paymentMethod,feeBearer:raw.feeBearer,offers:raw.offers};
+ const s:PricingStructure={version:STRUCTURE_VERSION,mode:raw.mode,company:{id:a.company.id,isApgi:a.company.slug==='apgi'},cost:shareableCost(cost.id,cost.snapshot),courses:courses.filter(c=>!!c),paymentMethod:raw.paymentMethod,feeBearer:raw.feeBearer,offers:raw.offers,commercial:raw.commercial};
  validateStructure(s);
- const policy=await calculatorPolicy(a.principal,a.session.user.id);if(!policy||policy.version!=='APGI-COMM-PRICE-001/1.2-draft')throw Error('APGI must prepare the new pricing policy draft first.');
+ const policy=await calculatorPolicy(a.principal,a.session.user.id);if(!policy||policy.version!==pricingPolicy.version)throw Error('APGI must prepare the new pricing policy draft first.');
  if(f.get('reviewed')!=='on')throw Error('Confirm the exact structure is ready for review.');
  const saved=(await write('/rest/v1/cc_price_structures',{company_id:a.company.id,created_by:a.session.user.id,policy_id:policy.id,document:s,fingerprint:pricingFingerprint(s)}))[0] as {id:string};refresh();return {success:'Four-option pricing structure saved for Johan and Jorrie’s review. Existing prices and approvals are unchanged.',link:`/course-calculator?company=${a.company.id}#structure-${saved.id}`};
  }catch(e){return failure(e);}}
-export async function pricingStructureDecision(_:StructureState,f:FormData):Promise<StructureState>{try{const {session}=await requirePlatformPrincipal();if(f.get('exact')!=='on')throw Error('Confirm this exact structure.');await calculatorRpc('cc_structure_decision',{p_actor:session.user.id,p_id:validId(field(f,'structure')),p_decision:field(f,'decision'),p_reason:field(f,'reason')});refresh();return {success:'Your decision is recorded. Publication is a separate step.'};}catch(e){return failure(e);}}
-export async function publishPricingStructure(_:StructureState,f:FormData):Promise<StructureState>{try{const {session}=await requirePlatformPrincipal();if(f.get('publish')!=='on')throw Error('Confirm publication.');await calculatorRpc('cc_publish_structure',{p_actor:session.user.id,p_id:validId(field(f,'structure'))});refresh();return {success:'The approved pricing structure is published for test quotes. Live payments remain disabled.'};}catch(e){return failure(e);}}
+export async function pricingStructureDecision(_:StructureState,f:FormData):Promise<StructureState>{try{const {session}=await requirePlatformPrincipal();const saved=(await rows<PriceRecord>(`/rest/v1/cc_price_structures?id=eq.${validId(field(f,'structure'))}&select=*&limit=1`))[0];if(saved?.document.version!==STRUCTURE_VERSION)throw Error('This earlier allocation model needs a replacement proposal before approval or publication.');if(f.get('exact')!=='on')throw Error('Confirm this exact structure.');await calculatorRpc('cc_structure_decision',{p_actor:session.user.id,p_id:validId(field(f,'structure')),p_decision:field(f,'decision'),p_reason:field(f,'reason')});refresh();return {success:'Your decision is recorded. Publication is a separate step.'};}catch(e){return failure(e);}}
+export async function publishPricingStructure(_:StructureState,f:FormData):Promise<StructureState>{try{const {session}=await requirePlatformPrincipal();const saved=(await rows<PriceRecord>(`/rest/v1/cc_price_structures?id=eq.${validId(field(f,'structure'))}&select=*&limit=1`))[0];if(saved?.document.version!==STRUCTURE_VERSION)throw Error('This earlier allocation model needs a replacement proposal before approval or publication.');if(f.get('publish')!=='on')throw Error('Confirm publication.');await calculatorRpc('cc_publish_structure',{p_actor:session.user.id,p_id:validId(field(f,'structure'))});refresh();return {success:'The approved pricing structure is published for test quotes. Live payments remain disabled.'};}catch(e){return failure(e);}}
 export async function addPricingQuote(_:StructureState,f:FormData):Promise<StructureState>{try{
  const a=await shopAccess(validId(field(f,'company'))),s=await publishedStructure(a.company.id,field(f,'course')),route=field(f,'route') as PurchaseRoute;
  if(!s||!ROUTES.includes(route))throw Error('No approved structure is published yet.');

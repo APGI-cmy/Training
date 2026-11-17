@@ -1,4 +1,6 @@
 import 'server-only';
+import {checkedRentalAddition} from './rental-additions';
+import type {RentalAdditionBasis} from '@/lib/rental-additions';
 import {createHash} from 'node:crypto';
 import {requireSession} from '@/server/auth/session';
 import {validId} from '@/lib/company-structure';
@@ -32,7 +34,8 @@ export async function verifyStructureQuote(q:CalculatorQuote&{structure_id?:stri
  if(!q.structure_id)throw Error('Choose a current approved pricing structure.');
  const s=await publishedStructure(q.company_id,q.courses[0]?.courseId);
  if(!s||s.id!==q.structure_id)throw Error('The pricing structure changed. Request a fresh quote.');
- const calculated=quoteStructure(s.document,q.input.route,q.input.seats);
+ const addition=(q.input as unknown as {rentalAddition?:RentalAdditionBasis}).rentalAddition;
+ const calculated=addition?await checkedRentalAddition(s.document,addition,q.buyer_id!):quoteStructure(s.document,q.input.route,q.input.seats);
  if(pricingFingerprint({structure:s.id,buyer:q.buyer_id,...calculated})!==q.fingerprint)throw Error('The saved quote requires reconciliation.');
 }
 export async function reconcilePricingBatch(batch:PurchaseBatch){
