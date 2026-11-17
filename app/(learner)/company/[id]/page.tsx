@@ -66,7 +66,7 @@ export default async function CompanyPage({
       {owner&&!isAdmin?<section className="admin-form-card"><h2>Learner enrolments and payments</h2><p>Company learner payments must use an enabled platform-managed payment route. Payments are disabled in V2, so paid enrolment and learner-invitation controls remain unavailable. Use the change-request form below to ask APGI for assistance. Company owners cannot mark learners paid or grant an off-platform payment override.</p></section>:null}
       <header className="admin-page-header">
         <div>
-          <p className="eyebrow">Hosted by APGI</p>
+          <p className="eyebrow">Company workspace</p>
           <h1>{company.name}</h1>
           <p>
             {owner
@@ -213,7 +213,7 @@ export default async function CompanyPage({
           <h2>Appoint a business owner</h2>
           <p>
             This invitation grants access only to {company.name}; it does not
-            grant APGI administrator rights.
+            grant global platform administrator rights.
           </p>
           <StructureForm
             action={companyStructureAction}
