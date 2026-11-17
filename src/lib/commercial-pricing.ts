@@ -15,7 +15,8 @@ export function rentalMonthlyCents(n:number,rates=RENTAL_RATES){
 export function commercialDefaults(seed:PricingStructure):PricingStructure{
  const values=Object.fromEntries(seed.courses.map(c=>[c.editionId,{audienceLevel:c.courseId==='vpshr-level-0'?2:c.scope==='client'?4:3,marketMultiplierBps:10000}]));
  const offers=Object.fromEntries(Object.entries(seed.offers).map(([route,o])=>[route,{...o,rateCents:12000,months:route==='subscription'?12:3,maxSeats:route==='individual'?1:1000,courseCap:route==='individual'?1:Math.min(route==='subscription'?4:seed.courses.length,seed.courses.length)}])) as PricingStructure['offers'];
- return {...seed,version:COMMERCIAL_VERSION,mode:'courses',offers,commercial:{referenceHours:8,referenceIndex:3,values,annualContentBps:2500,walletCentsPerLearner:10000,rentalRates:RENTAL_RATES.map(r=>({...r}))}};
+ const draft:PricingStructure={...seed,version:COMMERCIAL_VERSION,mode:'courses',offers,commercial:{referenceHours:8,referenceIndex:3,values,annualContentBps:2500,walletCentsPerLearner:10000,rentalRates:RENTAL_RATES.map(r=>({...r}))}};
+ draft.commercial!.walletCentsPerLearner=Math.max(10000,draft.courses.reduce((sum,c)=>sum+courseValue(draft,c,'wallet').listCents,0));return draft;
 }
 export function valueIndex(scope:CreditCourse['scope'],level:number){integer(level,'audience/complexity level',1,5);return level+({public:1,industry:2,client:3}[scope]);}
 export function courseValue(s:PricingStructure,c:CreditCourse,route:PurchaseRoute){
@@ -32,6 +33,7 @@ export function validateCommercial(s:PricingStructure){
  integer(t.annualContentBps,'annual content licence percentage',1,10000);integer(t.walletCentsPerLearner,'wallet purchasing value',1,100000000);
  if(!s.courses.length||s.courses.length>100||new Set(s.courses.map(c=>c.editionId)).size!==s.courses.length||s.courses.some(c=>c.currency!==s.cost.currency))throw Error('Select distinct eligible courses in the quoted currency.');
  for(const c of s.courses){const v=t.values[c.editionId];integer(v?.audienceLevel,'audience/complexity level',1,5);integer(v?.marketMultiplierBps,'documented market-value multiplier',1000,100000);creditUnits(c.hours);}
+ if(t.walletCentsPerLearner<Math.min(...s.courses.map(c=>courseValue(s,c,'wallet').listCents)))throw Error('Increase the wallet purchasing value so at least one selected course can be redeemed.');
  for(const [route,o]of Object.entries(s.offers)){
   integer(o.rateCents,'reference-course price',1,10000000);integer(o.minSeats,'minimum places',1,1000);integer(o.maxSeats,'maximum places',o.minSeats,1000);integer(o.months,'access months',1,60);integer(o.courseCap,'selected course cap',1,s.courses.length);
   if(route==='individual'&&(o.minSeats!==1||o.maxSeats!==1||o.courseCap!==1))throw Error('An individual purchase is one named course for one learner.');
