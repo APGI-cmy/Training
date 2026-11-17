@@ -1,6 +1,6 @@
 import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
 vi.mock('@/server/security-watchdog/hardening-probes',()=>({prepareFixtureMfa:vi.fn(),hardeningProbes:vi.fn(),hardeningCheckNames:[]}));
-vi.mock('@/server/environment-isolation',()=>({assertStagingIsolation:vi.fn(),STAGING_DATABASE_REF:'test-v2-only'}));
+vi.mock('@/server/environment-isolation',()=>({assertStagingIsolation:vi.fn(),configuredDatabaseRef:()=>'test-v2-only',configuredAppOrigin:()=> 'https://training-platform-v2-staging.vercel.app',STAGING_DATABASE_REF:'test-v2-only'}));
 vi.mock('@/server/supabase/admin-rest',()=>({adminRest:vi.fn()}));
 vi.mock('@/server/services/company-structure',()=>({rows:vi.fn(),requireCompanyForSession:vi.fn()}));
 vi.mock('@/server/security-watchdog/access',async importOriginal=>{const actual=await importOriginal<typeof import('@/server/security-watchdog/access')>();return {...actual,watchdogAccess:vi.fn(),watchdogRun:vi.fn()};});

@@ -1,5 +1,6 @@
 import {afterEach,beforeEach,describe,it,expect,vi} from 'vitest';
 vi.mock('@/server/services/email/delivery-ledger',()=>({beginMailAttempt:vi.fn(async()=>({id:'attempt',state:'sending',provider_id:null})),finishMailAttempt:vi.fn(async()=>{})}));
+vi.mock('@/server/services/email/recipient-brand',()=>({recipientBrand:vi.fn(async()=>null)}));
 vi.mock('@/server/services/email/staging-capture',()=>({captureStagingAuthEmail:vi.fn(async()=>true)}));
 import {sendCourseInvitationEmail} from '@/server/services/email/send-course-invitation';
 import {sendAccountConfirmationEmail} from '@/server/services/email/send-account-confirmation';

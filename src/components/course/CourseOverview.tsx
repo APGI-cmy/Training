@@ -21,7 +21,7 @@ export function CourseOverview({
             <h1>{course.title}</h1>
             <p>{course.description}</p>
             <p>
-              This governed course overview uses the APGI learner route for access checks, saved
+              This governed course overview uses the learner portal for access checks, saved
               progress and course-specific recovery.
             </p>
             <div className="button-row">

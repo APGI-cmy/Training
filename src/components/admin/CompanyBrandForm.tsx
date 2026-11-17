@@ -91,7 +91,7 @@ export function CompanyBrandForm({ company, returnTo }: { company: CompanyRecord
           </label>
         ))}
         <p className="admin-span-two">
-          Hosted by APGI remains visible. The certificate design does not change
+          Your company identity appears on learner pages and new certificates. The certificate design does not change
           course completion or assessment requirements.
         </p>
       </StructureForm>

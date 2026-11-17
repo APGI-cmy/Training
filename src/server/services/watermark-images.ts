@@ -20,5 +20,6 @@ export async function watermarkSettings(form:FormData,prefix:string,organisation
   const response=await adminRest(`/storage/v1/object/alp-branding-assets/${imagePath}`,{method:'POST',headers:{'content-type':'image/png'},body:new Uint8Array(bytes)});
   if(!response.ok)throw Error('The watermark image could not be uploaded. Your saved settings remain unchanged.');
  }
+ if(file instanceof File&&file.size)form.set(`${prefix}_kind`,'image');
  return watermarkFromForm(form,prefix,hasLogo,imagePath);
 }

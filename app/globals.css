@@ -1879,3 +1879,7 @@ body:has(.learner-scorm-full) .learner-shell {
 /* These buttons keep dark backgrounds in both themes. */
 .pricing-steps button{color:#eef8ff}
 .pricing-steps button:disabled{opacity:1;color:#c4d6e2;background:#365164}
+
+/* Company themes use their saved palette, with the supplied watermark across the content region. */
+:root[data-white-label="true"][data-theme="dark"]{--bg:color-mix(in srgb,var(--brand-navy) 35%,#020a18);--surface:color-mix(in srgb,var(--brand-blue) 65%,#071426);--surface-strong:color-mix(in srgb,var(--brand-blue) 75%,#102338);--line:color-mix(in srgb,var(--brand-mid-blue) 35%,#29445b)}
+:root[data-white-label="true"] .app-header{border-bottom:3px solid var(--brand-mid-blue)}

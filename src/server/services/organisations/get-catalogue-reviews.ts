@@ -5,7 +5,7 @@ import { isPlatformPrincipal } from "@/server/services/platform-principals";
 
 export type CatalogueReview = { id:string; courseId:string; company:string; stage:string; status:"open"|"published" };
 type ReviewRow = { id:string; course_id:string; status:string; document:{
-  brand?:{name?:string}; participants?:{email:string;state:string}[]; workflow?:{stage?:string};
+  sourceReviewId?:string;brand?:{name?:string}; participants?:{email:string;state:string}[]; workflow?:{stage?:string};
 } };
 
 // Review visibility is separate from learner availability and never grants enrolment.
@@ -21,7 +21,7 @@ export async function getCatalogueReviews(session:AlpSession, courseIds:string[]
     for(const row of await response.json() as ReviewRow[]) {
       if(!["open","published"].includes(row.status)||!courseIds.includes(row.course_id)||reviews.has(row.course_id))continue;
       if(!principal&&!row.document.participants?.some(p=>p.email.trim().toLowerCase()===email&&p.state!=="declined"))continue;
-      reviews.set(row.course_id,{id:row.id,courseId:row.course_id,company:row.document.brand?.name??"Company course",stage:row.document.workflow?.stage??"content_review",status:row.status as "open"|"published"});
+      reviews.set(row.course_id,{id:row.document.sourceReviewId??row.id,courseId:row.course_id,company:row.document.brand?.name??"Company course",stage:row.document.workflow?.stage??"content_review",status:row.status as "open"|"published"});
     }
   } catch { /* Private review metadata stays hidden when access cannot be verified. */ }
   return reviews;

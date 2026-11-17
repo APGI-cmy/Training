@@ -1,3 +1,4 @@
+import {reviewOverride,reviewCleared} from './review-overrides';
 import {hasReviewTask,reviewTaskBlockers,outstandingAssignedTasks,type ReviewTask,type TaskDecision} from "./review-tasks";
 import {correctionBlockers,type ContentRevision} from "./review-corrections";
 import {commercialPublicationBlockers,type PublicationWorkflow} from "./publication-workflow";
@@ -31,7 +32,7 @@ export const declarationReference = (parts:SatisfactoryPart[]) => parts.map(p=>(
 
 export type ReviewFinding = { implementationProgress?:import("./lu-review-workflow").ImplementationProgress[]; declarationReopen?:import("./lu-review-workflow").EndorsementReopen; carriedForwardEvidence?:{from:string;to:string;unit:string;at:string}[]; implementationRounds?:import("./lu-review-workflow").ImplementationRound[]; workflowEndorsements?:import("./lu-review-workflow").FindingEndorsement[]; id: string; unit: string; scope?: "current" | "course"; reference: string; category: string; categories?: string[]; satisfiedParts?: SatisfactoryPart[]; outcome?: "issue" | "satisfied"; supersededBy?: string; blocking: boolean; author: string; userId: string; at: string; text: string; comment?: string; previousVersions?: {scope?:"current"|"course";at:string;outcome?:"issue"|"satisfied";text:string;attachment?:string;reference:string;category:string;blocking:boolean;status:string}[]; attachment?: string; status: "open" | "fixed" | "closed"; fixedBy?: string; fingerprint?:string; fixedFingerprint?:string;fixedAt?:string;verifiedBy?:string;verifiedFingerprint?:string;verifiedAt?:string; replies: { email: string; userId: string; at: string; text: string }[] };
 
-export const activeFindings = (doc: ReviewDocument) => doc.findings.filter(f => !f.supersededBy);
+export const activeFindings = (doc: ReviewDocument) => {const clear=doc.reviewOverrides?.filter(o=>o.scope==='content'&&o.mode==='clear'&&!doc.reviewOverrides?.some(r=>r.revokes===o.id)).at(-1);return doc.findings.filter(f=>!f.supersededBy&&(!clear||Date.parse(f.at)>Date.parse(clear.at)));};
 export const findingAppliesToUnit = (finding:ReviewFinding,unit:string) => finding.scope==='course'||finding.unit===unit;
 export const findingLocationLabel = (finding:ReviewFinding) => finding.scope==='course'?'ALL LEARNING UNITS':finding.unit.toUpperCase();
 
@@ -88,6 +89,9 @@ export type ReviewChangeRequest = {
 };
 
 export type ReviewDocument = {
+  trainingReleases?:{id:string;at:string;fingerprint:string;brandRevision:number;commercialVersion:string|null}[];
+  sourceReviewId?:string;
+  reviewOverrides?:import('./review-overrides').ReviewOverride[];
   contentIdentity?:import('./course-deployment').CourseContentIdentity;
   registeredDeployment?:import('./course-deployment').RegisteredDeployment;
 
@@ -136,6 +140,7 @@ export function currentReport(doc: ReviewDocument, email: string) { return doc.r
 export function contentReviewBlockers(round: ReviewRound, currentFingerprint: string) {
 
   const d = round.document, reasons: string[] = [];
+  if(round.status==="open"&&round.fingerprint===currentFingerprint&&reviewOverride(d,"content",currentFingerprint))return [];
 
   if (round.status !== "open") reasons.push("This round is no longer open.");
 
@@ -180,9 +185,9 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
 
 export function reviewBlockers(round:ReviewRound,hash:string,brandRevision=round.document.brand.revision){
 
- const reasons=contentReviewBlockers(round,hash);reasons.push(...(getCourseBySlug(round.course_id)?.publicationIssues??[]),...reviewTaskBlockers(round,brandRevision));const w=round.document.workflow;
+ const d=round.document,content=reviewOverride(d,"content",hash,brandRevision),commercials=reviewOverride(d,"commercials",hash,brandRevision),branding=reviewOverride(d,"branding",hash,brandRevision);const reasons=contentReviewBlockers(round,hash);reasons.push(...(getCourseBySlug(round.course_id)?.publicationIssues??[]),...reviewTaskBlockers(round,brandRevision));const w=d.workflow;
 
- if(w)reasons.push(...commercialPublicationBlockers(w,hash,brandRevision));
+ if(w)reasons.push(...commercialPublicationBlockers(w,hash,brandRevision,{content:!!content,commercials:!!commercials,branding:!!branding}));
 
  else if(round.document.terms.partner&&round.document.terms.decision!=="accepted")reasons.push("The authorised company owner must accept this exact commercial schedule.");
 

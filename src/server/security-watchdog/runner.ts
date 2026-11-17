@@ -73,6 +73,7 @@ export async function cleanInterruptedWatchdogRuns(){
 }
 
 export async function runSecurityWatchdog(access:WatchdogAccess,scope:string|null,requestId:string,trigger:'manual'|'scheduled'|'deployment'='manual'){
+ if(process.env.ALP_ENVIRONMENT==='training-production')throw new WatchdogError('Production synthetic checks require separate qualification; use the staging test environment.');
  assertStagingIsolation();checkWatchdogScope(access,scope);watchdogPublicKey();
  const scopeLabel=scope?(await rows<{name:string}>(`/rest/v1/organisations?id=eq.${scope}&is_active=eq.true&select=name&limit=1`))[0]?.name:'Whole platform';
  if(!scopeLabel)throw new WatchdogError('This company is unavailable.');

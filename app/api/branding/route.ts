@@ -1,3 +1,5 @@
+import {visibleBrandFooter,isPartnerBrand} from '@/lib/white-label';
+import {tenantBrandForHost} from '@/server/services/tenant-branding';
 import {companyWatermarks} from '@/lib/watermarks';
 import { NextRequest, NextResponse } from "next/server";
 import { getCourseBySlug } from "@/lib/courses";
@@ -22,6 +24,8 @@ export async function GET(request: NextRequest) {
       { headers: { "Cache-Control": "no-store" } },
     );
   }
+  const hostedBrand=await tenantBrandForHost(request.nextUrl.hostname);
+  if(hostedBrand)return NextResponse.json({branding:hostedBrand},{headers:{"Cache-Control":"no-store"}});
   let company = null;
   if (session) {
     try {
@@ -37,6 +41,7 @@ export async function GET(request: NextRequest) {
       );
     }
   }
+  const hostBrand=company?null:await tenantBrandForHost(request.nextUrl.hostname);
   const branding = company
     ? {
         courseId: `organisation:${company.slug}`,
@@ -52,12 +57,13 @@ export async function GET(request: NextRequest) {
         secondaryColor: company.secondary_color,
         accentColor: company.accent_color,
         paleColor: company.pale_color,
-        footerText: "Hosted by APGI",
+        hidePlatformBranding:isPartnerBrand(company.name),
+        footerText: visibleBrandFooter(company.name,company.footer_text),
         isActive: company.is_active,
       }
     : session
       ? await getLearnerOrganisationBranding(session.user.id)
-      : null;
+      : hostBrand;
   return NextResponse.json(
     { branding },
     { headers: { "Cache-Control": "no-store" } },

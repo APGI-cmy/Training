@@ -11,8 +11,8 @@ export const certificateDesigns = [
   { id: "horizon", name: "Horizon", description: "A calm lower band with a contrasting fine rule." }
 ] as const;
 export type CertificateDesignId = typeof certificateDesigns[number]["id"];
-export type CertificateSnapshot = { name: string; course: string; organisation: string; templateId: CertificateDesignId; primary: string; secondary: string; accent: string; logoPath: string | null; test: boolean; statement: string; headerStyle?:'logo-only-v1';watermarkLayout?:'page-cover-v1';watermark?:import('../watermarks').Watermark };
-export const currentCertificateHeader = () => ({headerStyle:'logo-only-v1' as const,watermarkLayout:'page-cover-v1' as const});
+export type CertificateSnapshot = { platformAttribution?:'hidden-v1'; name: string; course: string; organisation: string; templateId: CertificateDesignId; primary: string; secondary: string; accent: string; logoPath: string | null; test: boolean; statement: string; headerStyle?:'logo-only-v1';watermarkLayout?:'page-cover-v1';watermark?:import('../watermarks').Watermark };
+export const currentCertificateHeader = () => ({platformAttribution:'hidden-v1' as const,headerStyle:'logo-only-v1' as const,watermarkLayout:'page-cover-v1' as const});
 // The stored version keeps issued certificate snapshots and signatures unchanged.
 export function certificateHeaderLayout(s:CertificateSnapshot,hasLogo:boolean){
  const current=s.headerStyle==='logo-only-v1';

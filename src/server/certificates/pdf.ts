@@ -14,6 +14,7 @@ export async function certificatePdf(c: CertificateRecord) {
   const doc=await PDFDocument.create(); doc.registerFontkit(fontkit);
   const [regular,bold]=await Promise.all(['Regular','Bold'].map(async n=>doc.embedFont(await readFile(path.join(process.cwd(),`public/certificate-fonts/NotoSans-${n}.ttf`)),{subset:true})));
   const page=doc.addPage([842,595]); const s=c.snapshot;
+  const displayedNumber=s.platformAttribution==='hidden-v1'&&c.certificate_number==='APGI-V2-PREVIEW'?'TRAINING-PREVIEW':c.certificate_number;
   function color(hex:string){const h=safeColor(hex);return rgb(parseInt(h.slice(1,3),16)/255,parseInt(h.slice(3,5),16)/255,parseInt(h.slice(5,7),16)/255);}
   function drawFrame(){for(const r of frame(s)) {
     if(r.radius) page.drawEllipse({x:r.x+r.w/2,y:595-r.y-r.h/2,xScale:r.w/2,yScale:r.h/2,color:color(r.color)});
@@ -47,14 +48,13 @@ export async function certificatePdf(c: CertificateRecord) {
   centre('This certificate is awarded to',218,13);centre(s.name,267,30,true);
   centre('for successful completion of',302,13);centre(s.course,334,20,true);
   centre(s.statement,366,11);centre(new Date(c.issued_at).toLocaleDateString('en-ZA',{year:'numeric',month:'long',day:'numeric',timeZone:'Africa/Johannesburg'}),446,10);
-  centre(`Certificate number: ${c.certificate_number}`,495,10);
+  centre(`Certificate number: ${displayedNumber}`,495,10);
   if(s.test)centre('TEST CERTIFICATE - NOT VALID FOR QUALIFICATION',517,13,true,650,color('#b22525'));
-  page.drawRectangle({x:644,y:2,width:175,height:18,color:rgb(1,1,1)});
-  page.drawText('Hosted by APGI',{x:725,y:8,size:10,font:bold,color:ink});
+  if(s.platformAttribution!=='hidden-v1'){page.drawRectangle({x:644,y:2,width:175,height:18,color:rgb(1,1,1)});page.drawText('Hosted by APGI',{x:725,y:8,size:10,font:bold,color:ink});}
   const verify=new URL(`/verify-certificate/${c.id}`,process.env.NEXT_PUBLIC_APP_URL).toString();
   const qr=await doc.embedPng(await QRCode.toBuffer(verify,{type:'png',margin:1,errorCorrectionLevel:'M'}));
   page.drawImage(qr,{x:739,y:82,width:58,height:58});page.drawText('Scan to verify',{x:739,y:65,size:7,font:regular,color:ink});
   page.drawText(`Verify: ${c.id}`,{x:70,y:67,size:8,font:regular,color:ink});
-  doc.setTitle(`${c.certificate_number} - ${s.course}`);doc.setSubject(`Authenticated certificate; verification URL ${verify}`);doc.setCreator('APGI Training');doc.setCreationDate(new Date(c.issued_at));
+  doc.setTitle(`${displayedNumber} - ${s.course}`);doc.setSubject(`Authenticated certificate; verification URL ${verify}`);doc.setCreator(s.platformAttribution==='hidden-v1'?s.organisation+' Training':'APGI Training');doc.setCreationDate(new Date(c.issued_at));
   return doc.save();
 }

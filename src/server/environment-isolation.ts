@@ -1,4 +1,5 @@
-// V2 is a staging-only development line. Changing these boundaries requires a
+import {assertProductionEnvironment,PRODUCTION_DATABASE_REF,PRODUCTION_ORIGIN} from './production-environment.ts';
+// V2 staging and the explicitly approved production project remain isolated. Changing these boundaries requires a
 // separately reviewed release; never relax them to deploy to the V1 project.
 export const STAGING_PROJECT_ID = "prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf";
 export const STAGING_DATABASE_REF = "eaaqgtdpvbxdgjxphjie";
@@ -17,7 +18,10 @@ export function usesStagingMailCapture(env: Environment = process.env) {
   return env.ALP_ENVIRONMENT === "v2-staging" && !stagingEmailEnabled(env);
 }
 
+export function configuredDatabaseRef(env:Environment=process.env){return env.ALP_ENVIRONMENT==='training-production'?PRODUCTION_DATABASE_REF:STAGING_DATABASE_REF;}
+export function configuredAppOrigin(env:Environment=process.env){return env.ALP_ENVIRONMENT==='training-production'?PRODUCTION_ORIGIN:STAGING_ORIGIN;}
 export function assertStagingIsolation(env: Environment = process.env) {
+  if(env.ALP_ENVIRONMENT==='training-production')return assertProductionEnvironment(env);
   const fail = (reason: string): never => { throw new Error(`V2_ISOLATION_BLOCKED: ${reason}`); };
   if (env.ALP_ENVIRONMENT !== "v2-staging") fail("staging environment must be explicitly selected");
   if (env.VERCEL && env.VERCEL_PROJECT_ID !== STAGING_PROJECT_ID) fail("wrong hosting project");

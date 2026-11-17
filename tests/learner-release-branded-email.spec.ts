@@ -22,7 +22,7 @@ beforeEach(() => {
       p.includes("course_invitations")
         ? [
             {
-              organisation_id: "company",
+              organisation_id: "11111111-1111-4111-8111-111111111111",
               course_id: "scannex-training-programme",
             },
           ]
@@ -39,7 +39,7 @@ beforeEach(() => {
 describe("Branded invitation templates", () => {
   it.each(['admin','learner','business_owner'] as const)('opens password setup directly for an invited %s without asking them to sign in',async invitedRole=>{
     await sendCourseInvitationEmail({invitationId:'fixture',recipientEmail:'invited@example.invalid',invitedRole,courseTitle:'Test course',invitationToken:'fixture-token',expiresAt:'2099-01-01',accountSetup:true});
-    const mail=m.deliver.mock.calls[0][0];expect(mail.subject).toBe('Set up your APGI Training V2 password');
+    const mail=m.deliver.mock.calls[0][0];expect(mail.subject).toBe(`Set up your ${invitedRole==='admin'?'APGI Training':'Partner Training'} password`);
     expect(mail.html).toContain('/register?token=fixture-token&amp;setup=1');expect(mail.text).toContain('/register?token=fixture-token&setup=1');
     expect(mail.text).toContain('You do not need an existing password');expect(mail.text).toContain('confirm your own password');expect(mail.text).toContain('confirmation link');
     expect(mail.text).not.toContain('/invitations/fixture-token');expect(mail.html).not.toContain('Open your administrator invitation');expect(mail.idempotencyKey).toMatch(/^account-setup-/);
@@ -56,7 +56,7 @@ describe("Branded invitation templates", () => {
     const mail = m.deliver.mock.calls[0][0];
     expect(mail.html).toContain("Partner Training");
     expect(mail.html).toContain("/images/course-covers/scannex-cover.png");
-    expect(mail.html).toContain("Hosted by APGI");
+    expect(mail.html).not.toContain("Hosted by APGI");
     expect(mail.to).toBe("learner@example.invalid");
     expect(mail.html).toContain(
       "https://training-platform-v2-staging.vercel.app/invitations/fixture-token",
@@ -73,7 +73,7 @@ describe("Branded invitation templates", () => {
     });
     const mail = m.deliver.mock.calls[0][0];
     expect(mail.text).toContain(
-      "does not grant APGI platform administrator access",
+      "does not grant global platform administrator access",
     );
     expect(mail.subject).toContain("company workspace");
   });

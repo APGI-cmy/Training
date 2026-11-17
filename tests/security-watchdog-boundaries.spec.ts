@@ -1,5 +1,5 @@
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
-vi.mock('@/server/environment-isolation',()=>({assertStagingIsolation:vi.fn(),STAGING_DATABASE_REF:'test-isolated',STAGING_ORIGIN:'https://training-platform-v2-staging.vercel.app',stagingEmailEnabled:()=>true}));
+vi.mock('@/server/environment-isolation',()=>({assertStagingIsolation:vi.fn(),configuredDatabaseRef:()=>'test-isolated',configuredAppOrigin:()=> 'https://training-platform-v2-staging.vercel.app',STAGING_DATABASE_REF:'test-isolated',STAGING_ORIGIN:'https://training-platform-v2-staging.vercel.app',stagingEmailEnabled:()=>true}));
 vi.mock('@/server/services/email/delivery-ledger',()=>({beginMailAttempt:vi.fn(),finishMailAttempt:vi.fn()}));
 vi.mock('@/server/auth/session',()=>({getSupabaseRestUrl:(p:string)=>'https://test-isolated.supabase.co'+p}));
 import {NextRequest} from 'next/server';

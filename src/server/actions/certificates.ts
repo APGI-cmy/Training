@@ -32,7 +32,8 @@ export async function issueMyCertificate(form: FormData) {
   const org=o.ok?(await o.json())[0]:null; if(!org) throw new Error("The enrolled organisation is unavailable.");
   const n=await adminRest("/rest/v1/rpc/v2_next_certificate_number",{method:"POST",body:"{}"});
   if(!n.ok) throw new Error("Certificate numbering is unavailable.");
-  const number=await n.json() as string;
+  const issuedNumber=await n.json() as string;
+  const number=org.slug==='apgi'?issuedNumber:issuedNumber.replace(/^APGI(?:-V2)?/,String(org.slug).toUpperCase());
   const snapshot: CertificateSnapshot={...currentCertificateHeader(),watermark:companyWatermarks(org.watermarks).certificate,name:profile.certificate_name,course:course.title,organisation:org.name,templateId:isDesign(org.certificate_template_id)?org.certificate_template_id:'classic',primary:safeColor(org.primary_color),secondary:safeColor(org.secondary_color),accent:safeColor(org.accent_color,'#9c7b30'),logoPath:org.logo_path??null,test:process.env.ALP_ENVIRONMENT==='v2-staging',statement:course.id==='scannex-training-programme'?'Required learning and approved Scannex assessment completed.':'Required learning activities completed.'};
   const row: Omit<CertificateRecord,'signature'|'status'>={id:randomUUID(),certificate_number:number,user_id:session.user.id,course_id:course.id,organisation_id:enrolment.organisation_id,issued_at:new Date().toISOString(),snapshot};
   const signature=signCertificate(row);

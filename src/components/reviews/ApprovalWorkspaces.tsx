@@ -1,3 +1,4 @@
+import {ReviewOverrideControl} from './ReviewOverrideControl';
 import type {ReviewRound} from '@/lib/course-review';
 import type {CompanyRecord} from '@/lib/company-structure';
 import {findWorkflowStep,type WorkflowStep} from '@/lib/publication-guide';
@@ -12,10 +13,10 @@ export function ApprovalWorkspaces({round,brand,email,principal,hash,guide,comme
  const commercial=findWorkflowStep(guide,'commercials'),branding=findWorkflowStep(guide,'branding');
  return <>
   {commercial?<ApprovalWorkflowModal kind="commercials" title="Commercial preparation and sign-off" course={round.document.title} email={email} step={commercial} roundId={round.id} revision={round.revision} autoOpen={commercialPage}>
-   {commercialVisible?<><PublicationProgress round={round} principal={principal} email={email} hash={hash} brandRevision={brand.brand_revision} guide={guide}/><ReviewTaskPanel mode="commercials" round={round} brand={brand} email={email} principal={principal} hash={hash} guide={guide}/></>:<p>The commercial proposal will be available when APGI sends the jointly approved offer. Content and branding reviews remain available in their own workflows.</p>}
+   {commercialVisible?<ReviewOverrideControl round={round} scope="commercials" principal={principal} brandRevision={brand.brand_revision}/>:null}{commercialVisible?<><PublicationProgress round={round} principal={principal} email={email} hash={hash} brandRevision={brand.brand_revision} guide={guide}/><ReviewTaskPanel mode="commercials" round={round} brand={brand} email={email} principal={principal} hash={hash} guide={guide}/></>:<p>The commercial proposal will be available when APGI sends the jointly approved offer. Content and branding reviews remain available in their own workflows.</p>}
   </ApprovalWorkflowModal>:null}
   {!commercialPage&&branding?<ApprovalWorkflowModal kind="branding" title="Platform branding and design" course={round.document.title} email={email} step={branding} roundId={round.id} revision={round.revision}>
-   <ReviewTaskPanel mode="branding" round={round} brand={brand} email={email} principal={principal} hash={hash} guide={guide}/>
+   <ReviewOverrideControl round={round} scope="branding" principal={principal} brandRevision={brand.brand_revision}/><ReviewTaskPanel mode="branding" round={round} brand={brand} email={email} principal={principal} hash={hash} guide={guide}/>
   </ApprovalWorkflowModal>:null}
  </>;
 }

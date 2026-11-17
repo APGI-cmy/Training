@@ -26,7 +26,7 @@ export default async function InvitationRedemptionPage({
       <main className="content-band">
         <div className="content-inner auth-panel">
           <p className="eyebrow">Platform invitation</p>
-          <h1>Access your APGI invitation</h1>
+          <h1>Access your training invitation</h1>
           <p>
             If you have not created your separate Version 2 account, choose
             your password below first. If you already have a V2 account, sign in.

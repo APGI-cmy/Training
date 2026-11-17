@@ -1,10 +1,11 @@
+import {reviewOverride} from '@/lib/review-overrides';
 import Link from "next/link";
 import {contentReviewBlockers,type ReviewRound} from "@/lib/course-review";
 import {findWorkflowStep,type WorkflowStep} from "@/lib/publication-guide";
 import {WorkflowSectionStatus} from "./WorkflowSectionStatus";
 import {ReviewForm} from "./ReviewForms";
 export function FinalContentClearance({round,principal,email,hash,guide}:{round:ReviewRound;principal:boolean;email:string;hash:string;guide?:WorkflowStep[]}){
- const w=round.document.workflow;
+ const w=round.document.workflow;const exception=reviewOverride(round.document,"content",hash);if(exception)return <section className="review-box" id="final-content-clearance"><h2>Content release exception</h2><p>Publication is permitted by the recorded override from {exception.email}. It is not a final content endorsement. {exception.reason}</p></section>;
  if(!w)return null;
  if(!principal||round.document.requester!==email||w.contentApproval)return <section id="final-content-clearance" className="review-box"><div className="workflow-section-heading"><h2>Final content clearance status</h2><WorkflowSectionStatus step={findWorkflowStep(guide,"clearance")}/></div><p>{w.contentApproval?.fingerprint===hash?`Final content clearance recorded by ${w.contentApproval.email} at ${w.contentApproval.at}.`:"The requester must clear the exact corrected content after the required reviews, independent checks and blocking corrections are complete."}</p></section>;
  const blockers=contentReviewBlockers(round,hash),hintId=`content-approval-hint-${round.id}`;

@@ -1,5 +1,5 @@
 import 'server-only';
-import {STAGING_DATABASE_REF, STAGING_ORIGIN} from '@/server/environment-isolation';
+import {configuredDatabaseRef,configuredAppOrigin} from '@/server/environment-isolation';
 import {costServices} from '@/lib/service-costs';
 import {exchangeFeed} from '@/lib/currency-rates';
 
@@ -8,6 +8,7 @@ const publicSources=new Set([exchangeFeed,...costServices.map(s=>s.source).filte
 // or request bodies to another provider. This is an application boundary, not a
 // claim of a provider-wide network firewall or content-inspection service.
 export function providerTarget(input:string|URL,init:RequestInit={}){
+ const STAGING_DATABASE_REF=configuredDatabaseRef(),STAGING_ORIGIN=configuredAppOrigin();
  const raw=String(input);
  if(/[\\\u0000-\u0020\u007f]/.test(raw))throw Error('OUTBOUND_TARGET_REJECTED');
  const url=new URL(raw), headers=new Headers(init.headers), method=(init.method??'GET').toUpperCase();
@@ -24,7 +25,7 @@ export function providerTarget(input:string|URL,init:RequestInit={}){
   if([...headers.keys()].some(k=>!['accept','user-agent'].includes(k)))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
  }else throw Error('OUTBOUND_TARGET_REJECTED');
  // Reject headers containing any configured provider secret at the wrong host.
- for(const [key,host] of [['SUPABASE_SERVICE_ROLE_KEY',`${STAGING_DATABASE_REF}.supabase.co`],['NEXT_PUBLIC_SUPABASE_ANON_KEY',`${STAGING_DATABASE_REF}.supabase.co`],['STAGING_RESEND_API_KEY','api.resend.com']] as const){
+ for(const [key,host] of [['SUPABASE_SERVICE_ROLE_KEY',`${STAGING_DATABASE_REF}.supabase.co`],['NEXT_PUBLIC_SUPABASE_ANON_KEY',`${STAGING_DATABASE_REF}.supabase.co`],['STAGING_RESEND_API_KEY','api.resend.com'],['RESEND_API_KEY','api.resend.com']] as const){
   const secret=process.env[key];if(secret&&secret.length>8&&url.hostname!==host&&[...headers.values()].some(v=>v.includes(secret)))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
  }
  return url;

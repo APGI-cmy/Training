@@ -2,7 +2,7 @@ import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
 vi.mock('@/server/security/auth-budget',()=>({claimSecurityBudget:vi.fn(async()=>true)}));
 vi.mock('@/server/security-watchdog/events',()=>({recordSecurityEvent:vi.fn()}));
 vi.mock('@/server/auth/session',()=>({getCurrentSession:vi.fn(),storeVerifiedSession:vi.fn()}));
-vi.mock('@/server/environment-isolation',()=>({assertStagingIsolation:vi.fn(),STAGING_DATABASE_REF:'v2-test'}));
+vi.mock('@/server/environment-isolation',()=>({assertStagingIsolation:vi.fn(),configuredDatabaseRef:()=>'v2-test',configuredAppOrigin:()=> 'https://training-platform-v2-staging.vercel.app',STAGING_DATABASE_REF:'v2-test'}));
 import {getCurrentSession,storeVerifiedSession} from '@/server/auth/session';
 import {accountMfaOperation,securityAccount} from '@/server/security-watchdog/account-security';
 const id='ad673bd3-ff61-46b6-9941-090675220964',other='bd673bd3-ff61-46b6-9941-090675220964';

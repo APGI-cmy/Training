@@ -29,9 +29,11 @@ export function useCourseBranding() {
 export function BrandingShell({
   children,
   homeHref = "/",
+  initialBranding=null,
 }: {
   children: ReactNode;
   homeHref?: string;
+  initialBranding?:CourseBranding|null;
 }) {
   const pathname = usePathname();
   const [search, setSearch] = useState("");
@@ -42,7 +44,7 @@ export function BrandingShell({
         getCourses()[0]?.slug ??
         null)
       : null);
-  const [branding, setBranding] = useState<CourseBranding | null>(null);
+  const [branding, setBranding] = useState<CourseBranding | null>(initialBranding);
   const [revision, setRevision] = useState(0);
   const [resolvedPath, setResolvedPath] = useState<string | null>(null);
   const companyId = pathname.match(/^\/company\/([0-9a-f-]{36})(?:\/|$)/i)?.[1];
@@ -82,23 +84,24 @@ export function BrandingShell({
       })
       .then((payload: { branding?: CourseBranding | null }) => {
         if (!cancelled) {
-          setBranding(payload.branding ?? null);
+          setBranding(payload.branding ?? initialBranding);
           setResolvedPath(pathname);
         }
       })
       .catch(() => {
         if (!cancelled) {
-          setBranding(null);
-          setResolvedPath(null);
+          setBranding(initialBranding);
+          setResolvedPath(initialBranding?pathname:null);
         }
       });
     return () => {
       cancelled = true;
     };
-  }, [courseSlug, companyId, pathname, revision]);
+  }, [courseSlug, companyId, pathname, revision, initialBranding]);
 
   useEffect(() => {
     const root = document.documentElement;
+    if(branding?.hidePlatformBranding)root.dataset.whiteLabel="true";else delete root.dataset.whiteLabel;
     const values = branding
       ? {
           "--brand-navy": branding.primaryColor,
@@ -119,11 +122,11 @@ export function BrandingShell({
   return (
     <BrandingReadyContext.Provider value={resolvedPath === pathname}>
       <CourseBrandingContext.Provider
-        value={resolvedPath === pathname ? branding : null}
+        value={resolvedPath === pathname ? branding : initialBranding}
       >
         <header className="app-header">
-          {resolvedPath === pathname ? (
-            <Brand href={homeHref} branding={branding} />
+          {resolvedPath === pathname || initialBranding ? (
+            <Brand href={homeHref} branding={resolvedPath === pathname ? branding : initialBranding} />
           ) : (
             <span role="status">Loading training workspace…</span>
           )}

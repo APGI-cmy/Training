@@ -1,0 +1,5 @@
+import type {ReviewDocument,ReviewRound} from './course-review';
+export type ReviewScope='content'|'commercials'|'branding';
+export type ReviewOverride={id:string;scope:ReviewScope;mode:'clear'|'retain'|'revoke';fingerprint:string;brandRevision:number;commercialVersion:string|null;reason:string;actorId:string;email:string;at:string;revokes?:string};
+export function reviewOverride(d:ReviewDocument,scope:ReviewScope,fingerprint:string,brandRevision=d.brand.revision){const grants=(d.reviewOverrides??[]).filter(o=>o.scope===scope&&o.mode!=='revoke'),o=grants.at(-1);if(!o||o.fingerprint!==fingerprint||(d.reviewOverrides??[]).some(r=>r.revokes===o.id)||scope==='branding'&&o.brandRevision!==brandRevision||scope==='commercials'&&o.commercialVersion!==(d.workflow?.commercials.at(-1)?.id??null))return undefined;return o;}
+export function reviewCleared(r:ReviewRound,scope:ReviewScope,brandRevision=r.document.brand.revision){return reviewOverride(r.document,scope,r.fingerprint,brandRevision)?.mode==='clear';}

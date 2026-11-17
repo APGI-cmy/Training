@@ -1,3 +1,4 @@
+import {visibleBrandFooter,isPartnerBrand} from '@/lib/white-label';
 import { BrandingPreset, CourseBranding } from "@/lib/branding";
 import { getLearnerOrganisation } from "@/server/services/organisations/get-organisations";
 import { getSupabaseRestUrl } from "@/server/auth/session";
@@ -76,7 +77,8 @@ export async function getLearnerOrganisationBranding(userId: string): Promise<Co
     secondaryColor: organisation.secondaryColor,
     accentColor: organisation.accentColor,
     paleColor: organisation.paleColor,
-    footerText: organisation.footerText,
+    footerText: visibleBrandFooter(organisation.name,organisation.footerText),
+    hidePlatformBranding:isPartnerBrand(organisation.name),
     isActive: organisation.isActive,
   };
 }

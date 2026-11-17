@@ -24,13 +24,13 @@ export async function registerInvitedUser(_previousState: InvitationRegistration
   if (password !== confirmation) return { error: "The two passwords do not match. Enter the same new password in both fields." };
 
   const tokenHash = createHash("sha256").update(token).digest("hex");
-  const invitationResponse = await adminRest(`/rest/v1/course_invitations?select=recipient_email,expires_at,revoked_at,redeemed_at,status&token_hash=eq.${encodeURIComponent(tokenHash)}&limit=1`);
-  if (!invitationResponse.ok) return { error: "This invitation cannot be used. Request a new invitation from APGI." };
+  const invitationResponse = await adminRest(`/rest/v1/course_invitations?select=organisation_id,recipient_email,expires_at,revoked_at,redeemed_at,status&token_hash=eq.${encodeURIComponent(tokenHash)}&limit=1`);
+  if (!invitationResponse.ok) return { error: "This invitation cannot be used. Request a new invitation from your training administrator." };
 
-  const invitation = ((await invitationResponse.json()) as Array<{ recipient_email?: string; expires_at?: string; revoked_at?: string | null; redeemed_at?: string | null; status?: string }>)[0];
+  const invitation = ((await invitationResponse.json()) as Array<{ organisation_id?:string;recipient_email?: string; expires_at?: string; revoked_at?: string | null; redeemed_at?: string | null; status?: string }>)[0];
   const invitationEmail = invitation?.recipient_email?.trim().toLowerCase();
   if (!invitationEmail || invitationEmail !== email || invitation.revoked_at || invitation.redeemed_at || !["pending", "sent"].includes(invitation.status ?? "") || !invitation.expires_at || !(new Date(invitation.expires_at).getTime() > Date.now())) {
-    return { error: "This invitation cannot be used. Request a new invitation from APGI." };
+    return { error: "This invitation cannot be used. Request a new invitation from your training administrator." };
   }
 
   try {
@@ -42,7 +42,7 @@ export async function registerInvitedUser(_previousState: InvitationRegistration
     });
     if (!generated.ok) return { error: "We could not complete registration. If you already have an account, sign in using the invitation link instead." };
     const payload = await generated.json() as { hashed_token?: string };
-    if (!payload.hashed_token || !(await sendAccountConfirmationEmail(email, payload.hashed_token))) {
+    if (!payload.hashed_token || !(await sendAccountConfirmationEmail(email, payload.hashed_token,invitation.organisation_id))) {
       return { error: "Your account confirmation email could not be sent. Please contact your training administrator, or use Forgot password if your account was created." };
     }
   } catch {
@@ -51,7 +51,7 @@ export async function registerInvitedUser(_previousState: InvitationRegistration
 
   return {
     ok: true,
-    message: usesStagingMailCapture() ? "No email was sent. Your staging administrator can open your confirmation link in Test messages. Confirm your test account, then save your profile to activate the invited role or course." : "Check your email for ‘Confirm your APGI Training account’. Open it and confirm your email to go straight to your profile. Saving your profile will activate your invited role or enrolled course.",
+    message: usesStagingMailCapture() ? "No email was sent. Your staging administrator can open your confirmation link in Test messages. Confirm your test account, then save your profile to activate the invited role or course." : "Check your email for your training account confirmation. Open it and confirm your email to go straight to your profile. Saving your profile will activate your invited role or enrolled course.",
     continueUrl: getInvitationSignInPath(token)
   };
 }

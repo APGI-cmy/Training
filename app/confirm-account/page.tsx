@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function ConfirmAccountPage({ searchParams }: { searchParams: Promise<{ token_hash?: string; error?: string }> }) {
   const { token_hash, error } = await searchParams;
   return <main className="content-band"><div className="content-inner auth-panel">
-    <p className="eyebrow">Welcome to APGI Training</p><h1>Confirm your email</h1>
+    <p className="eyebrow">Welcome to your training workspace</p><h1>Confirm your email</h1>
     {token_hash && !error ? <>
       <p>Select Confirm below to verify your email address and go straight to your learner profile.</p>
       <form action={confirmAccount}>

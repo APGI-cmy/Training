@@ -17,11 +17,10 @@ export function CertificatePreview({ snapshot: s, number = "APGI-V2-PREVIEW", da
       <text x="421" y="334" fontSize="20" textLength={s.course.length>48?640:undefined} lengthAdjust="spacingAndGlyphs">{s.course}</text>
       <text x="421" y="366" fontSize="11">{s.statement}</text>
       <text x="421" y="446" fontSize="10" fill="#142d46">{date}</text>
-      <text x="421" y="495" fontSize="10">Certificate number: {number}</text>
+      <text x="421" y="495" fontSize="10">Certificate number: {s.platformAttribution==="hidden-v1"&&number==="APGI-V2-PREVIEW"?"TRAINING-PREVIEW":number}</text>
       {s.test ? <text x="421" y="517" fontSize="13" fontWeight="bold" fill="#b22525">TEST CERTIFICATE — NOT VALID FOR QUALIFICATION</text> : null}
     </g>
-    <rect x="644" y="575" width="175" height="18" fill="white" />
-    <text x="805" y="587" textAnchor="end" fontSize="10" fontFamily="Arial" fill="#142d46">Hosted by APGI</text>
+    {s.platformAttribution!=="hidden-v1"?<><rect x="644" y="575" width="175" height="18" fill="white" /><text x="805" y="587" textAnchor="end" fontSize="10" fontFamily="Arial" fill="#142d46">Hosted by APGI</text></>:null}
     {verificationUrl ? <text x="70" y="528" fontSize="8" fill="#142d46">Verify using the code printed on the downloadable certificate.</text> : null}
   </svg>;
 }

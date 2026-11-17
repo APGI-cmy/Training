@@ -8,6 +8,7 @@ export const APGI_BRAND = {
 } as const;
 
 export type CourseBranding = {
+  hidePlatformBranding?:boolean;
   watermarkUrl?:string|null;
   watermark?:import("./watermarks").Watermark;
   courseId: string;

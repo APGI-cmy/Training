@@ -1,3 +1,4 @@
+import {reviewOverride,reviewCleared} from './review-overrides';
 import {reviewerContentComplete} from "./lu-review-workflow";
 import type {ReviewDocument,ReviewPerson,ReviewRound} from "./course-review";
 export const reviewTaskLabels={content:"Content",commercials:"Commercials",branding:"Branding"} as const;
@@ -28,18 +29,18 @@ export function companyBrandApproved(round:ReviewRound,brandRevision:number){
 export function reviewTaskBlockers(round:ReviewRound,brandRevision:number){
  const d=round.document,v=d.workflow?.commercials.at(-1),reasons:string[]=[];
  for(const p of d.participants.filter(p=>p.state!=="declined"))for(const task of p.tasks??[]){
-  if(task==="content")continue;
+  if(task==="content"||reviewOverride(d,task,round.fingerprint,brandRevision))continue;
   if(task==="commercials"&&commercialReviewApproved(d,p.email,p.userId))continue;
   const target=task==="branding"?String(brandRevision):v?.id;
   const decision=target?taskDecision(d,p.email,task,target):undefined;
   if(!decision||decision.decision!=="approve"||decision.userId!==p.userId)reasons.push(`${p.email}: current ${task} review approval outstanding.`);
  }
- if(d.workflow?.partner&&!companyBrandApproved(round,brandRevision))reasons.push("The company owner must explicitly approve the current branding revision.");
+ if(d.workflow?.partner&&!reviewOverride(d,"branding",round.fingerprint,brandRevision)&&!companyBrandApproved(round,brandRevision))reasons.push("The company owner must explicitly approve the current branding revision.");
  return reasons;
 }
 export function outstandingAssignedTasks(round:ReviewRound,p:ReviewPerson,brandRevision=round.document.brand.revision){
  const v=round.document.workflow?.commercials.at(-1);
- return assignedTasks(p).filter(task=>task==="content"?round.document.reviewProcessVersion===3?!reviewerContentComplete(round,p.email):p.state!=="finished":
+ return assignedTasks(p).filter(task=>!reviewCleared(round,task,brandRevision)).filter(task=>task==="content"?round.document.reviewProcessVersion===3?!reviewerContentComplete(round,p.email):p.state!=="finished":
   // Legacy commercial scope was advisory. Existing reports retain their meaning.
   !p.tasks?false:task==="commercials"?!commercialReviewApproved(round.document,p.email,p.userId):taskDecision(round.document,p.email,task,String(brandRevision))?.decision!=="approve");
 }

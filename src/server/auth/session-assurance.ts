@@ -1,6 +1,6 @@
 import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import 'server-only';
-import {assertStagingIsolation,STAGING_DATABASE_REF} from '@/server/environment-isolation';
+import {assertStagingIsolation,STAGING_DATABASE_REF,configuredDatabaseRef} from '@/server/environment-isolation';
 export type AccountFactor={id:string;factor_type:string;status:string;friendly_name?:string};
 // Claims are inspected only AFTER /auth/v1/user has verified the access token.
 export function verifiedSessionClaims(token:string,actor:string){
@@ -14,7 +14,7 @@ export function requiresAccountMfa(token:string,actor:string,factors:AccountFact
 export async function activeVerifiedSession(token:string,actor:string){
  assertStagingIsolation();const claims=verifiedSessionClaims(token,actor),key=process.env.SUPABASE_SERVICE_ROLE_KEY;
  if(!claims||!key)return false;
- try{const r=await fetch(`https://${STAGING_DATABASE_REF}.supabase.co/rest/v1/rpc/v2_watchdog_session_active`,{method:'POST',headers:{apikey:key,authorization:`Bearer ${key}`,'content-type':'application/json'},body:JSON.stringify({p_actor:actor,p_session:claims.sessionId}),cache:'no-store',signal:AbortSignal.timeout(8000)});return r.ok&&(await r.json())===true;}catch{return false;}
+ try{const r=await fetch(`https://${process.env.ALP_ENVIRONMENT==='training-production'?configuredDatabaseRef():STAGING_DATABASE_REF}.supabase.co/rest/v1/rpc/v2_watchdog_session_active`,{method:'POST',headers:{apikey:key,authorization:`Bearer ${key}`,'content-type':'application/json'},body:JSON.stringify({p_actor:actor,p_session:claims.sessionId}),cache:'no-store',signal:AbortSignal.timeout(8000)});return r.ok&&(await r.json())===true;}catch{return false;}
 }
 export type SessionSecurity={active:boolean;privileged:boolean;enrolled:boolean};
 export async function verifiedSessionSecurity(token:string,actor:string):Promise<SessionSecurity>{
@@ -22,7 +22,7 @@ export async function verifiedSessionSecurity(token:string,actor:string):Promise
  assertStagingIsolation();const claims=verifiedSessionClaims(token,actor),key=process.env.SUPABASE_SERVICE_ROLE_KEY;
  if(!claims||!key)return denied;
  try{
-  const r=await fetch(`https://${STAGING_DATABASE_REF}.supabase.co/rest/v1/rpc/v2_security_session_status`,{method:'POST',headers:{apikey:key,authorization:`Bearer ${key}`,'content-type':'application/json'},body:JSON.stringify({p_actor:actor,p_session:claims.sessionId}),cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)});
+  const r=await fetch(`https://${process.env.ALP_ENVIRONMENT==='training-production'?configuredDatabaseRef():STAGING_DATABASE_REF}.supabase.co/rest/v1/rpc/v2_security_session_status`,{method:'POST',headers:{apikey:key,authorization:`Bearer ${key}`,'content-type':'application/json'},body:JSON.stringify({p_actor:actor,p_session:claims.sessionId}),cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)});
   if(!r.ok)return denied;const value=await r.json();
   return value&&['active','privileged','enrolled'].every(k=>typeof value[k]==='boolean')?value:denied;
  }catch{return denied;}

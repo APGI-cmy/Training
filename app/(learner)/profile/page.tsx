@@ -44,7 +44,7 @@ export default async function ProfilePage({
         <div className="content-inner">
           <p className="eyebrow">
             {completingOnboarding
-              ? "Welcome to APGI Training"
+              ? "Welcome to your training workspace"
               : "Learner profile"}
           </p>
           <h1>
@@ -99,7 +99,7 @@ export default async function ProfilePage({
                         : invitation.invited_role === "business_owner"
                           ? "Company business owner - company-scoped access"
                           : (getCourseBySlug(invitation.course_id)?.title ??
-                            "APGI course")}
+                            "Training course")}
                     </li>
                   ))}
                 </ul>

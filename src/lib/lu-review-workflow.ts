@@ -1,3 +1,4 @@
+import {reviewCleared} from './review-overrides';
 import type {ReviewDocument,ReviewFinding,ReviewRound} from './course-review';
 import {activeFindings,findingAppliesToUnit} from './course-review';
 import {hasReviewTask} from './review-tasks';
@@ -130,6 +131,7 @@ export function luInitialReviewProgress(round:ReviewRound,unit:string,recheckPen
  });
 }
 export function luReviewStages(round:ReviewRound,unit:string,recheckPending=false){
+ if(!recheckPending&&reviewCleared(round,"content"))return [{id:"initial" as const,label:"Initial review — overridden",done:true},{id:"implementation" as const,label:"Implementation feedback — overridden",done:true},{id:"reopened" as const,label:"Reopened rounds — overridden",done:true,rounds:[] as number[]},{id:"endorsements" as const,label:"Endorsements — overridden",done:true}];
  const d=round.document,findings=activeFindings(d).filter(f=>findingAppliesToUnit(f,unit));
  const reviewers=luInitialReviewProgress(round,unit,recheckPending);
  const initialComplete=reviewers.length>=2&&reviewers.every(p=>p.complete),emptyDeemed=initialComplete&&reviewers.some(p=>p.deemed)&&findings.length===0;

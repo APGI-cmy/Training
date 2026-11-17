@@ -1,3 +1,4 @@
+import {reviewOverride} from '@/lib/review-overrides';
 import {ReviewGuidance} from './ReviewGuidance';
 import type {WorkflowStep} from '@/lib/publication-guide';
 import type {ReviewNotificationTask} from '@/lib/review-notification-tasks';
@@ -74,12 +75,14 @@ function LegacyReviewProcess({round,email,userId,requester,fresh}:{round:ReviewR
 
 export function ReviewProcess(props:{round:ReviewRound;email:string;userId:string;requester:boolean;fresh:boolean;deployedFingerprint?:string;steps?:WorkflowStep[];tasks?:ReviewNotificationTask[]}){
  const {round,email,userId,fresh}=props,d=round.document;
+ const clear=reviewOverride(d,'content',round.fingerprint);if(clear?.mode==='clear')return <section className="review-box" id="review-guidance"><h2>Content review — cleared by recorded exception</h2><p className="form-success">The active content-review steps are green under an administrative override. Earlier findings and endorsements are archived; no reviewer approval is inferred.</p><a href={`/course-reviews/${round.id}/overrides/${clear.id}`}>Read archived feedback and the override reason</a><ul>{d.units.map(u=><li key={u.slug}>✓ <a href={`/course-reviews/${round.id}/units/${u.slug}`}>{u.title}</a> — review overridden</li>)}</ul></section>;
  if(d.reviewProcessVersion!==3)return <LegacyReviewProcess {...props}/>;
  // Whitelist the content-workflow snapshot. Private commercial schedules never enter client props.
  const snapshot:ReviewRound={id:round.id,plan_id:null,organisation_id:round.organisation_id,course_id:round.course_id,fingerprint:round.fingerprint,revision:round.revision,status:round.status,created_at:round.created_at,document:{title:d.title,brand:d.brand,requester:d.requester,requesterId:d.requesterId,designerEmail:d.designerEmail,reviewProcessVersion:3,cutoff:d.cutoff,units:d.units,participants:d.participants,findings:d.findings,reports:d.reports.map(r=>({...r,text:"",endorsements:[]})),events:[],terms:{text:"",partner:false,acceptor:""},...(d.workflow?{workflow:{version:2,stage:d.workflow.stage,designerName:d.workflow.designerName,designerCompany:d.workflow.designerCompany,ownerId:d.workflow.ownerId,partner:d.workflow.partner,partnerEmail:"",commercials:[],counterOffers:0}}:{})}};
  // Only registered version scopes are needed in the working view; release notes and
  // deployment references remain in the requester-controlled registration history.
  snapshot.document.contentRevisions=d.contentRevisions?.map(r=>({fingerprint:r.fingerprint,previousFingerprint:r.previousFingerprint,at:r.at,email:'',userId:'',notes:'',deployment:'',changedUnits:r.changedUnits,preservedUnits:r.preservedUnits}));
+ snapshot.document.reviewOverrides=d.reviewOverrides?.filter(o=>o.scope==='content');
  snapshot.document.nonresponsePolicy=d.nonresponsePolicy;snapshot.document.deemedEndorsements=d.deemedEndorsements;
  const pending=luWorkflowBlockers(round);
  return <section className="review-box review-process" id="review-process" aria-labelledby="review-process-heading"><span id="review-process-heading"/><span id="review-units"/><span id="review-summary"/><span id="shared-findings"/><span id="my-full-review"/>

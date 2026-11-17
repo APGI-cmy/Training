@@ -28,7 +28,7 @@ describe("Invited account confirmation and first profile", () => {
     expect(result.ok).toBe(true);
     const creation = mocks.rest.mock.calls.find(([path]) => path === "/auth/v1/admin/generate_link");
     expect(JSON.parse(creation![1].body)).toEqual({ type: "signup", email: "learner@example.invalid", password: "fixture-password-only" });
-    expect(mocks.email).toHaveBeenCalledWith("learner@example.invalid", "secret-confirmation-token");
+    expect(mocks.email).toHaveBeenCalledWith("learner@example.invalid", "secret-confirmation-token", undefined);
     expect(JSON.stringify(result)).not.toContain("secret-confirmation-token");
     expect(mocks.store).not.toHaveBeenCalled();
   });

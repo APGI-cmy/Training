@@ -5,7 +5,7 @@ import {verifiedSessionClaims,requiresAccountMfa,activeVerifiedSession} from '@/
 import {signWatchdogReport,verifyWatchdogReport} from '@/server/security-watchdog/signing';
 import type {WatchdogCheck,WatchdogPayload} from '@/lib/security-watchdog';
 import {syntheticTotp} from '@/server/security-watchdog/synthetic-totp';
-vi.mock('@/server/environment-isolation',()=>({assertStagingIsolation:vi.fn(),STAGING_DATABASE_REF:'v2-test'}));
+vi.mock('@/server/environment-isolation',()=>({assertStagingIsolation:vi.fn(),configuredDatabaseRef:()=>'v2-test',configuredAppOrigin:()=> 'https://training-platform-v2-staging.vercel.app',STAGING_DATABASE_REF:'v2-test'}));
 const c=(state:WatchdogCheck['state']):WatchdogCheck=>({id:state,title:state,state,kind:'synthetic_behaviour',detail:'Synthetic QA'});
 const session='ad673bd3-ff61-46b6-9941-090675220964';
 const token=(v:unknown)=>'header.'+Buffer.from(JSON.stringify(v)).toString('base64url')+'.already-provider-verified';

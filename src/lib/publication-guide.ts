@@ -1,3 +1,4 @@
+import {reviewOverride} from './review-overrides';
 import {courseReviewProgress} from "./review-progress";
 import {commercialReviewPath,commercialSignoffAnchor,commercialReviewerAnchor,brandingReviewerAnchor,reportAnchor} from "./review-navigation";
 import {activeFindings,currentReport,contentReviewBlockers,type ReviewRound} from "./course-review";
@@ -13,8 +14,8 @@ export function publicationGuide(round:ReviewRound,hash:string,brandRevision:num
  const own=primary.find(p=>p.email===email),covered=(slug:string)=>own?own.coverage.includes(slug):primary.length>=2&&primary.every(p=>p.coverage.includes(slug));
  const reportDone=(email:string)=>{const p=primary.find(p=>p.email===email);return p?.state==="finished"&&!!currentReport(d,email);};
  const endorsed=(email:string)=>{const r=currentReport(d,email);return !!r&&!r.endorsements.some(e=>e.decision==="changes")&&r.endorsements.some(e=>e.decision==="approve"&&e.userId!==r.userId&&e.email!==r.email&&d.participants.some(p=>p.email===e.email&&p.state!=="declined"&&hasReviewTask(p,"content")));};
- const contentDone=fresh&&(round.status==="published"||contentReviewBlockers(round,hash).filter(r=>!r.toLowerCase().includes("blocking")&&!r.toLowerCase().includes("correction")).length===0);
- const issues=activeFindings(d).filter(f=>f.blocking),tasks=reviewTaskBlockers(round,brandRevision);
+ const contentDone=fresh&&(round.status==="published"||contentReviewBlockers({...round,document:{...d,reviewOverrides:[]}},hash).filter(r=>!r.toLowerCase().includes("blocking")&&!r.toLowerCase().includes("correction")).length===0);
+ const issues=activeFindings(d).filter(f=>f.blocking),tasks=reviewTaskBlockers({...round,document:{...d,reviewOverrides:[]}},brandRevision);
  const branding=tasks.filter(x=>x.includes("branding"));
  const current=phase??(w?.stage==="content_review"?"content":["commercial_draft","apgi_approval","negotiation","unresolved"].includes(w?.stage??"")?"commercials":w?.stage==="partner_offer"&&!companyBrandApproved(round,brandRevision)?"branding":"publication");
  const submitted=primary.filter(p=>reportDone(p.email)).length,checked=primary.filter(p=>endorsed(p.email)).length;
@@ -33,7 +34,7 @@ export function publicationGuide(round:ReviewRound,hash:string,brandRevision:num
   content.label="2. Content review and endorsements";
   content.href=`${base}#review-guidance`;
   corrections.href=`${base}#review-guidance`;
-  content.done=fresh&&(round.status==="published"||contentReviewBlockers(round,hash).length===0);
+  content.done=fresh&&(round.status==="published"||contentReviewBlockers({...round,document:{...d,reviewOverrides:[]}},hash).length===0);
   content.note=!fresh?"The platform is automatically registering the changed live deployment. Saved review evidence is retained.":`LU coverage: ${progress.coverageConfirmed}/${progress.coverageRequired} reviewer confirmations${progress.rechecks?` · ${progress.rechecks} rechecks pending`:''}. Implementation responses: ${progress.submitted}/${progress.corrections.length}. Awaiting endorsement: ${progress.awaitingEndorsement.length} records. Open Review guidance for reviewer history and direct action links. Publication is separate. Unanimous no-findings initial reviews finish without endorsements.`;
   content.children=progress.units.map((u,i)=>({id:u.slug,number:`2.${i+1}`,label:u.title,done:fresh&&u.stages.every(s=>s.done),href:`${base}#review-unit-${u.slug}`,note:u.stages.map(s=>`${s.label}: ${s.done?'complete':'outstanding'}`).join('; ')}));
   corrections.label="3. Changes implemented";
@@ -42,6 +43,8 @@ export function publicationGuide(round:ReviewRound,hash:string,brandRevision:num
   corrections.children=[{id:'deployment',number:'3.1',label:'Live version registered automatically',done:fresh,href:`${base}#changes-implemented`},...progress.records.filter(r=>r.finding.outcome!=='satisfied'||r.phase==='Reopened').map((r,i)=>({id:r.finding.id,number:`3.${i+2}`,label:`${r.finding.unit.toUpperCase()} · ${r.finding.reference}`,done:fresh&&r.implemented&&r.phase!=='Reopened',href:`${base}#finding-${r.finding.id}`,note:r.phase==='Awaiting endorsement'?'Implementation submitted — awaiting endorsement':r.phase==='Closed'?'Closed':r.phase==='Reopened'?'Reopened — next response required':'Implementation response required'}))];
  }
 
+ for(const scope of ["content","commercials","branding"] as const){const o=reviewOverride(d,scope,hash,brandRevision);if(!o)continue;const mark=(step:WorkflowStep):WorkflowStep=>({...step,done:true,note:`Review overridden by ${o.email}: ${o.reason}. Earlier records are archived; this is not a reviewer endorsement.`,children:step.children?.map(mark)});if(o.mode==="clear"){for(const id of scope==="content"?["content","corrections"]:[scope]){const i=result.findIndex(x=>x.id===id);if(i>=0)result[i]=mark(result[i]);}}else{const step=result.find(x=>x.id===scope);if(step)step.note=`Training release override is active; saved review progress remains visible. ${o.reason}`;}}
+ const live=d.trainingReleases?.at(-1);if(live?.fingerprint===hash&&live.brandRevision===brandRevision&&live.commercialVersion===(v?.id??null)){const p=result.find(x=>x.id==="publication");if(p){p.done=true;p.note="Training release published; the retained review remains open. Existing learner records use the frozen release.";}}
  return result;
 }
 export function setupGuide():WorkflowStep[]{return numberSteps(["Course and review team","Content review","Corrections and verification","Commercial preparation and sign-off","Branding review","Final clearance and publication"].map((label,i)=>({id:`setup-${i}`,label:`${i+1}. ${label}`,done:false,current:i===0,note:i===0?"Save a review request to start tracking this course.":undefined})));}

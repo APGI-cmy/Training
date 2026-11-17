@@ -132,6 +132,12 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
   const id=validId(text(form,"round_id")),access=await requireReview(id),{round,session,email,principal,fresh}=access,d=round.document;
 
   const op=text(form,"operation"),now=new Date().toISOString();let notice="Saved to the shared review.",mail= [] as ReturnType<typeof reviewMail>;
+  if(op==='review_override'){
+   if(!principal||!fresh||round.status!=='open')throw Error('An authorised principal and the current open course version are required.');
+   const result=await adminRest('/rest/v1/rpc/v4_apply_review_override',{method:'POST',body:JSON.stringify({p_id:id,p_revision:Number(text(form,'expected_revision')),p_fingerprint:text(form,'expected_fingerprint',64,64),p_brand:Number(text(form,'brand_revision')),p_actor:session.user.id,p_scope:text(form,'scope'),p_mode:text(form,'mode'),p_reason:text(form,'reason',15,4000),p_confirm:form.get('confirm_override')==='on',p_revoke:form.get('override_id')?validId(String(form.get('override_id'))):null})});
+   if(!result.ok)throw Error('Override not saved. Refresh and check the exact version, confirmation, reason and principal authority.');
+   revalidatePath(`/course-reviews/${id}`,'layout');revalidatePath('/course-reviews');revalidatePath('/notifications');return {success:'The review exception is recorded. Earlier evidence is archived and recoverable. Training publication is a separate explicit step; payments and learner assessment requirements are unchanged.'};
+  }
   if(op==='retry_deployment_registration')return fresh?{success:'The live course version is registered. Your saved review work is retained.',href:`/course-reviews/${id}#review-process`}:{error:'Automatic registration is waiting for the confirmed live deployment. Please refresh shortly; saved work is retained.'};
 
   if(op==="register_content_revision"){

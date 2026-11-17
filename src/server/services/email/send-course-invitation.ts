@@ -1,4 +1,6 @@
 import "server-only";
+import {isPartnerBrand} from "@/lib/white-label";
+import {recipientBrand,type RecipientBrand} from "./recipient-brand";
 import {escapeEmail,formatEmailText,emailHeading} from "@/lib/email-format";
 export {escapeEmail} from "@/lib/email-format";
 import { createHash } from "node:crypto";
@@ -43,7 +45,7 @@ export function brandedEmail(input: {
       ? input.color!
       : "#102b49";
   const sections=(input.sections??[]).map(section=>emailHeading(section.heading)+formatEmailText(section.body)+(section.items?.length?`<ul style="margin:0 0 20px;padding-left:28px">${section.items.map(value=>`<li style="margin:0 0 10px;line-height:1.65">${e(value)}</li>`).join('')}</ul>`:'')).join('');
-  return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta charset="utf-8"></head><body style="margin:0;padding:0;background:#edf3f7;font-family:Arial,sans-serif;color:#17324d"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td align="center" style="padding:24px 12px"><table role="presentation" width="760" style="width:100%;max-width:760px;background:#ffffff;border:1px solid #d6e1e8;border-radius:10px" cellspacing="0" cellpadding="0" border="0"><tr><td style="padding:26px;background:#ffffff;border-top:5px solid ${color};color:#102b47">${input.logo?`<img src="${e(input.logo)}" alt="${e(input.brand)} logo" width="150" style="display:block;width:150px;max-width:100%;height:auto;border:0;margin:0 0 18px">`:''}<p style="font:bold 24px Arial,sans-serif;line-height:1.4;margin:0">${e(input.brand)}</p></td></tr>${input.image?`<tr><td style="padding:0"><img src="${e(input.image)}" alt="${e(input.title)} — course illustration" width="760" style="display:block;width:100%;max-width:760px;height:auto;border:0"></td></tr>`:''}<tr><td style="padding:26px;font:16px Arial,sans-serif;line-height:1.65"><h1 style="font-size:25px;line-height:1.35;margin:0 0 20px;color:#102b47">${e(input.title)}</h1>${formatEmailText(input.description)}${sections}<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0"><tr><td bgcolor="${color}" style="border-radius:6px"><a href="${e(input.link)}" style="display:inline-block;background:${color};color:#ffffff;text-decoration:none;padding:14px 22px;border:1px solid ${color};border-radius:6px;font:bold 16px Arial,sans-serif;line-height:1.5">${e(input.button)}</a></td></tr></table><div style="font-size:14px;line-height:1.65">${formatEmailText(input.footer)}</div><hr style="border:0;border-top:1px solid #d6e1e8;margin:24px 0"><p style="font-size:12px;line-height:1.6;color:#557084;margin:0">Hosted by APGI. If you were not expecting this message, you can ignore it.</p></td></tr></table></td></tr></table></body></html>`;
+  return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta charset="utf-8"></head><body style="margin:0;padding:0;background:#edf3f7;font-family:Arial,sans-serif;color:#17324d"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td align="center" style="padding:24px 12px"><table role="presentation" width="760" style="width:100%;max-width:760px;background:#ffffff;border:1px solid #d6e1e8;border-radius:10px" cellspacing="0" cellpadding="0" border="0"><tr><td style="padding:26px;background:#ffffff;border-top:5px solid ${color};color:#102b47">${input.logo?`<img src="${e(input.logo)}" alt="${e(input.brand)} logo" width="150" style="display:block;width:150px;max-width:100%;height:auto;border:0;margin:0 0 18px">`:''}<p style="font:bold 24px Arial,sans-serif;line-height:1.4;margin:0">${e(input.brand)}</p></td></tr>${input.image?`<tr><td style="padding:0"><img src="${e(input.image)}" alt="${e(input.title)} — course illustration" width="760" style="display:block;width:100%;max-width:760px;height:auto;border:0"></td></tr>`:''}<tr><td style="padding:26px;font:16px Arial,sans-serif;line-height:1.65"><h1 style="font-size:25px;line-height:1.35;margin:0 0 20px;color:#102b47">${e(input.title)}</h1>${formatEmailText(input.description)}${sections}<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0"><tr><td bgcolor="${color}" style="border-radius:6px"><a href="${e(input.link)}" style="display:inline-block;background:${color};color:#ffffff;text-decoration:none;padding:14px 22px;border:1px solid ${color};border-radius:6px;font:bold 16px Arial,sans-serif;line-height:1.5">${e(input.button)}</a></td></tr></table><div style="font-size:14px;line-height:1.65">${formatEmailText(input.footer)}</div><hr style="border:0;border-top:1px solid #d6e1e8;margin:24px 0"><p style="font-size:12px;line-height:1.6;color:#557084;margin:0">${isPartnerBrand(input.brand)?"":"Hosted by APGI. "}If you were not expecting this message, you can ignore it. <a href="https://legal.apgi.app/training/privacy">Privacy policy</a></p></td></tr></table></td></tr></table></body></html>`;
 }
 export async function sendCourseInvitationEmail(
   input: InvitationEmailInput,
@@ -51,7 +53,8 @@ export async function sendCourseInvitationEmail(
   const config = emailConfiguration();
   if (!config) return { ok: false, error: "EMAIL_NOT_CONFIGURED" };
   const setup = input.accountSetup === true;
-  const invitationUrl = new URL(
+  const staging = process.env.ALP_ENVIRONMENT !== "training-production";
+  let invitationUrl = new URL(
     setup ? `/register?token=${encodeURIComponent(input.invitationToken)}&setup=1` : `/invitations/${encodeURIComponent(input.invitationToken)}`,
     config.origin,
   ).toString();
@@ -93,22 +96,25 @@ export async function sendCourseInvitationEmail(
       }
     }
   } catch {
-    /* Optional visuals fall back to APGI; the stored recipient and role never change. */
+    /* Company identity is required below; never send an unbranded partner invitation. */
   }
-  const title = setup ? "Choose your APGI V2 password and finish joining" : admin
+  let identity:RecipientBrand|null=null;try{identity=!admin&&organisationId?await recipientBrand(input.recipientEmail,organisationId):null;}catch{return {ok:false,error:'EMAIL_DELIVERY_FAILED'};}
+  if(!admin&&!identity)return {ok:false,error:"EMAIL_DELIVERY_FAILED"};
+  if(identity){brand=identity.name;logo=identity.logo;color=identity.color;invitationUrl=new URL(setup?`/register?token=${encodeURIComponent(input.invitationToken)}&setup=1`:`/invitations/${encodeURIComponent(input.invitationToken)}`,identity.origin).toString();}
+  const title = setup ? `Choose your ${brand} password and finish joining` : admin
     ? "Your APGI administrator invitation"
     : owner
       ? `Manage ${brand}`
       : input.courseTitle;
-  const heading = setup ? "You requested help signing in. This email address has an active invitation, but its separate Version 2 account has not been created yet." : admin
+  const heading = setup ? (staging?"You requested help signing in. This email address has an active invitation, but its separate Version 2 account has not been created yet.":"You have an active invitation. Choose your password to create your training account.") : admin
     ? "You have been invited to join APGI Training as a platform administrator."
     : owner
       ? `You have been invited to manage the ${brand} company workspace.`
       : `You have been invited to enrol in ${input.courseTitle}.`;
-  const instructions = setup ? "You do not need an existing password. Select Choose my password below, enter the email address that received this message, then choose and confirm your own password of at least 12 characters. We will email a confirmation link. Confirm your email, then complete and save Profile to activate only the access already assigned in your invitation. Your Version 1 account and password are separate and will not be changed. Never send your password to anyone." : admin
+  const instructions = setup ? "You do not need an existing password. Select Choose my password below, enter the email address that received this message, then choose and confirm your own password of at least 12 characters. We will email a confirmation link. Confirm your email, then complete and save Profile to activate only the access already assigned in your invitation. Never send your password to anyone." : admin
     ? "Sign in or create an account using this email address, then complete and save your profile. Your verified invitation will activate full administrator access in Version 2."
     : owner
-      ? "Use this invited email, verify your account and save Profile. Manage only your company logo, colours, certificate design and assigned policies. This does not grant APGI platform administrator access."
+      ? "Use this invited email, verify your account and save Profile. Manage only your company logo, colours, certificate design and assigned policies. This does not grant global platform administrator access."
       : "Use this invited email, verify your account and save Profile. Your invited course will appear on your dashboard automatically; no separate acceptance or approval is needed.";
   const button = setup ? "Choose my password" : admin
     ? "Open your administrator invitation"
@@ -131,13 +137,14 @@ export async function sendCourseInvitationEmail(
   return deliverTransactionalEmail({
     tracking:!admin&&!owner?false:{category:admin?'admin_invitation':'company_invitation',organisationId,sourceId:input.invitationId,actorId:input.actorId,messageKey:`invitation:${input.invitationId}`},
     to: input.recipientEmail,
-    subject: setup ? "Set up your APGI Training V2 password" : admin
+    branding:identity?{name:identity.name,from:identity.from,verified:identity.verified}:undefined,
+    subject: setup ? `Set up your ${brand} password` : admin
       ? "Your APGI administrator invitation"
       : owner
         ? `Your ${brand} company workspace invitation`
         : `Your ${brand} course invitation: ${input.courseTitle}`,
     html,
-    text: `${brand}\n${heading}\n${button}: ${invitationUrl}\n\n${instructions}\nThis link expires ${expiry}. Hosted by APGI.`,
+    text: `${brand}\n${heading}\n${button}: ${invitationUrl}\n\n${instructions}\nThis link expires ${expiry}.${isPartnerBrand(brand)?"":" Hosted by APGI."}`,
     idempotencyKey: `${setup ? "account-setup" : "course-invitation"}-${input.invitationId}-${createHash("sha256").update(input.invitationToken).digest("hex").slice(0, 20)}`,
   });
 }

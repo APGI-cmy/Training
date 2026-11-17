@@ -19,15 +19,15 @@ const DEADLINE_COOKIE='alp_recovery_deadline';
 function recoveryMessage() {
   return usesStagingMailCapture()
     ? "If a test account exists, its reset link is available to your staging administrator in Test messages. No email is sent from Version 2 staging."
-    : "If this address has an account or an active invitation, check your email for ‘Reset your APGI Training password’ or ‘Set up your APGI Training V2 password’. The email opens the correct password page; you do not need to sign in first. Check junk or quarantine too and use the newest email. If nothing arrives within a few minutes, contact your training administrator.";
+    : "If this address has an account or an active invitation, check your email for the password reset or account setup message. The email opens the correct password page; you do not need to sign in first. Check junk or quarantine too and use the newest email. If nothing arrives within a few minutes, contact your training administrator.";
 }
 
 export async function requestPasswordRecovery(_state: PasswordRecoveryState, formData: FormData): Promise<PasswordRecoveryState> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const next = safeRecoveryNext(String(formData.get("next") ?? ""));
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) return { error: "Enter the email address you use for APGI Training." };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) return { error: "Enter the email address you use for training." };
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceKey) return { error: "Password recovery is temporarily unavailable. Please contact APGI support." };
+  if (!serviceKey) return { error: "Password recovery is temporarily unavailable. Please contact your training administrator." };
   try {
     if (!(await claimAuthEmailBudget("recovery", email))) return { error: "Too many recovery requests. Please wait up to one hour before trying again, and check your latest email in the meantime." };
     const generated = await adminRest("/auth/v1/admin/generate_link", {
@@ -44,7 +44,7 @@ export async function requestPasswordRecovery(_state: PasswordRecoveryState, for
     if (!payload.hashed_token || !(await sendPasswordRecoveryEmail(email, payload.hashed_token, next))) throw new Error("RECOVERY_EMAIL_UNAVAILABLE");
     return { message: recoveryMessage() };
   } catch {
-    return { error: "Password recovery is temporarily unavailable. Please contact APGI support." };
+    return { error: "Password recovery is temporarily unavailable. Please contact your training administrator." };
   }
 }
 

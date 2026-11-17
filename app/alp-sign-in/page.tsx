@@ -7,10 +7,10 @@ export default async function AlpSignInPage({ searchParams }: { searchParams: Pr
   return (
     <main className="content-band">
       <div className="content-inner auth-panel">
-        <h1>APGI sign in</h1>
+        <h1>Sign in</h1>
         {passwordReset === "success" ? <p className="form-success" role="status">Your password has been updated. Sign in with your new password.</p> : null}
         <LoginForm returnTo={returnTo} />
-        <p>Read how APGI handles your account and training information in the <Link href="/privacy">privacy policy</Link>.</p>
+        <p>Read how we handle your account and training information in the <Link href="/privacy">privacy policy</Link>.</p>
         <p><Link href={`/forgot-password${returnTo ? `?next=${encodeURIComponent(returnTo)}` : ""}`}>Forgot password or need to finish joining?</Link></p>
       </div>
     </main>
