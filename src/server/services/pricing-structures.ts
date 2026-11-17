@@ -54,9 +54,9 @@ export async function confirmPricingBatch(object:Record<string,unknown>,eventId:
  const pi=await stripeRequest<{id:string;livemode:boolean;status:string;amount:number;currency:string;metadata:{apgi_pricing_batch?:string};latest_charge:{paid:boolean;captured:boolean;refunded:boolean;amount_refunded:number;disputed:boolean}}>(`payment_intents/${object.payment_intent}?expand%5B%5D=latest_charge`);
  if(pi.id!==object.payment_intent||pi.livemode!==false||pi.status!=='succeeded'||pi.amount!==b.amount_cents||pi.currency!==b.currency.toLowerCase()||pi.metadata.apgi_pricing_batch!==id||!pi.latest_charge?.paid||!pi.latest_charge.captured)throw Error('Verified sandbox payment does not match the cart.');
  // A delayed paid receipt honours the accepted, frozen quote even after its offer expires.
- await calculatorRpc('cc_fund_batch',{p_batch:id,p_checkout:object.id,p_intent:pi.id,p_event:eventId,p_amount:pi.amount,p_currency:pi.currency,p_live:false});
- if(pi.latest_charge.refunded||pi.latest_charge.amount_refunded||pi.latest_charge.disputed)await calculatorRpc('cc_hold_payment',{p_intent:pi.id,p_event:eventId,p_refund:pi.latest_charge.refunded===true});
- else await reconcilePricingBatch({...b,state:'funded',payment_intent:pi.id});
+ const held=pi.latest_charge.refunded||pi.latest_charge.amount_refunded>0||pi.latest_charge.disputed;
+ await calculatorRpc('cc_confirm_batch',{p_batch:id,p_checkout:object.id,p_intent:pi.id,p_event:eventId,p_amount:pi.amount,p_currency:pi.currency,p_live:false,p_hold:held,p_refund:pi.latest_charge.refunded===true});
+ if(!held)await reconcilePricingBatch({...b,state:'funded',payment_intent:pi.id});
 }
 export async function cartQuotes(cart:string,buyer:string){
  const owned=(await rows<{id:string}>(`/rest/v1/cc_carts?id=eq.${validId(cart)}&buyer_id=eq.${validId(buyer)}&select=id`))[0];if(!owned)throw Error('Your cart is unavailable.');
