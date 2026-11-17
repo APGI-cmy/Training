@@ -16,6 +16,9 @@ function refresh(){for(const p of ['/course-calculator','/course-shop','/course-
 export async function savePricingStructure(_:StructureState,f:FormData):Promise<StructureState>{try{
  const a=await calculatorAccess(validId(field(f,'company'))),raw=JSON.parse(field(f,'document')) as PricingStructure;
  const cost=(await rows<{id:string;snapshot:CostSchedule}>(`/rest/v1/cc_cost_versions?id=eq.${validId(raw.cost.id)}&select=id,snapshot&limit=1`))[0];if(!cost)throw Error('Choose a recorded platform cost version.');
+ if(!['USD','CAD','ZAR'].includes(cost.snapshot.currency))throw Error('Unsupported cost currency.');
+ const latest=(await rows<{id:string}>(`/rest/v1/cc_cost_versions?snapshot->>currency=eq.${cost.snapshot.currency}&select=id&order=created_at.desc&limit=1`))[0];
+ if(latest?.id!==cost.id)throw Error('The central platform cost version changed. Refresh before preparing a new structure. Existing approved structures retain their frozen basis.');
  const available=(await calculatorCourses(a.company.id,a.principal)).courses;
  const courses=raw.courses.map(c=>available.find(v=>v.id===c.id));if(courses.some(c=>!c))throw Error('Course records changed. Refresh before saving.');
  const s:PricingStructure={version:STRUCTURE_VERSION,mode:raw.mode,company:{id:a.company.id,isApgi:a.company.slug==='apgi'},cost:shareableCost(cost.id,cost.snapshot),courses:courses.filter(c=>!!c),paymentMethod:raw.paymentMethod,feeBearer:raw.feeBearer,offers:raw.offers};
