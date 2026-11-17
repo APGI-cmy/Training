@@ -1,3 +1,4 @@
+import {requireSession} from '@/server/auth/session';
 import Link from 'next/link';
 import {notFound} from 'next/navigation';
 import {shopAccess,type PriceRecord} from '@/server/services/pricing-structures';
@@ -6,6 +7,7 @@ import {rows} from '@/server/services/company-structure';
 import {CourseShop,type ShopOffer} from '@/components/payments/CourseShop';
 import {quoteStructure,ROUTES} from '@/lib/pricing-structures';
 export default async function CourseShopPage({searchParams}:{searchParams:Promise<{company?:string;course?:string}>}){
+ await requireSession();
  const params=await searchParams,company=params.company??(await rows<{id:string}>(`/rest/v1/organisations?slug=eq.apgi&select=id&limit=1`))[0]?.id;let a;try{a=await shopAccess(company);}catch{notFound();}
  const releases=await rows<{structure_id:string;course_id:string}>(`/rest/v1/cc_structure_releases?company_id=eq.${a.company.id}&select=structure_id,course_id&order=id.desc&limit=1000`);
  const current=releases.filter((r,i)=>releases.findIndex(v=>v.course_id===r.course_id)===i);

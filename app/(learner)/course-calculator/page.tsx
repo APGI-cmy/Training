@@ -1,3 +1,4 @@
+import {requireSession} from '@/server/auth/session';
 import Link from 'next/link';
 import {notFound} from 'next/navigation';
 import {PricingWorkflow} from '@/components/payments/PricingWorkflow';
@@ -11,6 +12,7 @@ import {quoteStructure,ROUTES,ROUTE_NAMES,moneyLabel} from '@/lib/pricing-struct
 import type {CostSchedule} from '@/lib/course-calculator';
 
 export default async function PricingPage({searchParams}:{searchParams:Promise<{company?:string}>}){
+ await requireSession();
  const params=await searchParams;let access;try{access=await calculatorAccess(params.company);}catch{notFound();}
  const {company,session,principal}=access;
  const [catalogue,costs,policy,structures,releases,principals]=await Promise.all([

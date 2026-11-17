@@ -1,3 +1,4 @@
+import {requireSession} from '@/server/auth/session';
 import Link from 'next/link';
 import {notFound} from 'next/navigation';
 import {shopAccess,cartQuotes,type PurchaseBatch} from '@/server/services/pricing-structures';
@@ -6,6 +7,7 @@ import {StructureForm} from '@/components/admin/StructureForm';
 import {checkoutPricingCart,removePricingQuote} from '@/server/actions/pricing-structures';
 import {moneyLabel,ROUTE_NAMES} from '@/lib/pricing-structures';
 export default async function CartPage({searchParams}:{searchParams:Promise<{company?:string}>}){
+ await requireSession();
  const params=await searchParams,company=params.company??(await rows<{id:string}>(`/rest/v1/organisations?slug=eq.apgi&select=id&limit=1`))[0]?.id;let a;try{a=await shopAccess(company);}catch{notFound();}
  const [carts,batches]=await Promise.all([rows<{id:string;state:string}>(`/rest/v1/cc_carts?buyer_id=eq.${a.session.user.id}&company_id=eq.${a.company.id}&state=eq.open&select=id,state&limit=1`),rows<PurchaseBatch>(`/rest/v1/cc_purchase_batches?buyer_id=eq.${a.session.user.id}&company_id=eq.${a.company.id}&select=*&order=created_at.desc&limit=20`)]);
  const cart=carts[0],quotes=cart?await cartQuotes(cart.id,a.session.user.id):[];
