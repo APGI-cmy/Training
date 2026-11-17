@@ -14,8 +14,8 @@ export type PriceRecord={id:string;company_id:string;policy_id:string;document:P
 export type PurchaseBatch={id:string;cart_id:string;buyer_id:string;company_id:string;mode:'test';state:string;payment_method:'card'|'invoice';amount_cents:number;currency:string;checkout_id:string|null;payment_intent:string|null;fee_evidence:unknown;hold_reason:string|null;created_at:string};
 export function pricingFingerprint(value:unknown):string{return createHash('sha256').update(JSON.stringify(value)).digest('hex');}
 export function shareableCost(id:string,s:CostSchedule):CostSchedule{return {id,currency:s.currency,monthlyPoolCents:s.monthlyPoolCents,activeLearners:s.activeLearners,newEnrolments:s.newEnrolments,variableCents:s.variableCents,processorBps:s.processorBps,processorFixedCents:s.processorFixedCents,source:s.source,sourceDraftId:s.sourceDraftId,rates:s.rates,floors:s.floors,margins:s.margins};}
-export async function publishedStructure(companyId:string){
- const release=(await rows<{structure_id:string}>(`/rest/v1/cc_structure_releases?company_id=eq.${validId(companyId)}&select=structure_id&order=id.desc&limit=1`))[0];
+export async function publishedStructure(companyId:string,courseId?:string){
+ const release=(await rows<{structure_id:string}>(`/rest/v1/cc_structure_releases?company_id=eq.${validId(companyId)}&${courseId?`course_id=eq.${encodeURIComponent(courseId)}&`:''}select=structure_id&order=id.desc&limit=1`))[0];
  if(!release)return null;
  return (await rows<PriceRecord>(`/rest/v1/cc_price_structures?id=eq.${release.structure_id}&select=*&limit=1`))[0]??null;
 }
@@ -30,7 +30,7 @@ export async function shopAccess(companyId:string){
 }
 export async function verifyStructureQuote(q:CalculatorQuote&{structure_id?:string;buyer_id?:string;expires_at?:string}){
  if(!q.structure_id)throw Error('Choose a current approved pricing structure.');
- const s=await publishedStructure(q.company_id);
+ const s=await publishedStructure(q.company_id,q.courses[0]?.courseId);
  if(!s||s.id!==q.structure_id)throw Error('The pricing structure changed. Request a fresh quote.');
  const calculated=quoteStructure(s.document,q.input.route,q.input.seats);
  if(pricingFingerprint({structure:s.id,buyer:q.buyer_id,...calculated})!==q.fingerprint)throw Error('The saved quote requires reconciliation.');
