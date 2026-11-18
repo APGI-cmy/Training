@@ -4,6 +4,7 @@ import { stagingEmailEnabled, STAGING_ORIGIN } from "@/server/environment-isolat
 import {beginMailAttempt,finishMailAttempt,type MailTracking} from './delivery-ledger';
 import {singleRecipient} from '@/server/security/outbound';
 import {escapeEmail} from '@/lib/email-format';
+import {backupEmailConfiguration,backupEmailNotice} from '@/lib/backup-email';
 
 export function emailConfiguration() {
   const staging=process.env.ALP_ENVIRONMENT==='v2-staging';
@@ -31,8 +32,13 @@ export function previewTransactionalEmail(input:{subject:string;html:string;text
  // them the same frame; a complete company-branded document stays intact.
  const frameBrand=input.branding?.name??"APGI Training",frameLogo=input.branding?input.branding.logo:`${STAGING_ORIGIN}/branding/apgi-logo.png`;
  const document=/<body\b[^>]*>/i.test(input.html)?input.html:`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta charset="utf-8"></head><body style="margin:0;padding:0;background:#edf3f7;font:16px Arial,sans-serif;color:#17324d;line-height:1.65"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td align="center" style="padding:24px 12px"><table role="presentation" width="760" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:760px;background:#ffffff;border:1px solid #d6e1e8"><tr><td style="padding:26px;border-top:5px solid #102b47">${frameLogo?`<img src="${escapeEmail(frameLogo)}" alt="${escapeEmail(frameBrand)} logo" width="150" style="display:block;width:150px;max-width:100%;height:auto;border:0;margin:0 0 18px">`:""}<p style="font:bold 24px Arial,sans-serif;margin:0 0 22px">${escapeEmail(frameBrand)}</p><h1 style="font-size:25px;line-height:1.35;margin:0 0 20px">${escapeEmail(input.subject)}</h1><div style="font:16px Arial,sans-serif;line-height:1.65">${input.html}</div><hr style="border:0;border-top:1px solid #d6e1e8;margin:24px 0"><p style="font-size:12px;line-height:1.6;color:#557084;margin:0">${input.branding?"":"Hosted by APGI"}</p></td></tr></table></td></tr></table></body></html>`;
- const html=!staging?document:document.replace(/(<body\b[^>]*>)/i,`$1${banner}`);
- return {subject:(staging?(input.branding?'['+input.branding.name+' TEST] ':'[APGI V2 TEST] '):'')+input.subject,html,text:(staging?notice+'\n\n':'')+input.text};
+ const backup=backupEmailConfiguration(),backupNotice=backup?backupEmailNotice(input.branding?.name??'Your training provider'):null;
+ const footnote=backupNotice?`<div role="note" style="max-width:712px;margin:16px auto;padding:12px 24px;color:#557084;font:12px Arial,sans-serif;line-height:1.6"><p style="margin:0">${escapeEmail(backupNotice)} <a href="https://legal.apgi.app/training/privacy">Privacy policy</a></p></div>`:'';
+ const rendered=footnote?document.replace(/<\/body>/i,footnote+'</body>'):document;
+ const html=!staging?rendered:rendered.replace(/(<body\b[^>]*>)/i,`$1${banner}`);
+ const text=(staging?notice+'\n\n':'')+input.text+(backupNotice?'\n\n'+backupNotice+'\nPrivacy policy: https://legal.apgi.app/training/privacy':'');
+ const privacy=process.env.NEXT_PUBLIC_APP_URL+'/privacy';
+ return {subject:(staging?(input.branding?'['+input.branding.name+' TEST] ':'[APGI V2 TEST] '):'')+input.subject,html:backup?html.replaceAll('https://legal.apgi.app/training/privacy',privacy):html,text:backup?text.replaceAll('https://legal.apgi.app/training/privacy',privacy):text};
 }
 export async function deliverTransactionalEmail(input:{to:string;subject:string;html:string;text:string;idempotencyKey:string;tracking?:MailTracking|false;branding?:DeliveryBrand}) {
   const config=emailConfiguration();
@@ -47,8 +53,9 @@ export async function deliverTransactionalEmail(input:{to:string;subject:string;
     try{
       const {recipientBrand}=await import('./recipient-brand');
       const identity=await recipientBrand(input.to,company);
-      if(!identity?.verified||!identity.from||input.branding&&input.branding.name!==identity.name)return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};
-      input={...input,branding:{name:identity.name,from:identity.from,verified:true,logo:identity.logo}};
+      const backup=backupEmailConfiguration();
+      if(!identity||(!backup&&(!identity.verified||!identity.from))||input.branding&&input.branding.name!==identity.name)return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};
+      input={...input,branding:{name:backup?identity.name+' Training':identity.name,from:backup?.from??identity.from,verified:!!backup||identity.verified,logo:identity.logo}};
       // Never resurrect a saved provider-branded template on a partner site.
       if(/Hosted by APGI|>\s*APGI Training\s*</i.test(input.html))return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};
     }catch{return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};}

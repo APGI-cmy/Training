@@ -10,6 +10,7 @@ import { getActiveOrganisations } from "@/server/services/organisations/get-orga
 import { getGroups } from "@/server/services/groups";
 import { adminRest } from "@/server/supabase/admin-rest";
 import {productionInvitationEmailsHeld} from '@/server/services/invitations/email-hold';
+import {backupEmailConfiguration} from '@/lib/backup-email';
 
 export default async function InvitationsPage() {
   await requireAdmin();
@@ -52,6 +53,7 @@ export default async function InvitationsPage() {
         </div>
       </header>
       {productionInvitationEmailsHeld()?<aside className="notice-card" role="status"><strong>Emails are on hold</strong><p>You can save individual or bulk learner invitations now. They remain pending; no emails or usable invitation links are sent. After your company’s DNS and sender verification, use Send invitation email for each saved invitation. Live payments remain disabled.</p></aside>:null}
+      {!productionInvitationEmailsHeld()&&backupEmailConfiguration()?<aside className="notice-card" role="status"><strong>Automated email backup service is active</strong><p>Invitations and account emails use your company branding with a temporary backup sender address and a short delivery notice. Live payments remain disabled. Previously held invitations are sent only when you choose Send invitation email.</p></aside>:null}
       <InvitationForm
         courses={courses}
         organisations={organisations}
