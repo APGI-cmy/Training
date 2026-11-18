@@ -11,7 +11,13 @@ export function matchesCourseFilter(course:CourseClassification&{title:string},f
  if(filter.scopes.includes('client')&&filter.clientName&&course.scope==='client'&&normal(course.clientName??'Client not recorded')!==normal(filter.clientName))return false;
  return !filter.search||normal(`${course.title} ${course.industry??''} ${course.clientName??''}`).includes(normal(filter.search));
 }
-export function classificationLabel(c:CourseClassification){return `${c.scope?SCOPE_NAMES[c.scope]:'Category not recorded'}${c.scope==='industry'?` · ${c.industry||'Industry not recorded'}`:c.scope==='client'?` · ${c.clientName||'Client not recorded'}`:''}`;}
+export function classificationLabel(c:CourseClassification){
+ const category=c.scope?SCOPE_NAMES[c.scope]:'Category not recorded';
+ if(c.scope==='industry')return `${category} · ${c.industry||'Industry not recorded'}`;
+ if(c.scope==='client')return `${category} · ${c.clientName||'Client not recorded'}${c.industry?` · ${c.industry}`:''}`;
+ return `${category}${c.industry?` · ${c.industry}`:''}`;
+}
+
 // Comparison display only. Never round or modify the invoice being approved.
 export function monthlyLearnerCents(total:number,learners:number,months:number){
  if(!Number.isSafeInteger(total)||total<0||!Number.isSafeInteger(learners)||learners<1||!Number.isSafeInteger(months)||months<1)throw Error('Check the total, learner count and access months.');

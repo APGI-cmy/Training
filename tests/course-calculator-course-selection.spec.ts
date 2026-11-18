@@ -27,3 +27,15 @@ describe('Monthly learner comparison',()=>{
  it('does not round or mutate a quoted invoice',()=>{const q=quoteStructure(make(),'subscription',100),before=JSON.stringify(q);expect(monthlyLearnerCents(q.result.totalCents,100,12)*1200).toBeCloseTo(q.result.totalCents,8);expect(JSON.stringify(q)).toBe(before);});
  it('rejects zero learner or term denominators',()=>{expect(()=>monthlyLearnerCents(100,0,12)).toThrow();expect(()=>monthlyLearnerCents(100,1,0)).toThrow();});
 });
+
+
+describe('A hundred-course discovery pool',()=>{
+ it('filters a large catalogue by category, industry, client and text without changing selected entitlements',()=>{
+  const pool=Array.from({length:100},(_,i)=>({title:`Course ${i}`,scope:i<40?'public' as const:i<80?'industry' as const:'client' as const,industry:i<60?'Mining':'Telecommunications',clientName:i>=80?'NKS Capital':undefined}));
+  const selected=new Set(['Course 5','Course 85']),before=JSON.stringify([...selected]);
+  expect(pool.filter(c=>matchesCourseFilter(c,{...emptyCourseFilter(),scopes:['industry'],industry:'Mining'}))).toHaveLength(20);
+  expect(pool.filter(c=>matchesCourseFilter(c,{...emptyCourseFilter(),scopes:['client'],clientName:'NKS Capital',search:'Course 85'}))).toHaveLength(1);
+  expect(pool.filter(c=>matchesCourseFilter(c,{...emptyCourseFilter(),search:'Course 99'}))).toHaveLength(1);
+  expect(JSON.stringify([...selected])).toBe(before);expect(pool.filter(c=>matchesCourseFilter(c,emptyCourseFilter()))).toHaveLength(100);
+ });
+});
