@@ -1,4 +1,4 @@
-import {backupEmailConfiguration} from '@/lib/backup-email';
+import {backupEmailConfiguration} from '../lib/backup-email.ts';
 export const PRODUCTION_PROJECT_ID='prj_BxMjzI1TwimFM2mbV2ox3d7EUTsz';
 export const PRODUCTION_DATABASE_REF='rbfzsttqbaocokzbvpbf';
 export const PRODUCTION_ORIGIN='https://training.nkscapital.co.za';
