@@ -3,7 +3,7 @@ import {providerFetch as fetch} from '@/server/security/provider-fetch';
 
 import { revalidatePath } from "next/cache";
 import { requireSession, getSupabaseRestUrl } from "@/server/auth/session";
-import { insertProfileFileMetadata } from "@/server/services/profiles";
+import { getProfile,insertProfileFileMetadata } from "@/server/services/profiles";
 
 export type FileUploadState = {
   error?: string;
@@ -24,6 +24,7 @@ export async function uploadProfileFileAction(
   formData: FormData
 ): Promise<FileUploadState> {
   const session = await requireSession();
+  if(!await getProfile(session))return {error:'Save your profile first. CV and photo uploads are optional and can be added later.'};
   const file = formData.get("profile_file");
   const purpose = String(formData.get("file_purpose") ?? "cv") === "profile_photo" ? "profile_photo" : "cv";
 

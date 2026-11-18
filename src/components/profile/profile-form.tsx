@@ -27,6 +27,7 @@ export function ProfileForm({
 
   return (
     <form className="alp-form" action={formAction}>
+      <p>Only your certificate name is required. A CV, profile photo, phone number and country are optional. Save your profile to continue; you can add private files later.</p>
       {onboarding ? (
         <input type="hidden" name="complete_onboarding" value="true" />
       ) : null}

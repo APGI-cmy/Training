@@ -120,8 +120,9 @@ export default async function ProfilePage({
             />
           </section>
           <section className="profile-panel">
-            <h2>Private files</h2>
-            <FileUploadControl />
+            <h2>Optional private files</h2>
+            <p>A CV or profile photo is not required to save your profile, activate an invitation or start training.</p>
+            {profile?<FileUploadControl />:<p>Save your profile first using the separate Save profile button. You can return here later to upload an optional file.</p>}
             <ul className="plain-list file-list">
               {files.map((file) => (
                 <li key={file.id}>

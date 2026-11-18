@@ -26,7 +26,7 @@ export async function updateProfileAction(
   const certificateName = clean(formData.get("certificate_name"));
 
   if (!certificateName) {
-    return { error: "Certificate name is required for APGI learner records." };
+    return { error: "Certificate name is required for your learner records." };
   }
 
   const result = await upsertProfile(session, {
