@@ -46,4 +46,5 @@ if (invalid.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(`Course-media verification passed: ${media.length} MP4 file(s) are real media objects.`);
+  await import('./verify-course-books.mjs');
 }
