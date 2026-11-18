@@ -2,7 +2,7 @@ import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {providerFetch} from '@/server/security/provider-fetch';
 const network=vi.fn();
 const url='https://rbfzsttqbaocokzbvpbf.supabase.co/rest/v1/organisations';
-beforeEach(()=>{vi.stubEnv('ALP_ENVIRONMENT','training-production');vi.stubGlobal('fetch',network);network.mockResolvedValue(Response.json([]));});
+beforeEach(()=>{vi.stubEnv('ALP_ENVIRONMENT','training-production');vi.stubEnv('NEXT_PUBLIC_APP_URL','https://training.nkscapital.co.za');vi.stubGlobal('fetch',network);network.mockResolvedValue(Response.json([]));});
 afterEach(()=>{vi.unstubAllEnvs();vi.unstubAllGlobals();vi.resetAllMocks();});
 describe('Modern production Supabase credentials',()=>{
  it.each(['sb_secret_fixture_not_a_real_key','sb_publishable_fixture_not_a_real_key'])('sends %s as an API key without treating it as a JWT',async key=>{

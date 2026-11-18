@@ -4,8 +4,8 @@ import {reviewOverride,type ReviewOverride} from '@/lib/review-overrides';
 import {reviewBlockers,activeFindings} from '@/lib/course-review';
 import {publicationGuide,findWorkflowStep} from '@/lib/publication-guide';
 import {luReviewStages} from '@/lib/lu-review-workflow';
-import {assertStagingIsolation} from '@/server/environment-isolation';
-import {PRODUCTION_DATABASE_REF,PRODUCTION_ORIGIN,PRODUCTION_PROJECT_ID} from '@/server/production-environment';
+import {assertStagingIsolation,configuredAppOrigin} from '@/server/environment-isolation';
+import {PRODUCTION_DATABASE_REF,PRODUCTION_ORIGIN,PRODUCTION_VERCEL_ORIGIN,PRODUCTION_PROJECT_ID} from '@/server/production-environment';
 const at='2026-11-17T18:00:00Z';
 function sample(){const r=notificationRound();r.document.reviewProcessVersion=3;r.document.findings=[{id:'finding',unit:'lu1',reference:'Slide 1',category:'Content',blocking:true,author:r.document.requester,userId:'johan',at:'2026-11-01T12:00:00Z',text:'A correction is required',status:'open',replies:[]}];return r;}
 function grant(r:ReturnType<typeof sample>,scope:ReviewOverride['scope'],mode:'retain'|'clear'='retain'){const o:ReviewOverride={id:scope,scope,mode,at,actorId:'johan',email:'johan.ras@apginc.ca',reason:'Client has prepaid; review continues independently.',fingerprint:r.fingerprint,brandRevision:1,commercialVersion:r.document.workflow!.commercials[0].id};(r.document.reviewOverrides??=[]).push(o);return o;}
@@ -20,5 +20,7 @@ describe('Explicit review exceptions without fabricated endorsements',()=>{
 describe('Production remains separate and payment-disabled',()=>{
  const production={ALP_ENVIRONMENT:'training-production',VERCEL:'1',VERCEL_PROJECT_ID:PRODUCTION_PROJECT_ID,ALP_PRODUCTION_DATABASE_REF:PRODUCTION_DATABASE_REF,NEXT_PUBLIC_SUPABASE_URL:`https://${PRODUCTION_DATABASE_REF}.supabase.co`,NEXT_PUBLIC_SUPABASE_ANON_KEY:'fixture-public',SUPABASE_SERVICE_ROLE_KEY:'fixture-private-not-real',NEXT_PUBLIC_APP_URL:PRODUCTION_ORIGIN,ALP_PAYMENTS_MODE:'disabled',SCANNEX_VIEWER_LAB_ENABLED:'false',ALP_EMAIL_MODE:'disabled'};
  it('accepts only the exact separate production configuration',()=>expect(()=>assertStagingIsolation(production)).not.toThrow());
+ it.each([PRODUCTION_ORIGIN,PRODUCTION_VERCEL_ORIGIN])('uses the selected approved address for generated links: %s',origin=>{const env={...production,NEXT_PUBLIC_APP_URL:origin};expect(()=>assertStagingIsolation(env)).not.toThrow();expect(configuredAppOrigin(env)).toBe(origin);});
+ it.each(['https://training-platform-v2-staging.vercel.app','https://nks-capital-training.attacker.invalid','https://nks-capital-training-other.vercel.app','http://nks-capital-training.vercel.app','https://nks-capital-training.vercel.app/reset-password','https://nks-capital-training.vercel.app.attacker.invalid'])('rejects an unapproved or inexact production address: %s',origin=>{const env={...production,NEXT_PUBLIC_APP_URL:origin};expect(()=>assertStagingIsolation(env)).toThrow();expect(()=>configuredAppOrigin(env)).toThrow();});
  it.each([{VERCEL_PROJECT_ID:'prj_ORt9BeL7D469cnEOZs04cyHD5s5y'},{NEXT_PUBLIC_SUPABASE_URL:'https://ooujszdvncwijbuzpjfp.supabase.co'},{NEXT_PUBLIC_SUPABASE_URL:'https://eaaqgtdpvbxdgjxphjie.supabase.co'},{NEXT_PUBLIC_APP_URL:'https://training.apgi.app'},{ALP_PAYMENTS_MODE:'live'},{STRIPE_SECRET_KEY:'sk_live_fixture'},{SCANNEX_VIEWER_LAB_ENABLED:'true'},{ALP_EMAIL_MODE:'transactional',RESEND_API_KEY:'re_fixture',EMAIL_FROM:'APGI <training@apginc.ca>'}])('rejects a cross-environment or premature activation change',change=>expect(()=>assertStagingIsolation({...production,...change})).toThrow());
 });
