@@ -8,10 +8,12 @@ vi.mock('@/server/services/company-structure',()=>({contextualCompany:vi.fn(),co
 vi.mock('@/server/services/branding/course-branding',()=>({getLearnerOrganisationBranding:vi.fn(),getPlatformOrganisationBranding:m.platform}));
 import {getTenantCourses,tenantCourseAssigned} from '@/server/services/tenant-courses';
 import {GET} from '../app/api/branding/route';
+import {getActiveOrganisations,getOrganisationsForAdmin} from '@/server/services/organisations/get-organisations';
 const company='ebe89fb6-23fa-4fb1-9bfb-c525795fa3c7';
 beforeEach(()=>{vi.resetAllMocks();vi.stubEnv('ALP_ENVIRONMENT','training-production');vi.stubEnv('ALP_DEFAULT_ORGANISATION_ID',company);m.rest.mockImplementation(async()=>Response.json([{course_id:'tiger-kidnapping-telecommunications'}]));m.brand.mockResolvedValue({brandName:'NKS Capital',hidePlatformBranding:true});});
 afterEach(()=>vi.unstubAllEnvs());
 describe('Production company boundary',()=>{
+ it('scopes organisation selectors to the production company instead of the APGI seed organisation',async()=>{m.rest.mockImplementation(async()=>Response.json([{id:company,name:'NKS Capital',slug:'nks-capital',is_active:true,logo_path:null}]));for(const list of [getActiveOrganisations,getOrganisationsForAdmin])expect((await list()).map(o=>o.id)).toEqual([company]);expect(m.rest.mock.calls.every(([path])=>path.includes(`id=eq.${company}`))).toBe(true);});
  it('returns only assigned courses and denies an unassigned course even for the shared static registry',async()=>{expect((await getTenantCourses()).map(c=>c.id)).toEqual(['tiger-kidnapping-telecommunications']);expect(await tenantCourseAssigned('vpshr-level-0')).toBe(false);expect(await tenantCourseAssigned('tiger-kidnapping-telecommunications')).toBe(true);expect(m.rest.mock.calls[0][0]).toContain(`organisation_id=eq.${company}`);});
  it('does not expose the global catalogue when configuration or the assignment service fails',async()=>{vi.stubEnv('ALP_DEFAULT_ORGANISATION_ID','');await expect(getTenantCourses()).rejects.toThrow();vi.stubEnv('ALP_DEFAULT_ORGANISATION_ID',company);m.rest.mockResolvedValue(new Response('unavailable',{status:503}));await expect(getTenantCourses()).rejects.toThrow();});
  it('leaves the existing shared V2 staging catalogue available',async()=>{vi.stubEnv('ALP_ENVIRONMENT','v2-staging');expect((await getTenantCourses()).length).toBeGreaterThan(1);expect(m.rest).not.toHaveBeenCalled();});

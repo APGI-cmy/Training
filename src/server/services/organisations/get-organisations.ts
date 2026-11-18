@@ -1,3 +1,4 @@
+import {getTenantCourses,productionCompanyId} from '@/server/services/tenant-courses';
 import { getSupabaseRestUrl } from "@/server/auth/session";
 import { adminRest } from "@/server/supabase/admin-rest";
 import type { Organisation } from "@/lib/organisation";
@@ -43,7 +44,8 @@ const selection = "id,slug,name,logo_path,primary_color,secondary_color,accent_c
 
 export async function getOrganisationsForAdmin(): Promise<Organisation[]> {
   try {
-    const response = await adminRest(`/rest/v1/organisations?select=${selection}&order=name.asc`);
+    const company=productionCompanyId();
+    const response = await adminRest(`/rest/v1/organisations?select=${selection}&order=name.asc${company?`&id=eq.${company}`:''}`);
     if (!response.ok) return [];
     return ((await response.json()) as OrganisationRow[]).map(toOrganisation);
   } catch {
@@ -53,7 +55,8 @@ export async function getOrganisationsForAdmin(): Promise<Organisation[]> {
 
 export async function getActiveOrganisations(): Promise<Organisation[]> {
   try {
-    const response = await adminRest(`/rest/v1/organisations?is_active=eq.true&select=${selection}&order=name.asc`);
+    const company=productionCompanyId();
+    const response = await adminRest(`/rest/v1/organisations?is_active=eq.true&select=${selection}&order=name.asc${company?`&id=eq.${company}`:''}`);
     if (!response.ok) return [];
     return ((await response.json()) as OrganisationRow[]).map(toOrganisation);
   } catch {
@@ -99,4 +102,3 @@ export async function getAvailableCourseIds(userId: string, courseIds: string[])
     return new Set();
   }
 }
-import {getTenantCourses} from '@/server/services/tenant-courses';

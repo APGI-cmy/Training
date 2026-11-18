@@ -1,3 +1,4 @@
+import {productionCompanyId} from './tenant-courses';
 import "server-only";
 import { cookies } from "next/headers";
 import {
@@ -66,6 +67,7 @@ export async function accessibleCompanies(
     if (!ids.length) return [];
     scope = `&id=in.(${ids.join(",")})`;
   }
+  const productionCompany=productionCompanyId();if(productionCompany)scope+=`&id=eq.${productionCompany}`;
   return rows<CompanyRecord>(
     `/rest/v1/organisations?is_active=eq.true${scope}&select=${companyFields}&order=name.asc`,
   );
@@ -78,6 +80,8 @@ export async function requireCompany(id: string, ownerOnly = true) {
 export async function requireCompanyForSession(id:string,ownerOnly:boolean,session:AlpSession) {
   const actor = await companyActor(session);
   validId(id);
+  const productionCompany=productionCompanyId();
+  if(productionCompany&&id!==productionCompany)throw Error('This company is not available on this training site.');
   if (
     !actor.isAdmin &&
     !(await ownMemberships(actor.session, ownerOnly)).some(

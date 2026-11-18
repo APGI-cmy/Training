@@ -24,7 +24,7 @@ const input: InvitationInput = {
   courseId: "scannex-training-programme",
   basis: "internal_allocation",
   reason: "Automated release check",
-  organisationId: "test-org",
+  organisationId: "22222222-2222-4222-8222-222222222222",
   expiresAt: "2099-01-01T00:00:00Z",
 };
 
@@ -32,13 +32,14 @@ describe("First-learner release invitation authorization", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     vi.stubEnv("ALP_ENVIRONMENT", "production");
+    vi.stubEnv('ALP_DEFAULT_ORGANISATION_ID',input.organisationId!);
   });
   afterEach(() => vi.unstubAllEnvs());
 
   it('holds a published production invitation without sending, exposing a token or revoking it',async()=>{
     vi.stubEnv('ALP_ENVIRONMENT','training-production');vi.stubEnv('ALP_EMAIL_MODE','disabled');
     mocks.requireAdmin.mockResolvedValue({session:{user:{id:'real-admin'}}});
-    mocks.adminRest.mockImplementation(async(path:string)=>Response.json(path.startsWith('/rest/v1/organisations?')?[{id:'test-org',default_referral_share_bps:0}]:path.startsWith('/rest/v1/organisation_offerings?')?[{id:'published'}]:path==='/rest/v1/course_invitations'?[{id:'held-invitation'}]:[]));
+    mocks.adminRest.mockImplementation(async(path:string)=>Response.json(path.startsWith('/rest/v1/organisations?')?[{id:'22222222-2222-4222-8222-222222222222',default_referral_share_bps:0}]:path.startsWith('/rest/v1/organisation_offerings?')?[{id:'published'}]:path==='/rest/v1/course_invitations'?[{id:'held-invitation'}]:[]));
     const result=await createAndSendInvitation(input);
     expect(result).toEqual({ok:true,invitationId:'held-invitation',deliveryStatus:'held'});expect(mocks.send).not.toHaveBeenCalled();
     const row=JSON.parse(mocks.adminRest.mock.calls.find(([path])=>path==='/rest/v1/course_invitations')![1].body);
@@ -49,15 +50,16 @@ describe("First-learner release invitation authorization", () => {
   it('blocks production invitations for an unpublished course even while mail is held',async()=>{
     vi.stubEnv('ALP_ENVIRONMENT','training-production');vi.stubEnv('ALP_EMAIL_MODE','disabled');
     mocks.requireAdmin.mockResolvedValue({session:{user:{id:'real-admin'}}});
-    mocks.adminRest.mockImplementation(async(path:string)=>Response.json(path.startsWith('/rest/v1/organisations?')?[{id:'test-org',default_referral_share_bps:0}]:[]));
+    mocks.adminRest.mockImplementation(async(path:string)=>Response.json(path.startsWith('/rest/v1/organisations?')?[{id:'22222222-2222-4222-8222-222222222222',default_referral_share_bps:0}]:[]));
     expect(await createAndSendInvitation(input)).toMatchObject({ok:false,error:expect.stringContaining('Assign and publish')});
     expect(mocks.adminRest.mock.calls.every(([,init])=>!init?.method||init.method==='GET')).toBe(true);expect(mocks.send).not.toHaveBeenCalled();
   });
+  it('rejects a forged different company on the dedicated production site',async()=>{vi.stubEnv('ALP_ENVIRONMENT','training-production');vi.stubEnv('ALP_EMAIL_MODE','disabled');mocks.requireAdmin.mockResolvedValue({session:{user:{id:'real-admin'}}});expect(await createAndSendInvitation({...input,organisationId:'33333333-3333-4333-8333-333333333333'})).toMatchObject({ok:false,error:'INVITATION_ORGANISATION_INVALID'});expect(mocks.adminRest).not.toHaveBeenCalled();});
 
   it('counts held bulk invitations separately from emails actually sent',async()=>{
     vi.stubEnv('ALP_ENVIRONMENT','training-production');vi.stubEnv('ALP_EMAIL_MODE','disabled');
     mocks.requireAdmin.mockResolvedValue({session:{user:{id:'real-admin'}}});
-    mocks.adminRest.mockImplementation(async(path:string)=>Response.json(path.startsWith('/rest/v1/organisations?')?[{id:'test-org',default_referral_share_bps:0}]:path.startsWith('/rest/v1/organisation_offerings?')?[{id:'published'}]:path==='/rest/v1/course_invitations'?[{id:'held-invitation'}]:[]));
+    mocks.adminRest.mockImplementation(async(path:string)=>Response.json(path.startsWith('/rest/v1/organisations?')?[{id:'22222222-2222-4222-8222-222222222222',default_referral_share_bps:0}]:path.startsWith('/rest/v1/organisation_offerings?')?[{id:'published'}]:path==='/rest/v1/course_invitations'?[{id:'held-invitation'}]:[]));
     const result=await createBatchInvitations({invitations:[input,{...input,recipientEmail:'second@example.invalid'}]});
     expect(result).toMatchObject({created:2,sent:0,held:2,failed:0});expect(mocks.send).not.toHaveBeenCalled();
   });
@@ -70,7 +72,7 @@ describe("First-learner release invitation authorization", () => {
     mocks.adminRest.mockImplementation(async (path: string) =>
       Response.json(
         path.startsWith("/rest/v1/organisations?")
-          ? [{ id: "test-org", default_referral_share_bps: 0 }]
+          ? [{ id: "22222222-2222-4222-8222-222222222222", default_referral_share_bps: 0 }]
           : [],
       ),
     );
@@ -117,7 +119,7 @@ describe("First-learner release invitation authorization", () => {
     mocks.adminRest.mockImplementation(async (path: string) => {
       if (path.startsWith("/rest/v1/organisations?"))
         return Response.json([
-          { id: "test-org", default_referral_share_bps: 0 },
+          { id: "22222222-2222-4222-8222-222222222222", default_referral_share_bps: 0 },
         ]);
       if (path.startsWith("/rest/v1/course_invitations?select="))
         return Response.json([]);
@@ -158,7 +160,7 @@ describe("First-learner release invitation authorization", () => {
     mocks.adminRest.mockImplementation(async (path: string) => {
       if (path.startsWith("/rest/v1/organisations?"))
         return Response.json([
-          { id: "test-org", default_referral_share_bps: 0 },
+          { id: "22222222-2222-4222-8222-222222222222", default_referral_share_bps: 0 },
         ]);
       if (path === "/rest/v1/course_invitations")
         return Response.json([{ id: "test-invitation" }]);

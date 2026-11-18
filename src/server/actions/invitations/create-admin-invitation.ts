@@ -5,11 +5,13 @@ import { adminRest } from "@/server/supabase/admin-rest";
 import type { InvitationInput, CreateInvitationState } from "./create-invitation";
 import { deliverStoredInvitation } from "@/server/services/invitations/deliver-stored-invitation";
 import { revalidatePath } from "next/cache";
+import {productionCompanyId} from '@/server/services/tenant-courses';
 export async function createAdminInvitation(input: InvitationInput): Promise<CreateInvitationState> {
   const { session } = await requireAdmin();
   const email = input.recipientEmail.trim().toLowerCase(); const expires = new Date(input.expiresAt);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !input.organisationId || !input.reason.trim() || !Number.isFinite(expires.getTime()) || expires <= new Date()) return { ok: false, error: "ADMIN_INVITATION_FIELDS_REQUIRED" };
   if (!input.confirmAdminAccess) return { ok: false, error: "CONFIRM_FULL_ADMIN_ACCESS" };
+  const company=productionCompanyId();if(company&&input.organisationId!==company)return {ok:false,error:'INVITATION_ORGANISATION_INVALID'};
   const org = await adminRest(`/rest/v1/organisations?id=eq.${encodeURIComponent(input.organisationId)}&is_active=eq.true&select=id`);
   if (!org.ok || !(await org.json()).length) return { ok: false, error: "INVITATION_ORGANISATION_INVALID" };
   const existing = await adminRest(`/rest/v1/course_invitations?recipient_email=eq.${encodeURIComponent(email)}&invited_role=eq.admin&status=in.(pending,sent)&expires_at=gt.${encodeURIComponent(new Date().toISOString())}&select=id`);

@@ -9,6 +9,7 @@ import { validGroup } from "@/server/services/groups";
 import { createAdminInvitation } from "./create-admin-invitation";
 import { usesStagingMailCapture } from "@/server/environment-isolation";
 import { productionInvitationEmailsHeld } from '@/server/services/invitations/email-hold';
+import {productionCompanyId} from '@/server/services/tenant-courses';
 
 const invitationBases = new Set([
   "external_payment",
@@ -85,6 +86,7 @@ function validateInput(input: InvitationInput) {
 
 async function getOrganisationShare(organisationId: string | undefined) {
   if (!organisationId) return null;
+  const company=productionCompanyId();if(company&&organisationId!==company)return null;
   const response = await adminRest(
     `/rest/v1/organisations?id=eq.${encodeURIComponent(organisationId)}&is_active=eq.true&select=id,default_referral_share_bps&limit=1`,
   );
