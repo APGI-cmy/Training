@@ -6,6 +6,8 @@ import { ACTIVITY_COOKIE, sessionIsIdle, tokenNeedsRefresh } from "@/lib/session
 import { assertStagingIsolation } from "@/server/environment-isolation";
 import {tigerAssetAllowed,courseAssetRoute,courseAssetTarget} from '@/server/security/course-assets';
 import {editionAssetUrl} from '@/lib/course-editions';
+import {getCourseBySlug} from '@/lib/courses';
+import {tenantCourseAssigned} from '@/server/services/tenant-courses';
 
 const names = ["alp_access_token", "alp_refresh_token", "alp_user_id", ACTIVITY_COOKIE];
 
@@ -14,6 +16,12 @@ export async function proxy(request: NextRequest) {
   let decodedPath=request.nextUrl.pathname;
   try{decodedPath=decodeURIComponent(decodedPath);}catch{/* Invalid course paths are denied below. */}
   const target=decodedPath.startsWith('/courses/')?courseAssetTarget(request.nextUrl.pathname):null;
+  if(process.env.ALP_ENVIRONMENT==='training-production'){
+    const slug=/^\/(?:admin\/courses|learn|courses)\/([^/]+)(?:\/|$)/.exec(decodedPath)?.[1];
+    const course=slug?getCourseBySlug(slug):undefined;
+    const assignedCourse=course?.id??(target?.publicCover?target.courseId:undefined);
+    if(assignedCourse){try{if(!await tenantCourseAssigned(assignedCourse))return new NextResponse('Course not available on this training site.',{status:404,headers:{'cache-control':'private, no-store'}});}catch{return new NextResponse('Course assignments are temporarily unavailable.',{status:503,headers:{'cache-control':'private, no-store'}});}}
+  }
 
   const changed = new Map<string,string>();
 

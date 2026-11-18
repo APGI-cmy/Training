@@ -35,6 +35,33 @@ describe("First-learner release invitation authorization", () => {
   });
   afterEach(() => vi.unstubAllEnvs());
 
+  it('holds a published production invitation without sending, exposing a token or revoking it',async()=>{
+    vi.stubEnv('ALP_ENVIRONMENT','training-production');vi.stubEnv('ALP_EMAIL_MODE','disabled');
+    mocks.requireAdmin.mockResolvedValue({session:{user:{id:'real-admin'}}});
+    mocks.adminRest.mockImplementation(async(path:string)=>Response.json(path.startsWith('/rest/v1/organisations?')?[{id:'test-org',default_referral_share_bps:0}]:path.startsWith('/rest/v1/organisation_offerings?')?[{id:'published'}]:path==='/rest/v1/course_invitations'?[{id:'held-invitation'}]:[]));
+    const result=await createAndSendInvitation(input);
+    expect(result).toEqual({ok:true,invitationId:'held-invitation',deliveryStatus:'held'});expect(mocks.send).not.toHaveBeenCalled();
+    const row=JSON.parse(mocks.adminRest.mock.calls.find(([path])=>path==='/rest/v1/course_invitations')![1].body);
+    expect(row.status).toBe('pending');expect(row.metadata.delivery_hold).toBe('awaiting_nks_dns');expect(row).not.toHaveProperty('token');
+    expect(mocks.adminRest.mock.calls.some(([,init])=>init?.method==='PATCH'||init?.method==='DELETE')).toBe(false);
+  });
+
+  it('blocks production invitations for an unpublished course even while mail is held',async()=>{
+    vi.stubEnv('ALP_ENVIRONMENT','training-production');vi.stubEnv('ALP_EMAIL_MODE','disabled');
+    mocks.requireAdmin.mockResolvedValue({session:{user:{id:'real-admin'}}});
+    mocks.adminRest.mockImplementation(async(path:string)=>Response.json(path.startsWith('/rest/v1/organisations?')?[{id:'test-org',default_referral_share_bps:0}]:[]));
+    expect(await createAndSendInvitation(input)).toMatchObject({ok:false,error:expect.stringContaining('Assign and publish')});
+    expect(mocks.adminRest.mock.calls.every(([,init])=>!init?.method||init.method==='GET')).toBe(true);expect(mocks.send).not.toHaveBeenCalled();
+  });
+
+  it('counts held bulk invitations separately from emails actually sent',async()=>{
+    vi.stubEnv('ALP_ENVIRONMENT','training-production');vi.stubEnv('ALP_EMAIL_MODE','disabled');
+    mocks.requireAdmin.mockResolvedValue({session:{user:{id:'real-admin'}}});
+    mocks.adminRest.mockImplementation(async(path:string)=>Response.json(path.startsWith('/rest/v1/organisations?')?[{id:'test-org',default_referral_share_bps:0}]:path.startsWith('/rest/v1/organisation_offerings?')?[{id:'published'}]:path==='/rest/v1/course_invitations'?[{id:'held-invitation'}]:[]));
+    const result=await createBatchInvitations({invitations:[input,{...input,recipientEmail:'second@example.invalid'}]});
+    expect(result).toMatchObject({created:2,sent:0,held:2,failed:0});expect(mocks.send).not.toHaveBeenCalled();
+  });
+
   it("blocks V2 learner invitations until the company's course offering is published", async () => {
     vi.stubEnv("ALP_ENVIRONMENT", "v2-staging");
     mocks.requireAdmin.mockResolvedValue({

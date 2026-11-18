@@ -1,3 +1,4 @@
+import {getTenantCourses} from '@/server/services/tenant-courses';
 import {getSavedCourseCardImages} from '@/server/services/course-card-images';
 import Link from "next/link";
 import { publicationReturnPath } from "@/lib/publication-return";
@@ -125,7 +126,7 @@ export default async function CompanyPage({
             <label>
               Course
               <select name="course_id">
-                {getCourses().map((c) => (
+                {(await getTenantCourses()).map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.title}
                   </option>

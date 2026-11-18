@@ -1,3 +1,4 @@
+import {getTenantCourses} from '@/server/services/tenant-courses';
 import {isPlatformPrincipal} from '@/server/services/platform-principals';
 import {getSavedCourseCardImages} from '@/server/services/course-card-images';
 import Link from "next/link";
@@ -54,7 +55,7 @@ export default async function CataloguePage({ searchParams }: CatalogueProps) {
   await requireLearnerProfile(session);
   const { view } = (await searchParams) ?? {};
   const principal=view!=="my-learning"&&await isPlatformPrincipal(session);
-  const courses = getCourses();
+  const courses = await getTenantCourses();
  const cardImages=await getSavedCourseCardImages();
   const commerce = await getCourseCommerceSettings(courses.map((course) => course.slug));
   const [availableCourseIds, access, reviews, published] = await Promise.all([getAvailableCourseIds(session.user.id, courses.map((course) => course.id)), Promise.all(

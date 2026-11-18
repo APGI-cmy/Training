@@ -4,6 +4,7 @@ import {freezeCoursePaths,accessHasExpired,type EditionCourse} from '@/lib/cours
 import type {Course} from '@/types/course';
 import {rows} from './company-structure';
 import {getCurrentSession,getUserRoles,type AlpSession} from '@/server/auth/session';
+import {tenantCourseAssigned} from './tenant-courses';
 
 export type StoredEdition={id:string;course_id:string;runtime_course_id:string;runtime_slug:string;edition_number:number;state:string;course_document:Course;file_count:number;byte_count:number;content_hash:string;verified_at:string|null};
 export async function storedEdition(id:string){
@@ -15,6 +16,7 @@ export async function storedEdition(id:string){
 export async function getLearningCourse(slug:string,providedSession?:AlpSession|null):Promise<EditionCourse|undefined>{
  const session=providedSession??await getCurrentSession();if(!session)return undefined;
  const source=getCourseBySlug(slug);
+ if(source&&!await tenantCourseAssigned(source.id))return undefined;
  let edition:StoredEdition|null=null;
  if(source){
   const enrolment=(await rows<{edition_id:string|null}>(`/rest/v1/course_enrolments?user_id=eq.${session.user.id}&course_id=eq.${encodeURIComponent(source.id)}&select=edition_id&limit=1`))[0];
@@ -23,6 +25,7 @@ export async function getLearningCourse(slug:string,providedSession?:AlpSession|
  }else{
   edition=(await rows<StoredEdition>(`/rest/v1/course_editions?runtime_slug=eq.${encodeURIComponent(slug)}&state=eq.ready&select=*&limit=1`))[0]??null;
   if(!edition)return undefined;
+  if(!await tenantCourseAssigned(edition.course_id))return undefined;
   const enrolments=await rows<{id:string}>(`/rest/v1/course_enrolments?user_id=eq.${session.user.id}&course_id=eq.${encodeURIComponent(edition.runtime_course_id)}&select=id&limit=1`);
   if(!enrolments.length&&!(await getUserRoles(session.accessToken)).includes('admin'))return undefined;
  }

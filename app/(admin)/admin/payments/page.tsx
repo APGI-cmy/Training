@@ -1,3 +1,4 @@
+import {getTenantCourses} from '@/server/services/tenant-courses';
 import { CourseCommerceWorkspace } from "@/components/admin/CourseCommerceWorkspace";
 import { getCourses } from "@/lib/courses";
 import { defaultCourseCommerceSetting } from "@/lib/commerce";
@@ -13,7 +14,7 @@ export const dynamic = "force-dynamic";
 export default async function PaymentsPage({ searchParams }: { searchParams?: Promise<{ course?: string }> }) {
   await requireAdmin();
   const principal=await isPlatformPrincipal();if(!principal)redirect("/payments");
-  const courses = getCourses();
+  const courses = await getTenantCourses();
   const requestedCourse = (await searchParams)?.course;
   const course = courses.find((candidate) => candidate.slug === requestedCourse) ?? courses[0];
   const settings = await getCourseCommerceSettings(courses.map((candidate) => candidate.slug));

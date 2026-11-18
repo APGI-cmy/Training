@@ -3,6 +3,7 @@ import { usesStagingMailCapture } from "@/server/environment-isolation";
 import { adminRest } from "@/server/supabase/admin-rest";
 import { sendCourseInvitationEmail } from "@/server/services/email/send-course-invitation";
 import type { CreateInvitationState } from "@/server/actions/invitations/create-invitation";
+import {productionInvitationEmailsHeld} from './email-hold';
 
 export async function deliverStoredInvitation(input: {
   id: string;
@@ -14,6 +15,7 @@ export async function deliverStoredInvitation(input: {
   actorId: string | null;
   accountSetup?: boolean;
 }): Promise<CreateInvitationState> {
+  if(productionInvitationEmailsHeld())return {ok:true,invitationId:input.id,deliveryStatus:'held'};
   if (usesStagingMailCapture())
     return {
       ok: true,

@@ -1,3 +1,4 @@
+import {getTenantCourses} from '@/server/services/tenant-courses';
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { InvitationDeliveryControl } from "@/components/admin/InvitationDeliveryControl";
 import { InvitationForm } from "@/components/admin/InvitationForm";
@@ -7,10 +8,11 @@ import { getActiveOrganisations } from "@/server/services/organisations/get-orga
 import { getGroups } from "@/server/services/groups";
 import { createGroup } from "@/server/actions/groups";
 import { adminRest } from "@/server/supabase/admin-rest";
+import {productionInvitationEmailsHeld} from '@/server/services/invitations/email-hold';
 
 export default async function InvitationsPage() {
   await requireAdmin();
-  const courses = getCourses().map(({ id, title }) => ({ id, title }));
+  const courses = (await getTenantCourses()).map(({ id, title }) => ({ id, title }));
   const organisations = (await getActiveOrganisations()).map(
     ({ id, name, slug }) => ({ id, name, slug }),
   );
@@ -46,6 +48,7 @@ export default async function InvitationsPage() {
           </p>
         </div>
       </header>
+      {productionInvitationEmailsHeld()?<aside className="notice-card" role="status"><strong>Emails are on hold</strong><p>You can save individual or bulk learner invitations now. They remain pending; no emails or usable invitation links are sent. After NKS DNS and sender verification, use Send invitation email for each saved invitation. Live payments remain disabled.</p></aside>:null}
       <InvitationForm
         courses={courses}
         organisations={organisations}

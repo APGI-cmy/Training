@@ -1,0 +1,20 @@
+import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
+import {NextRequest} from 'next/server';
+const m=vi.hoisted(()=>({rest:vi.fn(),brand:vi.fn(),session:vi.fn(),platform:vi.fn()}));
+vi.mock('@/server/supabase/admin-rest',()=>({adminRest:m.rest}));
+vi.mock('@/server/services/tenant-branding',()=>({tenantBrandForHost:m.brand}));
+vi.mock('@/server/auth/session',()=>({getCurrentSession:m.session,getSupabaseRestUrl:(p:string)=>p}));
+vi.mock('@/server/services/company-structure',()=>({contextualCompany:vi.fn(),companyActor:vi.fn()}));
+vi.mock('@/server/services/branding/course-branding',()=>({getLearnerOrganisationBranding:vi.fn(),getPlatformOrganisationBranding:m.platform}));
+import {getTenantCourses,tenantCourseAssigned} from '@/server/services/tenant-courses';
+import {GET} from '../app/api/branding/route';
+const company='ebe89fb6-23fa-4fb1-9bfb-c525795fa3c7';
+beforeEach(()=>{vi.resetAllMocks();vi.stubEnv('ALP_ENVIRONMENT','training-production');vi.stubEnv('ALP_DEFAULT_ORGANISATION_ID',company);m.rest.mockImplementation(async()=>Response.json([{course_id:'tiger-kidnapping-telecommunications'}]));m.brand.mockResolvedValue({brandName:'NKS Capital',hidePlatformBranding:true});});
+afterEach(()=>vi.unstubAllEnvs());
+describe('Production company boundary',()=>{
+ it('returns only assigned courses and denies an unassigned course even for the shared static registry',async()=>{expect((await getTenantCourses()).map(c=>c.id)).toEqual(['tiger-kidnapping-telecommunications']);expect(await tenantCourseAssigned('vpshr-level-0')).toBe(false);expect(await tenantCourseAssigned('tiger-kidnapping-telecommunications')).toBe(true);expect(m.rest.mock.calls[0][0]).toContain(`organisation_id=eq.${company}`);});
+ it('does not expose the global catalogue when configuration or the assignment service fails',async()=>{vi.stubEnv('ALP_DEFAULT_ORGANISATION_ID','');await expect(getTenantCourses()).rejects.toThrow();vi.stubEnv('ALP_DEFAULT_ORGANISATION_ID',company);m.rest.mockResolvedValue(new Response('unavailable',{status:503}));await expect(getTenantCourses()).rejects.toThrow();});
+ it('leaves the existing shared V2 staging catalogue available',async()=>{vi.stubEnv('ALP_ENVIRONMENT','v2-staging');expect((await getTenantCourses()).length).toBeGreaterThan(1);expect(m.rest).not.toHaveBeenCalled();});
+ it.each(['?workspace=admin','?organisationId=00000000-0000-4000-8000-000000000000','?courseSlug=vpshr-level-0'])('keeps the host brand ahead of the admin or workspace selection: %s',async query=>{const response=await GET(new NextRequest('https://nks-capital-training.vercel.app/api/branding'+query));expect(await response.json()).toMatchObject({branding:{brandName:'NKS Capital'}});expect(m.platform).not.toHaveBeenCalled();expect(m.session).not.toHaveBeenCalled();});
+ it('fails closed rather than returning APGI administration branding on a production lookup failure',async()=>{m.brand.mockResolvedValue(null);const response=await GET(new NextRequest('https://nks-capital-training.vercel.app/api/branding?workspace=admin'));expect(response.status).toBe(503);expect(m.platform).not.toHaveBeenCalled();});
+});

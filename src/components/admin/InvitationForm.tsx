@@ -26,6 +26,6 @@ export function InvitationForm({ courses, organisations, defaultExpiry, groups =
     </div>
     <button className="primary-button" disabled={pending}>{pending ? "Creating…" : "Create invitation"}</button>
     {state.error ? <p role="alert" className="form-error">Invitation could not be created: {state.error}</p> : null}
-    {state.ok ? <div className="notice-card" role="status"><strong>Invitation created</strong>{state.invitationUrl ? <><p>Staging: no email was sent. Open this link using the invited test account.</p><a href={state.invitationUrl} target="_blank" rel="noopener noreferrer">Open test invitation</a><input aria-label="Test invitation link" readOnly value={state.invitationUrl} /></> : <p>{deliveryStatus === 'sent' ? 'The email provider accepted the invitation.' : 'Email delivery has not been confirmed.'}</p>}</div> : null}
+    {state.ok ? <div className="notice-card" role="status"><strong>Invitation created</strong>{state.invitationUrl ? <><p>Staging: no email was sent. Open this link using the invited test account.</p><a href={state.invitationUrl} target="_blank" rel="noopener noreferrer">Open test invitation</a><input aria-label="Test invitation link" readOnly value={state.invitationUrl} /></> : <p>{deliveryStatus === 'held' ? 'Held — no email was sent. Send this saved invitation after NKS DNS and the sender are verified.' : deliveryStatus === 'sent' ? 'The email provider accepted the invitation.' : 'Email delivery has not been confirmed.'}</p>}</div> : null}
   </form>;
 }

@@ -8,6 +8,7 @@ import { adminRest } from "@/server/supabase/admin-rest";
 import { validGroup } from "@/server/services/groups";
 import { createAdminInvitation } from "./create-admin-invitation";
 import { usesStagingMailCapture } from "@/server/environment-isolation";
+import { productionInvitationEmailsHeld } from '@/server/services/invitations/email-hold';
 
 const invitationBases = new Set([
   "external_payment",
@@ -41,7 +42,7 @@ export type InvitationInput = {
 export type CreateInvitationState = {
   ok: boolean;
   invitationId?: string;
-  deliveryStatus?: "sent" | "staging_link";
+  deliveryStatus?: "sent" | "staging_link" | "held";
   invitationUrl?: string;
   error?: string;
 };
@@ -278,7 +279,7 @@ export async function createAndSendInvitation(
   const organisation = await getOrganisationShare(clean.organisationId);
   if (!organisation)
     return { ok: false, error: "INVITATION_ORGANISATION_INVALID" };
-  if (process.env.ALP_ENVIRONMENT === "v2-staging") {
+  if (['v2-staging','training-production'].includes(process.env.ALP_ENVIRONMENT??'')) {
     const offering = await adminRest(
       `/rest/v1/organisation_offerings?organisation_id=eq.${encodeURIComponent(organisation.id)}&course_id=eq.${encodeURIComponent(clean.courseId)}&status=eq.published&select=id&limit=1`,
     );
@@ -317,6 +318,7 @@ export async function createAndSendInvitation(
         company: clean.company ?? null,
         organisation_id: organisation.id,
         referral_share_bps: organisation.default_referral_share_bps,
+        ...(productionInvitationEmailsHeld()?{delivery_hold:'awaiting_nks_dns'}:{}),
       },
     }),
   });
@@ -362,6 +364,7 @@ export async function createAndSendInvitation(
     return { ok: false, error: "INVITATION_AUDIT_FAILED" };
   }
 
+  if(productionInvitationEmailsHeld())return {ok:true,invitationId,deliveryStatus:'held'};
   const course = getCourseBySlug(clean.courseId);
   if (usesStagingMailCapture()) {
     return {
@@ -448,6 +451,7 @@ export async function createInvitationWithState(
     return { ok: false, error: "INVITATION_COURSE_REQUIRED" };
   let firstInvitationId: string | undefined;
   let firstUrl: string | undefined;
+  let held=false;
   for (const courseId of courseIds) {
     const result = await createAndSendInvitation({
       recipientEmail: String(formData.get("recipientEmail") ?? ""),
@@ -464,11 +468,12 @@ export async function createInvitationWithState(
     if (!result.ok) return { ...result, invitationId: firstInvitationId };
     firstInvitationId ??= result.invitationId;
     firstUrl ??= result.invitationUrl;
+    held ||= result.deliveryStatus==='held';
   }
   return {
     ok: true,
     invitationId: firstInvitationId,
-    deliveryStatus: firstUrl ? "staging_link" : "sent",
+    deliveryStatus: held ? "held" : firstUrl ? "staging_link" : "sent",
     invitationUrl: firstUrl,
   };
 }

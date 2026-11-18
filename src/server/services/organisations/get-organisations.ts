@@ -73,6 +73,7 @@ export async function getLearnerOrganisation(userId: string): Promise<Organisati
 }
 
 export async function getAvailableCourseIds(userId: string, courseIds: string[]): Promise<Set<string>> {
+  if(process.env.ALP_ENVIRONMENT==='training-production'){const assigned=new Set((await getTenantCourses()).map(c=>c.id));courseIds=courseIds.filter(id=>assigned.has(id));}
   if (!courseIds.length) return new Set();
   const courseFilter = courseIds.map((courseId) => `"${courseId.replaceAll('"', '\\"')}"`).join(",");
   try {
@@ -98,3 +99,4 @@ export async function getAvailableCourseIds(userId: string, courseIds: string[])
     return new Set();
   }
 }
+import {getTenantCourses} from '@/server/services/tenant-courses';

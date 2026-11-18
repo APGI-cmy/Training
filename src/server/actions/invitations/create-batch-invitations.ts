@@ -8,6 +8,7 @@ export type BatchInvitationResult = {
   ok: boolean;
   error?: string;
   invitationUrl?: string;
+  deliveryStatus?: 'sent'|'staging_link'|'held';
 };
 
 export async function createBatchInvitations(input: { invitations: InvitationInput[] }) {
@@ -25,12 +26,14 @@ export async function createBatchInvitations(input: { invitations: InvitationInp
     }
     unique.add(duplicateKey);
     const result = await createAndSendInvitation(invitation);
-    recipientResults.push({ recipientEmail, ok: result.ok, error: result.error, invitationUrl: result.invitationUrl });
+    recipientResults.push({ recipientEmail, ok: result.ok, error: result.error, invitationUrl: result.invitationUrl,deliveryStatus:result.deliveryStatus });
   }
 
   return {
     recipientResults,
-    sent: recipientResults.filter((result) => result.ok).length,
+    created: recipientResults.filter((result) => result.ok).length,
+    sent: recipientResults.filter((result) => result.ok&&result.deliveryStatus==='sent').length,
+    held: recipientResults.filter((result) => result.ok&&result.deliveryStatus==='held').length,
     failed: recipientResults.filter((result) => !result.ok).length
   };
 }

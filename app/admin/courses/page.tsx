@@ -1,3 +1,4 @@
+import {getTenantCourses} from '@/server/services/tenant-courses';
 import {CourseImageEditor} from '@/components/course/CourseImageEditor';
 import {getSavedCourseCardImages} from '@/server/services/course-card-images';
 import { requireAdmin } from "@/lib/auth/require-admin";
@@ -23,7 +24,7 @@ export default async function AdminCoursesPage() {
 
   const principal = await isPlatformPrincipal(session);
 
-  const courses = getCourses();
+  const courses = await getTenantCourses();
  const cardImages=await getSavedCourseCardImages();
  const [published,reviews]=await Promise.all([getPublishedCourseIds(courses.map(c=>c.id)),getCatalogueReviews(session,courses.map(c=>c.id))]);
 

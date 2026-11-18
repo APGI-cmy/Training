@@ -3,6 +3,7 @@ import 'server-only';
 import {courses} from '@/lib/course-catalogue';
 import {getCourseCover} from '@/lib/course-covers';
 import {assertStagingIsolation,STAGING_DATABASE_REF,configuredDatabaseRef} from '@/server/environment-isolation';
+import {tenantCourseAssigned} from '@/server/services/tenant-courses';
 
 // Match decoded path segments, never file extensions: videos, scripts and PDFs
 // must have the same access boundary as the presentation that references them.
@@ -28,6 +29,7 @@ export async function courseAssetAllowed(accessToken:string,courseId:string):Pro
  if(!accessToken||!courseId)return false;
  try{
   assertStagingIsolation();
+  if(!await tenantCourseAssigned(courseId))return false;
   // PostgREST verifies the JWT signature/expiry; the RPC binds auth.uid(), checks
   // the live session, MFA and current entitlement. No browser actor is trusted.
   const r=await fetch(`https://${process.env.ALP_ENVIRONMENT==='training-production'?configuredDatabaseRef():STAGING_DATABASE_REF}.supabase.co/rest/v1/rpc/v2_course_asset_access`,{method:'POST',headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,authorization:`Bearer ${accessToken}`,'content-type':'application/json'},body:JSON.stringify({p_course:courseId}),cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)});
@@ -38,6 +40,7 @@ export async function courseAssetRoute(accessToken:string,courseId:string):Promi
  if(!accessToken||!courseId)return null;
  try{
   assertStagingIsolation();
+  if(!await tenantCourseAssigned(courseId))return null;
   const r=await fetch(`https://${process.env.ALP_ENVIRONMENT==='training-production'?configuredDatabaseRef():STAGING_DATABASE_REF}.supabase.co/rest/v1/rpc/v3_course_asset_route`,{method:'POST',headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,authorization:`Bearer ${accessToken}`,'content-type':'application/json'},body:JSON.stringify({p_course:courseId})});
   if(!r.ok)return null;const value=await r.json();return value&&(value.preview===true||/^[a-f0-9-]{36}$/.test(value.editionId??''))?value:null;
  }catch{return null;}

@@ -8,6 +8,9 @@ import { contextualCompany,companyActor } from "@/server/services/company-struct
 import { getLearnerOrganisationBranding,getPlatformOrganisationBranding } from "@/server/services/branding/course-branding";
 
 export async function GET(request: NextRequest) {
+  const hostedBrand=await tenantBrandForHost(request.nextUrl.hostname);
+  if(hostedBrand)return NextResponse.json({branding:hostedBrand},{headers:{'Cache-Control':'no-store'}});
+  if(process.env.ALP_ENVIRONMENT==='training-production')return NextResponse.json({branding:null},{status:503,headers:{'Cache-Control':'no-store'}});
   const courseSlug = request.nextUrl.searchParams.get("courseSlug")?.trim();
   if (courseSlug && !getCourseBySlug(courseSlug)) {
     return NextResponse.json(
@@ -24,8 +27,6 @@ export async function GET(request: NextRequest) {
       { headers: { "Cache-Control": "no-store" } },
     );
   }
-  const hostedBrand=await tenantBrandForHost(request.nextUrl.hostname);
-  if(hostedBrand)return NextResponse.json({branding:hostedBrand},{headers:{"Cache-Control":"no-store"}});
   let company = null;
   if (session) {
     try {
