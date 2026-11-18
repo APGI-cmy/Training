@@ -1,8 +1,11 @@
+import {redirect} from 'next/navigation';
+import {productionCompanyId} from '@/server/services/tenant-courses';
 import { requireSession } from "@/server/auth/session";
 import { accessibleCompanies } from "@/server/services/company-structure";
 import { switchCompany } from "@/server/actions/company-structure";
 export default async function CompanyIndex() {
   const session = await requireSession();
+  if(productionCompanyId())redirect("/company-branding");
   const companies = await accessibleCompanies(session);
   return (
     <main className="admin-page">

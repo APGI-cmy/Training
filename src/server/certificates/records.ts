@@ -1,3 +1,6 @@
+import {getLearningCourse} from '@/server/services/course-editions';
+import {isTigerCourse} from '@/lib/tiger-progression';
+import {tigerCompletedUnits} from '@/server/services/tiger-progression';
 import "server-only";
 import { requireSession } from "@/server/auth/session";
 import { adminRest } from "@/server/supabase/admin-rest";
@@ -15,5 +18,8 @@ export async function myCertificateState(courseId: string) {
     adminRest("/rest/v1/rpc/v2_certificate_eligible",{method:"POST",body:JSON.stringify({p_user:session.user.id,p_course:courseId})})
   ]);
   if (!c.ok || !e.ok) throw new Error("Certificate eligibility could not be verified.");
-  return { certificate:(await c.json())[0] as CertificateRecord | undefined, eligible:(await e.json())===true };
+  const course=await getLearningCourse(courseId,session);
+  let eligible=(await e.json())===true;
+  if(course&&isTigerCourse(course)){const qualified=await tigerCompletedUnits(session,course);eligible=eligible&&course.units.length>0&&course.units.every(u=>qualified?.has(u.id));}
+  return { certificate:(await c.json())[0] as CertificateRecord | undefined, eligible };
 }

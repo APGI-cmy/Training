@@ -1,0 +1,12 @@
+import {beforeEach,describe,it,expect,vi} from 'vitest';
+const m=vi.hoisted(()=>({deliver:vi.fn(),rest:vi.fn(),brand:vi.fn()}));
+vi.mock('@/server/services/email/transactional-delivery',()=>({emailConfiguration:()=>({origin:new URL('https://nks-capital-training.vercel.app')}),deliverTransactionalEmail:m.deliver}));
+vi.mock('@/server/supabase/admin-rest',()=>({adminRest:m.rest}));
+vi.mock('@/server/services/email/recipient-brand',()=>({recipientBrand:m.brand}));
+vi.mock('@/server/services/course-card-images',()=>({getSavedCourseCardImages:async()=>({})}));
+import {sendCourseInvitationEmail} from '@/server/services/email/send-course-invitation';
+beforeEach(()=>{vi.resetAllMocks();vi.stubEnv('ALP_ENVIRONMENT','training-production');m.deliver.mockResolvedValue({ok:true,providerMessageId:'fixture'});m.rest.mockImplementation(async(path:string)=>Response.json(path.includes('/course_invitations?')?[{organisation_id:'nks',course_id:'tiger-kidnapping-telecommunications'}]:[{name:'NKS Capital',primary_color:'#000722'}]));m.brand.mockResolvedValue({name:'NKS Capital',logo:'https://nks.example/logo.png',color:'#000722',organisationId:'nks',origin:'https://nks-capital-training.vercel.app',from:'no-reply@nkscapital.co.za',verified:true});});
+describe('NKS-only learner email design',()=>{
+ it('uses the company logo, identity, neutral app links and current course cover',async()=>{await sendCourseInvitationEmail({invitationId:'fixture',recipientEmail:'learner@example.invalid',courseTitle:'Tiger Kidnapping in Telecommunications',invitationToken:'fixture-only',expiresAt:'2099-01-01'});const mail=m.deliver.mock.calls[0][0];expect(mail.subject).toContain('NKS Capital');expect(mail.html).toContain('https://nks.example/logo.png');expect(mail.html).toContain('/images/course-covers/tiger-cover.jpg');expect(mail.html).toContain('https://nks-capital-training.vercel.app/invitations/');expect(mail.html).not.toMatch(/Hosted by APGI|APGI Training|apgi-logo/);expect(mail.text).not.toContain('APGI');expect(mail.branding).toEqual({name:'NKS Capital',from:'no-reply@nkscapital.co.za',verified:true});});
+ it('fails closed without a company mail identity rather than using APGI branding',async()=>{m.brand.mockResolvedValue(null);expect(await sendCourseInvitationEmail({invitationId:'fixture',recipientEmail:'learner@example.invalid',courseTitle:'Tiger',invitationToken:'fixture-only',expiresAt:'2099-01-01'})).toMatchObject({ok:false});expect(m.deliver).not.toHaveBeenCalled();});
+});

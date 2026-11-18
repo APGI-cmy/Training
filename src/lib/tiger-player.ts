@@ -49,7 +49,7 @@ export function attachTigerPlayer(options:{host:Window;frame:HTMLIFrameElement;p
   const connector:Connector={register(candidate){
     if(!active)return;
     try{if(candidate.view().displayObject().ownerDocument!==frame.contentDocument)return;}catch{return;}
-    if(candidate.presentation().slides().count()!==policy.slideCount){options.adapterReady(false);options.status('This course package does not match its progression map. Please contact APGI.');candidate.view().playbackController().pause();return;}
+    if(candidate.presentation().slides().count()!==policy.slideCount){options.adapterReady(false);options.status('This course package does not match its progression map. Please contact your training administrator.');candidate.view().playbackController().pause();return;}
     releasePlayer?.();player=candidate;
     const event=candidate.view().playbackController().slideChangeEvent();event.addHandler(enforce);
     releasePlayer=()=>event.removeHandler(enforce);options.adapterReady(true);enforce();

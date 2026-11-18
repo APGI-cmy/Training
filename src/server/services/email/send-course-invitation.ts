@@ -1,3 +1,4 @@
+import {getSavedCourseCardImages} from '@/server/services/course-card-images';
 import "server-only";
 import {isPartnerBrand} from "@/lib/white-label";
 import {recipientBrand,type RecipientBrand} from "./recipient-brand";
@@ -121,7 +122,8 @@ export async function sendCourseInvitationEmail(
     : owner
       ? "Open your company invitation"
       : "Open your course invitation";
-  const cover = courseId ? getCourseCover(courseId) : null,
+  const cardImages=await getSavedCourseCardImages();
+  const cover = courseId ? cardImages[courseId]??getCourseCover(courseId) : null,
     course = courseId ? getCourseBySlug(courseId) : null;
   const html = brandedEmail({
     brand,

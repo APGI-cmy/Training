@@ -1,3 +1,6 @@
+import {redirect} from 'next/navigation';
+import {productionCompanyId} from '@/server/services/tenant-courses';
+import {requirePlatformPrincipal} from '@/server/services/platform-principals';
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { accessibleCompanies } from "@/server/services/company-structure";
@@ -7,6 +10,8 @@ import { isPlatformPrincipal } from "@/server/services/platform-principals";
 import { publicationReturnPath } from "@/lib/publication-return";
 export default async function CompaniesPage({searchParams}: {searchParams: Promise<{returnTo?:string}>}) {
   await requireAdmin();
+  if(productionCompanyId())redirect("/company-branding");
+  await requirePlatformPrincipal();
   const principal = await isPlatformPrincipal();
   const companies = await accessibleCompanies();
   const returnTo = principal ? publicationReturnPath((await searchParams).returnTo) : null;

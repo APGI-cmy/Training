@@ -1,4 +1,5 @@
 "use server";
+import {productionCompanyId} from '@/server/services/tenant-courses';
 import {watermarkSettings} from "@/server/services/watermark-images";
 import {watermarkFromForm,companyWatermarks} from '@/lib/watermarks';
 
@@ -95,7 +96,8 @@ export async function companyStructureAction(
   const op = String(form.get("operation") ?? "");
   try {
     if (op === "create") {
-      const { session } = await requireAdmin();
+      if(productionCompanyId())throw Error("Only the main platform can create or invite platform companies.");
+      const { session } = await requirePlatformPrincipal();
       const name = formText(form, "name", 2, 120),
         slug = companySlug(name);
       if (!slug) throw new Error("Enter a valid company name.");
@@ -240,6 +242,8 @@ export async function companyStructureAction(
         status,
       });
     } else if (op === "invite_owner") {
+      if(productionCompanyId())throw Error("Only the main platform can invite company owners.");
+      await requirePlatformPrincipal();
       if (!access.isAdmin)
         throw new Error("Only APGI administrators can appoint owners.");
       const link = await ownerInvitation(
@@ -292,6 +296,7 @@ export async function companyStructureAction(
       );
     } else throw new Error("Choose a valid action.");
     revalidatePath("/admin/companies");
+    revalidatePath("/company-branding");
     revalidatePath(`/company/${id}`);
     revalidatePath("/admin/certificates");
     revalidatePath("/admin/invitations");

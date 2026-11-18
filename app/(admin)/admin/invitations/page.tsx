@@ -1,4 +1,6 @@
-import {getTenantCourses} from '@/server/services/tenant-courses';
+import {getLearnerCompanies} from '@/server/services/learner-companies';
+import {LearnerGroupForm} from '@/components/admin/LearnerGroupForm';
+import {getTenantCourses,productionCompanyId} from '@/server/services/tenant-courses';
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { InvitationDeliveryControl } from "@/components/admin/InvitationDeliveryControl";
 import { InvitationForm } from "@/components/admin/InvitationForm";
@@ -6,7 +8,6 @@ import { LearnerImportWorkspace } from "@/components/admin/LearnerImportWorkspac
 import { getCourses } from "@/lib/courses";
 import { getActiveOrganisations } from "@/server/services/organisations/get-organisations";
 import { getGroups } from "@/server/services/groups";
-import { createGroup } from "@/server/actions/groups";
 import { adminRest } from "@/server/supabase/admin-rest";
 import {productionInvitationEmailsHeld} from '@/server/services/invitations/email-hold';
 
@@ -20,8 +21,10 @@ export default async function InvitationsPage() {
     .toISOString()
     .slice(0, 16);
   const groups = await getGroups();
+  const companies=await getLearnerCompanies();
+  const tenant=productionCompanyId();
   const response = await adminRest(
-    "/rest/v1/course_invitations?select=id,recipient_email,course_id,invited_role,group_id,status,expires_at&order=created_at.desc&limit=100",
+    `/rest/v1/course_invitations?select=id,recipient_email,course_id,invited_role,group_id,status,expires_at&order=created_at.desc&limit=100${tenant?`&organisation_id=eq.${tenant}`:""}`,
   );
   if (!response.ok) throw new Error("Invitation list is unavailable.");
   const invitations = (await response.json()) as Array<{
@@ -48,39 +51,25 @@ export default async function InvitationsPage() {
           </p>
         </div>
       </header>
-      {productionInvitationEmailsHeld()?<aside className="notice-card" role="status"><strong>Emails are on hold</strong><p>You can save individual or bulk learner invitations now. They remain pending; no emails or usable invitation links are sent. After NKS DNS and sender verification, use Send invitation email for each saved invitation. Live payments remain disabled.</p></aside>:null}
+      {productionInvitationEmailsHeld()?<aside className="notice-card" role="status"><strong>Emails are on hold</strong><p>You can save individual or bulk learner invitations now. They remain pending; no emails or usable invitation links are sent. After your company’s DNS and sender verification, use Send invitation email for each saved invitation. Live payments remain disabled.</p></aside>:null}
       <InvitationForm
         courses={courses}
         organisations={organisations}
         defaultExpiry={defaultExpiry}
         groups={groups}
+        companies={companies}
+        partnerSite={!!tenant}
       />
       <section className="admin-form-card">
         <h2>Add a learner group</h2>
-        <form action={createGroup} className="admin-form-grid">
-          <label>
-            Organisation
-            <select name="organisationId" required>
-              {organisations.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Group name
-            <input name="name" required maxLength={100} />
-          </label>
-          <button className="secondary-button">Save group</button>
-        </form>
+        <LearnerGroupForm organisations={organisations} companies={companies}/>
         <p>
           Individual learner (no group) is always available. Create groups here
           before assigning them or using group_name in an import.
         </p>
         {groups.map((g) => (
           <p key={g.id}>
-            {g.name} ·{" "}
+            {g.name}{g.client_company_id?` — ${companies.find(c=>c.id===g.client_company_id)?.name??""}`:""} ·{" "}
             {organisations.find((o) => o.id === g.organisation_id)?.name}
           </p>
         ))}

@@ -1,4 +1,5 @@
 "use server";
+import {rememberLearnerCompany,learnerCompanyName} from '@/server/services/learner-companies';
 
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { requireAdmin } from "@/lib/auth/require-admin";
@@ -276,6 +277,7 @@ export async function createAndSendInvitation(
     return { ok: false, error: "INVITATION_ROLE_INVALID" };
   if (input.role === "admin") return createAdminInvitation(input);
   const clean = normaliseInput(input);
+  try{if(clean.company)clean.company=learnerCompanyName(clean.company);}catch{return {ok:false,error:"INVITATION_COMPANY_INVALID"};}
   const validationError = validateInput(clean);
   if (validationError) return { ok: false, error: validationError };
   const organisation = await getOrganisationShare(clean.organisationId);
@@ -298,6 +300,7 @@ export async function createAndSendInvitation(
   const activeInvitationError = await ensureNoActiveInvitation(clean, actor);
   if (activeInvitationError) return { ok: false, error: activeInvitationError };
 
+  if(clean.company){try{const saved=await rememberLearnerCompany(organisation.id,clean.company,actor);clean.company=saved?.name;}catch{return {ok:false,error:"INVITATION_COMPANY_SAVE_FAILED"};}}
   const token = randomBytes(32).toString("base64url");
   const tokenHash = createHash("sha256").update(token).digest("hex");
   const invitationResponse = await adminRest("/rest/v1/course_invitations", {

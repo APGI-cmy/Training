@@ -17,9 +17,9 @@ type ImportSummary = {
 type ZipEntry = { name: string; compression: number; compressedSize: number; offset: number };
 type ImportRow = InvitationInput & { rowNumber: number };
 
-const template = [
+const invitationTemplate = (organisation:string,course:string) => [
   "email,first_name,last_name,national_identity_number,company,country,operation_subdivision,department_team,organisation_slug,course_slug,access_basis,reason,expires_at,role,group_name",
-  "learner@example.invalid,Ada,Lovelace,ID-EXAMPLE-001,Example Company,South Africa,,,apgi,scannex-training-programme,corporate_order,Training allocation,2026-12-31T23:59,learner,"
+  `learner@example.invalid,Ada,Lovelace,ID-EXAMPLE-001,Example Company,South Africa,,,${organisation},${course},corporate_order,Training allocation,2026-12-31T23:59,learner,`
 ].join("\n");
 
 const requiredReportingHeaders = ["company", "country", "organisation_slug"];
@@ -203,10 +203,10 @@ export function LearnerImportWorkspace({ courses, organisations, groups = [] }: 
   const [defaultGroup, setDefaultGroup] = useState("");
   const [testLinks, setTestLinks] = useState<Array<{ recipientEmail: string; invitationUrl?: string; error?: string }>>([]);
   function downloadTemplate() {
-    const url = URL.createObjectURL(new Blob([template], { type: "text/csv;charset=utf-8" }));
+    const url = URL.createObjectURL(new Blob([invitationTemplate(organisations[0]?.slug??"",courses[0]?.id??"")], { type: "text/csv;charset=utf-8" }));
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "apgi-learner-import-template.csv";
+    anchor.download = (organisations[0]?.slug??"training")+"-learner-import-template.csv";
     anchor.click();
     window.setTimeout(() => URL.revokeObjectURL(url), 0);
   }

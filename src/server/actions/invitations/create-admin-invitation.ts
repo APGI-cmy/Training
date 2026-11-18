@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import {productionCompanyId} from '@/server/services/tenant-courses';
 export async function createAdminInvitation(input: InvitationInput): Promise<CreateInvitationState> {
   const { session } = await requireAdmin();
+  if(productionCompanyId())return {ok:false,error:"PLATFORM_ADMIN_INVITATIONS_REQUIRE_APGI"};
   const email = input.recipientEmail.trim().toLowerCase(); const expires = new Date(input.expiresAt);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !input.organisationId || !input.reason.trim() || !Number.isFinite(expires.getTime()) || expires <= new Date()) return { ok: false, error: "ADMIN_INVITATION_FIELDS_REQUIRED" };
   if (!input.confirmAdminAccess) return { ok: false, error: "CONFIRM_FULL_ADMIN_ACCESS" };

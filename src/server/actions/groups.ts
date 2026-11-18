@@ -1,16 +1,24 @@
 "use server";
+import {rememberLearnerCompany,assertLearnerCompanyScope} from '@/server/services/learner-companies';
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { adminRest } from "@/server/supabase/admin-rest";
 import { validGroup } from "@/server/services/groups";
 export async function createGroup(form: FormData) {
   const { session } = await requireAdmin();
-  const name = String(form.get("name") ?? "").trim();
+  const companyName=String(form.get("company")??"").trim();
+  const name = String(form.get("name") ?? "").trim()||companyName;
   const organisationId = String(form.get("organisationId") ?? "");
+  assertLearnerCompanyScope(organisationId);
   if (!name || name.length > 100 || !organisationId) throw new Error("Enter a group name and organisation.");
-  const r = await adminRest("/rest/v1/learner_groups?on_conflict=organisation_id,name", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates" }, body: JSON.stringify({ name, organisation_id: organisationId, created_by: session.user.id }) });
+  const company=await rememberLearnerCompany(organisationId,companyName,session.user.id);
+  const r = await adminRest("/rest/v1/learner_groups?on_conflict=organisation_id,name", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates" }, body: JSON.stringify({ name, organisation_id: organisationId, created_by: session.user.id, client_company_id:company?.id??null }) });
   if (!r.ok) throw new Error("Group could not be saved.");
   revalidatePath("/admin/invitations"); revalidatePath("/admin/learners");
+}
+export async function createGroupWithState(_: {error?:string;success?:string},form:FormData):Promise<{error?:string;success?:string}>{
+  try{await createGroup(form);return {success:'Learner group saved. The company name is available for future learners.'};}
+  catch(error){if(error instanceof Error&&'digest' in error)throw error;return {error:error instanceof Error?error.message:'The learner group could not be saved.'};}
 }
 export async function assignLearnerGroup(form: FormData) {
   await requireAdmin();
@@ -18,6 +26,7 @@ export async function assignLearnerGroup(form: FormData) {
   const groupId = String(form.get("groupId") ?? "") || null;
   const q = `/rest/v1/course_enrolments?user_id=eq.${encodeURIComponent(userId)}&course_id=eq.${encodeURIComponent(courseId)}`;
   const r = await adminRest(`${q}&select=organisation_id`); const rows = r.ok ? await r.json() : [];
+  if(rows[0])assertLearnerCompanyScope(rows[0].organisation_id);
   if (!rows[0] || !(await validGroup(groupId ?? undefined, rows[0].organisation_id))) throw new Error("Choose a group in this learner's enrolled organisation.");
   const updated = await adminRest(q, { method: "PATCH", body: JSON.stringify({ group_id: groupId }) });
   if (!updated.ok) throw new Error("Group could not be assigned.");

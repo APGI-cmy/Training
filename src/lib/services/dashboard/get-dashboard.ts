@@ -4,6 +4,8 @@ import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { getLearnerProgress } from "@/lib/services/progress/get-learner-progress";
 import type { AlpSession } from "@/server/auth/session";
 import { getCookieCompletedUnitIds } from "@/server/progress/progress-cookie";
+import {isTigerCourse} from '@/lib/tiger-progression';
+import {tigerCompletedUnits} from '@/server/services/tiger-progression';
 
 export interface DashboardCourseCard {
   id: string;
@@ -75,6 +77,12 @@ export async function getDashboard(session?: AlpSession): Promise<LearnerDashboa
         }
       });
 
+      if(isTigerCourse(course)){
+        // Dashboard and course shell must use the same persisted prerequisites.
+        // A resume cookie or an old SCORM result alone cannot complete Tiger.
+        completedUnitIds.clear();
+        for(const id of (await tigerCompletedUnits(session!,course))??[])if(knownUnitIds.has(id))completedUnitIds.add(id);
+      }
       const completedUnits = completedUnitIds.size;
       const unitCount = course.units.length;
 
@@ -93,7 +101,7 @@ export async function getDashboard(session?: AlpSession): Promise<LearnerDashboa
   );
 
   return {
-    learnerName: "APGI learner",
+    learnerName: "Learner",
     courses,
     totalCourses: courses.length,
     totalUnits: courses.reduce((sum, course) => sum + course.unitCount, 0),

@@ -1,3 +1,4 @@
+import {productionCompanyId} from '@/server/services/tenant-courses';
 import {getTenantCourses} from '@/server/services/tenant-courses';
 import {getSavedCourseCardImages} from '@/server/services/course-card-images';
 import Link from "next/link";
@@ -35,7 +36,8 @@ export default async function CompanyPage({
     notFound();
   }
   const { company, session, isAdmin } = access;
-  const principal = isAdmin && await isPlatformPrincipal(session);
+  const partnerSite=!!productionCompanyId();
+  const principal = !partnerSite && isAdmin && await isPlatformPrincipal(session);
   const candidateReturn = publicationReturnPath((await searchParams).returnTo);
   let returnTo = principal ? candidateReturn : null;
   const owner =
@@ -82,11 +84,11 @@ export default async function CompanyPage({
       </header>
       <nav className="button-row">
         {returnTo ? <Link href={`${returnTo}${returnTo.includes("?")?"&":"?"}brand=${id}`}>Return to course preparation</Link> : null}
-        <Link href="/company">Switch company</Link>
+        {!partnerSite?<Link href="/company">Switch company</Link>:<Link href="/company-branding">Company branding</Link>}
         {owner ? <Link href="/policies">Policies and reviews</Link> : null}
         {owner ? <Link href={`/course-calculator?company=${id}`}>Course calculator and learning balances</Link> : null}
         {owner ? <Link href={`/company/${id}/payments`}>Payments and bank onboarding</Link> : null}
-        {isAdmin ? <Link href="/admin/companies">All companies</Link> : null}
+        {!partnerSite&&principal ? <Link href="/admin/companies">All companies</Link> : null}
       </nav>
       <section className="admin-form-card">
         <h2>Company courses</h2>
@@ -209,7 +211,7 @@ export default async function CompanyPage({
           </section>
         </>
       ) : null}
-      {isAdmin ? (
+      {!partnerSite&&isAdmin ? (
         <section className="admin-form-card">
           <h2>Appoint a business owner</h2>
           <p>
