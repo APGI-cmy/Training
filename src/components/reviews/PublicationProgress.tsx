@@ -1,3 +1,4 @@
+import {publishedTrainingRelease} from '@/lib/review-publication-state';
 import {initialReviewerComplete} from "@/lib/lu-review-workflow";
 import {commercialReviewPath,commercialSignoffAnchor} from "@/lib/review-navigation";
 import {CommercialDiscussion} from "./CommercialDiscussion";
@@ -21,6 +22,7 @@ export function PublicationProgress({round,principal,email,hash,brandRevision,gu
 
  const w=round.document.workflow;if(!w)return <section className="review-box"><h2>Earlier workflow</h2><p>This record is preserved. Start a content-first workflow to complete the current publication process.</p>{principal?<Link href={`/course-reviews/new?course=${round.course_id}&brand=${round.organisation_id}`}>Start current workflow</Link>:null}</section>;
 
+ const published=publishedTrainingRelease(round,hash,brandRevision);
  const v=currentCommercial(w),money=(n:number)=>`${v?.configuration.currency??"USD"} ${(n/100).toFixed(2)}`;
 
 
@@ -33,7 +35,7 @@ export function PublicationProgress({round,principal,email,hash,brandRevision,gu
 
 
 
- return <section className="review-box" id="commercial-preparation" aria-label="Publication workflow"><WorkflowSectionHeading title="Commercial preparation and sign-off" step={findWorkflowStep(guide,"commercials")}/><p><strong>Current step: {round.status==="published"?"Published":w.stage.replaceAll("_"," ")}</strong></p><p>Course designer: {w.designerName} · {w.designerCompany}</p>{w.contentApproval?<p>Content approved by {w.contentApproval.email} · {w.contentApproval.at}. Commercial and branding decisions remain separate.</p>:<p>Commercial preparation can continue while findings are addressed. All content, peer checks, commercial and branding approvals remain required before publication.</p>}
+ return <section className="review-box" id="commercial-preparation" aria-label="Publication workflow"><WorkflowSectionHeading title="Commercial preparation and sign-off" step={findWorkflowStep(guide,"commercials")}/><p><strong>Current step: {published?(round.status==="open"?"Published — review continuing":"Published"):w.stage.replaceAll("_"," ")}</strong></p><p>Course designer: {w.designerName} · {w.designerCompany}</p>{published?<p className="form-success">This course is already published. Complete the retained commercial review tasks below.</p>:w.contentApproval?<p>Content approved by {w.contentApproval.email} · {w.contentApproval.at}. Commercial and branding decisions remain separate.</p>:<p>Commercial preparation can continue while findings are addressed. All content, peer checks, commercial and branding approvals remain required before publication.</p>}
 
  {requester&&w.stage==="content_review"?<><p>{preparationReady?"Your review is submitted. You can prepare commercials while the team resolves findings and completes independent checks.":"Complete your initial LU findings and coverage confirmations to open commercial preparation."}</p><ReviewForm workflow id={round.id} operation="begin_commercials" label="Continue to commercials" disabled={!preparationReady||round.status!=="open"||hash!==round.fingerprint}/></>:null}
 
@@ -68,7 +70,7 @@ export function PublicationProgress({round,principal,email,hash,brandRevision,gu
 
  {principal&&w.stage==="ready_to_publish"&&w.partner&&v?.acceptance&&v.acceptance.brandRevision!==brandRevision?<ReviewForm disabled={round.status!=="open"||hash!==round.fingerprint} workflow id={round.id} operation="reconfirm_partner" label="Request partner confirmation of revised branding"><p>Branding changed. Content and joint commercial approvals remain, but the partner must confirm the new branding.</p></ReviewForm>:null}
 
- {w.stage==="ready_to_publish"?<p><a href="#final-publication">Open final publication checks</a>. All approvals are collected. Final publication must be performed explicitly by Johan or Jorrie using the release controls below.</p>:null}</section>;
+ {!published&&w.stage==="ready_to_publish"?<p><a href="#final-publication">Open final publication checks</a>. All approvals are collected. Final publication must be performed explicitly by Johan or Jorrie using the release controls below.</p>:null}</section>;
 
 }
 
