@@ -134,7 +134,7 @@ export function claimReviewer(round:ReviewRound,email:string,userId:string){
 
  const person=round.document.participants.find(p=>p.email===email);
 
- if(!person||person.state==="declined")throw Error("You are not an active assigned reviewer.");
+ if(!person||person.state==="declined"||round.document.reviewerRequests?.[email]?.state==='closed')throw Error("You are not an active assigned reviewer.");
 
  if(person.userId&&person.userId!==userId)throw Error("The reviewer account does not match the bound identity.");
 
@@ -176,7 +176,7 @@ export async function processReviewMail(){
 
   // Re-evaluate at send time: queued reminders cannot outlive their task/cutoff.
 
-  if(!round||staleOffer||staleResponse||round.status==="cancelled"||(['review_response_request','review_policy_notice','deemed_endorsement'].includes(m.kind)&&m.recipient!==round.document.requester&&(!person||person.state==='declined'))||((m.kind==="reminder"||m.kind==="invitation")&&(!person||!needsReminder(round,person,Date.now(),brandRevision)))||(m.kind==="progress_digest"&&round.status!=="open")){
+  if(!round||staleOffer||staleResponse||round.status==="cancelled"||(['review_response_request','review_policy_notice','deemed_endorsement'].includes(m.kind)&&m.recipient!==round.document.requester&&(!person||person.state==='declined'))||(m.kind==="reminder"&&(!person||!needsReminder(round,person,Date.now(),brandRevision)))||(m.kind==="invitation"&&(!person||!canWork(round)||person.state==="declined"||person.state==="finished"||round.document.reviewerRequests?.[person.email]?.state==='closed'))||(m.kind==="progress_digest"&&round.status!=="open")){
 
    await write(`/rest/v1/course_review_mail?id=eq.${m.id}`,{state:"skipped"},"PATCH");continue;
 

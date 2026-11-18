@@ -50,6 +50,7 @@ export async function LearnerSidebar() {
           { href: "/policies", label: "Policies and reviews" },
           ...(emailAdmin?[{href:'/security-watchdog',label:'Security Watchdog'}]:[]),
           { href: "/course-reviews", label: "Course reviews" },
+          { href: "/review-requests", label: "Review requests" },
         ] : []),
         ...(isAdmin ? [
           { href: "/admin", label: "Administration" },

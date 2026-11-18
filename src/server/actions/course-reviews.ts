@@ -329,12 +329,12 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
    await assertReviewInvitationReady(round.organisation_id,round.course_id);
 
    assertReviewWork(round,fresh);
-   const recipients=op==="resend_all_invites"?d.participants.filter(p=>p.state!=="declined"&&p.state!=="finished").map(p=>p.email):[normalizedEmail(text(form,"recipient",3,254))];
+   const recipients=op==="resend_all_invites"?d.participants.filter(p=>p.state!=="declined"&&p.state!=="finished"&&d.reviewerRequests?.[p.email]?.state!=='closed').map(p=>p.email):[normalizedEmail(text(form,"recipient",3,254))];
    if(!recipients.length)throw Error("There are no pending reviewers to email.");
    for(const recipient of recipients){
    const target=d.participants.find(p=>p.email===recipient);
 
-   if(!target||target.state==="declined"||target.state==="finished")throw Error("Only an unfinished, active review invitation can be resent.");
+   if(!target||target.state==="declined"||target.state==="finished"||d.reviewerRequests?.[recipient]?.state==='closed')throw Error("Only an unfinished, active review invitation can be resent.");
 
    const token=randomBytes(32).toString("base64url");
 

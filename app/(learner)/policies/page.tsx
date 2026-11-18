@@ -14,7 +14,7 @@ export default async function MyPolicies() {
   return (
     <main className="admin-page">
       <h1>Your policies and review requests</h1>
-      <PrivacyPolicyCard />
+      <PrivacyPolicyCard /><p><Link href="/review-requests?kind=policies">Request an independent policy review or open your policy review requests</Link></p>
       <section className="admin-form-card"><h2>Course pricing policy</h2><p>Platform-wide course access, credit allowances, prices and revenue-allocation rules. Its approval and effective status are shown on the document.</p><Link href="/pricing-policy">Read course access and commercial pricing policy</Link></section>
       <p>
         Only your company documents and versions explicitly assigned to you

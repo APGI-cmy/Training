@@ -1,3 +1,4 @@
+import type {ReviewRequest} from '@/lib/review-requests';
 import {reviewOverride} from '@/lib/review-overrides';
 import {ReviewGuidance} from './ReviewGuidance';
 import type {WorkflowStep} from '@/lib/publication-guide';
@@ -26,7 +27,7 @@ const Comment=({label,defaultValue}:{label:string;defaultValue?:string})=><label
 
 function LegacyReviewProcess({round,email,userId,requester,fresh}:{round:ReviewRound;email:string;userId:string;requester:boolean;fresh:boolean}){
  const d=round.document,base=`/course-reviews/${round.id}`,findings=activeFindings(d),person=d.participants.find(p=>p.email===email);
- const editable=canWork(round)&&fresh&&!!person&&person.state!=="declined"&&hasReviewTask(person,"content");
+ const editable=canWork(round)&&fresh&&round.document.reviewerRequests?.[email]?.state!=='closed'&&!!person&&person.state!=="declined"&&hasReviewTask(person,"content");
  const primary=d.participants.filter(p=>p.role==="primary"&&p.state!=="declined"&&hasReviewTask(p,"content"));
  const submitted=primary.filter(p=>p.state==="finished"&&currentReport(d,p.email)).length;
  const endorsed=primary.filter(p=>{const r=currentReport(d,p.email);return p.state==="finished"&&r&&!r.endorsements.some(e=>e.decision==="changes")&&r.endorsements.some(e=>e.decision==="approve"&&e.userId!==r.userId&&d.participants.some(p=>p.email===e.email&&p.state!=="declined"&&hasReviewTask(p,"content")));}).length;
@@ -73,7 +74,7 @@ function LegacyReviewProcess({round,email,userId,requester,fresh}:{round:ReviewR
  </section>;
 }
 
-export function ReviewProcess(props:{round:ReviewRound;email:string;userId:string;requester:boolean;fresh:boolean;deployedFingerprint?:string;steps?:WorkflowStep[];tasks?:ReviewNotificationTask[]}){
+export function ReviewProcess(props:{round:ReviewRound;email:string;userId:string;requester:boolean;fresh:boolean;deployedFingerprint?:string;steps?:WorkflowStep[];tasks?:ReviewNotificationTask[];requests?:ReviewRequest[];requestManager?:boolean}){
  const {round,email,userId,fresh}=props,d=round.document;
  const clear=reviewOverride(d,'content',round.fingerprint);if(clear?.mode==='clear')return <section className="review-box" id="review-guidance"><h2>Content review — cleared by recorded exception</h2><p className="form-success">The active content-review steps are green under an administrative override. Earlier findings and endorsements are archived; no reviewer approval is inferred.</p><a href={`/course-reviews/${round.id}/overrides/${clear.id}`}>Read archived feedback and the override reason</a><ul>{d.units.map(u=><li key={u.slug}>✓ <a href={`/course-reviews/${round.id}/units/${u.slug}`}>{u.title}</a> — review overridden</li>)}</ul></section>;
  if(d.reviewProcessVersion!==3)return <LegacyReviewProcess {...props}/>;
@@ -83,12 +84,13 @@ export function ReviewProcess(props:{round:ReviewRound;email:string;userId:strin
  // deployment references remain in the requester-controlled registration history.
  snapshot.document.contentRevisions=d.contentRevisions?.map(r=>({fingerprint:r.fingerprint,previousFingerprint:r.previousFingerprint,at:r.at,email:'',userId:'',notes:'',deployment:'',changedUnits:r.changedUnits,preservedUnits:r.preservedUnits}));
  snapshot.document.reviewOverrides=d.reviewOverrides?.filter(o=>o.scope==='content');
+ snapshot.document.reviewerRequests=d.reviewerRequests;
  snapshot.document.nonresponsePolicy=d.nonresponsePolicy;snapshot.document.deemedEndorsements=d.deemedEndorsements;
  const pending=luWorkflowBlockers(round);
  return <section className="review-box review-process" id="review-process" aria-labelledby="review-process-heading"><span id="review-process-heading"/><span id="review-units"/><span id="review-summary"/><span id="shared-findings"/><span id="my-full-review"/>
  {d.reports.map(r=><span key={r.id} id={reportAnchor(r.id)} className="review-process-anchor"/>)}
  <div id="review-process-notifications"><Link href="/notifications">Open notifications and tracking</Link></div>
- <ReviewGuidance round={round} email={email} userId={userId} steps={props.steps} tasks={props.tasks} fresh={fresh}/>
+ <ReviewGuidance round={round} email={email} userId={userId} steps={props.steps} tasks={props.tasks} fresh={fresh} requests={props.requests} requestManager={props.requestManager}/>
 
  <p>{pending.length?"Open a learning unit to see its initial review, implementation feedback, reopened rounds and endorsements.":"All LU reviews and required finding endorsements are complete. Final course, commercial and branding approvals remain separate."}</p>
  <LUReviewWorkspace round={snapshot} email={email} userId={userId} fresh={fresh} pendingRecheckUnits={fresh?[]:correctionRecheckUnits(round,props.deployedFingerprint??'')}/>

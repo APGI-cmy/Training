@@ -1,3 +1,4 @@
+import {flushReviewRequestMail} from '@/server/services/review-requests';
 import {timingSafeEqual} from "node:crypto";
 import {runMessageSchedules} from "@/server/services/messages";
 import {runEmailSets} from '@/server/services/email-sets';
@@ -9,6 +10,6 @@ export async function GET(request:Request){
  // A failure in a different mail queue must not prevent notification delivery.
  let failed=false;
  const attempt=async(work:()=>Promise<object>)=>{try{return await work();}catch{failed=true;return {error:'Messages remain queued for retry.'};}};
- const messages=await attempt(runMessageSchedules),emailSets=await attempt(runEmailSets),notifications=await attempt(flushNotificationMail);
- return Response.json({...messages,emailSets,notifications},{status:failed?503:200,headers:{'cache-control':'no-store'}});
+ const messages=await attempt(runMessageSchedules),emailSets=await attempt(runEmailSets),notifications=await attempt(flushNotificationMail),reviewRequests=await attempt(flushReviewRequestMail);
+ return Response.json({...messages,emailSets,notifications,reviewRequests},{status:failed?503:200,headers:{'cache-control':'no-store'}});
 }

@@ -89,6 +89,7 @@ export type ReviewChangeRequest = {
 };
 
 export type ReviewDocument = {
+  reviewerRequests?:Record<string,{state:'open'|'closed';cycle:number;at:string;reason:string}>;
   trainingReleases?:{id:string;at:string;fingerprint:string;brandRevision:number;commercialVersion:string|null}[];
   sourceReviewId?:string;
   reviewOverrides?:import('./review-overrides').ReviewOverride[];
@@ -204,7 +205,7 @@ export function canWork(round: ReviewRound, now = Date.now()) { return round.sta
 
 export function needsReminder(round: ReviewRound, person: ReviewPerson, now = Date.now(),brandRevision=round.document.brand?.revision??0) {
 
-  return person.role!=="partner" && canWork(round, now) && person.state !== "declined" && (person.tasks||round.document.reviewProcessVersion===3?outstandingAssignedTasks(round,person,brandRevision).length>0:person.state!=="finished");
+  return round.document.reviewerRequests?.[person.email]?.state!=="closed" && person.role!=="partner" && canWork(round, now) && person.state !== "declined" && (person.tasks||round.document.reviewProcessVersion===3?outstandingAssignedTasks(round,person,brandRevision).length>0:person.state!=="finished");
 
 }
 

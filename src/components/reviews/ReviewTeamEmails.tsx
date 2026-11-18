@@ -4,7 +4,7 @@ import {canWork,type ReviewRound} from '@/lib/course-review';
 import type {ReviewInvitationEmailState} from '@/lib/review-invitation-email';
 
 export function ReviewTeamEmails({round,fresh,invitationEmail}:{round:ReviewRound;fresh:boolean;invitationEmail:ReviewInvitationEmailState}){
- const pending=round.document.participants.filter(person=>person.state!=='finished'&&person.state!=='declined');
+ const pending=round.document.participants.filter(person=>person.state!=='finished'&&person.state!=='declined'&&round.document.reviewerRequests?.[person.email]?.state!=='closed');
  const locked=!fresh||!canWork(round)||!pending.length||invitationEmail.status==='blocked';
  return <div aria-label="Resend review emails"><ReviewInvitationSummary state={invitationEmail}/>
  <p>Resend the current invitation to all {pending.length} reviewers with outstanding work. Each person receives a separate email with their own assignments and joining link. Completed and declined reviewers are excluded. Existing reviews and approvals are retained.</p>

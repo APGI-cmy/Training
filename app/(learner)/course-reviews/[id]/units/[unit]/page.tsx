@@ -21,7 +21,7 @@ export default async function ReviewUnit({params,searchParams}:{params:Promise<{
   const content=getUnitContent(round.course_id,unit);if(!content)notFound();
   const lu=content.unit,ebook=reviewEbook(lu);
   const recheckPending=!fresh&&correctionRecheckUnits(round,source.fingerprint).includes(lu.slug);
-  const editable=fresh&&canWork(round)&&!!person&&person.state!=="declined"&&hasReviewTask(person,"content");
+  const editable=fresh&&canWork(round)&&round.document.reviewerRequests?.[email]?.state!=='closed'&&!!person&&person.state!=="declined"&&hasReviewTask(person,"content");
   const viewerAvailability=content.course.slug==="scannex-training-programme"?evaluateViewerLabAvailability(await getViewerLabSettings(),lu.slug):undefined;
   const feedback=<ReviewPanel key={`${id}:${lu.slug}:${query?.finding??query?.feedback??""}`} id={id} unit={lu.slug} canEdit={editable} disabledReason={preview.notice} email={email} hasEbook={!!ebook} findings={activeFindings(round.document).filter(f=>findingAppliesToUnit(f,lu.slug))} openOnLoad={query?.feedback==="1"||!!query?.finding} initialFindingId={query?.finding}/>;
   return <><PreviewNotice preview={preview}/><p className="content-inner">{round.document.brand.name} · Review version {round.fingerprint.slice(0,12)}</p>

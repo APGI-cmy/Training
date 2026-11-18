@@ -1,3 +1,4 @@
+import {SectionReviewRequests} from '@/components/reviews/SectionReviewRequests';
 import {redirect} from 'next/navigation';
 import {productionCompanyId} from '@/server/services/tenant-courses';
 import {requirePlatformPrincipal} from '@/server/services/platform-principals';
@@ -52,7 +53,7 @@ export default async function CompaniesPage({searchParams}: {searchParams: Promi
       <section className="admin-launch-grid">
         {companies.map((c) => (
           <article className="admin-form-card" key={c.id}>
-            <h2>{c.name}</h2>
+            <h2>{c.name}</h2><SectionReviewRequests company={c.id} kind="branding"/>
             <p>
               {c.slug} · brand revision {c.brand_revision}
             </p>

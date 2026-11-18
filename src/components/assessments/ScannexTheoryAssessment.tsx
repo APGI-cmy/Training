@@ -1,4 +1,6 @@
 "use client";
+import {previewIndependentTheory} from '@/server/actions/review-requests';
+
 
 import { useActionState, useState } from "react";
 import {
@@ -16,16 +18,18 @@ export function ScannexTheoryAssessment({
   questions,
   latestResult,
   reviewId,
+  independentRequestId,
   adminPreview = false
 }: {
   courseSlug: string;
   questions: ScannexTheoryQuestion[];
   latestResult: { score: number; maxScore: number; submittedAt: string } | null;
   reviewId?: string;
+  independentRequestId?: string;
   adminPreview?: boolean;
 }) {
   const [answers, setAnswers] = useState<ScannexTheoryAnswerState>({});
-  const [state, action, pending] = useActionState(reviewId ? previewReviewTheory : adminPreview ? previewAdminTheory : submitScannexTheoryAttempt, initialState);
+  const [state, action, pending] = useActionState(independentRequestId ? previewIndependentTheory : reviewId ? previewReviewTheory : adminPreview ? previewAdminTheory : submitScannexTheoryAttempt, initialState);
 
   function setAnswer(question: ScannexTheoryQuestion, optionId: string) {
     setAnswers((current) => {
@@ -47,7 +51,7 @@ export function ScannexTheoryAssessment({
           <div>
             <p className="eyebrow">Part A: knowledge assessment</p>
             <h2 id="scannex-theory-heading">Scannex theory assessment</h2>
-            <p>{reviewId || adminPreview ? "Preview: scoring is checked on the server, but no learner attempt, grade or certificate is recorded." : "Answer every question. The correct answers are assessed securely after submission and are not displayed."}</p>
+            <p>{independentRequestId || reviewId || adminPreview ? "Preview: scoring is checked on the server, but no learner attempt, grade or certificate is recorded." : "Answer every question. The correct answers are assessed securely after submission and are not displayed."}</p>
           </div>
           <div className="score-badge">68 marks</div>
         </div>
@@ -59,6 +63,7 @@ export function ScannexTheoryAssessment({
         ) : null}
 
         <form action={action} className="assessment-form">
+          {independentRequestId?<input type="hidden" name="request_id" value={independentRequestId}/>:null}
           {reviewId?<input type="hidden" name="round_id" value={reviewId}/>:null}
           <input name="courseSlug" type="hidden" value={courseSlug} readOnly />
           <input name="answers" type="hidden" value={JSON.stringify(answers)} readOnly />

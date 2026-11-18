@@ -13,7 +13,7 @@ export type NotificationInbox=NotificationCounts&{total:number;items:PersonalNot
 export function notificationTarget(path:string|null,message="") {
  const target=path??message.match(/\/course-reviews\/[0-9a-f-]{36}/i)?.[0]??"/notifications";
  if(/^\/messages(?:\/[0-9a-f-]{36})?$/i.test(target))return target;
- return /^(?:\/notifications|\/payments|\/payments\/reports\?scope=(?:all|self|[0-9a-f-]{36})&table=[a-z_]+|\/admin\/learners|\/admin\/invitations|\/admin\/payments\/stripe(?:\/private)?|\/catalogue(?:\?view=my-learning)?|\/course-reviews\/[0-9a-f-]{36}(?:\/commercials)?|\/policies\/[0-9a-f-]{36}|\/company\/[0-9a-f-]{36}(?:\/payments)?)(?:#[a-z0-9_-]+)?$/i.test(target)?target:"/notifications";
+ return /^(?:\/notifications|\/payments|\/payments\/reports\?scope=(?:all|self|[0-9a-f-]{36})&table=[a-z_]+|\/admin\/learners|\/admin\/invitations|\/admin\/payments\/stripe(?:\/private)?|\/catalogue(?:\?view=my-learning)?|\/course-reviews\/[0-9a-f-]{36}(?:\/commercials)?|\/review-requests\/[0-9a-f-]{36}|\/policies\/[0-9a-f-]{36}|\/company\/[0-9a-f-]{36}(?:\/payments)?)(?:#[a-z0-9_-]+)?$/i.test(target)?target:"/notifications";
 }
 export const notificationReference=(n:Pick<PersonalNotification,"id"|"reference_number">)=>n.reference_number?`Notification ${n.reference_number}`:`Notification ${n.id.slice(0,8).toUpperCase()}`;
 export const notificationStatus=(n:PersonalNotification)=>n.target_path==="/notifications#archived-company-request"?"No response required — company inactive or unavailable":n.response_type==="acknowledge"?(n.acknowledged_at?"Acknowledged":"Acknowledgement requested"):n.response_type==="action"?(n.pending?"Action required":"Action completed or no longer required"):n.read_at?"Read":"Unread";

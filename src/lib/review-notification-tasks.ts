@@ -10,7 +10,7 @@ export type ReviewNotificationTask={key:string;roundId:string;revision:number;ti
 export type ReviewTaskSource={round:ReviewRound;hash:string;brandRevision:number};
 export function reviewNotificationTasks({round:r,hash,brandRevision}:ReviewTaskSource,email:string,userId:string,principal:boolean):ReviewNotificationTask[]{
  const d=r.document,w=d.workflow,v=w?.commercials.at(-1),p=d.participants.find(p=>p.email===email),base=`/course-reviews/${r.id}`,commercial=commercialReviewPath(r.id),fresh=hash===r.fingerprint;
- if(r.status!=="open"||!w||!principal&&(!p||p.state==="declined"))return [];
+ if(d.reviewerRequests?.[email]?.state==='closed'||r.status!=="open"||!w||!principal&&(!p||p.state==="declined"))return [];
  const published=publishedTrainingRelease(r,hash,brandRevision);
  // Retire only the old commercial version already released by exception.
  // New calculator policy and price-structure approvals remain independent.

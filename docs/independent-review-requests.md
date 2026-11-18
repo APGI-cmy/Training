@@ -1,0 +1,11 @@
+# Independent review requests
+
+Each company can request content, branding, commercials or selected-policy review independently. Section buttons open the shared request dialog; the original structured LU reviewer assignment workflow remains available. The shared request model can later be called by Course Creator without moving the historical course records.
+
+Requests freeze exact selected documents or course fingerprints. Each recipient has an open/responded/closed request, revision, cycle and append-only event history. Reopen, resend and close require a reason. A close is an administrative action, not endorsement, policy activation, course publication or financial approval. Explicit human decisions are recorded for every selected policy. Copy for AI uses the clipboard only; nothing is transmitted to an AI service. Separate PDF attachments must be downloaded for review.
+
+Existing Tiger assignments are linked for tracking without changing their findings, responses, coverage, approvals or learner releases. Reopening a linked request preserves the old deemed-endorsement history but requires a fresh human response; the earlier automatic closure cannot satisfy that new request. Closing pauses that person's new review actions and reminders. The frozen published learner release stays available.
+
+Request events create a company-branded durable email and in-platform notice. This source has its own idempotent mail queue, avoiding duplicate generic notification emails. Claim tokens, retry delay and provider acceptance are recorded. New-user joining links are random tokens stored as hashes on requests; raw tokens are restricted to the mail queue and never exposed in shared history. Verified matching email or authorised company management is required to read a request. Company owners cannot access another company's requests. Internal policies remain limited to the platform principals.
+
+Producer checks include transaction-only database fixtures that roll back, permission and tenant tests, exact item decisions, duplicate-create prevention, response history, and unchanged source evidence. These checks are not human acceptance of the course, policy, branding or commercials. Live payments stay disabled.

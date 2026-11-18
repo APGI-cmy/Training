@@ -1,3 +1,4 @@
+import {SectionReviewRequests} from '@/components/reviews/SectionReviewRequests';
 import { rows } from "@/server/services/company-structure";
 import { policyReviewerStatus, type PolicyDecision } from "@/lib/policy-review";
 import Link from "next/link";
@@ -36,7 +37,7 @@ export default async function AdminPoliciesPage() {
           </p>
         </div>
       </header>
-      <PrivacyPolicyCard />
+      <PrivacyPolicyCard />{companies.map(c=><section className="admin-form-card" key={c.id}><h2>{c.name} policy reviews</h2><SectionReviewRequests company={c.id} kind="policies"/></section>)}
       <section className="directory-card">
         <h2>Document register and review decisions</h2><p>Open a document to read saved rejections, proposed changes and its audit trail. Creating a draft is a separate action below.</p>
         {policies.map((p) => (
