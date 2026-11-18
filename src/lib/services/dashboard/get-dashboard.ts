@@ -17,6 +17,7 @@ export interface DashboardCourseCard {
   completedUnits: number;
   progressPercent: number;
   href: string;
+  classification?: import("@/lib/course-selection").CourseClassification;
 }
 
 export interface LearnerDashboard {

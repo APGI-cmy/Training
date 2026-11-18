@@ -1,3 +1,4 @@
+import {courseClassifications} from '@/server/services/course-classification';
 import {getSavedCourseCardImages} from '@/server/services/course-card-images';
 import { LearnerDashboard } from "@/components/dashboard/LearnerDashboard";
 import { requireSession } from "@/server/auth/session";
@@ -15,5 +16,7 @@ export default async function DashboardPage() {
   await requireLearnerProfile(session);
   const dashboard = await getDashboard(session);
 
-  return <LearnerDashboard dashboard={dashboard} cardImages={await getSavedCourseCardImages()} />;
+  const labels=await courseClassifications(dashboard.courses.map(c=>c.id));
+  const labelled={...dashboard,courses:dashboard.courses.map(c=>({...c,classification:labels.get(c.id)}))};
+  return <LearnerDashboard dashboard={labelled} cardImages={await getSavedCourseCardImages()} />;
 }

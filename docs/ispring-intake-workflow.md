@@ -218,3 +218,20 @@ Once the deployed URL is confirmed working:
 | Served by Vercel | ❌ No | ✅ Yes |
 | Safe for review before go-live | ✅ Yes | ❌ Immediately live on merge |
 | Tracked in Git | ✅ Yes | ✅ Yes |
+
+
+## Course discovery labels
+
+Future course-upload documents may include `classification`, using the fragment in
+`docs/templates/course-classification.json`. `category` is `public`, `industry`, or
+`client`. Industry courses include `industry`; client-specific courses include
+`clientName`. These are business discovery labels, separate from learning-credit
+and audience/complexity calculations. The calculator uses the recorded credit
+category for pricing and reads industry/client labels from the credit metadata
+version first, then the uploaded course document. Missing names are displayed as
+unrecorded rather than guessed.
+
+Owners can add or correct an industry/client label under the calculator's
+**Course industry and client details** section. This appends a metadata version;
+it never changes a frozen course edition, earlier prices, learner records,
+company membership or course ownership. Use this before preparing pricing.

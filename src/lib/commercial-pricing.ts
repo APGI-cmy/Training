@@ -1,5 +1,5 @@
 import {allocation,creditUnits,integer,type CostSchedule,type CreditCourse,type PurchaseRoute} from './course-calculator';
-import type {PricingStructure,LegacyQuote} from './pricing-structures';
+import {offerCourses,type PricingStructure,type LegacyQuote} from './pricing-structures';
 
 export const COMMERCIAL_VERSION='2026-11-17.3';
 export const COMMERCIAL_POLICY='APGI-COMM-PRICE-001/1.3-draft';
@@ -33,8 +33,9 @@ export function validateCommercial(s:PricingStructure){
  integer(t.annualContentBps,'annual content licence percentage',1,10000);integer(t.walletCentsPerLearner,'wallet purchasing value',1,100000000);
  if(!s.courses.length||s.courses.length>100||new Set(s.courses.map(c=>c.editionId)).size!==s.courses.length||s.courses.some(c=>c.currency!==s.cost.currency))throw Error('Select distinct eligible courses in the quoted currency.');
  for(const c of s.courses){const v=t.values[c.editionId];integer(v?.audienceLevel,'audience/complexity level',1,5);integer(v?.marketMultiplierBps,'documented market-value multiplier',1000,100000);creditUnits(c.hours);}
- if(t.walletCentsPerLearner<Math.min(...s.courses.map(c=>courseValue(s,c,'wallet').listCents)))throw Error('Increase the wallet purchasing value so at least one selected course can be redeemed.');
+ if(t.walletCentsPerLearner<Math.min(...offerCourses(s,'wallet').map(c=>courseValue(s,c,'wallet').listCents)))throw Error('Increase the wallet purchasing value so at least one selected course can be redeemed.');
  for(const [route,o]of Object.entries(s.offers)){
+  const eligible=offerCourses(s,route as PurchaseRoute);if(o.editionIds&&o.courseCap>eligible.length)throw Error('The course cap exceeds this option’s selected courses.');
   integer(o.rateCents,'reference-course price',1,10000000);integer(o.minSeats,'minimum places',1,1000);integer(o.maxSeats,'maximum places',o.minSeats,1000);integer(o.months,'access months',1,60);integer(o.courseCap,'selected course cap',1,s.courses.length);
   if(route==='individual'&&(o.minSeats!==1||o.maxSeats!==1||o.courseCap!==1))throw Error('An individual purchase is one named course for one learner.');
   if(route!=='individual'&&o.minSeats<10)throw Error('Group offers begin at ten named learners.');
@@ -46,7 +47,7 @@ export function validateCommercial(s:PricingStructure){
 export type CommercialBreakdown={balanceUnit:'learning-credits'|'purchasing-credits';scheduledDiscountBps:number;listContentCents:number;weight:number;serviceMarketCents:number;serviceCostFloorCents:number;annualContentBps:number;walletCentsPerLearner:number;lines:{editionId:string;title:string;scope:string;hours:number;learningCredits:number;weight:number;listCents:number;payableCents:number;floorCents:number;lineTotalCents:number;redemptionBaseCents:number;remainderLearners:number}[]};
 export function commercialQuote(s:PricingStructure,route:PurchaseRoute,n:number,base:LegacyQuote):LegacyQuote&{commercial:CommercialBreakdown}{
  const o=s.offers[route],t=s.commercial!;integer(n,'quoted places',o.minSeats,o.maxSeats);
- const selected=route==='individual'?s.courses.slice(0,1):s.courses;
+ const selected=offerCourses(s,route);
  if(selected.length>o.courseCap&&route!=='wallet')throw Error('The selected courses exceed this option’s course cap.');
  const discount=route==='seat_pack'?bulkDiscountBps(n):0;
  const lines=selected.map(c=>{const v=courseValue(s,c,route);const factor=route==='subscription'?t.annualContentBps:10000-discount;const lineTotal=route==='seat_pack'?Math.max(v.floor*n,up(v.listCents*n*factor/10000)):Math.max(v.floor,up(v.listCents*factor/10000))*n;return {editionId:c.editionId,title:c.title,scope:c.scope,hours:c.hours,learningCredits:c.hours/10,weight:v.weight,listCents:v.listCents,payableCents:up(lineTotal/n),floorCents:v.floor,lineTotalCents:lineTotal,redemptionBaseCents:Math.floor(lineTotal/n),remainderLearners:lineTotal%n};});

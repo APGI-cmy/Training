@@ -1,12 +1,13 @@
+import type {CreditCourse} from '@/lib/credit-course-metadata';
 import {commercialDefaults,commercialQuote,validateCommercial,COMMERCIAL_VERSION,type CommercialTerms,type CommercialBreakdown} from './commercial-pricing';
-import {allocation,calculateCoursePrice,creditUnits,integer,type CreditCourse,type CostSchedule,type PurchaseRoute,type CalculatorInput} from './course-calculator';
+import {allocation,calculateCoursePrice,creditUnits,integer,type CostSchedule,type PurchaseRoute,type CalculatorInput} from './course-calculator';
 
 export const LEGACY_STRUCTURE_VERSION='2026-11-17.1';
 export const STRUCTURE_VERSION=COMMERCIAL_VERSION;
 export const ROUTES:PurchaseRoute[]=['individual','seat_pack','wallet','subscription'];
 export const ROUTE_NAMES:Record<PurchaseRoute,string>={individual:'Individual course',seat_pack:'Bulk course seats',wallet:'Learning wallet',subscription:'Platform access'};
 export type RecipientShares={ownerBps:number;sellerBps:number;apgiBps:number};
-export type OfferTerms={rateCents:number;minSeats:number;maxSeats:number;months:number;courseCap:number;credits:number;shares:Record<string,RecipientShares>;exceptionReason:string;ownerAuthority:string};
+export type OfferTerms={rateCents:number;minSeats:number;maxSeats:number;months:number;courseCap:number;credits:number;shares:Record<string,RecipientShares>;exceptionReason:string;ownerAuthority:string;editionIds?:string[]};
 export type PricingStructure={version:string;mode:'credits'|'courses';company:{id:string;isApgi:boolean};cost:CostSchedule;courses:CreditCourse[];paymentMethod:'card'|'invoice';feeBearer:'buyer'|'platform';offers:Record<PurchaseRoute,OfferTerms>;commercial?:CommercialTerms};
 export function legacyDefaultStructure(cost:CostSchedule,courses:CreditCourse[],company:{id:string;isApgi:boolean}):PricingStructure{
  if(!courses.length)throw Error('Choose a course with recorded credits.');
@@ -56,11 +57,24 @@ export function validateStructure(s:PricingStructure){
  if(s.version===LEGACY_STRUCTURE_VERSION)return legacyValidateStructure(s);
  validateCommercial(s);for(const route of ROUTES){quoteStructure(s,route,s.offers[route].minSeats);quoteStructure(s,route,s.offers[route].maxSeats);}return s;
 }
+export function offerCourses(s:PricingStructure,route:PurchaseRoute):CreditCourse[]{
+ const ids=s.offers[route]?.editionIds;
+ if(ids===undefined)return route==='individual'?s.courses.slice(0,1):s.courses;
+ if(!Array.isArray(ids)||!ids.length||new Set(ids).size!==ids.length||ids.some(id=>typeof id!=='string'||!s.courses.some(c=>c.editionId===id)))throw Error('Select distinct eligible courses for each pricing option.');
+ const courses=ids.map(id=>s.courses.find(c=>c.editionId===id)!);
+ if(route==='individual'&&courses.length!==1)throw Error('Choose exactly one course for the individual option.');
+ return courses;
+}
+export function selectOfferCourses(s:PricingStructure,route:PurchaseRoute,ids:string[]):PricingStructure{
+ const next={...s,offers:{...s.offers,[route]:{...s.offers[route],editionIds:ids,courseCap:route==='individual'?1:ids.length,credits:s.courses.filter(c=>ids.includes(c.editionId)).reduce((n,c)=>n+c.hours/10,0)}}};
+ offerCourses(next,route);
+ return next;
+}
 export function quoteStructure(s:PricingStructure,route:PurchaseRoute,seats:number):StructureQuote{
  if(s.version===LEGACY_STRUCTURE_VERSION)return legacyQuoteStructure(s,route,seats);
  if(s.version!==STRUCTURE_VERSION)throw Error('Unsupported retained pricing version.');
- const seed=legacyDefaultStructure(s.cost,[s.courses[0]],s.company),o=s.offers[route];
+ const selected=offerCourses(s,route),seed=legacyDefaultStructure(s.cost,[selected[0]],s.company),o=s.offers[route];
  if(!o||!ROUTES.includes(route))throw Error('Choose an approved buying option.');
- seed.offers[route]={...o,courseCap:1,credits:s.courses[0].hours/10,rateCents:s.cost.rates[s.courses[0].scope]};
+ seed.offers[route]={...o,courseCap:1,credits:selected[0].hours/10,rateCents:s.cost.rates[selected[0].scope]};
  return commercialQuote(s,route,seats,legacyQuoteStructure(seed,route,seats));
 }

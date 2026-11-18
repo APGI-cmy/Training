@@ -117,5 +117,6 @@ export interface Course {
   publicationIssues?: string[];
   pricing?: "company_agreement";
   catalogueVisibility?: "client_specific";
+  classification?: {category:"public"|"industry"|"client";industry?:string;clientName?:string};
   units: LearningUnit[];
 }

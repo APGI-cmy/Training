@@ -1,14 +1,16 @@
+import type {CreditCourse} from '@/lib/credit-course-metadata';
 import 'server-only';
 import {createHash} from 'node:crypto';
 import {requireSession} from '@/server/auth/session';
 import {validId} from '@/lib/company-structure';
-import {calculateCoursePrice,type CreditCourse,type CostSchedule,type CalculatorInput} from '@/lib/course-calculator';
+import {calculateCoursePrice,type CostSchedule,type CalculatorInput} from '@/lib/course-calculator';
 import {accessibleCompanies,ownMemberships,requireCompany,rows,write} from './company-structure';
 import {isPlatformPrincipal} from './platform-principals';
 import {adminRest} from '@/server/supabase/admin-rest';
 import {stripeRequest} from './stripe-platform';
 import {reconcileStripeFee,type StripeFeeTransaction} from '@/lib/stripe-fee-reconciliation';
 import pricingPolicy from '@/data/course-pricing-policy.json';
+import {productionCompanyId} from './tenant-courses';
 
 export type CalculatorQuote={id:string;company_id:string;created_by:string;input:CalculatorInput;result:ReturnType<typeof calculateCoursePrice>;courses:CreditCourse[];cost_snapshot:CostSchedule;fingerprint:string;policy_id:string;created_at:string};
 export type CalculatorOrder={id:string;quote_id:string;buyer_id:string;company_id:string;mode:'test';state:string;checkout_id:string|null;payment_intent:string|null;amount_cents:number;currency:string;fee_evidence:Record<string,unknown>|null;hold_reason:string|null};
@@ -24,14 +26,16 @@ export async function calculatorAccess(companyId?:string){
 export async function calculatorCourses(companyId:string,principal:boolean){
  const [versions,editions,companies,offerings]=await Promise.all([
   rows<{id:string;edition_id:string;owner_id:string;snapshot:Omit<CreditCourse,'id'|'editionId'|'ownerId'|'ownerIsApgi'>}>('/rest/v1/cc_credit_versions?select=*&order=created_at.desc&limit=1000'),
-  rows<{id:string;course_id:string;edition_number:number;course_document:{title:string}}>(`/rest/v1/course_editions?state=eq.ready&select=id,course_id,edition_number,course_document&limit=1000`),
+  rows<{id:string;course_id:string;edition_number:number;course_document:{title:string;classification?:{category?:CreditCourse['scope'];industry?:string;clientName?:string}}}>(`/rest/v1/course_editions?state=eq.ready&select=id,course_id,edition_number,course_document&limit=1000`),
   rows<{id:string;slug:string;name:string}>('/rest/v1/organisations?is_active=eq.true&select=id,slug,name'),
   rows<{course_id:string}>(`/rest/v1/organisation_offerings?organisation_id=eq.${companyId}&select=course_id`)
  ]);
+ const tenant=productionCompanyId();
  const seen=new Set<string>(),courses:CreditCourse[]=[];
  for(const v of versions){if(seen.has(v.edition_id))continue;seen.add(v.edition_id);const e=editions.find(e=>e.id===v.edition_id),owner=companies.find(c=>c.id===v.owner_id);if(!e||!owner)continue;
+  if(tenant&&!offerings.some(o=>o.course_id===e.course_id))continue;
   if(!principal&&v.owner_id!==companyId&&v.snapshot.scope!=='public'&&!offerings.some(o=>o.course_id===e.course_id))continue;
-  courses.push({...v.snapshot,id:v.id,editionId:e.id,courseId:e.course_id,title:`${e.course_document.title} · edition ${e.edition_number}`,ownerId:owner.id,ownerIsApgi:owner.slug==='apgi'});
+  courses.push({...v.snapshot,id:v.id,editionId:e.id,courseId:e.course_id,title:`${e.course_document.title} · edition ${e.edition_number}`,ownerId:owner.id,ownerIsApgi:owner.slug==='apgi',industry:v.snapshot.industry??e.course_document.classification?.industry,clientName:v.snapshot.clientName??e.course_document.classification?.clientName});
  }
  return {courses,editions,companies};
 }
