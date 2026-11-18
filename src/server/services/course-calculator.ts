@@ -39,6 +39,10 @@ export async function calculatorCourses(companyId:string,principal:boolean){
  }
  return {courses,editions,companies};
 }
+export async function calculatorWalletCourses(companyId:string,principal:boolean){
+ const [catalogue,published]=await Promise.all([calculatorCourses(companyId,principal),rows<{course_id:string}>(`/rest/v1/organisation_offerings?organisation_id=eq.${companyId}&status=eq.published&select=course_id`)]);
+ return catalogue.courses.filter(c=>published.some(p=>p.course_id===c.courseId));
+}
 export async function calculatorPolicy(principal:boolean,actorId:string){
  const policy=(await rows<{id:string;version:string;body:string;body_hash:string}>(`/rest/v1/cc_policy_versions?version=eq.${encodeURIComponent(pricingPolicy.version)}&select=*&limit=1`))[0];
  if(policy)return policy;

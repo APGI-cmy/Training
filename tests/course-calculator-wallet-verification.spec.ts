@@ -1,0 +1,23 @@
+import {beforeEach,describe,it,expect,vi} from 'vitest';
+const m=vi.hoisted(()=>({rows:vi.fn()}));
+vi.mock('@/server/services/company-structure',()=>({rows:m.rows,write:vi.fn()}));
+vi.mock('@/server/services/rental-additions',()=>({checkedRentalAddition:vi.fn()}));
+vi.mock('@/server/auth/session',()=>({requireSession:vi.fn()}));
+vi.mock('@/server/services/platform-principals',()=>({isPlatformPrincipal:vi.fn()}));
+vi.mock('@/server/services/course-calculator',()=>({calculatorRpc:vi.fn()}));
+vi.mock('@/server/services/stripe-platform',()=>({stripeRequest:vi.fn()}));
+import {verifyStructureQuote,pricingFingerprint} from '@/server/services/pricing-structures';
+import {defaultStructure,quoteStructure} from '@/lib/pricing-structures';
+import {withCategoryWallet} from '@/lib/category-wallet';
+const company='11111111-1111-4111-8111-111111111111',structure='22222222-2222-4222-8222-222222222222',buyer='33333333-3333-4333-8333-333333333333';
+const cost={id:'cost',currency:'USD',monthlyPoolCents:76035,activeLearners:30,newEnrolments:10,variableCents:0,processorBps:370,processorFixedCents:22,source:'Recorded costs',sourceDraftId:'draft',rates:{public:250,industry:750,client:1500},floors:{public:500,industry:500,client:500},margins:{public:2500,industry:4000,client:5500}};
+const course={id:'credit',editionId:'edition',courseId:'primary-course',title:'Primary course',ownerId:company,ownerIsApgi:true,scope:'public' as const,hours:8,minimumCents:0,currency:'USD',evidence:'Recorded workload'};
+const s=withCategoryWallet(defaultStructure(cost,[course],{id:company,isApgi:true}),[{...course,id:'wallet-credit',editionId:'wallet-edition',courseId:'different-wallet-course'}]);
+const computed=quoteStructure(s,'wallet',1,{faceCents:1000000,categories:['public']});
+const quote=()=>({company_id:company,structure_id:structure,buyer_id:buyer,...computed,fingerprint:pricingFingerprint({structure,buyer,...computed})});
+beforeEach(()=>{vi.resetAllMocks();m.rows.mockResolvedValueOnce([{structure_id:structure}]).mockResolvedValueOnce([{id:structure,document:s}]);});
+describe('Frozen wallet quote verification',()=>{
+ it('finds the approved primary release even when the wallet catalogue starts with another course',async()=>{await expect(verifyStructureQuote(quote() as any)).resolves.toBeUndefined();expect(m.rows.mock.calls[0][0]).toContain('course_id=eq.primary-course');});
+ it('rejects a modified purchasing-credit amount against the saved fingerprint',async()=>{const q=quote();(q.input as any)=structuredClone(q.input);(q.input as any).walletPurchase.faceCents+=100;await expect(verifyStructureQuote(q as any)).rejects.toThrow(/reconciliation/);});
+ it('requires a fresh quote when the published structure changes',async()=>{m.rows.mockReset().mockResolvedValueOnce([{structure_id:structure}]).mockResolvedValueOnce([{id:'another-structure',document:s}]);await expect(verifyStructureQuote(quote() as any)).rejects.toThrow(/fresh quote/);});
+});

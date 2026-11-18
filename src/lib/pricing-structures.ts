@@ -1,14 +1,16 @@
+import {categoryWalletQuote,walletCourses,validateCategoryWallet,CATEGORY_WALLET_POLICY,type CategoryWallet,type WalletPurchase} from './category-wallet';
 import type {CreditCourse} from '@/lib/credit-course-metadata';
-import {commercialDefaults,commercialQuote,validateCommercial,COMMERCIAL_VERSION,type CommercialTerms,type CommercialBreakdown} from './commercial-pricing';
+import {commercialDefaults,commercialQuote,validateCommercial,type CommercialTerms,type CommercialBreakdown} from './commercial-pricing';
 import {allocation,calculateCoursePrice,creditUnits,integer,type CostSchedule,type PurchaseRoute,type CalculatorInput} from './course-calculator';
 
 export const LEGACY_STRUCTURE_VERSION='2026-11-17.1';
-export const STRUCTURE_VERSION=COMMERCIAL_VERSION;
+// Keep this independent of the mutually importing quote modules' initialization order.
+export const STRUCTURE_VERSION='2026-11-17.3';
 export const ROUTES:PurchaseRoute[]=['individual','seat_pack','wallet','subscription'];
 export const ROUTE_NAMES:Record<PurchaseRoute,string>={individual:'Individual course',seat_pack:'Bulk course seats',wallet:'Learning wallet',subscription:'Platform access'};
 export type RecipientShares={ownerBps:number;sellerBps:number;apgiBps:number};
 export type OfferTerms={rateCents:number;minSeats:number;maxSeats:number;months:number;courseCap:number;credits:number;shares:Record<string,RecipientShares>;exceptionReason:string;ownerAuthority:string;editionIds?:string[]};
-export type PricingStructure={version:string;mode:'credits'|'courses';company:{id:string;isApgi:boolean};cost:CostSchedule;courses:CreditCourse[];paymentMethod:'card'|'invoice';feeBearer:'buyer'|'platform';offers:Record<PurchaseRoute,OfferTerms>;commercial?:CommercialTerms};
+export type PricingStructure={version:string;mode:'credits'|'courses';company:{id:string;isApgi:boolean};cost:CostSchedule;courses:CreditCourse[];paymentMethod:'card'|'invoice';feeBearer:'buyer'|'platform';offers:Record<PurchaseRoute,OfferTerms>;commercial?:CommercialTerms;categoryWallet?:CategoryWallet};
 export function legacyDefaultStructure(cost:CostSchedule,courses:CreditCourse[],company:{id:string;isApgi:boolean}):PricingStructure{
  if(!courses.length)throw Error('Choose a course with recorded credits.');
  const scope=courses[0].scope,compatible=courses.filter(c=>c.scope===scope&&c.currency===cost.currency).map(c=>({...c})),shares=Object.fromEntries(compatible.map(c=>{const a=allocation(0,c.ownerIsApgi,company.isApgi,c.ownerId===company.id);return [c.editionId,{ownerBps:a.ownerBps,sellerBps:a.sellerBps,apgiBps:a.apgiBps}];}));
@@ -55,9 +57,10 @@ export function defaultStructure(cost:CostSchedule,courses:CreditCourse[],compan
 }
 export function validateStructure(s:PricingStructure){
  if(s.version===LEGACY_STRUCTURE_VERSION)return legacyValidateStructure(s);
- validateCommercial(s);for(const route of ROUTES){quoteStructure(s,route,s.offers[route].minSeats);quoteStructure(s,route,s.offers[route].maxSeats);}return s;
+ validateCommercial(s);if(s.categoryWallet)validateCategoryWallet(s);for(const route of ROUTES){quoteStructure(s,route,s.offers[route].minSeats);quoteStructure(s,route,s.offers[route].maxSeats,route==='wallet'&&s.categoryWallet?{faceCents:s.categoryWallet.maxFaceCents,categories:s.categoryWallet.categories}:undefined);}return s;
 }
 export function offerCourses(s:PricingStructure,route:PurchaseRoute):CreditCourse[]{
+ if(route==='wallet'&&s.categoryWallet)return walletCourses(s);
  const ids=s.offers[route]?.editionIds;
  if(ids===undefined)return route==='individual'?s.courses.slice(0,1):s.courses;
  if(!Array.isArray(ids)||!ids.length||new Set(ids).size!==ids.length||ids.some(id=>typeof id!=='string'||!s.courses.some(c=>c.editionId===id)))throw Error('Select distinct eligible courses for each pricing option.');
@@ -70,11 +73,12 @@ export function selectOfferCourses(s:PricingStructure,route:PurchaseRoute,ids:st
  offerCourses(next,route);
  return next;
 }
-export function quoteStructure(s:PricingStructure,route:PurchaseRoute,seats:number):StructureQuote{
+export function quoteStructure(s:PricingStructure,route:PurchaseRoute,seats:number,walletPurchase?:WalletPurchase):StructureQuote{
  if(s.version===LEGACY_STRUCTURE_VERSION)return legacyQuoteStructure(s,route,seats);
  if(s.version!==STRUCTURE_VERSION)throw Error('Unsupported retained pricing version.');
+ if(route==='wallet'&&s.categoryWallet)return categoryWalletQuote(s,seats,walletPurchase);
  const selected=offerCourses(s,route),seed=legacyDefaultStructure(s.cost,[selected[0]],s.company),o=s.offers[route];
  if(!o||!ROUTES.includes(route))throw Error('Choose an approved buying option.');
  seed.offers[route]={...o,courseCap:1,credits:selected[0].hours/10,rateCents:s.cost.rates[selected[0].scope]};
- return commercialQuote(s,route,seats,legacyQuoteStructure(seed,route,seats));
+ const q=commercialQuote(s,route,seats,legacyQuoteStructure(seed,route,seats));return s.categoryWallet?{...q,result:{...q.result,policyVersion:CATEGORY_WALLET_POLICY}}:q;
 }

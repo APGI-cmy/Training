@@ -1,5 +1,6 @@
 'use client';
 import {MonthlyPrice} from './MonthlyPrice';
+import type {ReactNode} from 'react';
 import {useState} from 'react';
 import {DiscountBands,QuantitySlider} from './PricingWorkflow';
 import {StructureForm} from '@/components/admin/StructureForm';
@@ -8,8 +9,8 @@ import {moneyLabel,ROUTE_NAMES} from '@/lib/pricing-structures';
 import {bulkDiscountBps} from '@/lib/commercial-pricing';
 import type {PurchaseRoute} from '@/lib/course-calculator';
 export type ShopOffer={route:PurchaseRoute;min:number;max:number;months:number;cap:number;credits:number;courses:string[];prices:[number,number,number,number,number,number][];commercial?:{balanceUnit:string;walletCentsPerLearner:number;annualContentBps:number}};
-export function CourseShop({company,course,currency,offers}:{company:string;course:string;currency:string;offers:ShopOffer[]}){
- return <div className="pricing-cards">{offers.map(o=><Offer key={`${course}-${o.route}`} company={company} course={course} currency={currency} offer={o}/>)}</div>;
+export function CourseShop({company,course,currency,offers,children}:{company:string;course:string;currency:string;offers:ShopOffer[];children?:ReactNode}){
+ return <div className="pricing-cards">{offers.map(o=><Offer key={`${course}-${o.route}`} company={company} course={course} currency={currency} offer={o}/>)}{children}</div>;
 }
 function Offer({company,course,currency,offer:o}:{company:string;course:string;currency:string;offer:ShopOffer}){
  const [seats,setSeats]=useState(o.min),p=o.prices[seats-o.min];

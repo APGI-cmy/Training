@@ -1,8 +1,9 @@
 'use server';
+import {parseWalletPurchase} from '@/lib/wallet-purchase-input';
 import {revalidatePath} from 'next/cache';
 import {validId,type StructureState} from '@/lib/company-structure';
 import {quoteStructure,validateStructure,type PricingStructure,STRUCTURE_VERSION,ROUTES} from '@/lib/pricing-structures';
-import {calculatorAccess,calculatorCourses,calculatorPolicy,calculatorRpc,assertCalculatorCoursesPublished} from '@/server/services/course-calculator';
+import {calculatorAccess,calculatorCourses,calculatorWalletCourses,calculatorPolicy,calculatorRpc,assertCalculatorCoursesPublished} from '@/server/services/course-calculator';
 import {requirePlatformPrincipal} from '@/server/services/platform-principals';
 import {rows,write} from '@/server/services/company-structure';
 import {cartQuotes,pricingFingerprint,publishedStructure,shopAccess,verifyStructureQuote,shareableCost,type PurchaseBatch,type PriceRecord} from '@/server/services/pricing-structures';
@@ -11,7 +12,7 @@ import {stripeVault,stripeRequest} from '@/server/services/stripe-platform';
 import {stripeRedirect} from '@/lib/stripe-payments';
 import pricingPolicy from '@/data/course-pricing-policy.json';
 import {STAGING_ORIGIN} from '@/server/environment-isolation';
-const field=(f:FormData,k:string)=>{const v=f.get(k);if(typeof v!=='string'||v.length>100000)throw Error('Check the form.');return v;};
+const field=(f:FormData,k:string)=>{const v=f.get(k);if(typeof v!=='string'||v.length>500000)throw Error('Check the form.');return v;};
 const failure=(e:unknown):StructureState=>({error:e instanceof Error?e.message:'This change could not be saved.'});
 function refresh(){for(const p of ['/course-calculator','/course-shop','/course-cart','/learning-balances'])revalidatePath(p);}
 export async function savePricingStructure(_:StructureState,f:FormData):Promise<StructureState>{try{
@@ -22,8 +23,9 @@ export async function savePricingStructure(_:StructureState,f:FormData):Promise<
  const latest=(await rows<{id:string}>(`/rest/v1/cc_cost_versions?snapshot->>currency=eq.${cost.snapshot.currency}&select=id&order=created_at.desc&limit=1`))[0];
  if(latest?.id!==cost.id)throw Error('The central platform cost version changed. Refresh before preparing a new structure. Existing approved structures retain their frozen basis.');
  const available=(await calculatorCourses(a.company.id,a.principal)).courses;
+ const walletAvailable=raw.categoryWallet?await calculatorWalletCourses(a.company.id,a.principal):[];
  const courses=raw.courses.map(c=>available.find(v=>v.id===c.id));if(courses.some(c=>!c))throw Error('Course records changed. Refresh before saving.');
- const s:PricingStructure={version:STRUCTURE_VERSION,mode:raw.mode,company:{id:a.company.id,isApgi:a.company.slug==='apgi'},cost:shareableCost(cost.id,cost.snapshot),courses:courses.filter(c=>!!c),paymentMethod:raw.paymentMethod,feeBearer:raw.feeBearer,offers:raw.offers,commercial:raw.commercial};
+ const s:PricingStructure={version:STRUCTURE_VERSION,mode:raw.mode,company:{id:a.company.id,isApgi:a.company.slug==='apgi'},cost:shareableCost(cost.id,cost.snapshot),courses:courses.filter(c=>!!c),paymentMethod:raw.paymentMethod,feeBearer:raw.feeBearer,offers:raw.offers,commercial:raw.commercial,...(raw.categoryWallet?{categoryWallet:{...raw.categoryWallet,catalogue:walletAvailable}}:{})};
  validateStructure(s);
  const policy=await calculatorPolicy(a.principal,a.session.user.id);if(!policy||policy.version!==pricingPolicy.version)throw Error('APGI must prepare the new pricing policy draft first.');
  if(f.get('reviewed')!=='on')throw Error('Confirm the exact structure is ready for review.');
@@ -34,7 +36,8 @@ export async function publishPricingStructure(_:StructureState,f:FormData):Promi
 export async function addPricingQuote(_:StructureState,f:FormData):Promise<StructureState>{try{
  const a=await shopAccess(validId(field(f,'company'))),s=await publishedStructure(a.company.id,field(f,'course')),route=field(f,'route') as PurchaseRoute;
  if(!s||!ROUTES.includes(route))throw Error('No approved structure is published yet.');
- const q=quoteStructure(s.document,route,Number(field(f,'seats')));
+ const seats=Number(field(f,'seats'));if(route==='wallet'&&s.document.categoryWallet&&!a.manager&&seats!==1)throw Error('Only a company manager may buy multiple named learner places.');
+ const q=quoteStructure(s.document,route,seats,route==='wallet'&&s.document.categoryWallet?parseWalletPurchase(f.get('wallet_credit_cents'),f.get('wallet_categories'),s.document.categoryWallet):undefined);
  if(!await calculatorRpc<boolean>('cc_can_shop',{p_actor:a.session.user.id,p_company:a.company.id,p_route:route,p_courses:q.courses}))throw Error('This option is not available for your company role or course scope.');
  const body={structure_id:s.id,buyer_id:a.session.user.id,company_id:a.company.id,created_by:a.session.user.id,policy_id:s.policy_id,input:q.input,result:q.result,courses:q.courses,cost_snapshot:q.cost,expires_at:new Date(Date.now()+86400000).toISOString(),fingerprint:pricingFingerprint({structure:s.id,buyer:a.session.user.id,...q})};
  const saved=(await write('/rest/v1/cc_quotes',body))[0] as {id:string};await calculatorRpc('cc_cart_add',{p_actor:a.session.user.id,p_quote:saved.id});refresh();return {success:'Your exact test quote is in the cart, valid for 24 hours. No payment or enrolment was created.',link:`/course-cart?company=${a.company.id}`};

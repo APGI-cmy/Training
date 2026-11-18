@@ -84,3 +84,39 @@ Stripe regression suite; actual PostgreSQL migration/RPC/permission tests,
 including competing simultaneous redemptions; isolated application build;
 deployment/status checks and browser checks. Test data stays in a separate local
 PostgreSQL database, never in the hosted learner records.
+
+
+## Category purchasing-wallet proposal — 18 November 2026
+
+`category-wallet-2026-11-18.1` is an optional marker on a new structure, not a
+rewrite of the 2026-11-17.3 model. Historical structures without the marker use
+the original quoting, funding and redemption dispatchers. The new policy is
+`APGI-COMM-PRICE-001/1.4-draft`; decisions and activation are separate owner steps.
+
+The wallet catalogue is independent of the named-course buying pool and contains
+ready recorded editions with published company offerings. Select one or more
+categories, buy total purchasing credits with the slider, and set named learner
+capacity separately. Courses are selected on redemption. Purchasing-credit face
+value is USD1; learning credits remain workload measures. The exact combined
+average is weighted by course count. Whole course equivalents drive the existing
+bulk discount, beginning at ten equivalents and capped at 50% from 1,000.
+
+Platform service and processing remain outside the spendable credit balance.
+Every named place receives a deterministic share of face credits and actual
+content cash. Course/owner floors and integer rounding may limit the discount.
+Cumulative proportional cash accounting prevents overspend and allocates only
+actual discounted cash. One-place purchases are assigned to the buyer; company
+managers assign multiple places. Private-category access and verified policy/
+structure approvals are checked before checkout. Existing refund/hold and expiry
+controls remain in force; all new records and payments are sandbox-only.
+
+The buyer portal obtains dynamic quotes from the authenticated, private/no-store
+`/api/category-wallet-quote` endpoint. It returns public totals and eligible course
+requirements, not raw cost evidence or recipient percentages. The cart action
+recalculates each quote and its fingerprint on the server. No new approval or
+funded entitlement is inferred by previewing or saving a proposal.
+
+Producer checks include the calculator tests and
+`scripts/qa/category-wallet-transaction.sql`. That SQL test uses a transaction-local
+approval mock and fixtures, then rolls everything back; it is not an actual
+payment or an approval of the production proposal.

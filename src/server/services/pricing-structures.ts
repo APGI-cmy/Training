@@ -32,10 +32,11 @@ export async function shopAccess(companyId:string){
 }
 export async function verifyStructureQuote(q:CalculatorQuote&{structure_id?:string;buyer_id?:string;expires_at?:string}){
  if(!q.structure_id)throw Error('Choose a current approved pricing structure.');
- const s=await publishedStructure(q.company_id,q.courses[0]?.courseId);
+ const wallet=(q.input as unknown as {walletPurchase?:{faceCents:number;categories:import('@/lib/course-calculator').CourseScope[];primaryCourseId:string}}).walletPurchase;
+ const s=await publishedStructure(q.company_id,wallet?.primaryCourseId??q.courses[0]?.courseId);
  if(!s||s.id!==q.structure_id)throw Error('The pricing structure changed. Request a fresh quote.');
  const addition=(q.input as unknown as {rentalAddition?:RentalAdditionBasis}).rentalAddition;
- const calculated=addition?await checkedRentalAddition(s.document,addition,q.buyer_id!):quoteStructure(s.document,q.input.route,q.input.seats);
+ const calculated=addition?await checkedRentalAddition(s.document,addition,q.buyer_id!):quoteStructure(s.document,q.input.route,q.input.seats,wallet);
  if(pricingFingerprint({structure:s.id,buyer:q.buyer_id,...calculated})!==q.fingerprint)throw Error('The saved quote requires reconciliation.');
 }
 export async function reconcilePricingBatch(batch:PurchaseBatch){
