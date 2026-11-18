@@ -7,7 +7,7 @@ const m = vi.hoisted(() => ({ session: vi.fn(), access: vi.fn(), book: vi.fn(), 
 const pdf = Buffer.from("%PDF-1.7 local QA fixture");
 vi.mock("@/server/auth/session", () => ({ getCurrentSession: m.session }));
 vi.mock("@/lib/services/enrolments/get-course-access", () => ({ getCourseAccess: m.access }));
-vi.mock("@/server/services/course-books", () => ({ getCourseBook: m.book }));
+vi.mock("@/server/services/course-books", () => ({ getCourseBook: m.book, loadCourseBookBytes: async () => Buffer.from("%PDF-1.7 local QA fixture") }));
 vi.mock("@/server/services/profiles", () => ({ getProfile: m.profile }));
 vi.mock("@/server/services/course-benefits", () => ({ writeBenefitEvent: m.audit, benefitRpc: m.rpc, requireScannexLearner: m.enrolled, getOwnedCertificate: m.owned, benefitError: () => "Safely rejected" }));
 vi.mock("@/lib/auth/require-admin", () => ({ requireAdmin: m.admin }));

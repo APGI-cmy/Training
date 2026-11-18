@@ -19,6 +19,11 @@ const mock = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://127.0.0.1:8877');
   let body = ''; for await (const chunk of req) body += chunk;
   res.setHeader('content-type', 'application/json');
+  if (url.pathname.startsWith('/storage/v1/object/authenticated/v1-scannex-course-books/scannex-books-20261118-v1/')) {
+    const filename = url.pathname.split('/').at(-1);
+    if(!/^[a-z0-9-]+\.pdf$/.test(filename)) {res.writeHead(404);return res.end();}
+    res.setHeader('content-type','application/pdf'); return res.end(await readFile(`private/course-books/scannex/${filename}`));
+  }
   let result = [];
   if (url.pathname === '/auth/v1/user') result = { id: user, email: 'qa@example.invalid', email_confirmed_at: '2026-01-01' };
   else if (url.pathname.endsWith('/profiles')) result = [{ user_id: user, full_name: 'Local QA Learner', certificate_name: 'Local QA Learner', country: 'Namibia' }];

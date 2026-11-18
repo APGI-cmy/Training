@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/learn/*/resources": ["./private/course-books/scannex/manifest.json"],
-    "/learn/*/resources/download": ["./private/course-books/scannex/**"]
+    "/learn/*/resources/download": ["./private/course-books/scannex/manifest.json"]
   },
   turbopack: {
     root: process.cwd()

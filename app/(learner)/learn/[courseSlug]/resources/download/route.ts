@@ -1,11 +1,9 @@
-import { createReadStream } from "node:fs";
-import { readFile } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { createHash, randomUUID } from "node:crypto";
 import { getCurrentSession } from "@/server/auth/session";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { COPYRIGHT_TERMS, COPYRIGHT_TERMS_VERSION, SCANNEX_COURSE_ID, validSignature } from "@/lib/course-benefits";
-import { getCourseBook } from "@/server/services/course-books";
+import { getCourseBook, loadCourseBookBytes } from "@/server/services/course-books";
 import { getProfile } from "@/server/services/profiles";
 import { writeBenefitEvent } from "@/server/services/course-benefits";
 
@@ -31,16 +29,18 @@ export async function POST(request: Request, context: { params: Promise<{ course
     const expectedName = profile?.certificate_name?.trim() || profile?.full_name?.trim() || "";
     const signature = form.get("signature");
     if (!validSignature(signature, expectedName)) return error("Please return to the download page and enter your full name exactly as shown.", 400);
-    const hash = createHash("sha256").update(await readFile(book.path)).digest("hex");
+    const bytes = await loadCourseBookBytes(book);
+    const hash = createHash("sha256").update(bytes).digest("hex");
     if (hash !== book.sha256) throw new Error("BOOK_INTEGRITY_FAILED");
     const requestId = randomUUID();
     await writeBenefitEvent(session.user.id, "ebook_download_authorised", {
-      requestId, courseId: SCANNEX_COURSE_ID, bookId: book.id, filename: book.filename, sha256: hash,
+      requestId, courseId: SCANNEX_COURSE_ID, bookId: book.id, documentVersion: book.version, filename: book.filename, sha256: hash,
       email: session.user.email ?? null, signature, profileName: expectedName, termsVersion: COPYRIGHT_TERMS_VERSION,
       terms: COPYRIGHT_TERMS, termsSha256: createHash("sha256").update(COPYRIGHT_TERMS).digest("hex")
     });
     // Stream the full book: buffered responses exceed the hosting payload limit.
-    const stream = Readable.toWeb(createReadStream(book.path)) as ReadableStream<Uint8Array>;
+    const chunks = function* () { for (let offset = 0; offset < bytes.length; offset += 65536) yield bytes.subarray(offset, offset + 65536); };
+    const stream = Readable.toWeb(Readable.from(chunks())) as ReadableStream<Uint8Array>;
     return new Response(stream, { headers: { ...privateHeaders, "Content-Type": "application/pdf", "Content-Disposition": `attachment; filename="APGI-Scannex-${book.id}.pdf"`, "X-APGI-Download-Reference": requestId } });
   } catch (caught) {
     console.error("V1 e-book download failed", caught instanceof Error && caught.message === "BOOK_INTEGRITY_FAILED" ? "integrity" : "audit-or-resource-unavailable");

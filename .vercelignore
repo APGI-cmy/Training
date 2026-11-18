@@ -7,5 +7,5 @@ supabase/.temp
 *.tsbuildinfo
 *.log
 public/courses/Scannex Training Programme/**/LU * (SCORM).zip
-# Unlike .gitignore, do not exclude private/course-books PDFs here: the release
-# packages them as server-only traced files, outside public/ and all static URLs.
+# PDFs live in private Supabase Storage, not source archives or static hosting.
+private/course-books/scannex/*.pdf
