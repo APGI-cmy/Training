@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { getCourseBySlug, getCourses } from "@/lib/courses";
 import { adminRest } from "@/server/supabase/admin-rest";
+import {productionCompanyId} from '@/server/services/tenant-courses';
+import {requirePlatformPrincipal} from '@/server/services/platform-principals';
 
 export type OrganisationFormState = { success?: string; error?: string };
 
@@ -12,7 +14,9 @@ function slugify(value: string) {
 }
 
 export async function createOrganisation(_previousState: OrganisationFormState, formData: FormData): Promise<OrganisationFormState> {
-  const { session } = await requireAdmin();
+  await requireAdmin();
+  if(productionCompanyId())return {error:'Only the main platform can create platform companies.'};
+  const { session } = await requirePlatformPrincipal();
   const name = String(formData.get("name") ?? "").trim();
   const presetId = String(formData.get("brandingPresetId") ?? "").trim();
   const referralPercent = Number(formData.get("referralPercent") ?? "10");
@@ -49,7 +53,9 @@ export async function createOrganisation(_previousState: OrganisationFormState, 
 }
 
 export async function saveCourseCatalogueVisibility(_previousState: OrganisationFormState, formData: FormData): Promise<OrganisationFormState> {
-  const { session } = await requireAdmin();
+  await requireAdmin();
+  if(productionCompanyId())return {error:'Course availability is assigned by the main platform.'};
+  const { session } = await requirePlatformPrincipal();
   const courseId = String(formData.get("courseId") ?? "").trim();
   const visibility = String(formData.get("visibility") ?? "").trim();
   const organisationIds = formData.getAll("organisationIds").map(String).filter(Boolean);

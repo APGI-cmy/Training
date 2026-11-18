@@ -12,6 +12,7 @@ import {companyStructureAction} from '@/server/actions/company-structure';
 import {createAdminInvitation} from '@/server/actions/invitations/create-admin-invitation';
 import {LearnerCompanyField} from '@/components/admin/LearnerCompanyField';
 import {navigationGroups} from '@/lib/navigation-groups';
+import {createOrganisation,saveCourseCatalogueVisibility} from '@/server/actions/organisations/manage-organisations';
 const tenant='ebe89fb6-23fa-4fb1-9bfb-c525795fa3c7',other='33333333-3333-4333-8333-333333333333';
 beforeEach(()=>{vi.resetAllMocks();vi.stubEnv('ALP_ENVIRONMENT','training-production');vi.stubEnv('ALP_DEFAULT_ORGANISATION_ID',tenant);m.admin.mockResolvedValue({session:{user:{id:'actor'}}});});
 afterEach(()=>vi.unstubAllEnvs());
@@ -24,6 +25,7 @@ describe('Partner employer directory and administration boundary',()=>{
  it('denies cross-tenant group creation without changing existing records',async()=>{const f=new FormData();f.set('organisationId',other);f.set('company','Econet');await expect(createGroup(f)).rejects.toThrow();expect(m.rest).not.toHaveBeenCalled();});
  it('cannot create a platform partner through a direct server action on a partner site',async()=>{const f=new FormData();f.set('operation','create');f.set('name','Unauthorized partner');expect(await companyStructureAction({},f)).toMatchObject({error:expect.stringContaining('main platform')});expect(m.rest).not.toHaveBeenCalled();expect(m.principal).not.toHaveBeenCalled();});
  it('cannot invite a full platform administrator from the partner site',async()=>{expect(await createAdminInvitation({recipientEmail:'admin@example.invalid',courseId:'',basis:'internal_allocation',reason:'fixture',expiresAt:'2099-01-01',organisationId:tenant,confirmAdminAccess:true})).toEqual({ok:false,error:'PLATFORM_ADMIN_INVITATIONS_REQUIRE_APGI'});expect(m.rest).not.toHaveBeenCalled();});
+ it('also rejects the earlier company-creation and catalogue-management server actions',async()=>{expect(await createOrganisation({},new FormData())).toHaveProperty('error');expect(await saveCourseCatalogueVisibility({},new FormData())).toHaveProperty('error');expect(m.rest).not.toHaveBeenCalled();});
  it('offers an editable list of this tenant’s saved employers',()=>{const html=renderToStaticMarkup(<LearnerCompanyField organisationId={tenant} listId="employers" companies={[{id:'1',organisation_id:tenant,name:'Econet'},{id:'2',organisation_id:other,name:'Other customer'}]}/>);expect(html).toContain('list="employers"');expect(html).toContain('value="Econet"');expect(html).not.toContain('Other customer');expect(html).toContain('Select or type');});
  it('labels the partner navigation Company branding without duplicate company-management groups',()=>{const groups=navigationGroups([{href:'/company-branding',label:'Company branding'},{href:'/admin/certificates',label:'Certificate designs'}]);expect(groups).toHaveLength(1);expect(groups[0].label).toBe('Company branding');});
 });
