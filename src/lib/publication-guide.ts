@@ -44,6 +44,12 @@ export function publicationGuide(round:ReviewRound,hash:string,brandRevision:num
  }
 
  for(const scope of ["content","commercials","branding"] as const){const o=reviewOverride(d,scope,hash,brandRevision);if(!o)continue;const mark=(step:WorkflowStep):WorkflowStep=>({...step,done:true,note:`Review overridden by ${o.email}: ${o.reason}. Earlier records are archived; this is not a reviewer endorsement.`,children:step.children?.map(mark)});if(o.mode==="clear"){for(const id of scope==="content"?["content","corrections"]:[scope]){const i=result.findIndex(x=>x.id===id);if(i>=0)result[i]=mark(result[i]);}}else{const step=result.find(x=>x.id===scope);if(step)step.note=`Training release override is active; saved review progress remains visible. ${o.reason}`;}}
+ const contentClear=reviewOverride(d,'content',hash,brandRevision)?.mode==='clear';
+ const commercialClear=reviewOverride(d,'commercials',hash,brandRevision)?.mode==='clear';
+ const brandClear=reviewOverride(d,'branding',hash,brandRevision)?.mode==='clear';
+ if(contentClear){const setup=result.find(s=>s.id==='setup');if(setup){setup.done=true;setup.note='Review-team requirements closed by the recorded content override.';setup.children=setup.children?.map(s=>({...s,done:true}));}}
+ const publication=result.find(s=>s.id==='publication');
+ if(publication)publication.children=publication.children?.map(s=>s.id==='clearance'&&contentClear||s.id==='acceptance'&&commercialClear&&brandClear?{...s,done:true,note:'Cleared by recorded review override; no reviewer approval is inferred.'}:s);
  const live=d.trainingReleases?.at(-1);if(live?.fingerprint===hash&&live.brandRevision===brandRevision&&live.commercialVersion===(v?.id??null)){const p=result.find(x=>x.id==="publication");if(p){p.done=true;p.note="Training release published; the retained review remains open. Existing learner records use the frozen release.";}}
  return result;
 }
