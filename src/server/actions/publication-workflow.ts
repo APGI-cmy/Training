@@ -8,7 +8,7 @@ import {formText,validId} from "@/lib/company-structure";
 import {commercialConditionsSummary,developmentRecoverySummary,moneyCents,sharingBasisLabel} from "@/lib/commercial-planning";
 
 import {companyBrandApproved,hasReviewTask,outstandingAssignedTasks} from "@/lib/review-tasks";
-import {contentReviewBlockers} from "@/lib/course-review";
+import {finalContentReviewBlockers} from "@/lib/course-review";
 
 import {approveCommercial,acceptPartner,declinePartner,bothCommercialApprovals,currentCommercial,commercialPrincipals,quoteCommercial} from "@/lib/publication-workflow";
 
@@ -41,7 +41,7 @@ export async function publicationWorkflowAction(_:ReviewActionState,form:FormDat
   message="Commercial preparation opened. Content corrections and independent checks still block final publication.";
  }else if(op==="approve_content"){
 
-  if(round.document.requester!==email||round.document.requesterId!==session.user.id)throw Error("Only the review requester may clear the final course content.");if(w.contentApproval)throw Error("Content approval is already recorded.");const blockers=contentReviewBlockers(round,source.fingerprint);if(blockers.length)throw Error(blockers.join(" "));
+  if(round.document.requester!==email||round.document.requesterId!==session.user.id)throw Error("Only the review requester may clear the final course content.");if(w.contentApproval)throw Error("Content approval is already recorded.");const blockers=finalContentReviewBlockers(round,source.fingerprint);if(blockers.length)throw Error(blockers.join(" "));
 
   if(form.get("confirm_content")!=="on")throw Error("Confirm the reviewed course content.");
 

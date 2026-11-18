@@ -3,6 +3,7 @@ const m=vi.hoisted(()=>({access:vi.fn(),commit:vi.fn(),mail:vi.fn(()=>[]),proces
 vi.mock("@/server/services/course-reviews",()=>({requireReview:m.access,claimReviewer:vi.fn(),commitReview:m.commit,reviewEvent:vi.fn(),reviewMail:m.mail,processReviewMail:m.process}));
 vi.mock("@/server/services/publication-workflow",()=>({internalWorkflowMail:m.mail,preparePartnerOnboarding:m.onboard,requirePartnerOwner:m.owner}));
 vi.mock("next/cache",()=>({revalidatePath:vi.fn()}));
+import {notificationRound} from "./fixtures/review-notification";
 import {publicationWorkflowAction} from "@/server/actions/publication-workflow";
 const id="11111111-1111-4111-8111-111111111111";
 const cfg={hosting_fixed:"1",hosting_rate:"0",stripe_fixed:"0.30",stripe_rate:"2.90",administration_rate:"6",development_cost:"1000",already_paid:"0",recovery_rate:"25",development_status:"recover",minimum_apgi_income:"1",apgi_share:"20"};
@@ -31,4 +32,14 @@ describe("Commercial preparation independent of final content clearance",()=>{
  it("allows the requester to prepare commercials after their own submitted review despite unresolved findings",async()=>{const a=reviewed();m.access.mockResolvedValue(a);const result=await publicationWorkflowAction({},form("begin_commercials"));expect(result.error).toBeUndefined();expect(a.round.document.workflow.stage).toBe("commercial_draft");expect(a.round.document.workflow.contentApproval).toBeUndefined();expect(result.href).toContain("/publish?review=");});
  it("does not allow incomplete requester coverage to open commercial preparation",async()=>{const a=reviewed();a.round.document.participants=[];m.access.mockResolvedValue(a);expect((await publicationWorkflowAction({},form("begin_commercials"))).error).toMatch(/Complete your LU/);expect(m.commit).not.toHaveBeenCalled();});
  it("does not allow another principal to start the requester's step",async()=>{const a=reviewed();a.email="jorrie.jordaan@apginc.ca";a.session.user.id="jorrie";m.access.mockResolvedValue(a);expect((await publicationWorkflowAction({},form("begin_commercials"))).error).toMatch(/requester/);expect(m.commit).not.toHaveBeenCalled();});
+});
+
+
+describe('Final clearance cannot borrow a publication exception',()=>{
+ it('rejects an explicit approval request while genuine retained reviews remain incomplete',async()=>{
+  vi.clearAllMocks();const a=access(),round=notificationRound();
+  round.document.reviewOverrides=[{id:'content-exception',scope:'content',mode:'retain',fingerprint:'hash',brandRevision:1,commercialVersion:round.document.workflow!.commercials[0].id,reason:'Training may proceed while review continues.',actorId:'johan',email:round.document.requester,at:'2026-11-18T09:43:29Z'}];
+  m.access.mockResolvedValue({...a,round});const f=new FormData();f.set('round_id',round.id);f.set('operation','approve_content');f.set('confirm_content','on');
+  const result=await publicationWorkflowAction({},f);expect(result.error).toBeTruthy();expect(m.commit).not.toHaveBeenCalled();expect(m.process).not.toHaveBeenCalled();expect(round.document.workflow!.contentApproval).toBeUndefined();
+ });
 });

@@ -183,6 +183,11 @@ export function contentReviewBlockers(round: ReviewRound, currentFingerprint: st
 
 }
 
+// A release exception permits training; it never proves a human content review.
+export function finalContentReviewBlockers(round:ReviewRound,hash:string){
+ return contentReviewBlockers({...round,document:{...round.document,reviewOverrides:[]}},hash);
+}
+
 export function reviewBlockers(round:ReviewRound,hash:string,brandRevision=round.document.brand.revision){
 
  const d=round.document,content=reviewOverride(d,"content",hash,brandRevision),commercials=reviewOverride(d,"commercials",hash,brandRevision),branding=reviewOverride(d,"branding",hash,brandRevision);const reasons=contentReviewBlockers(round,hash);reasons.push(...(getCourseBySlug(round.course_id)?.publicationIssues??[]),...reviewTaskBlockers(round,brandRevision));const w=d.workflow;
