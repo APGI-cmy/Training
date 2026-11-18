@@ -46,7 +46,7 @@ export async function LearnerSidebar() {
         ...(session ? [
           { href: "/messages", label: "Messages and support" },
           ...(emailAdmin?[{href:'/messages/email-management',label:'Email management'},{href:'/messages/email-sets',label:'Email message sets'},{href:'/messages/image-library',label:'Image library'}]:[]),
-          ...(!partnerSite?[{ href: "/company", label: "Company workspaces" }]:[]),
+          ...(!partnerSite?[{ href: "/company", label: "Company workspaces" }]:!isAdmin&&emailAdmin?[{href:"/company-branding",label:"Company branding"}]:[]),
           { href: "/policies", label: "Policies and reviews" },
           ...(emailAdmin?[{href:'/security-watchdog',label:'Security Watchdog'}]:[]),
           { href: "/course-reviews", label: "Course reviews" },

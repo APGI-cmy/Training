@@ -1,13 +1,16 @@
 "use client";
 import {LearnerCompanyField} from './LearnerCompanyField';
 import type {LearnerCompany} from '@/server/services/learner-companies';
-import { useActionState, useState } from "react";
+import { useActionState, useState, useEffect } from "react";
+import {useRouter} from 'next/navigation';
 import { createInvitationWithState, type CreateInvitationState } from "@/server/actions/invitations/create-invitation";
 export function InvitationForm({ courses, organisations, defaultExpiry, groups = [], companies = [], partnerSite = false }: {
   courses: Array<{ id: string; title: string }>; organisations: Array<{ id: string; name: string }>;
   defaultExpiry: string; companies?:LearnerCompany[]; partnerSite?:boolean; groups?: Array<{ id: string; name: string; organisation_id: string }>;
 }) {
   const [state, action, pending] = useActionState(createInvitationWithState, { ok: false } as CreateInvitationState);
+  const router=useRouter();
+  useEffect(()=>{if(state.ok&&state.invitationId)router.refresh();},[state,router]);
   const [role, setRole] = useState("learner");
   const [organisationId, setOrganisationId] = useState(partnerSite?organisations[0]?.id??"":"");
   const deliveryStatus = state.deliveryStatus ?? "created_not_sent";
