@@ -7,10 +7,10 @@ export default function NotFound() {
       <div className="content-inner">
         <EmptyState
           title="Learning page not found"
-          description="The page you requested is not available in the APGI learning portal."
+          description="The page you requested is not available in your training workspace."
           action={
-            <Link className="primary-button" href="/courses/vpshr-level-0">
-              Return to Level 0
+            <Link className="primary-button" href="/">
+              Return to training home
             </Link>
           }
         />
