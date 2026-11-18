@@ -10,7 +10,7 @@ import {
 } from "@/server/assessments/scannex-theory-bank";
 import { requireSession } from "@/server/auth/session";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
-import { adminRest } from "@/server/supabase/admin-rest";
+import { benefitError, benefitRpc } from "@/server/services/course-benefits";
 import type { ScannexTheoryAnswerState } from "@/types/scannex-assessment";
 
 export type ScannexTheoryActionState = {
@@ -60,23 +60,12 @@ export async function submitScannexTheoryAttempt(
   }
 
   const result = scoreScannexTheoryAssessment(answers);
-  const response = await adminRest("/rest/v1/assessment_theory_attempts", {
-    method: "POST",
-    headers: { Prefer: "return=minimal" },
-    body: JSON.stringify({
-      learner_user_id: session.user.id,
-      course_id: course.id,
-      assessment_version: SCANNEX_THEORY_VERSION,
-      submitted_answers: answers,
-      score: result.score,
-      max_score: result.maxScore,
-      passed: result.passed
-    })
-  });
-
-  if (!response.ok) {
-    return { error: "Your assessment could not be recorded. Your answers have not been accepted; please try again." };
-  }
+  const runId = String(formData.get("runId") ?? "");
+  if (!/^[0-9a-f-]{36}$/i.test(runId)) return { error: "Please reload the assessment to confirm your current course attempt." };
+  try {
+    await benefitRpc("v1_submit_theory", { p_user: session.user.id, p_run: runId,
+      p_version: SCANNEX_THEORY_VERSION, p_answers: answers, p_score: result.score, p_passed: result.passed });
+  } catch (error) { return { error: benefitError(error) }; }
 
   revalidatePath(`/learn/${course.slug}/units/lu9`);
   revalidatePath(`/learn/${course.slug}/units/lu9/knowledge`);

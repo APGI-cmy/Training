@@ -2,6 +2,7 @@ import { ScannexAssessmentWorkspace } from "@/components/admin/ScannexAssessment
 import { getCourses } from "@/lib/courses";
 import { getAdminLearners } from "@/lib/services/admin/get-admin-learners";
 import { getAssessmentBookings } from "@/server/services/assessments/get-assessment-bookings";
+import { CourseBenefitRegister } from "@/components/admin/CourseBenefitRegister";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,7 @@ export default async function AssessmentsPage() {
       </header>
 
       <ScannexAssessmentWorkspace learners={learners} courses={courses} bookings={bookings} />
+      <CourseBenefitRegister />
 
       <section className="directory-card">
         <div className="admin-card-heading">

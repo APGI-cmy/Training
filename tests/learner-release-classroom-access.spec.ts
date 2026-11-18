@@ -22,8 +22,11 @@ it("rejects a theory submission without active course access before writing resu
 it("stores a complete enrolled learner submission against the authenticated identity", async () => {
   m.access.mockResolvedValue({ canAccess: true });
   const form = new FormData(); form.set("courseSlug", "scannex-training-programme"); form.set("answers", JSON.stringify(Object.fromEntries(getScannexTheoryQuestions().map(q => [q.id, [q.options[0].id]]))));
+  form.set("runId", "00000000-0000-4000-8000-000000000001");
+  m.rest.mockResolvedValueOnce(Response.json("00000000-0000-4000-8000-000000000002"));
   expect(await submitScannexTheoryAttempt({}, form)).toHaveProperty("score");
-  expect(JSON.parse(m.rest.mock.calls[0][1].body)).toMatchObject({ learner_user_id: "learner", max_score: 68, assessment_version: "scannex-summative-v2-classroom-202611" });
+  expect(m.rest.mock.calls[0][0]).toBe("/rest/v1/rpc/v1_submit_theory");
+  expect(JSON.parse(m.rest.mock.calls[0][1].body)).toMatchObject({ p_user: "learner", p_run: "00000000-0000-4000-8000-000000000001", p_version: "scannex-summative-v2-classroom-202611" });
 });
 const request = (origin = "https://training.apgi.app") => new NextRequest("https://training.apgi.app/api/admin/scannex-presenter", { method: "POST", headers: { origin } });
 it("rejects a foreign-origin presenter launch", async () => { expect((await POST(request("https://external.invalid"))).status).toBe(403); expect(m.admin).not.toHaveBeenCalled(); });

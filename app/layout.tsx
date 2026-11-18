@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { BrandingShell } from "@/components/branding/BrandingShell";
 import "./globals.css";
+import "./course-benefits.css";
 
 export const metadata: Metadata = {
   title: {

@@ -13,3 +13,6 @@ pnpm-debug.log*
 
 # iSpring import archives remain local; Vercel serves the unpacked SCORM files.
 public/courses/Scannex Training Programme/**/LU * (SCORM).zip
+
+# Copyright-controlled downloads are deployment assets, never public Git source.
+private/course-books/scannex/*.pdf

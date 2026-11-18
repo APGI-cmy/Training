@@ -43,6 +43,7 @@ export function UnitViewer({
           <h1>{unit.title}</h1>
           <p>{unit.subtitle}</p>
           <div className="unit-meta">
+            {isScannexUnit ? <a href={`/learn/${course.slug}/resources?book=${unit.slug}`}>Download unit e-book</a> : null}
             <span>{unit.duration}</span>
             <span>{isCompleted ? "Completed" : "Opened"}</span>
             {!isPracticalAssessment ? (
@@ -76,6 +77,7 @@ export function UnitViewer({
               <>
                 <UnitResources
                   eBookHref={originalHref}
+                  downloadHref={`/learn/${course.slug}/resources?book=${unit.slug}`}
                   activityHref={scormLaunchSrc ? `/learn/${course.slug}/units/${unit.slug}/scorm` : undefined}
                   activityAvailable={Boolean(scormLaunchSrc)}
                 />

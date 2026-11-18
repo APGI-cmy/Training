@@ -1,15 +1,18 @@
 import { ProgressIndicator } from "@/components/progress/ProgressIndicator";
 import type { CourseShell as CourseShellModel } from "@/lib/services/courses/get-course-shell";
 import type { CourseResume } from "@/lib/services/progress/get-course-resume";
+import type { ReactNode } from "react";
 
 export function CourseShell({
   shell,
   progressMessage,
-  resume
+  resume,
+  benefits
 }: {
   shell: CourseShellModel;
   progressMessage?: string;
   resume?: CourseResume | null;
+  benefits?: ReactNode;
 }) {
   const { course, units, firstUnit, completedUnits, nextAction } = shell;
   const showCompletionMessage = progressMessage === "unit-completed";
@@ -46,6 +49,7 @@ export function CourseShell({
         </div>
       </section>
 
+      {benefits}
       <section className="content-band">
         <div className="content-inner">
           <p className="eyebrow">Learning units</p>
@@ -69,6 +73,7 @@ export function CourseShell({
                     ? "Open assessment"
                     : unit.isCompleted ? "Review unit" : unit.isOpened ? "Continue unit" : "Open unit"}
                 </a>
+                {course.id === "scannex-training-programme" && /^lu[1-9]$/.test(unit.slug) ? <p><a href={`/learn/${course.slug}/resources?book=${unit.slug}`}>Download unit e-book</a></p> : null}
               </article>
             ))}
           </div>

@@ -3,12 +3,14 @@ export function UnitResources({
   eBookHref,
   activityHref,
   activityAvailable,
-  activityLabel = "Open learning activity in a full window"
+  activityLabel = "Open learning activity in a full window",
+  downloadHref
 }: {
   eBookHref: string;
   activityHref?: string;
   activityAvailable: boolean;
   activityLabel?: string;
+  downloadHref?: string;
 }) {
   return (
     <section className="unit-resources" aria-labelledby="unit-resources-heading">
@@ -21,6 +23,7 @@ export function UnitResources({
         <a className="secondary-button" href={eBookHref} target="_blank" rel="noreferrer">
           Open Scannex e-book
         </a>
+        {downloadHref ? <a className="secondary-button" href={downloadHref}>Download unit e-book</a> : null}
         {activityAvailable && activityHref ? (
           <a className="primary-button" href={activityHref}>
             {activityLabel}

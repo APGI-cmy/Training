@@ -1,0 +1,94 @@
+{
+  "version": "scannex-books-20261118-v1",
+  "resources": [
+    {
+      "id": "full",
+      "title": "Complete Scannex learner e-book",
+      "filename": "scannex-complete-ebook.pdf",
+      "pages": 123,
+      "bytes": 14315710,
+      "sha256": "bd40bea7ab08e0f74440ef59177865af873470357152d970534c4b3cf1e005f2"
+    },
+    {
+      "id": "lu1",
+      "title": "Learning Unit 1",
+      "filename": "lu1.pdf",
+      "pages": 12,
+      "bytes": 1674295,
+      "sha256": "9756fe5313935b84b267ef108739ea2517faf9866a10729c94caa9d59870474b",
+      "source": "1. Scannex_The_Complete_Guide_Chapter_1.pdf"
+    },
+    {
+      "id": "lu2",
+      "title": "Learning Unit 2",
+      "filename": "lu2.pdf",
+      "pages": 16,
+      "bytes": 1777422,
+      "sha256": "4810b72ed37111fbe7aa05be4a5309cb97545d6a2d0f5803fd9947029f5a1b2f",
+      "source": "2. Scannex_The_Complete_Guide_Chapter_2.pdf"
+    },
+    {
+      "id": "lu3",
+      "title": "Learning Unit 3",
+      "filename": "lu3.pdf",
+      "pages": 18,
+      "bytes": 1883480,
+      "sha256": "7a81132b1e6e9fd8d796d1625b5f4b8bf53c5bd854d093a66f884e6802d35933",
+      "source": "3. Scannex_The_Complete_Guide_Chapter_3.pdf"
+    },
+    {
+      "id": "lu4",
+      "title": "Learning Unit 4",
+      "filename": "lu4.pdf",
+      "pages": 12,
+      "bytes": 1385769,
+      "sha256": "fdc471efcb20a2036da8a76852049344a4ad35abf80ba360e287654f3c2832d5",
+      "source": "4. Scannex_The_Complete_Guide_Chapter_4.pdf"
+    },
+    {
+      "id": "lu5",
+      "title": "Learning Unit 5",
+      "filename": "lu5.pdf",
+      "pages": 13,
+      "bytes": 1555569,
+      "sha256": "e7d55eda6a4ae9b82804c008a36d5a908b31ee810014b5251e7852dd55a51cdd",
+      "source": "5. Scannex_The_Complete_Guide_Chapter_5.pdf"
+    },
+    {
+      "id": "lu6",
+      "title": "Learning Unit 6",
+      "filename": "lu6.pdf",
+      "pages": 12,
+      "bytes": 1594886,
+      "sha256": "b532e5abdb3922bb2984af4121ea0aff218362b3814a7bab1171851546888996",
+      "source": "6. Scannex_The_Complete_Guide_Chapter_6.pdf"
+    },
+    {
+      "id": "lu7",
+      "title": "Learning Unit 7",
+      "filename": "lu7.pdf",
+      "pages": 15,
+      "bytes": 1530258,
+      "sha256": "7847d7212d4149924adfb2da06f847a12f3819390305e21d6fda3fe921f2665e",
+      "source": "7. Scannex_The_Complete_Guide_Chapter_7.pdf"
+    },
+    {
+      "id": "lu8",
+      "title": "Learning Unit 8",
+      "filename": "lu8.pdf",
+      "pages": 12,
+      "bytes": 1636427,
+      "sha256": "085d8c2f675075f9e9ccbfbf808a18cc672e44170d708fe5a1af6ea52cf73a9c",
+      "source": "8. Scannex_The_Complete_Guide_Chapter_8.pdf"
+    },
+    {
+      "id": "lu9",
+      "title": "Learning Unit 9",
+      "filename": "lu9.pdf",
+      "pages": 13,
+      "bytes": 1330473,
+      "sha256": "713b394b5f4acdf0a8c26dfe6d6afcdd0575aec136f3a65712f5eb332bd67fe2",
+      "source": "9. Scannex_The_Complete_Guide_Chapter 9.pdf"
+    }
+  ]
+}

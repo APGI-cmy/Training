@@ -8,6 +8,7 @@ import { getLearnerProgress } from "@/lib/services/progress/get-learner-progress
 import { requireSession } from "@/server/auth/session";
 import { getCookieCompletedUnitIds } from "@/server/progress/progress-cookie";
 import { getCourseResume } from "@/lib/services/progress/get-course-resume";
+import { CourseBenefits } from "@/components/course/CourseBenefits";
 
 export const metadata = {
   title: "Course shell"
@@ -69,5 +70,6 @@ export default async function Page({ params, searchParams }: PageProps) {
     notFound();
   }
 
-  return <CourseShell shell={shell} progressMessage={progressMessage} resume={resume} />;
+  return <CourseShell shell={shell} progressMessage={progressMessage} resume={resume}
+    benefits={course.id === "scannex-training-programme" ? <CourseBenefits userId={session.user.id}/> : undefined} />;
 }

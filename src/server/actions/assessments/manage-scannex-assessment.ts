@@ -7,6 +7,7 @@ import { calculateScannexPracticalScore, SCANNEX_PRACTICAL_RUBRIC, SCANNEX_PRACT
 import { getCourseBySlug } from "@/lib/courses";
 import { SCANNEX_PRACTICAL_MAX_SCORE, SCANNEX_SUMMATIVE_PASS_MARK } from "@/server/assessments/scannex-theory-bank";
 import { getLatestScannexTheoryAttempt } from "@/server/services/assessments/theory-attempts";
+import { ensureScannexRun, getBenefitState } from "@/server/services/course-benefits";
 import { adminRest } from "@/server/supabase/admin-rest";
 
 export type AssessmentActionState = { ok?: boolean; error?: string; message?: string };
@@ -84,12 +85,19 @@ export async function createAssessmentBooking(_previous: AssessmentActionState, 
   if (scheduledFor && Number.isNaN(new Date(scheduledFor).getTime())) return { error: "Enter a valid assessment date and time." };
 
   const status = approved ? "approved" : "scheduled";
+  const run = courseId === "scannex-training-programme" ? await ensureScannexRun(learnerId) : null;
+  if (run) {
+    const existing = await adminRest(`/rest/v1/assessment_bookings?select=id&learner_user_id=eq.${learnerId}&course_id=eq.${courseId}&status=neq.cancelled&${run.attempt_number === 1 ? `or=(v1_run_id.eq.${run.id},v1_run_id.is.null)` : `v1_run_id=eq.${run.id}`}&limit=1`);
+    if (!existing.ok) return { error: "Existing assessment bookings could not be verified." };
+    if (((await existing.json()) as unknown[]).length) return { error: "This course attempt already has an assessment booking. Use it, or cancel an unused booking before replacing it." };
+  }
   const latestTheoryAttempt = await getLatestScannexTheoryAttempt(learnerId, courseId);
   const response = await adminRest("/rest/v1/assessment_bookings", {
     method: "POST",
     headers: { Prefer: "return=representation" },
     body: JSON.stringify({
       learner_user_id: learnerId,
+      v1_run_id: run?.id ?? null,
       course_id: courseId,
       status,
       scheduled_for: scheduledFor ? new Date(scheduledFor).toISOString() : null,
@@ -118,6 +126,8 @@ export async function createAssessmentBooking(_previous: AssessmentActionState, 
 }
 
 type BookingRow = {
+  status?: string;
+  v1_run_id?: string | null;
   learner_user_id?: string;
   course_id?: string;
   theory_attempt_id?: string | null;
@@ -147,10 +157,17 @@ export async function recordAssessmentEvidence(_previous: AssessmentActionState,
   const parsedPracticalRubric = parsePracticalRubric(formData);
   if (parsedPracticalRubric.error) return { error: parsedPracticalRubric.error };
 
-  const bookingLookup = await adminRest(`/rest/v1/assessment_bookings?select=learner_user_id,course_id,theory_attempt_id,theory_score,theory_max_score,practical_rubric_score&id=eq.${encodeURIComponent(assessmentId)}&limit=1`);
+  const bookingLookup = await adminRest(`/rest/v1/assessment_bookings?select=learner_user_id,course_id,status,v1_run_id,theory_attempt_id,theory_score,theory_max_score,practical_rubric_score&id=eq.${encodeURIComponent(assessmentId)}&limit=1`);
   if (!bookingLookup.ok) return { error: "The assessment booking could not be found." };
   const booking = ((await bookingLookup.json()) as BookingRow[])[0];
   if (!booking?.learner_user_id || !booking.course_id) return { error: "The assessment booking could not be found." };
+  if (booking.status === "passed" || booking.status === "failed" || booking.status === "cancelled") return { error: "This booking is closed. Its final evidence and result are retained; use the new-attempt process for further assessment." };
+  if (booking.course_id === "scannex-training-programme") {
+    const state = await getBenefitState(booking.learner_user_id);
+    if ((booking.v1_run_id && booking.v1_run_id !== state.runId) || (!booking.v1_run_id && state.attemptNumber !== 1)) {
+      return { error: "This booking belongs to a previous course attempt. Its final evidence is retained; create a booking for the learner’s current attempt." };
+    }
+  }
 
   const storedPracticalRubricResponse = await adminRest(`/rest/v1/assessment_practical_rubrics?select=trainer_exercise_reference,raw_score,normalized_score,material_safety_concern,safety_review_notes&assessment_id=eq.${encodeURIComponent(assessmentId)}&limit=1`);
   const storedPracticalRubric = storedPracticalRubricResponse.ok
@@ -168,7 +185,7 @@ export async function recordAssessmentEvidence(_previous: AssessmentActionState,
     return { error: "Record evidence, a practical score, or select Passed only after the complete evidence set is already recorded." };
   }
 
-  const latestTheoryAttempt = await getLatestScannexTheoryAttempt(booking.learner_user_id, booking.course_id)
+  const latestTheoryAttempt = await getLatestScannexTheoryAttempt(booking.learner_user_id, booking.course_id, booking.v1_run_id ?? null)
     ?? (booking.theory_attempt_id && booking.theory_score != null
       ? { id: booking.theory_attempt_id, score: Number(booking.theory_score), maxScore: Number(booking.theory_max_score ?? 68) }
       : null);

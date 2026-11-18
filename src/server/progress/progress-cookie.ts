@@ -63,3 +63,12 @@ export async function markCookieUnitCompleted({
     maxAge: COOKIE_MAX_AGE_SECONDS
   });
 }
+
+export async function clearCookieCourseProgress({ userId, courseId }: { userId: string; courseId: string }) {
+  const cookieStore = await cookies();
+  const state = parseProgressCookie(cookieStore.get(PROGRESS_COOKIE)?.value);
+  if (state[userId]) delete state[userId][courseId];
+  cookieStore.set(PROGRESS_COOKIE, JSON.stringify(state), {
+    httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: COOKIE_MAX_AGE_SECONDS
+  });
+}

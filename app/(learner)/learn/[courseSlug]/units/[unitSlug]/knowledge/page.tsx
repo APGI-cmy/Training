@@ -8,6 +8,7 @@ import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { getScannexTheoryQuestions } from "@/server/assessments/scannex-theory-bank";
 import { requireSession } from "@/server/auth/session";
 import { getLatestScannexTheoryAttempt } from "@/server/services/assessments/theory-attempts";
+import { ensureScannexRun } from "@/server/services/course-benefits";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,7 @@ export default async function ScannexKnowledgeAssessmentPage({ params }: PagePro
   ]);
 
   if (!access.canAccess) return <CourseAccessDenied course={course} access={access} />;
+  const run = await ensureScannexRun(session.user.id);
 
   return (
     <ViewerUnitAccess userId={session.user.id} courseSlug={course.slug} unitSlug={unit.slug}>
@@ -53,6 +55,7 @@ export default async function ScannexKnowledgeAssessmentPage({ params }: PagePro
       </section>
       <ScannexTheoryAssessment
         courseSlug={course.slug}
+        runId={run.id}
         questions={getScannexTheoryQuestions()}
         latestResult={latestAttempt ? { score: latestAttempt.score, maxScore: latestAttempt.maxScore, submittedAt: latestAttempt.submittedAt } : null}
       />

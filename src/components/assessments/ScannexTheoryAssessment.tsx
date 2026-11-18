@@ -12,9 +12,11 @@ const initialState: ScannexTheoryActionState = {};
 export function ScannexTheoryAssessment({
   courseSlug,
   questions,
-  latestResult
+  latestResult,
+  runId
 }: {
   courseSlug: string;
+  runId: string;
   questions: ScannexTheoryQuestion[];
   latestResult: { score: number; maxScore: number; submittedAt: string } | null;
 }) {
@@ -53,6 +55,8 @@ export function ScannexTheoryAssessment({
         ) : null}
 
         <form action={action} className="assessment-form">
+          <input name="runId" type="hidden" value={runId} readOnly />
+          <p>One graded knowledge submission is available per course attempt. Further submissions require the course redo or APGI-approved re-enrolment process.</p>
           <input name="courseSlug" type="hidden" value={courseSlug} readOnly />
           <input name="answers" type="hidden" value={JSON.stringify(answers)} readOnly />
 
@@ -94,7 +98,7 @@ export function ScannexTheoryAssessment({
           ) : null}
 
           <div className="button-row">
-            <button className="primary-button" type="submit" disabled={pending}>
+            <button className="primary-button" type="submit" disabled={pending || Boolean(latestResult) || state.score !== undefined}>
               {pending ? "Recording assessment…" : "Submit knowledge assessment"}
             </button>
           </div>
