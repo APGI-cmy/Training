@@ -31,6 +31,12 @@ export function providerTarget(input:string|URL,init:RequestInit={}){
  return url;
 }
 export async function providerFetch(input:string|URL,init:RequestInit={}){
+ // Modern Supabase API keys are not JWTs. Older callers send the same key in
+ // both headers; retain it only as apikey. A real user's bearer JWT is preserved.
+ const headers=new Headers(init.headers),apiKey=headers.get('apikey');
+ if(apiKey&&/^(sb_secret_|sb_publishable_)/.test(apiKey)&&headers.get('authorization')===`Bearer ${apiKey}`){
+  headers.delete('authorization');init={...init,headers};
+ }
  const url=providerTarget(input,init);
  return fetch(url.href,{...init,redirect:'error',cache:'no-store',signal:init.signal?AbortSignal.any([init.signal,AbortSignal.timeout(20000)]):AbortSignal.timeout(20000)});
 }
