@@ -34,6 +34,7 @@ begin
  values(u,r.course_id,r.id,'failed',a,now(),now(),a) returning id into b;
  insert into public.assessment_events(assessment_id,event_type,actor_user_id,metadata) values(b,'decision_recorded',a,'{"decision":"failed"}');
  c:=public.v1_issue_certificate(u,'attendance');
+ if exists(select 1 from public.learner_progress where user_id=u and unit_id='scannex-lu-9' and status='completed') then raise exception 'Attendance must not complete summative assessment'; end if;
  if public.v1_issue_certificate(u,'attendance')<>c then raise exception 'Certificate is not idempotent'; end if;
  if not exists(select 1 from public.profiles where user_id=u and certificate_profile_locked_at is not null) then raise exception 'Name not locked'; end if;
  next_run:=public.v1_begin_redo(u,1);
@@ -73,6 +74,7 @@ begin
  update public.assessment_practical_rubrics set material_safety_concern=false,safety_review_notes=null where assessment_id=b;
  if not (public.v1_course_benefit_state(u)->>'passed')::boolean then raise exception 'Valid pass not recognised'; end if;
  c:=public.v1_issue_certificate(u,'passed');
+ if not exists(select 1 from public.completion_states where user_id=u and status='completed' and completed_units=9 and progress_percent=100) then raise exception 'Verified pass should complete course progress'; end if;
  if (select count(*) from public.v1_course_certificates where learner_user_id=u)<>2 then raise exception 'Attendance and achievement certificates should coexist'; end if;
  perform pg_temp.expect_error(format('select public.v1_begin_redo(%L,3)',u),'REDO_REQUIRES_FINAL_FAILURE');
  update public.profiles set certificate_name='Changed QA Name' where user_id=u;
