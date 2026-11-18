@@ -1,4 +1,5 @@
 'use server';
+import {recipientBrand} from '@/server/services/email/recipient-brand';
 import {randomUUID} from 'node:crypto';
 import {revalidatePath} from 'next/cache';
 import {managedMail,checkMailDelivery} from '@/server/services/mail-management';
@@ -36,6 +37,8 @@ export async function mailManagementAction(_:MailActionState,form:FormData):Prom
    const result=await requestPasswordRecovery({},recovery);if(result.error)throw Error(result.error);
    revalidatePath('/messages/email-management');return {success:'Fresh sign-in help requested for the same recipient. Old private links are never copied. Check the newest email and delivery record.'};
   }else{
+   const identity=await recipientBrand(row.recipient,row.organisation_id??undefined);
+   const origin=identity?.origin??process.env.NEXT_PUBLIC_APP_URL??STAGING_ORIGIN;
    let rendered:{subject:string;html:string;text:string}|undefined;
    if(row.category==='email_set'){
     const source=await adminRest(`/rest/v1/v2_email_outbox?id=eq.${encodeURIComponent(row.source_id??'')}&select=snapshot&limit=1`);
@@ -48,16 +51,16 @@ export async function mailManagementAction(_:MailActionState,form:FormData):Prom
     if(!(await messageRpc<boolean>('v2_message_access',{p_actor:actor,p_thread:saved.thread_id})))throw Error('Conversation unavailable.');
     if(message.html&&message.body)rendered={subject:row.subject,html:message.html,text:message.body};
     else{
-     const link=`${STAGING_ORIGIN}/messages/${saved.thread_id}`;
-     rendered={subject:row.subject,text:`A saved message is available in Messages and support. Sign in with ${row.recipient}. Read and reply: ${link}`,html:brandedEmail({brand:'APGI Training',title:row.subject,description:'A saved message is available in Messages and support. Sign in with the email address this message was sent to.',link,button:'Read and reply',footer:'Reply securely inside the platform.'})};
+     const link=`${origin}/messages/${saved.thread_id}`;
+     rendered={subject:row.subject,text:`A saved message is available in Messages and support. Sign in with ${row.recipient}. Read and reply: ${link}`,html:brandedEmail({brand:identity?.name??'APGI Training',logo:identity?.logo,color:identity?.color,title:row.subject,description:'A saved message is available in Messages and support. Sign in with the email address this message was sent to.',link,button:'Read and reply',footer:'Reply securely inside the platform.'})};
     }
    }else if(row.category==='policy'){
     const source=await adminRest(`/rest/v1/policy_reviewers?policy_id=eq.${encodeURIComponent(row.source_id??'')}&email=eq.${encodeURIComponent(row.recipient)}&select=email&limit=1`);
     if(!source.ok||!(await source.json()).length)throw Error('This recipient is no longer assigned to the policy.');
     const policy=await adminRest(`/rest/v1/platform_policy_versions?id=eq.${encodeURIComponent(row.source_id??'')}&status=eq.submitted&select=id&limit=1`);
     if(!policy.ok||!(await policy.json()).length)throw Error('This policy is no longer awaiting review.');
-    const link=`${STAGING_ORIGIN}/policies/${row.source_id}`;
-    rendered={subject:row.subject,text:`A policy is ready for your review. Sign in: ${link}. Opening the link does not approve anything.`,html:brandedEmail({brand:'APGI Training',title:row.subject,description:'A policy is ready for your review. Opening the link does not record approval. Please submit your decision inside the platform.',link,button:'Read policy',footer:'Sign in using this invited email address.'})};
+    const link=`${origin}/policies/${row.source_id}`;
+    rendered={subject:row.subject,text:`A policy is ready for your review. Sign in: ${link}. Opening the link does not approve anything.`,html:brandedEmail({brand:identity?.name??'APGI Training',logo:identity?.logo,color:identity?.color,title:row.subject,description:'A policy is ready for your review. Opening the link does not record approval. Please submit your decision inside the platform.',link,button:'Read policy',footer:'Sign in using this invited email address.'})};
    }else if(message.html&&message.body)rendered={subject:row.subject,html:message.html,text:message.body};
    if(!rendered)throw Error('This security-sensitive email cannot be copied. Use its original setup process to send a fresh request.');
    const subject=rendered.subject.replace(/^\[APGI V2 TEST\] /,'');

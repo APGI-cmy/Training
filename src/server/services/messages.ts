@@ -1,3 +1,4 @@
+import {recipientBrand} from './email/recipient-brand';
 import "server-only";
 import {createHash} from "node:crypto";
 import {adminRest} from "@/server/supabase/admin-rest";
@@ -19,12 +20,13 @@ export async function flushMessageMail(thread?:string){
  const config=emailConfiguration();if(!config)return {accepted:0,failed:0,configured:false};
  const jobs=await messageRpc<Outgoing[]>("v2_message_mail_claim",{p_thread:thread??null});let accepted=0,failed=0;
  for(let start=0;start<jobs.length;start+=5){await Promise.all(jobs.slice(start,start+5).map(async job=>{
-  let brand="APGI Training",color="#102b47";
+  const identity=await recipientBrand(job.email,job.organisation_id);
+  let brand=identity?.name??"APGI Training",color=identity?.color??"#102b47";
   const org=await adminRest(`/rest/v1/organisations?id=eq.${job.organisation_id}&select=name,primary_color&limit=1`);
   if(org.ok){const row=(await org.json())[0];if(row){brand=row.name;color=row.primary_color;}}
   const link=new URL(`/messages/${job.thread_id}`,config.origin).toString();
   const text=`From: ${job.sender_email}\n\n${job.body}\n\n${job.attachment?'An attachment is available securely in the conversation.\n\n':''}Read and reply: ${link}\n\nSign in using ${job.email}. If you have not activated your V2 account, use your existing V2 invitation or contact your training administrator for access. Reply in Messages and support; replies to this email are not added to the conversation.`;
-  const html=brandedEmail({brand,color,title:job.subject,description:text,link,button:"Read and reply",footer:"Message receipts confirm reading in the platform. Email accepted means the provider accepted the message; it is not proof of inbox delivery."}).replace('style="line-height:1.6"','style="line-height:1.6;white-space:pre-line"');
+  const html=brandedEmail({brand,color,logo:identity?.logo,title:job.subject,description:text,link,button:"Read and reply",footer:"Message receipts confirm reading in the platform. Email accepted means the provider accepted the message; it is not proof of inbox delivery."}).replace('style="line-height:1.6"','style="line-height:1.6;white-space:pre-line"');
   const result=await deliverTransactionalEmail({to:job.email,subject:job.subject,text,html,tracking:{category:'support',organisationId:job.organisation_id,sourceId:job.message_id,messageKey:`support:${job.message_id}:${job.email.toLowerCase()}`},idempotencyKey:createHash('sha256').update(`support:${job.message_id}:${job.email}`).digest('hex')});
   const saved=await adminRest(`/rest/v1/v2_message_deliveries?message_id=eq.${job.message_id}&email=eq.${encodeURIComponent(job.email)}&state=eq.sending`,{method:"PATCH",body:JSON.stringify({state:result.ok?"accepted":"failed",provider_id:result.ok?result.providerMessageId:null,next_at:new Date(Date.now()+15*60000).toISOString()})});
   if(!saved.ok)throw Error("Message saved. Email status is awaiting reconciliation.");if(result.ok)accepted++;else failed++;

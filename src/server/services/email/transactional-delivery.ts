@@ -22,14 +22,15 @@ export function emailConfiguration() {
   } catch {return null;}
 }
 
-export type DeliveryBrand={name:string;from?:string|null;verified?:boolean};
+export type DeliveryBrand={name:string;from?:string|null;verified?:boolean;logo?:string|null};
 export function previewTransactionalEmail(input:{subject:string;html:string;text:string;branding?:DeliveryBrand}){
  const staging=process.env.ALP_ENVIRONMENT==='v2-staging';
  const notice='VERSION 2 TEST ENVIRONMENT. This message concerns the separate Version 2 platform. It does not change your Version 1 account or course access. Use a separate Version 2 account with this email address.';
  const banner=`<div role="note" style="margin:0;padding:16px 24px;background:#fff5d6;color:#17324d;font:14px Arial,sans-serif;line-height:1.6"><strong>VERSION 2 TEST ENVIRONMENT</strong><p style="margin:8px 0 0">This message concerns the separate Version 2 platform. It does not change your Version 1 account or course access.</p><p style="margin:8px 0 0">Use a separate Version 2 account with this email address.</p></div>`;
  // Account and system messages are trusted server-generated fragments. Give
  // them the same frame; a complete company-branded document stays intact.
- const document=/<body\b[^>]*>/i.test(input.html)?input.html:`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta charset="utf-8"></head><body style="margin:0;padding:0;background:#edf3f7;font:16px Arial,sans-serif;color:#17324d;line-height:1.65"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td align="center" style="padding:24px 12px"><table role="presentation" width="760" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:760px;background:#ffffff;border:1px solid #d6e1e8"><tr><td style="padding:26px;border-top:5px solid #102b47"><img src="${STAGING_ORIGIN}/branding/apgi-logo.png" alt="APGI logo" width="150" style="display:block;width:150px;max-width:100%;height:auto;border:0;margin:0 0 18px"><p style="font:bold 24px Arial,sans-serif;margin:0 0 22px">APGI Training</p><h1 style="font-size:25px;line-height:1.35;margin:0 0 20px">${escapeEmail(input.subject)}</h1><div style="font:16px Arial,sans-serif;line-height:1.65">${input.html}</div><hr style="border:0;border-top:1px solid #d6e1e8;margin:24px 0"><p style="font-size:12px;line-height:1.6;color:#557084;margin:0">Hosted by APGI</p></td></tr></table></td></tr></table></body></html>`;
+ const frameBrand=input.branding?.name??"APGI Training",frameLogo=input.branding?input.branding.logo:`${STAGING_ORIGIN}/branding/apgi-logo.png`;
+ const document=/<body\b[^>]*>/i.test(input.html)?input.html:`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta charset="utf-8"></head><body style="margin:0;padding:0;background:#edf3f7;font:16px Arial,sans-serif;color:#17324d;line-height:1.65"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td align="center" style="padding:24px 12px"><table role="presentation" width="760" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:760px;background:#ffffff;border:1px solid #d6e1e8"><tr><td style="padding:26px;border-top:5px solid #102b47">${frameLogo?`<img src="${escapeEmail(frameLogo)}" alt="${escapeEmail(frameBrand)} logo" width="150" style="display:block;width:150px;max-width:100%;height:auto;border:0;margin:0 0 18px">`:""}<p style="font:bold 24px Arial,sans-serif;margin:0 0 22px">${escapeEmail(frameBrand)}</p><h1 style="font-size:25px;line-height:1.35;margin:0 0 20px">${escapeEmail(input.subject)}</h1><div style="font:16px Arial,sans-serif;line-height:1.65">${input.html}</div><hr style="border:0;border-top:1px solid #d6e1e8;margin:24px 0"><p style="font-size:12px;line-height:1.6;color:#557084;margin:0">${input.branding?"":"Hosted by APGI"}</p></td></tr></table></td></tr></table></body></html>`;
  const html=!staging?document:document.replace(/(<body\b[^>]*>)/i,`$1${banner}`);
  return {subject:(staging?(input.branding?'['+input.branding.name+' TEST] ':'[APGI V2 TEST] '):'')+input.subject,html,text:(staging?notice+'\n\n':'')+input.text};
 }
@@ -37,6 +38,21 @@ export async function deliverTransactionalEmail(input:{to:string;subject:string;
   const config=emailConfiguration();
   if(!config)return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};
   if(!singleRecipient(input.to,config.staging))return {ok:false as const,error:'EMAIL_DELIVERY_FAILED' as const};
+  if(process.env.ALP_ENVIRONMENT==='training-production'){
+    // Bind every production message category to the dedicated tenant's verified
+    // identity, even older notification jobs without their own sender fields.
+    const {productionCompanyId}=await import('@/server/services/tenant-courses');
+    const company=productionCompanyId();
+    if(!company||input.tracking&&input.tracking.organisationId&&input.tracking.organisationId!==company)return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};
+    try{
+      const {recipientBrand}=await import('./recipient-brand');
+      const identity=await recipientBrand(input.to,company);
+      if(!identity?.verified||!identity.from||input.branding&&input.branding.name!==identity.name)return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};
+      input={...input,branding:{name:identity.name,from:identity.from,verified:true,logo:identity.logo}};
+      // Never resurrect a saved provider-branded template on a partner site.
+      if(/Hosted by APGI|>\s*APGI Training\s*</i.test(input.html))return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};
+    }catch{return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};}
+  }
   let sender=config.from;
   if(input.branding){const display=input.branding.name.replace(/[\r\n<>]/g,'').slice(0,120);if(config.staging){sender=`${display} <${config.from.match(/<([^<>]+)>$/)?.[1]??config.from}>`;}else{if(!input.branding.verified||!input.branding.from||!singleRecipient(input.branding.from,false))return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};sender=`${display} <${input.branding.from}>`;}}
   let attempt:string|undefined;

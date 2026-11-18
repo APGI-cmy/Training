@@ -1,4 +1,5 @@
 "use server";
+import {recipientBrand} from "@/server/services/email/recipient-brand";
 import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import {internalDistributionConfiguration} from "@/lib/platform-partnership";
 import {attachCommercialPlan} from "@/server/services/publication-workflow";
@@ -51,6 +52,7 @@ async function notifyPolicy(id: string) {
       );
       continue;
     }
+    const identity=await recipientBrand(item.recipient_email,policy.organisation_id??undefined);
     const link = new URL(
       `/policies/${id}#required-reviews`,
       emailConfiguration()?.origin ?? STAGING_ORIGIN,
@@ -59,7 +61,9 @@ async function notifyPolicy(id: string) {
       to: item.recipient_email,
       subject: "A policy is ready for your review",
       html: brandedEmail({
-        brand: "APGI Training",
+        brand: identity?.name??"APGI Training",
+        logo: identity?.logo,
+        color: identity?.color,
         title: "Your review is requested",
         description:
           "A policy version has been submitted for your review. Sign in using this email to read the exact document and approve or reject it. Approval does not activate financial distributions in this structural release.",
