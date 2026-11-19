@@ -1,6 +1,7 @@
 """One release gate for all registered deployments; source archives must already be uploaded.
 
 python scripts/deploy-shared-release.py RELEASE_DIRECTORY --build
+python scripts/deploy-shared-release.py RELEASE_DIRECTORY --verify-builds
 python scripts/deploy-shared-release.py RELEASE_DIRECTORY --promote
 No credentials are read from files or printed. The authenticated Vercel CLI is used.
 """
@@ -31,14 +32,14 @@ def context_for(directory,target):
 
 def verify_built_application(directory,target):
     context=context_for(directory,target)
-    result=subprocess.run(CLI+['curl','/api/platform-version','--deployment','https://'+target['url'],'--scope',REGISTRY['teamSlug'],'--cwd',str(context),'--','--silent','--show-error','--fail'],capture_output=True,text=True)
+    result=subprocess.run(CLI+['--scope',REGISTRY['teamSlug'],'curl','/api/platform-version','--deployment','https://'+target['url'],'--','--silent','--show-error','--fail'],cwd=context,capture_output=True,text=True)
     if result.returncode:raise RuntimeError('Protected build readiness check failed for '+target['project'])
     data=json.loads(result.stdout)
     if data.get('version')!=REGISTRY['version'] or data.get('paymentsDisabled') is not True or data.get('schemaReady') is not True:raise RuntimeError('Build version, schema or payment guard is not ready')
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('release_directory',type=Path);p.add_argument('--build',action='store_true');p.add_argument('--promote',action='store_true');a=p.parse_args()
-    if a.build==a.promote:raise ValueError('Choose build or promote')
+    p=argparse.ArgumentParser();p.add_argument('release_directory',type=Path);p.add_argument('--build',action='store_true');p.add_argument('--verify-builds',action='store_true');p.add_argument('--promote',action='store_true');a=p.parse_args()
+    if sum([a.build,a.verify_builds,a.promote])!=1:raise ValueError('Choose build, verify-builds or promote')
     directory=a.release_directory.resolve();requests=[]
     if os.name=='nt':
         syncroot=Path(os.environ.get('OneDrive',r'C:\Users\Johan\OneDrive')).resolve()
@@ -81,6 +82,13 @@ def main():
             time.sleep(10)
         raise RuntimeError('Build deadline reached; inspect recorded builds before retrying')
     audit=json.loads(auditfile.read_text())
+    if a.verify_builds:
+        if audit['version']!=REGISTRY['version'] or audit['sourceCommit']!=next(iter(commits)) or audit['archivesSha256']!=sources[0] or audit['stage'] not in ['building','all_ready']:raise ValueError('Unverified release identity')
+        for t in audit['targets']:
+            d=api('/v13/deployments/'+t['deployment'])
+            if d.get('readyState')!='READY' or d.get('projectId')!=t['project'] or d.get('meta',{}).get('sourceCommit')!=audit['sourceCommit']:raise ValueError('Build identity is not READY')
+            verify_built_application(directory,t)
+        audit['stage']='all_ready';save(auditfile,audit);print(json.dumps({'stage':'all_ready','version':audit['version']}),flush=True);return
     if audit['version']!=REGISTRY['version'] or audit['sourceCommit']!=next(iter(commits)) or audit['archivesSha256']!=sources[0] or audit['stage']!='all_ready':raise ValueError('Unverified release cannot be promoted')
     promoted=[]
     try:
@@ -92,7 +100,7 @@ def main():
         for t in audit['targets']:
             context=context_for(directory,t)
             t['context']=str(context)
-            result=subprocess.run(CLI+['promote','https://'+t['url'],'--yes','--scope',REGISTRY['teamSlug'],'--cwd',str(context)],capture_output=True,text=True)
+            result=subprocess.run(CLI+['--scope',REGISTRY['teamSlug'],'promote','https://'+t['url'],'--yes'],cwd=context,capture_output=True,text=True)
             if result.returncode:raise RuntimeError('Promotion failed for '+t['project'])
             promoted.append(t);t['promoted']=True;save(auditfile,audit)
         for t in audit['targets']:
@@ -109,7 +117,7 @@ def main():
     except Exception:
         audit['stage']='rollback_required'
         for t in reversed(promoted):
-            r=subprocess.run(CLI+['rollback',t['previous'],'--yes','--scope',REGISTRY['teamSlug'],'--cwd',t['context']],capture_output=True,text=True)
+            r=subprocess.run(CLI+['--scope',REGISTRY['teamSlug'],'rollback',t['previous'],'--yes'],cwd=t['context'],capture_output=True,text=True)
             t['rollbackSucceeded']=r.returncode==0
         save(auditfile,audit);raise
 
