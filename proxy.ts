@@ -20,7 +20,7 @@ export async function proxy(request: NextRequest) {
     const slug=/^\/(?:admin\/courses|learn|courses)\/([^/]+)(?:\/|$)/.exec(decodedPath)?.[1];
     const course=slug?getCourseBySlug(slug):undefined;
     const assignedCourse=course?.id??(target?.publicCover?target.courseId:undefined);
-    if(assignedCourse){try{if(!await tenantCourseAssigned(assignedCourse))return new NextResponse('Course not available on this training site.',{status:404,headers:{'cache-control':'private, no-store'}});}catch{return new NextResponse('Course assignments are temporarily unavailable.',{status:503,headers:{'cache-control':'private, no-store'}});}}
+    if(assignedCourse){try{if(!await tenantCourseAssigned(assignedCourse,request.cookies.get(names[0])?.value))return new NextResponse('Course not available on this training site.',{status:404,headers:{'cache-control':'private, no-store'}});}catch{return new NextResponse('Course assignments are temporarily unavailable.',{status:503,headers:{'cache-control':'private, no-store'}});}}
   }
 
   const changed = new Map<string,string>();

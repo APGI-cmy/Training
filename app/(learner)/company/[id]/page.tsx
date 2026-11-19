@@ -46,6 +46,7 @@ export default async function CompanyPage({
   if(owner&&candidateReturn?.startsWith("/course-reviews/")&&!candidateReturn.startsWith("/course-reviews/new?")){const {requireReview}=await import("@/server/services/course-reviews");try{const r=await requireReview(candidateReturn.split("/").at(-1)!);if(r.round.organisation_id===id)returnTo=candidateReturn;}catch{/* An unrelated review never becomes a return target. */}}
   const workflows=owner?await rows<{id:string;document:{title:string;workflow?:{partnerEmail:string;stage:string}}}>(`/rest/v1/course_review_rounds?or=(organisation_id.eq.${id},document->workflow->>partnerCompanyId.eq.${id})&status=eq.open&select=id,document`):[];
   const offerings = await companyOfferings(id);
+  const ownedDraftIds=principal?new Set((await rows<{id:string}>(`/rest/v1/courses?owner_organisation_id=eq.${id}&select=id`)).map(c=>c.id)):new Set<string>();
  const cardImages=await getSavedCourseCardImages();
   const requests = owner
     ? await rows<{
@@ -87,6 +88,7 @@ export default async function CompanyPage({
         {!partnerSite?<Link href="/company">Switch company</Link>:<Link href="/company-branding">Company branding</Link>}
         {owner ? <Link href="/policies">Policies and reviews</Link> : null}
         {owner ? <Link href={`/course-calculator?company=${id}`}>Course calculator and learning balances</Link> : null}
+        {owner ? <Link href={`/course-sharing?company=${id}`}>Course ownership and sharing</Link> : null}
         {owner ? <Link href={`/company/${id}/payments`}>Payments and bank onboarding</Link> : null}
         {!partnerSite&&principal ? <Link href="/admin/companies">All companies</Link> : null}
       </nav>
@@ -128,7 +130,7 @@ export default async function CompanyPage({
             <label>
               Course
               <select name="course_id">
-                {(await getTenantCourses()).map((c) => (
+                {(await getTenantCourses()).filter(c=>ownedDraftIds.has(c.id)).map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.title}
                   </option>
@@ -145,8 +147,7 @@ export default async function CompanyPage({
               </select>
             </label>
             <p className="admin-span-two">
-              A course can be assigned to several companies. To publish a new
-              release, complete <Link href="/course-reviews">Course reviews and publication</Link>.
+              Drafts can be assigned only to their declared owner. Use <Link href={`/course-sharing?company=${id}`}>Course ownership and sharing</Link> to share an already published owner release with another platform. To publish an owner release, complete <Link href="/course-reviews">Course reviews and publication</Link>.
               Publication does not enrol learners or enable payments.
             </p>
           </StructureForm>

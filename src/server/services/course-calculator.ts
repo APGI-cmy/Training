@@ -24,6 +24,7 @@ export async function calculatorAccess(companyId?:string){
  return {session,principal,company,companies:available};
 }
 export async function calculatorCourses(companyId:string,principal:boolean){
+ const locked=new Set((await rows<{course_id:string}>(`/rest/v1/course_distribution?recipient_organisation_id=eq.${validId(companyId)}&state=neq.withdrawn&select=course_id`)).map(s=>s.course_id));
  const [versions,editions,companies,offerings]=await Promise.all([
   rows<{id:string;edition_id:string;owner_id:string;snapshot:Omit<CreditCourse,'id'|'editionId'|'ownerId'|'ownerIsApgi'>}>('/rest/v1/cc_credit_versions?select=*&order=created_at.desc&limit=1000'),
   rows<{id:string;course_id:string;edition_number:number;course_document:{title:string;classification?:{category?:CreditCourse['scope'];industry?:string;clientName?:string}}}>(`/rest/v1/course_editions?state=eq.ready&select=id,course_id,edition_number,course_document&limit=1000`),
@@ -32,7 +33,7 @@ export async function calculatorCourses(companyId:string,principal:boolean){
  ]);
  const tenant=productionCompanyId();
  const seen=new Set<string>(),courses:CreditCourse[]=[];
- for(const v of versions){if(seen.has(v.edition_id))continue;seen.add(v.edition_id);const e=editions.find(e=>e.id===v.edition_id),owner=companies.find(c=>c.id===v.owner_id);if(!e||!owner)continue;
+ for(const v of versions){if(seen.has(v.edition_id))continue;seen.add(v.edition_id);const e=editions.find(e=>e.id===v.edition_id),owner=companies.find(c=>c.id===v.owner_id);if(!e||!owner||locked.has(e.course_id))continue;
   if(tenant&&!offerings.some(o=>o.course_id===e.course_id))continue;
   if(!principal&&v.owner_id!==companyId&&v.snapshot.scope!=='public'&&!offerings.some(o=>o.course_id===e.course_id))continue;
   courses.push({...v.snapshot,id:v.id,editionId:e.id,courseId:e.course_id,title:`${e.course_document.title} · edition ${e.edition_number}`,ownerId:owner.id,ownerIsApgi:owner.slug==='apgi',industry:v.snapshot.industry??e.course_document.classification?.industry,clientName:v.snapshot.clientName??e.course_document.classification?.clientName});

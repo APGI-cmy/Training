@@ -15,6 +15,7 @@ import { isPlatformPrincipal } from "@/server/services/platform-principals";
 import {getPublishedCourseIds} from '@/server/services/course-publication-status';
 import {getCatalogueReviews} from '@/server/services/organisations/get-catalogue-reviews';
 import {CoursePublicationBadge} from '@/components/course/CoursePublicationBadge';
+import {receivedPublishedShares} from '@/server/services/course-distribution';
 
 
 
@@ -25,6 +26,7 @@ export default async function AdminCoursesPage() {
   const principal = await isPlatformPrincipal(session);
 
   const courses = await getTenantCourses();
+ const shared=await receivedPublishedShares();
  const cardImages=await getSavedCourseCardImages();
  const [published,reviews]=await Promise.all([getPublishedCourseIds(courses.map(c=>c.id)),getCatalogueReviews(session,courses.map(c=>c.id))]);
 
@@ -70,7 +72,7 @@ export default async function AdminCoursesPage() {
 
               </Link>
 
-              {principal ? <Link className="button-link" href={reviews.has(course.id)?`/course-reviews/${reviews.get(course.id)!.id}`:`/course-reviews/new?course=${course.slug}`}>{reviews.get(course.id)?.status==='published'?'View publication record':reviews.has(course.id)?'Open publication workflow':'Start publication workflow'}</Link> : null}
+              {shared.some(s=>s.course_id===course.id)?<Link className="button-link" href={`/course-sharing#share-${shared.find(s=>s.course_id===course.id)!.id}`}>View shared published release</Link>:principal ? <Link className="button-link" href={reviews.has(course.id)?`/course-reviews/${reviews.get(course.id)!.id}`:`/course-reviews/new?course=${course.slug}`}>{reviews.get(course.id)?.status==='published'?'View publication record':reviews.has(course.id)?'Open publication workflow':'Start publication workflow'}</Link> : null}
               {principal ? <Link className="button-link" href={`/admin/courses/${course.slug}/editions`}>Editions, access expiry and e-book offers</Link> : null}
 
             </div>

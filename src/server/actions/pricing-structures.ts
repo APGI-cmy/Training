@@ -11,12 +11,14 @@ import {type CostSchedule,type PurchaseRoute} from '@/lib/course-calculator';
 import {stripeVault,stripeRequest} from '@/server/services/stripe-platform';
 import {stripeRedirect} from '@/lib/stripe-payments';
 import pricingPolicy from '@/data/course-pricing-policy.json';
+import {assertNoSharedPriceRewrite} from '@/server/services/course-distribution';
 import {STAGING_ORIGIN} from '@/server/environment-isolation';
 const field=(f:FormData,k:string)=>{const v=f.get(k);if(typeof v!=='string'||v.length>500000)throw Error('Check the form.');return v;};
 const failure=(e:unknown):StructureState=>({error:e instanceof Error?e.message:'This change could not be saved.'});
 function refresh(){for(const p of ['/course-calculator','/course-shop','/course-cart','/learning-balances'])revalidatePath(p);}
 export async function savePricingStructure(_:StructureState,f:FormData):Promise<StructureState>{try{
  const a=await calculatorAccess(validId(field(f,'company'))),raw=JSON.parse(field(f,'document')) as PricingStructure;
+ await assertNoSharedPriceRewrite(a.company.id,raw.courses.map(c=>c.courseId));
  if(raw.version!==STRUCTURE_VERSION)throw Error('The pricing model changed. Refresh and prepare a new proposal; earlier records remain retained.');
  const cost=(await rows<{id:string;snapshot:CostSchedule}>(`/rest/v1/cc_cost_versions?id=eq.${validId(raw.cost.id)}&select=id,snapshot&limit=1`))[0];if(!cost)throw Error('Choose a recorded platform cost version.');
  if(!['USD','CAD','ZAR'].includes(cost.snapshot.currency))throw Error('Unsupported cost currency.');

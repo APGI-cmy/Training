@@ -15,7 +15,7 @@ describe('Production learner discovery and draft preview remain separate',()=>{
  it('hides an assigned public VPSHR draft and private EA draft while retaining Tiger',async()=>{
   m.rest.mockImplementation(async(path:string)=>{
    expect(path).toContain(`organisation_id=eq.${company}`);
-   expect(path).toContain('status=eq.published');expect(path).toContain('reviewed_release_id=not.is.null');
+   expect(path).toContain('status=eq.published');expect(path).toContain('or=(reviewed_release_id.not.is.null,shared_distribution_id.not.is.null)');
    return Response.json(offerings);
   });
   expect(await getAvailableCourseIds('learner',courses)).toEqual(new Set([tiger]));

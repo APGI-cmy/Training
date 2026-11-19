@@ -227,6 +227,10 @@ export async function companyStructureAction(
         throw new Error("Choose a valid course and status.");
       if (status === "published")
         throw new Error("Publish through Course reviews and publication after the exact release has passed review. This menu cannot bypass that approval.");
+      if(status==='draft'){
+        const owned=(await rows<{owner_organisation_id:string|null}>(`/rest/v1/courses?id=eq.${encodeURIComponent(course)}&select=owner_organisation_id&limit=1`))[0];
+        if(owned?.owner_organisation_id!==id)throw Error('Drafts belong on their declared owner platform. Use Course ownership and sharing to share an already published owner release.');
+      }
       await write(
         "/rest/v1/organisation_offerings?on_conflict=organisation_id,course_id",
         {

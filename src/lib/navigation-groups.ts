@@ -2,7 +2,7 @@ export type NavigationItem={href:string;label:string};
 export function navigationGroups(items:NavigationItem[]) {
  const definitions=[
   {id:"learning",label:"My learning",paths:["/catalogue","/catalogue?view=my-learning","/learning-balances"]},
-  {id:"publication",label:"Course publication",paths:["/admin/courses","/course-reviews","/review-requests","/course-calculator","/admin/agreements","/admin/service-costs"]},
+  {id:"publication",label:"Course publication",paths:["/admin/courses","/course-reviews","/review-requests","/course-calculator","/course-sharing","/admin/agreements","/admin/service-costs"]},
   {id:"companies",label:items.some(i=>i.href==="/company-branding")&&!items.some(i=>i.href==="/admin/companies")?"Company branding":"Companies and branding",paths:["/company-branding","/company","/admin/companies","/admin/certificates"]},
   {id:"enrolment",label:"Learners and payments",paths:["/admin/learners","/admin/invitations","/admin/enrolments","/admin/assessments","/payments","/admin/payments/stripe","/admin/payments"]},
   {id:"governance",label:"Policies and administration",paths:["/admin","/policies","/admin/policies","/security-watchdog"]},

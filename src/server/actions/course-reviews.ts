@@ -73,6 +73,7 @@ export async function createCourseReview(_:ReviewActionState,form:FormData):Prom
   const designerName=text(form,"designer_name",2,180),designerCompany=text(form,"designer_company",2,180),ownerId=validId(text(form,"rights_holder"));
 
   const owner=(await rows<{id:string;slug:string}>(`/rest/v1/organisations?id=eq.${ownerId}&is_active=eq.true&select=id,slug`))[0];if(!owner)throw Error("Choose the current legal course owner.");
+  if(ownerId!==brandId)throw Error('Start the course review on its declared owner platform. Only the owner’s published release may be offered to another platform. Existing review records remain available.');
 
   const rawTasks=form.getAll("review_tasks").map(String);
   const tasks=rawTasks.length?rawTasks.map(raw=>{const parsed=JSON.parse(raw);if(!Array.isArray(parsed)||parsed.some(x=>typeof x!=="string"))throw Error("Choose valid reviewer assignments.");return selectedTasks(parsed);}):undefined;

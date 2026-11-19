@@ -2,6 +2,7 @@ import 'server-only';
 import {configuredDatabaseRef,configuredAppOrigin} from '@/server/environment-isolation';
 import {costServices} from '@/lib/service-costs';
 import {exchangeFeed} from '@/lib/currency-rates';
+import {PLATFORM_RELEASE} from '@/lib/platform-release';
 
 const publicSources=new Set([exchangeFeed,...costServices.map(s=>s.source).filter(Boolean)]);
 // Every server HTTP destination is code-owned. Redirects cannot move credentials
@@ -21,6 +22,8 @@ export function providerTarget(input:string|URL,init:RequestInit={}){
   if(!auth?.startsWith('Bearer re_')||headers.has('apikey'))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
  }else if(url.origin==='https://api.stripe.com'&&/^\/v1\/[A-Za-z0-9_/-]+$/.test(url.pathname)){
   if(!auth?.startsWith('Bearer rk_test_')||headers.has('apikey'))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
+ }else if(PLATFORM_RELEASE.targets.some(t=>t.origin===url.origin)&&url.pathname==='/api/course-exchange'&&method==='GET'&&init.body==null){
+  if(!auth||!/^Bearer eyJ[A-Za-z0-9._-]+$/.test(auth)||headers.has('apikey')||[...headers.keys()].some(k=>!['authorization'].includes(k)))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
  }else if((publicSources.has(url.href)||url.href===STAGING_ORIGIN+'/api/course-deployment')&&['GET','HEAD'].includes(method)&&init.body==null){
   if([...headers.keys()].some(k=>!['accept','user-agent'].includes(k)))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
  }else throw Error('OUTBOUND_TARGET_REJECTED');

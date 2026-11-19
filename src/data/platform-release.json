@@ -1,0 +1,10 @@
+{
+ "version":"2.0.20261119.1",
+ "schema":"course-distribution-v6",
+ "teamId":"team_KOQzed54bA9hTgta0YarblZq",
+ "teamSlug":"rassie-ras-projects",
+ "targets":[
+  {"project":"prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf","origin":"https://training-platform-v2-staging.vercel.app","companySlug":null,"workspaces":["apgi","mediation-zone"],"name":"APGI V2 and Mediation Zone workspace"},
+  {"project":"prj_BxMjzI1TwimFM2mbV2ox3d7EUTsz","origin":"https://nks-capital-training.vercel.app","companySlug":"nks-capital","workspaces":["nks-capital"],"name":"NKS Capital production"}
+ ]
+}
