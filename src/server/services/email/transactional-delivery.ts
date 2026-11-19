@@ -55,7 +55,7 @@ export async function deliverTransactionalEmail(input:{to:string;subject:string;
       const identity=await recipientBrand(input.to,company);
       const backup=backupEmailConfiguration();
       if(!identity||(!backup&&(!identity.verified||!identity.from))||input.branding&&input.branding.name!==identity.name)return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};
-      input={...input,branding:{name:backup?identity.name+' Training':identity.name,from:backup?.from??identity.from,verified:!!backup||identity.verified,logo:identity.logo}};
+      input={...input,tracking:input.tracking?{...input.tracking,organisationId:company}:input.tracking,branding:{name:backup?identity.name+' Training':identity.name,from:backup?.from??identity.from,verified:!!backup||identity.verified,logo:identity.logo}};
       // Never resurrect a saved provider-branded template on a partner site.
       if(/Hosted by APGI|>\s*APGI Training\s*</i.test(input.html))return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};
     }catch{return {ok:false as const,error:'EMAIL_NOT_CONFIGURED' as const};}

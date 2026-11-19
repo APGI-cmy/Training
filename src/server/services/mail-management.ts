@@ -5,16 +5,22 @@ import {messageRpc} from './messages';
 import {adminRest} from '@/server/supabase/admin-rest';
 import {emailConfiguration} from './email/transactional-delivery';
 import type {MailWorkspace,MailDetail} from '@/lib/mail-tracking';
+import {productionCompanyId} from './tenant-courses';
+import {getCourseBySlug} from '@/lib/courses';
 export async function mailWorkspace(query:{search?:string;category?:string;state?:string;offset?:number;company?:string}){
  const session=await notificationSession();
- const workspace=await messageRpc<MailWorkspace>('v2_mail_workspace',{p_actor:session.user.id,p_search:(query.search??'').slice(0,200),p_category:query.category??'',p_state:query.state??'',p_offset:query.offset??0,p_company:query.company||null});
- return {session,workspace,eventsConfigured:!!process.env.STAGING_RESEND_WEBHOOK_SECRET};
+ const tenant=productionCompanyId();
+ const workspace=await messageRpc<MailWorkspace>('v2_mail_workspace',{p_actor:session.user.id,p_search:(query.search??'').slice(0,200),p_category:query.category??'',p_state:query.state??'',p_offset:query.offset??0,p_company:tenant??query.company??null});
+ if(tenant)workspace.companies=workspace.companies.filter(c=>c.id===tenant);
+ for(const mail of workspace.messages){const course=(mail as typeof mail&{course_id?:string}).course_id;if(mail.category==='learner_invitation'&&course)mail.subject=`${mail.company??'Training'} — ${getCourseBySlug(course)?.title??course}`;}
+ return {session,workspace,eventsConfigured:!!(process.env.ALP_ENVIRONMENT==='v2-staging'?process.env.STAGING_RESEND_WEBHOOK_SECRET:process.env.RESEND_WEBHOOK_SECRET)};
 }
 export async function managedMail(id:string){
  const session=await notificationSession();
- const detail=await messageRpc<MailDetail>('v2_mail_detail',{p_actor:session.user.id,p_id:id});
  const result=await adminRest(`/rest/v1/v2_mail_messages?id=eq.${id}&select=*&limit=1`);
  if(!result.ok)throw Error('Email unavailable.');const row=(await result.json())[0];if(!row)throw Error('Email unavailable.');
+ const tenant=productionCompanyId();if(tenant&&row.organisation_id!==tenant)throw Error('Email unavailable.');
+ const detail=await messageRpc<MailDetail>('v2_mail_detail',{p_actor:session.user.id,p_id:id});
  return {session,detail,row:row as {id:string;message_key:string;organisation_id:string|null;source_id:string|null;category:string;recipient:string;subject:string}};
 }
 export async function checkMailDelivery(id:string){

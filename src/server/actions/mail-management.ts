@@ -27,8 +27,9 @@ export async function mailManagementAction(_:MailActionState,form:FormData):Prom
    revalidatePath('/messages/email-management');return {success:'Follow-up saved.'};
   }
   if(operation!=='resend')throw Error('Choose a valid action.');
+  if(['review_invitation','review_notification'].includes(row.category)||row.message_key.startsWith('independent-review:'))throw Error('Open the related review workflow to manage this request. Its reason and reviewer scope must be preserved.');
   const message=await messageRpc<typeof row&{html:string|null;body:string|null}>('v2_mail_manage',{p_actor:actor,p_id:id,p_action:'resend'});
-  if(['admin_invitation','company_invitation'].includes(row.category)){
+  if(['admin_invitation','company_invitation','learner_invitation'].includes(row.category)){
    const invitation=new FormData();invitation.set('invitationId',row.source_id??'');
    const result=await resendInvitation({ok:false},invitation);
    if(!result.ok)throw Error(result.error==='INVITATION_NOT_ACTIVE'?'This invitation was accepted, revoked or expired. It cannot be resent.':result.error==='WAIT_ONE_MINUTE_BEFORE_RESENDING'?'Please wait one minute before resending.':'Invitation could not be resent. Check its current status.');

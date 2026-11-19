@@ -1,0 +1,16 @@
+import {beforeEach,it,expect,vi} from 'vitest';
+const m=vi.hoisted(()=>({rpc:vi.fn(),admin:vi.fn(),tenant:vi.fn(),session:vi.fn(),rest:vi.fn()}));
+vi.mock('@/server/services/messages',()=>({messageRpc:m.rpc}));
+vi.mock('@/lib/auth/require-admin',()=>({requireAdmin:m.admin}));
+vi.mock('@/server/services/notifications',()=>({notificationSession:m.session}));
+vi.mock('@/server/services/tenant-courses',()=>({productionCompanyId:m.tenant}));
+vi.mock('@/server/supabase/admin-rest',()=>({adminRest:m.rest}));
+vi.mock('@/server/services/email/transactional-delivery',()=>({emailConfiguration:()=>null}));
+import {pendingLearners} from '@/server/services/pending-learners';
+import {mailWorkspace,managedMail} from '@/server/services/mail-management';
+import {invitationProgress} from '@/lib/mail-tracking';
+beforeEach(()=>{vi.resetAllMocks();m.admin.mockResolvedValue({session:{user:{id:'actor'}}});m.session.mockResolvedValue({user:{id:'actor'}});m.tenant.mockReturnValue('nks');});
+it('scopes pending learner searches and pagination to the partner company',async()=>{m.rpc.mockResolvedValue({total:3,learners:[]});await pendingLearners('econet',2);expect(m.rpc).toHaveBeenCalledWith('v7_pending_learner_workspace',{p_actor:'actor',p_search:'econet',p_offset:25,p_company:'nks'});});
+it('forces NKS email scope even if a foreign company is requested',async()=>{m.rpc.mockResolvedValue({messages:[],companies:[{id:'nks'},{id:'other'}]});const result=await mailWorkspace({company:'other'});expect(m.rpc.mock.calls[0][1].p_company).toBe('nks');expect(result.workspace.companies).toEqual([{id:'nks'}]);});
+it('rejects foreign message details on the production partner site',async()=>{m.rest.mockResolvedValue(Response.json([{organisation_id:'other'}]));await expect(managedMail('id')).rejects.toThrow('Email unavailable');expect(m.rpc).not.toHaveBeenCalled();});
+it('distinguishes awaiting registration from actual activation',()=>{const a={category:'learner_invitation' as const,accepted_at:null,invitation_status:'sent',expires_at:'2099-01-01'};expect(invitationProgress(a)).toBe('Awaiting registration');expect(invitationProgress({...a,accepted_at:'2026-11-19'})).toBe('Accepted / activated');});
