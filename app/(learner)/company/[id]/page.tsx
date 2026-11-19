@@ -37,7 +37,8 @@ export default async function CompanyPage({
   }
   const { company, session, isAdmin } = access;
   const partnerSite=!!productionCompanyId();
-  const principal = !partnerSite && isAdmin && await isPlatformPrincipal(session);
+  const ownerInviter = isAdmin && await isPlatformPrincipal(session);
+  const principal = !partnerSite && ownerInviter;
   const candidateReturn = publicationReturnPath((await searchParams).returnTo);
   let returnTo = principal ? candidateReturn : null;
   const owner =
@@ -212,7 +213,7 @@ export default async function CompanyPage({
           </section>
         </>
       ) : null}
-      {!partnerSite&&isAdmin ? (
+      {ownerInviter ? (
         <section className="admin-form-card">
           <h2>Appoint a business owner</h2>
           <p>

@@ -246,7 +246,8 @@ export async function companyStructureAction(
         status,
       });
     } else if (op === "invite_owner") {
-      if(productionCompanyId())throw Error("Only the main platform can invite company owners.");
+      // requireCompany above pins production to its own company. Only a platform
+      // principal may appoint that company's owner; partner admins cannot do so.
       await requirePlatformPrincipal();
       if (!access.isAdmin)
         throw new Error("Only APGI administrators can appoint owners.");

@@ -46,6 +46,15 @@ records cross databases. Failed exchange remains a retryable failure, not an
 empty-success response. Course media must already exist in the common release;
 the exchange never writes a publicly downloadable course package.
 
+The central APGI ten-minute scheduler also sends a signed refresh request to each
+registered recipient. A recipient performs one local pull, never a recursive peer
+refresh or email-queue flush. This keeps course shelves in sync even while a
+recipient's separate message scheduler is not configured. A failed refresh is
+reported as retryable. Enabling a recipient's older email backlog remains a
+separate operational decision. Platform principals may invite a production owner
+only to that production site's own company; ordinary partner administrators may
+not appoint owners, and acceptance never grants global administrator rights.
+
 ## Financial boundary
 
 The original approved calculator is unchanged. `sharedCourseQuote` applies its

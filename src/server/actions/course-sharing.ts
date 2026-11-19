@@ -4,7 +4,7 @@ import {requireSession} from '@/server/auth/session';
 import {offerCourse,decideDistribution} from '@/server/services/course-distribution';
 import {formText,type StructureState} from '@/lib/company-structure';
 import {requireCourseSharingOwner} from '@/server/services/course-sharing';
-import {syncCourseShares} from '@/server/services/course-exchange';
+import {refreshRegisteredCourseShares} from '@/server/services/course-exchange';
 export async function courseSharingAction(_:StructureState,form:FormData):Promise<StructureState>{
  try{
   const session=await requireSession();
@@ -28,6 +28,6 @@ export async function distributionDecisionAction(_:StructureState,form:FormData)
 }
 export async function refreshCourseShares(_:StructureState,form:FormData):Promise<StructureState>{try{
  const session=await requireSession();await requireCourseSharingOwner(formText(form,'company'),session);
- const result=await syncCourseShares();revalidatePath('/course-sharing');
+ const result=await refreshRegisteredCourseShares();revalidatePath('/course-sharing');
  return {success:`Shared-course metadata checked on common version ${result.version}. No learner records or passwords were exchanged.`};
 }catch(e){if(e instanceof Error&&'digest' in e)throw e;return {error:e instanceof Error?e.message:'Course exchange awaits retry.'};}}

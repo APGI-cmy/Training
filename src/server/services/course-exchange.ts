@@ -63,3 +63,17 @@ export async function syncCourseShares(){
  if(local.length){const counts=await rows<{distribution_id:string;window_start:string;requests:number}>(`/rest/v1/course_distribution_denials?distribution_id=in.(${local.map(d=>d.id).join(',')})&window_start=gte.${encodeURIComponent(new Date(Date.now()-86400000).toISOString())}&requests=gte.20&select=distribution_id,window_start,requests&limit=100`);for(const c of counts)await distributionRpc('v6_distribution_security_alert',{p_key:local.find(d=>d.id===c.distribution_id)!.source_key,p_window:c.window_start,p_count:c.requests});}
  return {version:PLATFORM_RELEASE.version,imported};
 }
+
+// The central scheduler can refresh a recipient without enabling that recipient's
+// unrelated mail queues. POST performs one local pull only, so it cannot recurse.
+export async function refreshRegisteredCourseShares(){
+ const result=await syncCourseShares();let peersRefreshed=0;
+ for(const peer of PLATFORM_RELEASE.targets.filter(t=>t.project!==process.env.VERCEL_PROJECT_ID)){
+  const response=await fetch(`${peer.origin}/api/course-exchange`,{method:'POST',headers:{authorization:`Bearer ${await getVercelOidcToken()}`,'content-type':'application/json'},body:JSON.stringify({action:'refresh',version:PLATFORM_RELEASE.version})});
+  if(!response.ok)throw Error(`Partner course refresh awaits retry (HTTP ${response.status}).`);
+  const payload=await response.json() as {version:string;refreshed:boolean};
+  if(payload.version!==PLATFORM_RELEASE.version||payload.refreshed!==true)throw Error('Partner refresh version mismatch.');
+  peersRefreshed++;
+ }
+ return {...result,peersRefreshed};
+}
