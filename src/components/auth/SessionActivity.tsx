@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { IDLE_TIMEOUT_MS } from "@/lib/session-activity";
+import { isPublicAccountPath } from "@/lib/auth/account-entry";
 
 export function SessionActivity() {
 
@@ -49,7 +50,15 @@ export function SessionActivity() {
 
         const response=await fetch("/api/auth/activity",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({active:idle<IDLE_TIMEOUT_MS}),cache:"no-store"});
 
-        if(response.status===401){lastSent=Date.now();if(authenticated){stopped=true;window.location.assign(`/alp-sign-in?next=${encodeURIComponent(location.pathname+location.search+location.hash)}`);}return;}
+        if(response.status===401){
+          lastSent=Date.now();
+          const wasAuthenticated=authenticated;
+          authenticated=false;setWarning("");
+          if(wasAuthenticated&&!isPublicAccountPath(location.pathname)){
+            stopped=true;window.location.assign(`/alp-sign-in?next=${encodeURIComponent(location.pathname+location.search+location.hash)}`);
+          }
+          return;
+        }
 
         if(response.ok){const result=await response.json();authenticated=result.authenticated;lastSent=Date.now();}
 
