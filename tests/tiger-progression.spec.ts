@@ -21,9 +21,24 @@ describe('Tiger progression prerequisites',()=>{
   expect(firstBlockedSlide(policy,state,1)).toBeNull();expect(unitQualified(policy,state)).toBe(false);
   state.quiz_passed=true;state.qualified_at=new Date().toISOString();expect(unitQualified(policy,state)).toBe(true);
  });
- it('requires the duplicate LU4 activity summary separately at each slide',()=>{
-  const p=manifest.units.lu4;const duplicate=p.activities.filter(a=>a.id===p.activities[0].id);expect(duplicate).toHaveLength(2);
-  expect(activityKey(duplicate[0])).not.toBe(activityKey(duplicate[1]));
+ it('requires the corrected LU4 activity for unfinished attempts without discarding earlier evidence',()=>{
+  const p=manifest.units.lu4;
+  expect(p.activities.map(a=>a.id)).toEqual(['TK-LU04-LA01','TK-LU04-LA02','TK-LU04-LA03','TK-LU04-LA04']);
+  const state={...emptyTigerProgress(),video_ranges:[[0,p.duration]] as [number,number][],summaries:['TK-LU04-LA01@3','TK-LU04-LA02@4','TK-LU04-LA03@5','TK-LU04-LA01@6']};
+  expect(firstBlockedSlide(p,state,p.quizSlide)).toBe(6);expect(requirementsComplete(p,state)).toBe(false);
+  state.summaries.push('TK-LU04-LA04@6');expect(requirementsComplete(p,state)).toBe(true);
+  expect(state.summaries).toContain('TK-LU04-LA01@6');expect(unitQualified(p,state)).toBe(false);
+ });
+ it('preserves saved LU4 passes with the old summary key without manufacturing new evidence',()=>{
+  const p=manifest.units.lu4;
+  const state={...emptyTigerProgress(),video_ranges:[[0,p.duration]] as [number,number][],summaries:['TK-LU04-LA01@3','TK-LU04-LA02@4','TK-LU04-LA03@5','TK-LU04-LA01@6'],quiz_passed:true,qualified_at:'2026-11-19T08:00:00Z'};
+  const before=JSON.stringify(state);
+  expect(unitQualified(p,state)).toBe(true);expect(firstBlockedSlide(p,state,p.quizSlide)).toBeNull();
+  expect(JSON.stringify(state)).toBe(before);expect(state.summaries).not.toContain('TK-LU04-LA04@6');
+  expect(unitQualified(p,{...state,quiz_passed:false})).toBe(false);
+  expect(unitQualified(p,{...state,qualified_at:null})).toBe(false);
+  expect(unitQualified(p,{...state,summaries:['TK-LU04-LA01@6']})).toBe(false);
+  expect(unitQualified(p,{...state,video_ranges:[]})).toBe(false);
  });
  it('does not infer a pass from completion, a missing score, a fail, or a score below 80%',()=>{
   for(const attempt of [{completion_status:'completed',success_status:'failed',score_scaled:1},{completion_status:'completed',success_status:'passed'},{completion_status:'completed',success_status:'passed',score_scaled:.79},{completion_status:'incomplete',success_status:'passed',score_scaled:1}])expect(normalizedQuizPass(attempt)).toBe(false);

@@ -14,6 +14,13 @@ export function tigerPolicy(course:Course, unit:LearningUnit):TigerPolicy|null {
   return (manifest.units as Record<string,TigerPolicy>)[unit.slug]??null;
 }
 export const activityKey = (activity:{id:string;slide:number}) => `${activity.id}@${activity.slide}`;
+export function activityComplete(policy:TigerPolicy,state:TigerProgress,activity:{id:string;slide:number}) {
+  if(state.summaries.includes(activityKey(activity)))return true;
+  // Keep a genuinely completed Unit 4 valid without rewriting its historical evidence.
+  // Incomplete attempts must open the corrected LA04 summary before they can pass.
+  return policy.unitId==='tiger-telecom-lu-4'&&activity.id==='TK-LU04-LA04'&&activity.slide===6&&
+    !!state.qualified_at&&state.quiz_passed&&state.summaries.includes('TK-LU04-LA01@6');
+}
 export function mergeWatchedRanges(ranges:unknown, duration:number):WatchedRange[] {
   if(!Array.isArray(ranges)||ranges.length>512||!Number.isFinite(duration)||duration<=0) throw Error('Invalid viewing evidence');
   const sorted:WatchedRange[] = ranges.map(value=>{
@@ -27,7 +34,7 @@ export function mergeWatchedRanges(ranges:unknown, duration:number):WatchedRange
 export function watchedSeconds(ranges:WatchedRange[]){return ranges.reduce((sum,[a,b])=>sum+b-a,0);}
 export function videoComplete(policy:TigerPolicy,state:TigerProgress){return watchedSeconds(mergeWatchedRanges(state.video_ranges,policy.duration))/policy.duration>=manifest.videoThreshold;}
 export function requirementsComplete(policy:TigerPolicy,state:TigerProgress){
-  return state.legacy_credit===true || (videoComplete(policy,state)&&policy.activities.every(a=>state.summaries.includes(activityKey(a))));
+  return state.legacy_credit===true || (videoComplete(policy,state)&&policy.activities.every(a=>activityComplete(policy,state,a)));
 }
 export function unitQualified(policy:TigerPolicy,state:TigerProgress){return !!state.qualified_at&&(state.legacy_credit===true||requirementsComplete(policy,state)&&state.quiz_passed);}
 export function normalizedQuizPass(attempt:{completion_status?:string|null;success_status?:string|null;score_raw?:number|null;score_max?:number|null;score_scaled?:number|null}) {
@@ -39,7 +46,7 @@ export function normalizedQuizPass(attempt:{completion_status?:string|null;succe
 export function firstBlockedSlide(policy:TigerPolicy,state:TigerProgress,targetSlide:number):number|null {
   if(state.legacy_credit)return null;
   if(targetSlide>policy.videoSlide&&!videoComplete(policy,state))return policy.videoSlide;
-  for(const a of policy.activities){if(targetSlide>a.slide&&!state.summaries.includes(activityKey(a)))return a.slide;}
+  for(const a of policy.activities){if(targetSlide>a.slide&&!activityComplete(policy,state,a))return a.slide;}
   return null;
 }
 export function missingTigerRequirement(policy:TigerPolicy,state:TigerProgress){

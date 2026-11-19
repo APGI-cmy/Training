@@ -1,4 +1,4 @@
-import {activityKey,firstBlockedSlide,mergeWatchedRanges,missingTigerRequirement,type TigerPolicy,type TigerProgress,type WatchedRange} from './tiger-progression';
+import {activityComplete,activityKey,firstBlockedSlide,mergeWatchedRanges,missingTigerRequirement,type TigerPolicy,type TigerProgress,type WatchedRange} from './tiger-progression';
 
 type Dispatcher={addHandler:(handler:()=>void)=>void;removeHandler:(handler:()=>void)=>void};
 export type TigerNativePlayer={presentation:()=>{slides:()=>{count:()=>number}};view:()=>{displayObject:()=>HTMLElement;playbackController:()=>{currentSlideIndex:()=>number;gotoSlide:(index:number,play?:boolean)=>void;slideChangeEvent:()=>Dispatcher;pause:()=>void}}};
@@ -78,9 +78,9 @@ export function attachTigerPlayer(options:{host:Window;frame:HTMLIFrameElement;p
       }
     }
     const activity=policy.activities.find(a=>a.slide===slide);if(!activity)return;
-    const key=activityKey(activity);if(state.summaries.includes(key)||summaryPending.has(key))return;
+    const key=activityKey(activity);if(activityComplete(policy,state,activity)||summaryPending.has(key))return;
     const inspectSummary=(doc:Document)=>{
-      if(!active||currentSlide()!==activity.slide||state.summaries.includes(key)||summaryPending.has(key))return;
+      if(!active||currentSlide()!==activity.slide||activityComplete(policy,state,activity)||summaryPending.has(key))return;
       const identifier=doc.body?.textContent?.match(/TK-LU\d{2}-(?:LA|F)\d{2}/)?.[0];
       const modal=doc.getElementById('summary-modal');
       if(identifier!==activity.id||!modal||modal.hidden||modal.getAttribute('aria-hidden')==='true'||!isVisible(modal))return;
