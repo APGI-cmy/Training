@@ -22,8 +22,10 @@ export function providerTarget(input:string|URL,init:RequestInit={}){
   if(!auth?.startsWith('Bearer re_')||headers.has('apikey'))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
  }else if(url.origin==='https://api.stripe.com'&&/^\/v1\/[A-Za-z0-9_/-]+$/.test(url.pathname)){
   if(!auth?.startsWith('Bearer rk_test_')||headers.has('apikey'))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
- }else if(PLATFORM_RELEASE.targets.some(t=>t.origin===url.origin)&&url.pathname==='/api/course-exchange'&&method==='GET'&&init.body==null){
-  if(!auth||!/^Bearer eyJ[A-Za-z0-9._-]+$/.test(auth)||headers.has('apikey')||[...headers.keys()].some(k=>!['authorization'].includes(k)))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
+ }else if(PLATFORM_RELEASE.targets.some(t=>t.origin===url.origin)&&url.pathname==='/api/course-exchange'&&['GET','POST'].includes(method)){
+  const refresh=method==='POST',allowedHeaders=refresh?['authorization','content-type']:['authorization'];
+  if(!auth||!/^Bearer eyJ[A-Za-z0-9._-]+$/.test(auth)||headers.has('apikey')||[...headers.keys()].some(k=>!allowedHeaders.includes(k)))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
+  if(refresh?(headers.get('content-type')!=='application/json'||url.search!==''||init.body!==JSON.stringify({action:'refresh',version:PLATFORM_RELEASE.version})):init.body!=null)throw Error('OUTBOUND_TARGET_REJECTED');
  }else if((publicSources.has(url.href)||url.href===STAGING_ORIGIN+'/api/course-deployment')&&['GET','HEAD'].includes(method)&&init.body==null){
   if([...headers.keys()].some(k=>!['accept','user-agent'].includes(k)))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
  }else throw Error('OUTBOUND_TARGET_REJECTED');
