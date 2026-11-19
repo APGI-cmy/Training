@@ -1,4 +1,4 @@
-import {getTenantCourses,productionCompanyId} from '@/server/services/tenant-courses';
+import {getTenantPublishedCourseIds,productionCompanyId} from '@/server/services/tenant-courses';
 import { getSupabaseRestUrl } from "@/server/auth/session";
 import { adminRest } from "@/server/supabase/admin-rest";
 import type { Organisation } from "@/lib/organisation";
@@ -76,10 +76,11 @@ export async function getLearnerOrganisation(userId: string): Promise<Organisati
 }
 
 export async function getAvailableCourseIds(userId: string, courseIds: string[]): Promise<Set<string>> {
-  if(process.env.ALP_ENVIRONMENT==='training-production'){const assigned=new Set((await getTenantCourses()).map(c=>c.id));courseIds=courseIds.filter(id=>assigned.has(id));}
   if (!courseIds.length) return new Set();
   const courseFilter = courseIds.map((courseId) => `"${courseId.replaceAll('"', '\\"')}"`).join(",");
   try {
+    const published = await getTenantPublishedCourseIds();
+    if (published !== null) return new Set(courseIds.filter(id => published.has(id)));
     const [organisation, settingsResponse] = await Promise.all([
       getLearnerOrganisation(userId),
       adminRest(`/rest/v1/course_catalogue_settings?course_id=in.(${encodeURIComponent(courseFilter)})&select=course_id,visibility`),
