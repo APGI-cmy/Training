@@ -2,9 +2,9 @@ import 'server-only';
 import {adminRest} from '@/server/supabase/admin-rest';
 import {deliverTransactionalEmail,emailConfiguration} from './email/transactional-delivery';
 import {notificationEmail,type NotificationMail} from '@/lib/notification-email';
-export async function flushNotificationMail(){
+export async function flushNotificationMail(scope?:'distribution'){
  const config=emailConfiguration();if(!config)return {configured:false,accepted:0,failed:0};
- const response=await adminRest('/rest/v1/rpc/v5_claim_notification_mail',{method:'POST',body:'{}'});
+ const response=await adminRest(scope==='distribution'?'/rest/v1/rpc/v6_claim_distribution_mail':'/rest/v1/rpc/v5_claim_notification_mail',{method:'POST',body:'{}'});
  if(!response.ok)throw Error('Notification email queue unavailable');
  const jobs:NotificationMail[]=await response.json();let accepted=0,failed=0;
  // Space sends below the provider rate limit; the durable queue retries failures.

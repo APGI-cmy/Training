@@ -48,7 +48,10 @@ the exchange never writes a publicly downloadable course package.
 
 The central APGI ten-minute scheduler also sends a signed refresh request to each
 registered recipient. A recipient performs one local pull, never a recursive peer
-refresh or email-queue flush. This keeps course shelves in sync even while a
+refresh or general email-queue flush. Only notifications with the dedicated
+`distribution-message:` identity can be claimed for delivery after this refresh;
+earlier learner/review queues and provider-accepted messages are excluded. This
+keeps course shelves and new sharing notices working even while a
 recipient's separate message scheduler is not configured. A failed refresh is
 reported as retryable. Enabling a recipient's older email backlog remains a
 separate operational decision. Platform principals may invite a production owner
