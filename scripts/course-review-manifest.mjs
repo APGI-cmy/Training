@@ -14,7 +14,7 @@ const content={},entries={};for(const [slug,folder] of Object.entries(roots)){co
 // Catalogue objects are already included in each review's own fingerprint.
 // Keep the shared engine independent of course additions. The compatibility
 // entry preserves existing review identities across this registry-only split.
-const sources=createHash('sha256');for(const file of ['src/lib/courses.ts','src/components/course/ScormPlayer.tsx','src/components/QuizEngine.tsx','src/components/assessments/ScannexTheoryAssessment.tsx','src/server/assessments/scannex-theory-bank.ts','src/lib/services/courses/get-unit-content.ts'])sources.update((await readFile(file,'utf8')).replaceAll('\r\n','\n'));
+const sources=createHash('sha256');for(const file of ['src/lib/courses.ts','src/components/course/ScormPlayer.tsx','src/components/course/SequencedTrainingFrame.tsx','src/lib/learning-sequence.ts','src/lib/learning-sequence-dom.ts','src/lib/training-player-sequencing.ts','src/lib/tiger-player.ts','src/components/QuizEngine.tsx','src/components/assessments/ScannexTheoryAssessment.tsx','src/server/assessments/scannex-theory-bank.ts','src/lib/services/courses/get-unit-content.ts'])sources.update((await readFile(file,'utf8')).replaceAll('\r\n','\n'));
 const engine=sources.digest('hex'),compatibility=JSON.parse(await readFile('src/data/course-review-engine-compatibility.json','utf8'));
 const source=engine===compatibility.engine?compatibility.legacySource:engine;
 await writeFile('src/data/course-review-manifest.json',JSON.stringify({...content,source}));

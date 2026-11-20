@@ -4,7 +4,7 @@ type Dispatcher={addHandler:(handler:()=>void)=>void;removeHandler:(handler:()=>
 export type TigerNativePlayer={presentation:()=>{slides:()=>{count:()=>number}};view:()=>{displayObject:()=>HTMLElement;playbackController:()=>{currentSlideIndex:()=>number;gotoSlide:(index:number,play?:boolean)=>void;slideChangeEvent:()=>Dispatcher;pause:()=>void}}};
 type Evidence={ranges?:WatchedRange[];summary?:string};
 type Connector={register:(player:TigerNativePlayer)=>void};
-export function attachTigerPlayer(options:{host:Window;frame:HTMLIFrameElement;policy:TigerPolicy;initial:TigerProgress;save:(evidence:Evidence)=>Promise<TigerProgress>;status:(message:string)=>void;adapterReady:(ready:boolean)=>void}) {
+export function attachTigerPlayer(options:{host:Window;frame:HTMLIFrameElement;policy:TigerPolicy;initial:TigerProgress;save:(evidence:Evidence)=>Promise<TigerProgress>;status:(message:string)=>void;adapterReady:(ready:boolean)=>void;summaryAllowed?:(doc:Document)=>boolean}) {
   const {host,frame,policy}=options;
   const connectorHost=host as unknown as {ispringPresentationConnector?:Connector};
   const previous=connectorHost.ispringPresentationConnector;
@@ -83,7 +83,7 @@ export function attachTigerPlayer(options:{host:Window;frame:HTMLIFrameElement;p
       if(!active||currentSlide()!==activity.slide||activityComplete(policy,state,activity)||summaryPending.has(key))return;
       const identifier=doc.body?.textContent?.match(/TK-LU\d{2}-(?:LA|F)\d{2}/)?.[0];
       const modal=doc.getElementById('summary-modal');
-      if(identifier!==activity.id||!modal||modal.hidden||modal.getAttribute('aria-hidden')==='true'||!isVisible(modal))return;
+      if(identifier!==activity.id||!modal||modal.hidden||modal.getAttribute('aria-hidden')==='true'||!isVisible(modal)||options.summaryAllowed&&!options.summaryAllowed(doc))return;
       summaryPending.add(key);void send({summary:key}).catch(()=>{}).finally(()=>{host.setTimeout(()=>summaryPending.delete(key),5000);});
     };
     for(const doc of documents()){
@@ -98,6 +98,7 @@ export function attachTigerPlayer(options:{host:Window;frame:HTMLIFrameElement;p
   const timer=host.setInterval(tick,250);cleanup.push(()=>host.clearInterval(timer));
   return {
     flush,
+    progressState:()=>state,
     update(saved:TigerProgress){state=saved;ranges=mergeWatchedRanges([...ranges,...saved.video_ranges],policy.duration);enforce();},
     dispose(){active=false;releasePlayer?.();cleanup.forEach(fn=>fn());frame.style.visibility='';if(connectorHost.ispringPresentationConnector===connector){if(previous)connectorHost.ispringPresentationConnector=previous;else delete connectorHost.ispringPresentationConnector;}}
   };

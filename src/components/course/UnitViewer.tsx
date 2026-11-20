@@ -8,6 +8,7 @@ import { AdvanceUnit } from "./AdvanceUnit";
 import { previewUnitHref, type CoursePreview } from "@/lib/course-preview";
 import { encodeAssetPath } from "@/lib/courses";
 import { ScormPlayer } from "@/components/course/ScormPlayer";
+import {SequencedTrainingFrame} from './SequencedTrainingFrame';
 import { PresentationViewport } from "@/components/course/PresentationViewport";
 import { UnitResources } from "@/components/course/UnitResources";
 import type { CourseShellUnit } from "@/lib/services/courses/get-course-shell";
@@ -130,12 +131,13 @@ export function UnitViewer({
             ) : !isPracticalAssessment ? (
               <>
                 <PresentationViewport title={unit.title} navigation={navigation}><figure className="media-item">
-                  <iframe
+                  <SequencedTrainingFrame
+                    courseSlug={course.slug}
+                    unitSlug={unit.slug}
+                    completed={isCompleted}
+                    preview={!!preview}
                     title={`${unit.title} ${isScannexUnit ? "e-book" : "published unit"}`}
                     src={embeddedSrc}
-                    loading="lazy"
-                    allow="fullscreen"
-                    allowFullScreen
                   />
                   <figcaption>
                     {isScannexUnit

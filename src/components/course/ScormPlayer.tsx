@@ -4,7 +4,9 @@ import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNo
 import { readPreviewProgress, updatePreviewProgress } from "./PreviewProgress";
 
 import {attachTigerPlayer} from '@/lib/tiger-player';
-import {missingTigerRequirement,type TigerPolicy,type TigerProgress} from '@/lib/tiger-progression';
+import {activityComplete,firstBlockedSlide,missingTigerRequirement,type TigerPolicy,type TigerProgress} from '@/lib/tiger-progression';
+import {attachTrainingSequencing} from '@/lib/training-player-sequencing';
+import {sequenceKey,type SequenceRecord} from '@/lib/learning-sequence';
 
 type ScormValues = Record<string, string>;
 
@@ -103,19 +105,40 @@ export function ScormPlayer({
   const [leaving, setLeaving] = useState(false);
   const [adapterReady,setAdapterReady]=useState(false);
   const adapter=useRef<ReturnType<typeof attachTigerPlayer>|null>(null);
+  const sequencing=useRef<ReturnType<typeof attachTrainingSequencing>|null>(null);
+  const sequenceRecords=useRef<SequenceRecord[]>([]),completedUnit=useRef(false);
   const tigerContext=useRef<{state:TigerProgress;version:string;edition:string}|null>(null);
   const frameRef=useCallback((frame:HTMLIFrameElement|null)=>{
-    if(!frame){adapter.current?.dispose();adapter.current=null;return;}
+    if(!frame){sequencing.current?.dispose();sequencing.current=null;adapter.current?.dispose();adapter.current=null;return;}
     const context=tigerContext.current;
-    if(mode!=='learner'||!progressionPolicy||!context)return;
-    adapter.current=attachTigerPlayer({host:window,frame,policy:progressionPolicy,initial:context.state,status:setStatus,adapterReady:setAdapterReady,
+    if(mode==='learner'&&progressionPolicy&&context)adapter.current=attachTigerPlayer({host:window,frame,policy:progressionPolicy,initial:context.state,status:setStatus,adapterReady:setAdapterReady,
+      summaryAllowed:doc=>sequencing.current?.summaryReady(doc)??false,
       save:async(evidence)=>{
         const response=await fetch('/api/tiger-progress',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({courseSlug,unitSlug,version:context.version,edition:context.edition,...evidence})});
         if(!response.ok)throw Error('Save failed');
         const payload=await response.json();context.state=payload.state;return payload.state;
       }
     });
-  },[courseSlug,unitSlug,mode,progressionPolicy]);
+    sequencing.current=attachTrainingSequencing({host:window,frame,records:sequenceRecords.current,status:setStatus,
+      completed:doc=>{
+        if(completedUnit.current)return true;
+        if(!progressionPolicy||!context)return false;
+        const id=doc.body?.textContent?.match(/TK-LU\d{2}-(?:LA|F)\d{2}/)?.[0],activity=progressionPolicy.activities.find(a=>a.id===id);
+        return !!activity&&activityComplete(progressionPolicy,adapter.current?.progressState()??context.state,activity);
+      },
+      forwardAllowed:mode==='learner'&&progressionPolicy&&context?slide=>firstBlockedSlide(progressionPolicy,adapter.current?.progressState()??context.state,slide)===null:undefined,
+      save:async record=>{
+        if(mode==='preview'){
+          sequenceRecords.current=[...sequenceRecords.current.filter(r=>sequenceKey(r)!==sequenceKey(record)),record];
+          if(previewScope)updatePreviewProgress(previewScope,current=>({...current,attempts:{...current.attempts,[unitSlug]:{...current.attempts[unitSlug],'apgi.sequence':JSON.stringify(sequenceRecords.current)}}}));
+          return record;
+        }
+        const response=await fetch('/api/learning-sequences',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({courseSlug,unitSlug,record})});
+        if(!response.ok)throw Error('Activity progress could not be saved');
+        return (await response.json()).record as SequenceRecord;
+      }
+    });
+  },[courseSlug,unitSlug,mode,progressionPolicy,previewScope]);
 
   async function returnToUnit(event: MouseEvent<HTMLAnchorElement>) {
     if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
@@ -152,6 +175,8 @@ export function ScormPlayer({
     if (mode === "preview") {
       const saved = previewScope ? readPreviewProgress(previewScope).attempts[unitSlug] : undefined;
       valuesRef.current = { ...initialValues(), ...saved };
+      try{sequenceRecords.current=JSON.parse(saved?.['apgi.sequence']??'[]');}catch{sequenceRecords.current=[];}
+      completedUnit.current=saved?.['cmi.completion_status']==='completed';
       valuesRef.current["cmi.entry"] = saved?.["cmi.suspend_data"] ? "resume" : "ab-initio";
       const savePreview = async () => {
         const values = valuesRef.current;
@@ -212,7 +237,9 @@ export function ScormPlayer({
     saveProgressRef.current = save;
 
     const load = async () => {
-      const response = await fetch(endpoint, { cache: "no-store" });
+      const [response,sequences] = await Promise.all([fetch(endpoint, { cache: "no-store" }),fetch(`/api/learning-sequences?courseSlug=${encodeURIComponent(courseSlug)}&unitSlug=${encodeURIComponent(unitSlug)}`,{cache:'no-store'})]);
+      if(!sequences.ok)throw Error('Saved activity sequence unavailable');
+      sequenceRecords.current=(await sequences.json()).records;
       if(progressionPolicy&&!response.ok)throw Error('Saved progress unavailable');
       const payload = response.ok ? await response.json() : { attempt: null };
       if(progressionPolicy){
@@ -224,6 +251,7 @@ export function ScormPlayer({
       }
       if (!active) return;
       valuesRef.current = initialValues(payload.attempt);
+      completedUnit.current=payload.attempt?.completion_status==='completed';
       installApi(() => { void save(); });
       setStatus("Your progress is saved to your learner record.");
       setReady(true);
@@ -233,6 +261,7 @@ export function ScormPlayer({
     const saveBeforeLeaving = () => { void save(); };
     window.addEventListener("pagehide", saveBeforeLeaving);
     return () => {
+      sequencing.current?.dispose();sequencing.current=null;
       adapter.current?.dispose();adapter.current=null;
       active = false;
       saveProgressRef.current = null;

@@ -1,0 +1,24 @@
+<!doctype html><meta charset="utf-8"><title>Tiger LU1 native Next regression</title><style>body{font:17px Arial;margin:20px;background:#eef3f7}iframe{width:100%;height:560px;border:2px solid #123}#status{padding:12px;background:white}li{margin:5px}</style>
+<h1>Tiger LU1 native player regression</h1><p id="status">Preparing local test; no learner account or database writes.</p><ol id="results"></ol><iframe id="player" title="Actual iSpring player regression"></iframe>
+<script type="module">
+import {attachTrainingSequencing} from './modules/training-player-sequencing.js';import {attachTigerPlayer} from './modules/tiger-player.js';import {activityComplete,firstBlockedSlide} from './modules/tiger-progression.js';import {sequenceKey} from './modules/learning-sequence.js';
+const status=document.getElementById('status'),frame=document.getElementById('player'),list=document.getElementById('results'),records=new Map();let player,core;
+const delay=ms=>new Promise(r=>setTimeout(r,ms));const assert=(ok,text)=>{const li=document.createElement('li');li.textContent=(ok?'PASS ':'FAIL ')+text;list.append(li);if(!ok)throw Error(text);};
+const policy={unitId:'tiger-telecom-lu-1',slideCount:11,videoSlide:2,duration:75,quizSlide:11,activities:[{id:'TK-LU01-F01',slide:3},{id:'TK-LU01-F02',slide:4},{id:'TK-LU01-F03',slide:5},{id:'TK-LU01-LA01',slide:6}]};
+let evidence={video_ranges:[[0,75]],summaries:['TK-LU01-F01@3','TK-LU01-F02@4','TK-LU01-F03@5'],quiz_passed:false,qualified_at:null};
+const values={'cmi.entry':'ab-initio','cmi.mode':'normal','cmi.credit':'credit','cmi.completion_status':'unknown','cmi.learner_id':'local-fixture','cmi.learner_name':'Local fixture'};
+window.API_1484_11={Initialize:()=> 'true',Terminate:()=> 'true',GetValue:k=>values[k]||'',SetValue:(k,v)=>{values[k]=v;return 'true';},Commit:()=> 'true',GetLastError:()=> '0',GetErrorString:()=> '',GetDiagnostic:()=> ''};
+const tiger=attachTigerPlayer({host:window,frame,policy,initial:evidence,save:async input=>{if(input.summary)evidence={...evidence,summaries:[...new Set([...evidence.summaries,input.summary])]};return evidence;},status:t=>status.textContent=t,adapterReady:()=>{},summaryAllowed:doc=>core?.summaryReady(doc)??false});
+core=attachTrainingSequencing({host:window,frame,records:[],save:async record=>{records.set(sequenceKey(record),structuredClone(record));return record;},completed:doc=>{const id=doc.body?.textContent?.match(/TK-LU\d{2}-(?:LA|F)\d{2}/)?.[0],activity=policy.activities.find(a=>a.id===id);return !!activity&&activityComplete(policy,tiger.progressState(),activity);},forwardAllowed:slide=>firstBlockedSlide(policy,tiger.progressState(),slide)===null,status:t=>status.textContent=t});
+const connector=window.ispringPresentationConnector;window.ispringPresentationConnector={register:p=>{player=p;connector.register(p);}};
+frame.src='/courses/Tiger%20kidnapping_telecommunications/LU1/res/index.html';
+try{
+ for(let i=0;!player&&i<240;i++)await delay(100);assert(!!player,'Actual native SDK connected');
+ const controller=player.view().playbackController();controller.gotoSlide(5,false);
+ let activity;for(let i=0;i<120;i++){activity=Array.from(frame.contentDocument.querySelectorAll('iframe')).map(f=>f.contentDocument).find(d=>d?.getElementById('activity-title')?.textContent==='Coercion and safe action');if(activity)break;await delay(100);}assert(!!activity,'Actual slide 6 activity opened');await delay(400);
+ const next=Array.from(frame.contentDocument.querySelectorAll('button,[role="button"]')).find(b=>(b.textContent||'').trim()==='Next');assert(!!next,'Native Next located');assert(next.disabled||next.getAttribute('aria-disabled')==='true','Native Next disabled before required activity');
+ const before=activity;next.click();await delay(250);assert(controller.currentSlideIndex()===5&&activity===before,'Premature Next stays on slide 6 without restarting the activity');
+ activity.getElementById('begin').click();for(const b of activity.querySelectorAll('[data-stage]')){b.click();await delay(30);}activity.getElementById('summary').click();await delay(1000);
+ assert(tiger.progressState().summaries.includes('TK-LU01-LA01@6'),'Summary saved only after ordered activity');assert(!next.disabled&&next.getAttribute('aria-disabled')!=='true','Native Next enabled after saved summary');activity.getElementById('close-summary').click();status.textContent='READY: click the real native Next button below to finish the regression test.';for(let i=0;i<3600&&controller.currentSlideIndex()!==6;i++)await delay(100);assert(controller.currentSlideIndex()===6,'Native Next advances to slide 7');assert(evidence.video_ranges[0][1]===75&&evidence.summaries.length===4&&!evidence.quiz_passed,'Earlier video, summaries and unpassed quiz preserved');status.textContent='DONE: native slide 6 → 7 regression passed; no learner or database writes.';
+}catch(error){status.textContent='FAILED: '+error.message;}
+</script>

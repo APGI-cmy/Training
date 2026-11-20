@@ -1,0 +1,23 @@
+import {beforeEach,describe,it,expect,vi} from 'vitest';
+const m=vi.hoisted(()=>({session:vi.fn(),course:vi.fn(),access:vi.fn(),unit:vi.fn(),rest:vi.fn()}));
+vi.mock('@/server/auth/session',()=>({getCurrentSession:m.session}));
+vi.mock('@/server/services/course-editions',()=>({getLearningCourse:m.course}));
+vi.mock('@/lib/services/enrolments/get-course-access',()=>({getCourseAccess:m.access}));
+vi.mock('@/server/services/tiger-progression',()=>({tigerUnitAllowed:m.unit}));
+vi.mock('@/server/supabase/admin-rest',()=>({adminRest:m.rest}));
+vi.mock('@/server/security/course-assets',()=>({decodedCoursePath:(p:string)=>{try{const d=decodeURIComponent(p);return d.includes('..')||d.includes('%')?null:d;}catch{return null;}}}));
+import {GET,PUT} from '../app/api/learning-sequences/route';
+import {NextRequest} from 'next/server';
+const record={document:'/courses/Tiger%20kidnapping_telecommunications/LU1/res/data/wo4/index.html',profile:'indexed-stage-v1',steps:4,begun:true,through:0,summary:false};
+const request=(body:unknown={courseSlug:'tiger',unitSlug:'lu1',record},origin='https://training.example')=>new NextRequest('https://training.example/api/learning-sequences',{method:'PUT',headers:{origin,'content-type':'application/json'},body:JSON.stringify(body)});
+beforeEach(()=>{vi.clearAllMocks();m.session.mockResolvedValue({accessToken:'test',user:{id:'verified-user',email:'learner@example.test',email_confirmed_at:'today'}});m.course.mockResolvedValue({id:'tiger',editionId:'pinned-edition',units:[{id:'lu-1',slug:'lu1',assetBase:'/courses/Tiger%20kidnapping_telecommunications/LU1'}]});m.access.mockResolvedValue({canAccess:true});m.unit.mockResolvedValue(true);m.rest.mockResolvedValue(Response.json([]));});
+describe('Account and edition scoped navigation evidence',()=>{
+ it('rejects signed-out reads before touching progress',async()=>{m.session.mockResolvedValue(null);expect((await GET(new NextRequest('https://training.example/api/learning-sequences?courseSlug=tiger&unitSlug=lu1'))).status).toBe(403);expect(m.rest).not.toHaveBeenCalled();});
+ it('rejects unenrolled users and locked later Tiger units',async()=>{m.access.mockResolvedValue({canAccess:false});expect((await PUT(request())).status).toBe(403);m.access.mockResolvedValue({canAccess:true});m.unit.mockResolvedValue(false);expect((await PUT(request())).status).toBe(403);expect(m.rest).not.toHaveBeenCalled();});
+ it('blocks cross-origin writes before authentication or storage',async()=>{expect((await PUT(request(undefined,'https://elsewhere.test'))).status).toBe(403);expect(m.session).not.toHaveBeenCalled();expect(m.rest).not.toHaveBeenCalled();});
+ it('rejects another course or unit document',async()=>{expect((await PUT(request({courseSlug:'tiger',unitSlug:'lu1',record:{...record,document:'/courses/Tiger%20kidnapping_telecommunications/LU2/res/data/wo1/index.html'}}))).status).toBe(400);expect(m.rest).not.toHaveBeenCalled();});
+ it('rejects unknown player profiles and malformed evidence',async()=>{expect((await PUT(request({courseSlug:'tiger',unitSlug:'lu1',record:{...record,profile:'unknown-profile'}}))).status).toBe(400);expect((await PUT(request({courseSlug:'tiger',unitSlug:'lu1',record:{...record,summary:true}}))).status).toBe(400);expect(m.rest).not.toHaveBeenCalled();});
+ it('binds reads to the verified user and pinned edition, never a browser-supplied identity',async()=>{const r=await GET(new NextRequest('https://training.example/api/learning-sequences?courseSlug=tiger&unitSlug=lu1&user_id=forged'));expect(r.status).toBe(200);expect(m.rest.mock.calls[0][0]).toContain('user_id=eq.verified-user');expect(m.rest.mock.calls[0][0]).toContain('edition_key=eq.pinned-edition');expect(r.headers.get('Cache-Control')).toBe('private, no-store');});
+ it('stores only navigation evidence with server-derived identities',async()=>{m.rest.mockResolvedValue(Response.json(record));expect((await PUT(request({courseSlug:'tiger',unitSlug:'lu1',user_id:'forged',record}))).status).toBe(200);const call=m.rest.mock.calls[0];expect(call[0]).toBe('/rest/v1/rpc/training_sequence_merge');const body=JSON.parse(call[1].body);expect(body.p_user).toBe('verified-user');expect(body.p_edition).toBe('pinned-edition');expect(body).not.toHaveProperty('p_passed');});
+ it('reports a save outage without claiming completion or disclosing private errors',async()=>{m.rest.mockRejectedValue(Error('private database detail'));const r=await PUT(request());expect(r.status).toBe(503);expect(await r.text()).not.toContain('private database detail');});
+});

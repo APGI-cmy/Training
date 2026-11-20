@@ -1,0 +1,36 @@
+<!doctype html><meta charset="utf-8"><title>Sequential learning control QA</title>
+<style>body{font:16px Arial;margin:25px;background:#edf1f7;color:#132c4c}iframe{width:100%;height:660px;border:2px solid #506d88}li{margin:8px}.fail{color:#a11}.pass{color:#075827}</style>
+<h1>Sequential learning control QA</h1><p id="status">Preparing actual exported activity tests…</p><ol id="results"></ol><iframe id="activity" title="Actual exported activity test"></iframe>
+<script type="module">
+import {attachActivitySequence,activityProfile} from './modules/learning-sequence-dom.js';
+import {sequenceKey} from './modules/learning-sequence.js';
+const frame=document.getElementById('activity'),results=document.getElementById('results'),records=new Map();let controller,counts={pass:0,fail:0};
+const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const assert=(ok,message)=>{if(!ok)throw Error(message);};
+const locked=el=>el.hasAttribute('disabled')||el.getAttribute('aria-disabled')==='true';
+function report(path,ok,detail){const li=document.createElement('li');li.className=ok?'pass':'fail';li.textContent=(ok?'PASS ':'FAIL ')+decodeURIComponent(path)+': '+detail;results.append(li);counts[ok?'pass':'fail']++;document.getElementById('status').textContent=JSON.stringify(counts);}
+async function load(path){controller?.dispose();await new Promise((resolve,reject)=>{const timeout=setTimeout(()=>reject(Error('Activity load timeout')),12000);frame.onload=()=>{clearTimeout(timeout);resolve();};frame.src=path;});await delay(30);return frame.contentDocument;}
+const inventory=await fetch('all-archive-course-paths.json').then(r=>r.json());
+const paths=inventory.filter(p=>p.endsWith('/index.html')&&/Tiger kidnapping_telecommunications\/LU\d\/res\/data\/wo\d+\/index.html/.test(p)).concat(inventory.filter(p=>p.endsWith('/index.html')&&/Scannex Training Programme.*\(SCORM\)\/res\/data\/wo\d+\/index.html/.test(p)));
+for(const source of paths){const path='/'+source.slice('public/'.length).split('/').map(encodeURIComponent).join('/');try{
+ const doc=await load(path),profile=activityProfile(doc);assert(profile,'No mapped interaction profile');
+ const raw=Array.from(doc.querySelectorAll(profile.steps)),groups=profile.alternatives?[raw.filter(e=>e.id==='continue-decision'),raw.filter(e=>e.hasAttribute('data-choice'))]:raw.map(e=>[e]);
+ assert(groups.length>0,'No authored sections');
+ controller=attachActivitySequence(doc,{load:key=>records.get(key),save:async record=>{records.set(sequenceKey(record),structuredClone(record));},completed:()=>false,changed:()=>{}});
+ assert(controller,'Sequencer did not attach');assert(groups.every(g=>g.every(locked)),'Section enabled before Begin');
+ doc.querySelector(profile.begin).click();await delay(10);controller.refresh();
+ for(let i=0;i<groups.length;i++){
+  const current=Array.from(doc.querySelectorAll(profile.steps));const nextGroups=profile.alternatives?[current.filter(e=>e.id==='continue-decision'),current.filter(e=>e.hasAttribute('data-choice'))]:current.map(e=>[e]);
+  assert(!locked(nextGroups[i][0]),'Expected section '+(i+1)+' locked');
+  if(i+2<nextGroups.length)assert(nextGroups[i+2].every(locked),'Later section unlocked early');
+  nextGroups[i][0].dispatchEvent(new doc.defaultView.MouseEvent('click',{bubbles:true,cancelable:true}));await delay(10);controller.refresh();
+ }
+ const summary=doc.querySelector(profile.summary);assert(summary&&!locked(summary),'Summary remains locked after exploration');
+ summary.click();controller.refresh();await delay(10);controller.refresh();
+ assert(controller.canLeave(),'Forward remains blocked after saved summary');
+ const original=records.get(controller.key);assert(original?.summary,'Summary not saved');
+ controller.dispose();controller=attachActivitySequence(doc,{load:key=>records.get(key),save:async()=>{},completed:()=>false,changed:()=>{}});assert(controller.canLeave(),'Saved progress failed to resume');
+ report(path,true,groups.length+' sections, ordered unlock, saved summary and resume');
+ }catch(error){report(path,false,error.message);}}
+document.getElementById('status').textContent='DONE '+JSON.stringify(counts);window.fixtureResults=counts;
+</script>
