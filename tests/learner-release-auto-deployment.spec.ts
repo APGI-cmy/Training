@@ -20,6 +20,26 @@ describe('Automatic live course registration',()=>{
  it('honours the independently verified LU9 legacy transition',()=>{const r=changedRound();expect(changedDeploymentUnits(r,deliveryIdentityForCourse(r.course_id)!)).toEqual(['lu9']);});
  it('does not exempt unknown legacy content changes',()=>{const r=changedRound();r.id='another-round';expect(changedDeploymentUnits(r,deliveryIdentityForCourse(r.course_id)!)).toHaveLength(13);});
  it.each(['preview','development'])('rejects a %s runtime before any database call',async(mode)=>{vi.stubEnv('VERCEL_ENV',mode);const r=changedRound();expect(runtimeDeployment()).toBeUndefined();expect(await ensureReviewDeployment(r,deliveryIdentityForCourse(r.course_id)!.fingerprint)).toBe(r);expect(m.rpc).not.toHaveBeenCalled();});
+ it('registers the NKS production deployment only against its own canonical live identity',async()=>{
+  vi.stubEnv('ALP_ENVIRONMENT','training-production');vi.stubEnv('VERCEL_PROJECT_ID','prj_BxMjzI1TwimFM2mbV2ox3d7EUTsz');
+  const r=changedRound(),identity=deliveryIdentityForCourse(r.course_id)!;
+  const updated={...r,fingerprint:identity.fingerprint,document:{...r.document,contentIdentity:identity}};
+  m.rpc.mockResolvedValue(Response.json({}));m.rows.mockResolvedValue([updated]);
+  expect(currentDeliveryStatus()?.projectId).toBe('prj_BxMjzI1TwimFM2mbV2ox3d7EUTsz');
+  expect(await ensureReviewDeployment(r,identity.fingerprint)).toEqual(updated);
+  expect(fetch).toHaveBeenCalledWith('https://nks-capital-training.vercel.app/api/course-deployment',expect.any(Object));
+  const args=JSON.parse(m.rpc.mock.calls[0][1].body);
+  expect(args.p_mail[0].body).toContain('https://nks-capital-training.vercel.app/course-reviews/');
+  expect(args.p_mail[0].body).not.toContain('https://training-platform-v2-staging.vercel.app');
+ });
+ it('rejects V1, unregistered hosts, wrong environment bindings and incomplete live content evidence',async()=>{
+  for(const [project,environment] of [['prj_ORt9BeL7D469cnEOZs04cyHD5s5y','training-production'],['unregistered','training-production'],['prj_BxMjzI1TwimFM2mbV2ox3d7EUTsz','v2-staging'],['prj_XaAAh2r1oRKGsi8HLxXGDzcI1yaf','training-production']]){
+   vi.stubEnv('VERCEL_PROJECT_ID',project);vi.stubEnv('ALP_ENVIRONMENT',environment);expect(runtimeDeployment()).toBeUndefined();
+  }
+  vi.stubEnv('VERCEL_PROJECT_ID','prj_BxMjzI1TwimFM2mbV2ox3d7EUTsz');vi.stubEnv('ALP_ENVIRONMENT','training-production');
+  const remote=currentDeliveryStatus()!;remote.identities={};vi.stubGlobal('fetch',vi.fn(async()=>Response.json(remote)));
+  const r=changedRound();expect(await ensureReviewDeployment(r,deliveryIdentityForCourse(r.course_id)!.fingerprint)).toBe(r);expect(m.rpc).not.toHaveBeenCalled();
+ });
  it('rejects an unpromoted candidate, wrong project, missing metadata and wrong course identity',async()=>{for(const alter of [(s:any)=>{s.deployment.id='dpl_Old';},(s:any)=>{s.projectId='wrong';},(s:any)=>{s.courses['vpshr-level-0']='wrong';}]){const s=currentDeliveryStatus()!;alter(s);vi.stubGlobal('fetch',vi.fn(async()=>Response.json(s)));await ensureReviewDeployment(changedRound(),deliveryIdentityForCourse('vpshr-level-0')!.fingerprint);}vi.stubGlobal('fetch',vi.fn(async()=>new Response('',{status:503})));await ensureReviewDeployment(changedRound(),'x');expect(m.rpc).not.toHaveBeenCalled();});
  it('uses a constrained system transaction and specific reviewer instructions',async()=>{const r=changedRound(),identity=deliveryIdentityForCourse(r.course_id)!;const updated=structuredClone(r);updated.fingerprint=identity.fingerprint;updated.document.contentIdentity=identity;updated.revision++;m.rpc.mockResolvedValue(new Response('{}'));m.rows.mockResolvedValue([updated]);const before=JSON.stringify(r);expect(await ensureReviewDeployment(r,identity.fingerprint)).toEqual(updated);expect(JSON.stringify(r)).toBe(before);const [url,opts]=m.rpc.mock.calls[0],body=JSON.parse(opts.body);expect(url).toContain('v3_register_course_deployment');expect(body.p_actor).toBeUndefined();expect(body.p_document).toBeUndefined();expect(body.p_identity).toEqual(identity);expect(body.p_mail[0].body).toContain('LU9');expect(body.p_mail[0].body).toContain('12 unchanged');expect(body.p_mail[0].body).toContain('Re-confirm');expect(body.p_mail[0].body).toContain('No reopens');});
  it('does not register already current or closed reviews',async()=>{const r=changedRound(),identity=deliveryIdentityForCourse(r.course_id)!;r.fingerprint=identity.fingerprint;r.document.contentIdentity=identity;expect(await ensureReviewDeployment(r,identity.fingerprint)).toBe(r);r.status='published';r.fingerprint='old';m.rows.mockResolvedValue([r]);await synchronizeCourseDeployments();expect(m.rpc).not.toHaveBeenCalled();});

@@ -18,7 +18,7 @@ export function reviewNotificationTasks({round:r,hash,brandRevision}:ReviewTaskS
  const legacyCommercialActive=!releasedTerms||!publishedReviewOverride(r,'commercials',releasedTerms);
  const tasks:ReviewNotificationTask[]=[];
  const add=(kind:string,version:string,title:string,requirement:string,anchor:string,path=base)=>tasks.push({key:`review-action:${r.id}:${kind}:${version}`,roundId:r.id,revision:r.revision,title:`${title} — ${d.title}`,requirement,path,anchor,version,actorUserId:d.requesterId});
- if(!fresh&&principal)add("deployment",hash,"Register the corrected course deployment","The deployed content differs from the recorded review. Check the corrections, register this deployment and confirm the review cutoff. This does not approve content.","changes-implemented");
+ if(!fresh&&principal)add("deployment",hash,"Check the latest course deployment","Automatic registration is awaiting confirmation of the live course version. Open Changes implemented and select Check latest deployment. Existing review evidence is retained; this does not approve content.","changes-implemented");
  if(!canWork(r)){
   add("extension",d.cutoff,principal?"Review deadline passed — decide on an extension":"Request an extension to continue reviewing","The cutoff has passed. Work cannot continue until the requester approves an extension; overdue work never counts as approval.","manage-request");return tasks;
  }

@@ -11,6 +11,7 @@ import {presentPolicyNotification,type PolicyDecision} from "@/lib/policy-review
 import {isPlatformPrincipal} from "./platform-principals";
 import {contentSource,reviewSource} from "./course-reviews";
 import {syncReviewMessages} from './review-message-sync';
+import {ensureReviewDeployment} from './course-deployments';
 export async function notificationSession(){const session=await requireSession();if(!session.user.email_confirmed_at)throw Error("Confirm your email to use notifications.");return session;}
 const taskContext=cache(async(session:AlpSession)=>{
  const principal=await isPlatformPrincipal(session),email=session.user.email?.toLowerCase()??"";
@@ -20,7 +21,8 @@ const taskContext=cache(async(session:AlpSession)=>{
   const active=await rows<{id:string}>(`/rest/v1/organisations?id=eq.${round.organisation_id}&is_active=eq.true&select=id&limit=1`);
   if(!active.length)return null;
   const source=round.document.workflow?await contentSource(round.course_id,round.organisation_id):await reviewSource(round.plan_id!);
-  return {round,hash:source.fingerprint,brandRevision:source.brand.brand_revision};
+  const current=round.document.workflow?await ensureReviewDeployment(round,source.fingerprint):round;
+  return {round:current,hash:source.fingerprint,brandRevision:source.brand.brand_revision};
  }))).filter((s):s is ReviewTaskSource=>!!s);
  return {principal,email,sources,tasks:sources.flatMap(source=>reviewNotificationTasks(source,email,session.user.id,principal))};
 });

@@ -97,9 +97,9 @@ export async function requireReview(id:string,options:{archiveCancelled?:boolean
  if(options.archiveCancelled&&round.status==='cancelled')redirect(`/course-reviews/${id}/archive`);
 
  const source=round.document.workflow?await contentSource(round.course_id,round.organisation_id):await reviewSource(round.plan_id!);
- const previous=round.fingerprint;
  round=await ensureReviewDeployment(round,source.fingerprint);
- if(previous!==round.fingerprint)try{await processReviewMail();}catch{/* Durable outbox retries. */}
+ // Registration queues its new notices. A page read must never flush an older
+ // learner/reviewer mail backlog; delivery remains with the mail workflow.
 
  return {...actor,round,source,fresh:source.fingerprint===round.fingerprint};
 

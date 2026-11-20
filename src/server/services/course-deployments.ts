@@ -5,29 +5,34 @@ import {changedDeploymentUnits,deliveryIdentityForCourse,type RegisteredDeployme
 import {hasReviewTask} from '@/lib/review-tasks';
 import {reviewNonresponseNotice} from '@/lib/review-nonresponse';
 import type {ReviewRound} from '@/lib/course-review';
-import {STAGING_ORIGIN,STAGING_PROJECT_ID,assertStagingIsolation} from '@/server/environment-isolation';
+import {assertStagingIsolation} from '@/server/environment-isolation';
+import {PLATFORM_RELEASE} from '@/lib/platform-release';
 import {adminRest} from '@/server/supabase/admin-rest';
 import {rows} from './company-structure';
 
 export function runtimeDeployment(env:NodeJS.ProcessEnv=process.env):RegisteredDeployment|undefined {
- if(env.VERCEL_ENV!=='production'||env.ALP_ENVIRONMENT!=='v2-staging'||env.VERCEL_PROJECT_ID!==STAGING_PROJECT_ID||!/^dpl_[a-zA-Z0-9]+$/.test(env.VERCEL_DEPLOYMENT_ID??'')||!/^[-a-zA-Z0-9.]+\.vercel\.app$/.test(env.VERCEL_URL??''))return undefined;
+ const site=PLATFORM_RELEASE.targets.find(target=>target.project===env.VERCEL_PROJECT_ID);
+ if(env.VERCEL_ENV!=='production'||!site||env.ALP_ENVIRONMENT!==(site.companySlug?'training-production':'v2-staging')||!/^dpl_[a-zA-Z0-9]+$/.test(env.VERCEL_DEPLOYMENT_ID??'')||!/^[-a-zA-Z0-9.]+\.vercel\.app$/.test(env.VERCEL_URL??''))return undefined;
  return {id:env.VERCEL_DEPLOYMENT_ID!,url:`https://${env.VERCEL_URL}`,...(/^[a-f0-9]{40}$/.test(env.VERCEL_GIT_COMMIT_SHA??'')?{commit:env.VERCEL_GIT_COMMIT_SHA}:{})};
 }
 
 export function currentDeliveryStatus() {
  const deployment=runtimeDeployment();if(!deployment)return undefined;
- return {version:1,projectId:STAGING_PROJECT_ID,deployment,
-  courses:Object.fromEntries(getCourses().flatMap(course=>{const identity=deliveryIdentityForCourse(course.id);return identity?[[course.id,identity.fingerprint]]:[]}))};
+ return {version:1,projectId:process.env.VERCEL_PROJECT_ID!,deployment,
+  courses:Object.fromEntries(getCourses().flatMap(course=>{const identity=deliveryIdentityForCourse(course.id);return identity?[[course.id,identity.fingerprint]]:[]})),
+  identities:Object.fromEntries(getCourses().flatMap(course=>{const identity=deliveryIdentityForCourse(course.id);return identity?[[course.id,identity]]:[]}))};
 }
 
 async function confirmedLiveDeployment() {
  const local=currentDeliveryStatus();if(!local)return undefined;
  assertStagingIsolation();
- const response=await fetch(`${STAGING_ORIGIN}/api/course-deployment`,{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(15000)});
+ const site=PLATFORM_RELEASE.targets.find(target=>target.project===local.projectId)!;
+ const response=await fetch(`${site.origin}/api/course-deployment`,{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(15000)});
  if(!response.ok)return undefined;
  const remote=await response.json() as ReturnType<typeof currentDeliveryStatus>;
- if(remote?.version!==1||remote.projectId!==STAGING_PROJECT_ID||remote.deployment.id!==local.deployment.id||remote.deployment.url!==local.deployment.url)return undefined;
+ if(remote?.version!==1||remote.projectId!==local.projectId||remote.deployment.id!==local.deployment.id||remote.deployment.url!==local.deployment.url)return undefined;
  for(const [id,fingerprint] of Object.entries(local.courses))if(remote.courses[id]!==fingerprint)return undefined;
+ if(JSON.stringify(remote.identities)!==JSON.stringify(local.identities))return undefined;
  return local.deployment;
 }
 
@@ -38,7 +43,8 @@ function deploymentNotices(round:ReviewRound,fingerprint:string,changed:string[]
  const recipients=[...new Set([round.document.requester,...round.document.participants.filter(p=>p.state!=='declined'&&hasReviewTask(p,'content')).map(p=>p.email),...(round.document.workflow?.commercials.at(-1)?.acceptance?[round.document.workflow.partnerEmail]:[])])].filter(Boolean);
  return recipients.map(to=>{
   const person=round.document.participants.find(p=>p.email===to&&p.state!=='declined'),reviewer=person&&hasReviewTask(person,'content');
-  const links=changed.map(slug=>`${slug.toUpperCase()}: ${STAGING_ORIGIN}/course-reviews/${round.id}#review-unit-${slug}`).join('\n');
+  const origin=PLATFORM_RELEASE.targets.find(target=>target.project===process.env.VERCEL_PROJECT_ID)!.origin;
+  const links=changed.map(slug=>`${slug.toUpperCase()}: ${origin}/course-reviews/${round.id}#review-unit-${slug}`).join('\n');
   const steps=reviewer?'Open each changed LU and check the presentation, embedded quizzes and any corrections. Re-confirm “I reviewed this entire LU” under Initial review. When the designer has submitted implementation notes, open Endorsements and choose Yes—endorse or No—do not endorse with a reason. No reopens the finding.':'The assigned content reviewers must recheck the changed LUs. The designer still records implementation notes for each finding; deployment registration does not declare a finding fixed.';
   return {key:`${round.id}:auto-release:${fingerprint}:${round.revision}:${to}`,to,kind:'content_revision_registered',subject:`${round.document.title}: updated ${changed.map(u=>u.toUpperCase()).join(', ')} ready for review`,
    body:`To: ${to}\n\nThe APGI platform automatically registered a successfully deployed course update.\n\nChanged learning units: ${names}.\n${preserved} unchanged learning units keep their saved coverage. All earlier findings, comments, screenshots, reports and endorsement history remain saved.\n\n${steps}\n\n${links}\n\nCommercial and branding decisions remain separate. Final publication still requires approval.${round.document.nonresponsePolicy?`\n\n${reviewNonresponseNotice}`:''}\n\nDeployment record: ${deployment.url} (${deployment.id}).`};

@@ -1,5 +1,5 @@
 import 'server-only';
-import {configuredDatabaseRef,configuredAppOrigin} from '@/server/environment-isolation';
+import {configuredDatabaseRef} from '@/server/environment-isolation';
 import {costServices} from '@/lib/service-costs';
 import {exchangeFeed} from '@/lib/currency-rates';
 import {PLATFORM_RELEASE} from '@/lib/platform-release';
@@ -9,7 +9,7 @@ const publicSources=new Set([exchangeFeed,...costServices.map(s=>s.source).filte
 // or request bodies to another provider. This is an application boundary, not a
 // claim of a provider-wide network firewall or content-inspection service.
 export function providerTarget(input:string|URL,init:RequestInit={}){
- const STAGING_DATABASE_REF=configuredDatabaseRef(),STAGING_ORIGIN=configuredAppOrigin();
+ const STAGING_DATABASE_REF=configuredDatabaseRef();
  const raw=String(input);
  if(/[\\\u0000-\u0020\u007f]/.test(raw))throw Error('OUTBOUND_TARGET_REJECTED');
  const url=new URL(raw), headers=new Headers(init.headers), method=(init.method??'GET').toUpperCase();
@@ -26,7 +26,7 @@ export function providerTarget(input:string|URL,init:RequestInit={}){
   const refresh=method==='POST',allowedHeaders=refresh?['authorization','content-type']:['authorization'];
   if(!auth||!/^Bearer eyJ[A-Za-z0-9._-]+$/.test(auth)||headers.has('apikey')||[...headers.keys()].some(k=>!allowedHeaders.includes(k)))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
   if(refresh?(headers.get('content-type')!=='application/json'||url.search!==''||init.body!==JSON.stringify({action:'refresh',version:PLATFORM_RELEASE.version})):init.body!=null)throw Error('OUTBOUND_TARGET_REJECTED');
- }else if((publicSources.has(url.href)||url.href===STAGING_ORIGIN+'/api/course-deployment')&&['GET','HEAD'].includes(method)&&init.body==null){
+ }else if((publicSources.has(url.href)||(PLATFORM_RELEASE.targets.some(t=>t.origin===url.origin)&&url.pathname==='/api/course-deployment'&&!url.search))&&['GET','HEAD'].includes(method)&&init.body==null){
   if([...headers.keys()].some(k=>!['accept','user-agent'].includes(k)))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
  }else throw Error('OUTBOUND_TARGET_REJECTED');
  // Reject headers containing any configured provider secret at the wrong host.
