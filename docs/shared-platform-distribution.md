@@ -5,6 +5,19 @@ application version against separate databases and configuration. Mediation Zone
 is an APGI V2 workspace; it does not currently have a separate training deployment.
 V1 is excluded. Do not copy a partner deployment into V1 to work around a release issue.
 
+## Next-version learning controls
+
+All training on APGI and partner platforms must inherit the same sequential
+activity controls in the next platform version. Required buttons unlock in order;
+Next remains disabled until the current required activity/summary evidence is
+saved, with clear guidance and backward navigation preserved. This is planned
+work, not a description of the currently deployed behavior. Existing learner
+progress, reviews, certificates and publication state must be retained, and live
+payments must remain disabled. See the
+[requirements and acceptance checks](../modules/ALP/02-frs/addenda/20261120-sequential-learning-controls-requirements.md)
+and the
+[requirement registry entry](../modules/ALP/REQUIREMENT_REGISTRY_ADDENDA/20261120-sequential-learning-controls-registry.md).
+
 ## Release operation
 
 Prepare source archives from the verified current deployment, preserving all
