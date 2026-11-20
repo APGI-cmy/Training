@@ -20,10 +20,11 @@ export function attachTrainingSequencing(options:TrainingSequenceOptions){
   const doc=frame.contentDocument,ack=doc?.getElementById('acknowledge');
   return !!ack&&!!doc?.getElementById('contents')&&(!/Reviewed\s*✓/.test(ack.textContent??'')||!!doc.querySelector('#save-status.warning'));
  }
+ function forwardControl(button:Element){const label=(button.getAttribute('aria-label')||button.textContent||'').trim();return /^next(?:\s*[›»→])?$/i.test(label)||!!button.ownerDocument.getElementById('acknowledge')&&/^Next learning activity\s*→?$/i.test(label);}
  function blocked(){return eaBlocked()||!!options.forwardAllowed&&!options.forwardAllowed(current()+1)||[...documents].some(([doc,sequence])=>!!sequence&&doc.defaultView&&children().includes(doc)&&!sequence.canLeave());}
  function paint(){
   if(!active)return;const disabled=blocked();options.changed?.(disabled);
-  try{for(const button of frame.contentDocument?.querySelectorAll('button,[role="button"]')??[]){const label=(button.getAttribute('aria-label')||button.textContent||'').trim();if(/^next(?:\s*[›»→])?$/i.test(label))lock(button,disabled);}}catch{}
+  try{for(const button of frame.contentDocument?.querySelectorAll('button,[role="button"]')??[]){if(forwardControl(button))lock(button,disabled);else if(locks.has(button))lock(button,false);}}catch{}
   const ea=frame.contentDocument;
   if(ea?.getElementById('acknowledge')&&ea.getElementById('contents')){
    const entries=Array.from(ea.querySelectorAll('#contents button')),position=entries.findIndex(e=>e.getAttribute('aria-current')==='step');
@@ -36,9 +37,9 @@ export function attachTrainingSequencing(options:TrainingSequenceOptions){
  function intercept(event:Event){
   if(!blocked())return;const target=event.target as Element|null;
   const button=target?.closest?.('button,[role="button"]');
-  if(button&&/^next(?:\s*[›»→])?$/i.test((button.getAttribute('aria-label')||button.textContent||'').trim())){event.preventDefault();event.stopImmediatePropagation();paint();}
+  if(button&&forwardControl(button)){event.preventDefault();event.stopImmediatePropagation();paint();}
  }
- function keyboard(event:KeyboardEvent){if(!blocked()||!['ArrowRight','PageDown'].includes(event.key))return;const target=event.target as Element|null;if(target?.closest?.('input,textarea,select,video,audio'))return;event.preventDefault();event.stopImmediatePropagation();}
+ function keyboard(event:KeyboardEvent){if(!blocked()||!['ArrowRight','PageDown'].includes(event.key))return;const eaNext=frame.contentDocument?.getElementById('next');if(!player&&eaNext&&frame.contentDocument?.getElementById('acknowledge')&&!forwardControl(eaNext))return;const target=event.target as Element|null;if(target?.closest?.('input,textarea,select,video,audio'))return;event.preventDefault();event.stopImmediatePropagation();}
  const bound=new Set<Document>();
  const changed=()=>paint();
  const connector:Connector={register(candidate){
