@@ -62,6 +62,7 @@ export function unitProgressDisplay(course: Course, userId: string, evidence: Pr
     const quiz = passed ? `Passed${score === null ? "" : ` · ${score}%`}`
       : attempt?.success_status === "failed" ? `Not yet passed${score === null ? "" : ` · latest score ${score}%`}`
       : historic ? "Earlier completion retained"
+      : policy && !evidence.detailedAvailable ? "Detailed quiz progress temporarily unavailable"
       : policy ? "No pass recorded · 80% required" : hasResult ? "Result saved" : "No quiz result reported";
     const measures = [attempt?.progress_measure].filter((n): n is number => typeof n === "number" && Number.isFinite(n));
     return { id: unit.id, title: unit.title, order: unit.order,

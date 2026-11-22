@@ -6,3 +6,6 @@
 .unit-progress-breakdown li p { margin-block: .4rem; }
 .unit-progress-breakdown li ul { padding-inline-start: 1.1rem; }
 .unit-progress-breakdown li ul li { margin-block: .35rem; }
+.unit-progress-breakdown li details > summary { cursor: pointer; padding-block: .25rem; }
+.directory-table tr:has(.unit-progress-breakdown[open]) > td { vertical-align: top; }
+.learner-progress-block > span { display: block; }

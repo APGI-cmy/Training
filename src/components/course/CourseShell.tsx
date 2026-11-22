@@ -29,7 +29,7 @@ export function CourseShell({
             <p className="eyebrow">Learner course shell</p>
             <h1>{course.title}</h1>
             <p>{course.description}</p>
-            {course.editionId?<p>Edition {course.editionNumber} · <Link href={`/learn/${course.slug}/records`}>My results, saved assessments and e-book options</Link></p>:null}
+            {(course.editionId || backHref === "/dashboard")?<p>{course.editionId ? `Edition ${course.editionNumber} · ` : ""}<Link href={`/learn/${course.slug}/records`}>My saved progress, results and e-book options</Link></p>:null}
             {showCompletionMessage ? (
               <p role="status">Unit marked complete. Progress has been updated.</p>
             ) : null}
