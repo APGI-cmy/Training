@@ -1,0 +1,8 @@
+.unit-progress-breakdown { margin-block: .75rem; max-width: 30rem; white-space: normal; overflow-wrap: anywhere; }
+.unit-progress-breakdown > summary { cursor: pointer; font-weight: 700; padding-block: .4rem; }
+.unit-progress-breakdown > summary:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.unit-progress-breakdown > ol { padding-inline-start: 1.4rem; }
+.unit-progress-breakdown > ol > li { padding-block: .75rem; border-top: 1px solid #7894a455; }
+.unit-progress-breakdown li p { margin-block: .4rem; }
+.unit-progress-breakdown li ul { padding-inline-start: 1.1rem; }
+.unit-progress-breakdown li ul li { margin-block: .35rem; }

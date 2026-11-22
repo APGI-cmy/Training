@@ -2,12 +2,14 @@ import "server-only";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { getCourses } from "@/lib/courses";
 import { adminRest } from "@/server/supabase/admin-rest";
+import { unitProgressDisplay, type UnitProgressDisplay } from "@/lib/learning-progress-display";
+import { loadProgressDisplayEvidence } from "@/server/services/learning-progress-display";
 
 const pageSize = 25;
 
 type ProfileRow = { user_id: string; email: string | null; full_name: string | null; preferred_name: string | null; created_at: string; updated_at: string };
 type EnrolmentRow = { user_id: string; course_id: string; status: "pending" | "enrolled" | "revoked"; updated_at: string; group_id?: string | null; organisation_id?: string };
-export type AdminCourseProgress = { courseId: string; title: string; completed: number; total: number; percent: number; groupId: string | null; organisationId: string; available: boolean };
+export type AdminCourseProgress = { courseId: string; title: string; completed: number; total: number; percent: number; groupId: string | null; organisationId: string; available: boolean; units?: UnitProgressDisplay[] };
 
 export type AdminLearner = { id: string; name: string; email: string; createdAt: string; lastActivityAt: string; enrolmentCount: number; status: "enrolled" | "pending" | "revoked" | "no_enrolments"; courseSummary: string; courseProgress?: AdminCourseProgress[] };
 export type AdminLearnerPage = { learners: AdminLearner[]; page: number; pageSize: number; total: number; totalPages: number; unavailable: boolean };
@@ -51,22 +53,16 @@ async function getEnrolments(userIds: string[]) {
 
 async function enrichProgress(learners: AdminLearner[], enrolments: Map<string, EnrolmentRow[]>) {
   if (!learners.length) return learners;
-  const ids = learners.map(l => l.id).join(",");
-  const [p,s] = await Promise.all([
-    adminRest(`/rest/v1/learner_progress?user_id=in.(${ids})&select=user_id,course_id,unit_id,status,updated_at`),
-    adminRest(`/rest/v1/scorm_attempts?user_id=in.(${ids})&select=user_id,course_id,unit_id,completion_status,updated_at`)
-  ]);
-  type Progress = { user_id: string; course_id: string; unit_id: string; status?: string; completion_status?: string; updated_at: string };
-  const available = p.ok && s.ok;
-  const rows: Progress[] = [...(p.ok ? await p.json() : []), ...(s.ok ? await s.json() : [])];
+  const evidence = await loadProgressDisplayEvidence(learners.map(l => l.id));
+  const available = evidence.available;
+  const rows = [...evidence.learning, ...evidence.scorm, ...evidence.tiger, ...evidence.sequence];
   return learners.map(l => {
     const own = rows.filter(r => r.user_id === l.id);
     const courseProgress = (enrolments.get(l.id) ?? []).map(e => {
       const course = getCourses().find(c => c.id === e.course_id);
-      const required = course?.units.filter(u => e.course_id !== "scannex-training-programme" || u.order <= 8) ?? [];
-      const completed = new Set(own.filter(r => r.course_id === e.course_id && (r.status === "completed" || r.completion_status === "completed")).map(r => r.unit_id));
-      const count = required.filter(u => completed.has(u.id)).length;
-      return { courseId: e.course_id, title: course?.title ?? e.course_id, completed: count, total: required.length, percent: required.length ? Math.round(count / required.length * 100) : 0, groupId: e.group_id ?? null, organisationId: e.organisation_id ?? "", available };
+      const units = course ? unitProgressDisplay(course, l.id, evidence) : [];
+      const count = units.filter(u => u.state === "Completed").length;
+      return { courseId: e.course_id, title: course?.title ?? e.course_id, completed: count, total: units.length, percent: units.length ? Math.round(count / units.length * 100) : 0, groupId: e.group_id ?? null, organisationId: e.organisation_id ?? "", available, units };
     });
     return { ...l, courseProgress, lastActivityAt: [l.lastActivityAt,...own.map(r=>r.updated_at)].sort().at(-1) ?? l.lastActivityAt };
   });
