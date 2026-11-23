@@ -2,14 +2,14 @@ import "server-only";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { getCourses } from "@/lib/courses";
 import { adminRest } from "@/server/supabase/admin-rest";
-import { unitProgressDisplay, type UnitProgressDisplay } from "@/lib/learning-progress-display";
+import { overallLearningProgress, unitProgressDisplay, type UnitProgressDisplay } from "@/lib/learning-progress-display";
 import { loadProgressDisplayEvidence } from "@/server/services/learning-progress-display";
 
 const pageSize = 25;
 
 type ProfileRow = { user_id: string; email: string | null; full_name: string | null; preferred_name: string | null; created_at: string; updated_at: string };
 type EnrolmentRow = { user_id: string; course_id: string; status: "pending" | "enrolled" | "revoked"; updated_at: string; group_id?: string | null; organisation_id?: string };
-export type AdminCourseProgress = { courseId: string; title: string; completed: number; total: number; percent: number; groupId: string | null; organisationId: string; available: boolean; units?: UnitProgressDisplay[] };
+export type AdminCourseProgress = { courseId: string; title: string; completed: number; total: number; percent: number; overallPercent?: number | null; groupId: string | null; organisationId: string; available: boolean; units?: UnitProgressDisplay[] };
 
 export type AdminLearner = { id: string; name: string; email: string; createdAt: string; lastActivityAt: string; enrolmentCount: number; status: "enrolled" | "pending" | "revoked" | "no_enrolments"; courseSummary: string; courseProgress?: AdminCourseProgress[] };
 export type AdminLearnerPage = { learners: AdminLearner[]; page: number; pageSize: number; total: number; totalPages: number; unavailable: boolean };
@@ -62,7 +62,7 @@ async function enrichProgress(learners: AdminLearner[], enrolments: Map<string, 
       const course = getCourses().find(c => c.id === e.course_id);
       const units = course ? unitProgressDisplay(course, l.id, evidence) : [];
       const count = units.filter(u => u.state === "Completed").length;
-      return { courseId: e.course_id, title: course?.title ?? e.course_id, completed: count, total: units.length, percent: units.length ? Math.round(count / units.length * 100) : 0, groupId: e.group_id ?? null, organisationId: e.organisation_id ?? "", available, units };
+      return { courseId: e.course_id, title: course?.title ?? e.course_id, completed: count, total: units.length, percent: units.length ? Math.round(count / units.length * 100) : 0, overallPercent: overallLearningProgress(units), groupId: e.group_id ?? null, organisationId: e.organisation_id ?? "", available, units };
     });
     return { ...l, courseProgress, lastActivityAt: [l.lastActivityAt,...own.map(r=>r.updated_at)].sort().at(-1) ?? l.lastActivityAt };
   });

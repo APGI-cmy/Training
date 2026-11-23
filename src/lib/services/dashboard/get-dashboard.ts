@@ -6,6 +6,8 @@ import type { AlpSession } from "@/server/auth/session";
 import { getCookieCompletedUnitIds } from "@/server/progress/progress-cookie";
 import {isTigerCourse} from '@/lib/tiger-progression';
 import {tigerCompletedUnits} from '@/server/services/tiger-progression';
+import {loadProgressDisplayEvidence} from '@/server/services/learning-progress-display';
+import {overallLearningProgress,unitProgressDisplay} from '@/lib/learning-progress-display';
 
 export interface DashboardCourseCard {
   id: string;
@@ -16,6 +18,7 @@ export interface DashboardCourseCard {
   unitCount: number;
   completedUnits: number;
   progressPercent: number;
+  overallProgressPercent?: number | null;
   href: string;
   classification?: import("@/lib/course-selection").CourseClassification;
 }
@@ -26,6 +29,7 @@ export interface LearnerDashboard {
   totalCourses: number;
   totalUnits: number;
   totalCompletedUnits: number;
+  overallProgressPercent?: number | null;
 }
 
 export async function getDashboard(session?: AlpSession): Promise<LearnerDashboard> {
@@ -49,6 +53,7 @@ export async function getDashboard(session?: AlpSession): Promise<LearnerDashboa
         .map(({ course,access }) => ({...course,expired:access.status==='expired'}))
     : [];
 
+  const displayEvidence = await loadProgressDisplayEvidence(session && enrolledCourses.length ? [session.user.id] : []);
   const courses = await Promise.all(
     enrolledCourses.map(async (course) => {
       const [databaseProgress, cookieCompletedUnitIds] = await Promise.all([
@@ -96,16 +101,23 @@ export async function getDashboard(session?: AlpSession): Promise<LearnerDashboa
         unitCount,
         completedUnits,
         progressPercent: unitCount === 0 ? 0 : Math.round((completedUnits / unitCount) * 100),
+        overallProgressPercent: overallLearningProgress(unitProgressDisplay(course, session!.user.id, displayEvidence, completedUnitIds, true)),
         href: `/learn/${course.slug}${course.expired?'/records':''}`
       };
     })
   );
 
+  const totalUnits = courses.reduce((sum,c) => sum+c.unitCount,0);
+  const totalCompletedUnits = courses.reduce((sum,c) => sum+c.completedUnits,0);
+  const overallProgressPercent = totalUnits && totalCompletedUnits === totalUnits ? 100 :
+    courses.some(c => c.overallProgressPercent === null) ? null : totalUnits ?
+      Math.min(99.9,Math.round(courses.reduce((sum,c) => sum+(c.overallProgressPercent ?? 0)*c.unitCount,0)/totalUnits*10)/10) : 0;
   return {
     learnerName: "Learner",
     courses,
     totalCourses: courses.length,
-    totalUnits: courses.reduce((sum, course) => sum + course.unitCount, 0),
-    totalCompletedUnits: courses.reduce((sum, course) => sum + course.completedUnits, 0)
+    totalUnits,
+    totalCompletedUnits,
+    overallProgressPercent
   };
 }

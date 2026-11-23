@@ -26,6 +26,7 @@ export interface CourseShell {
   firstUnit?: CourseShellUnit;
   completedUnits: number;
   progressPercent: number;
+  overallProgressPercent?: number | null;
   nextAction?: NextLearningAction;
 }
 

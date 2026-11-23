@@ -3,6 +3,7 @@ import {useState} from 'react';
 import {CourseFilters} from '@/components/course/CourseFilters';
 import {emptyCourseFilter,matchesCourseFilter,classificationLabel} from '@/lib/course-selection';
 import Link from "next/link";
+import { OVERALL_PROGRESS_HELP } from "@/lib/learning-progress-display";
 import { ProgressIndicator } from "@/components/progress/ProgressIndicator";
 import { CourseCardCover } from "@/components/course/CourseCardCover";
 import type { LearnerDashboard as LearnerDashboardModel } from "@/lib/services/dashboard/get-dashboard";
@@ -24,6 +25,7 @@ export function LearnerDashboard({ dashboard,cardImages={} }: { dashboard: Learn
           <ProgressIndicator
             completedUnits={dashboard.totalCompletedUnits}
             totalUnits={dashboard.totalUnits}
+            overallPercent={dashboard.overallProgressPercent}
           />
         </div>
       </section>
@@ -50,8 +52,8 @@ export function LearnerDashboard({ dashboard,cardImages={} }: { dashboard: Learn
                   <p>{course.description}</p>
                   <div className="course-card-progress">
                     <small>{course.completedUnits} of {course.unitCount} units complete</small>
-                    <progress value={course.completedUnits} max={course.unitCount || 1} />
-                    <small>{course.progressPercent}% complete</small>
+                    <progress value={course.overallProgressPercent === null ? undefined : course.overallProgressPercent ?? course.progressPercent} max={100} aria-label={`${course.title}: overall learning progress`} title={OVERALL_PROGRESS_HELP} />
+                    <small title={OVERALL_PROGRESS_HELP}>{course.overallProgressPercent === null ? "Overall progress temporarily unavailable" : `${course.overallProgressPercent ?? course.progressPercent}% overall progress`}</small>
                   </div>
                   <Link className="primary-button" href={course.href}>
                     {course.completedUnits > 0 ? "Continue course" : "Open course"}

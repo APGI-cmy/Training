@@ -9,6 +9,8 @@ import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { getLearnerProgress } from "@/lib/services/progress/get-learner-progress";
 import { requireSession } from "@/server/auth/session";
 import { getCookieCompletedUnitIds } from "@/server/progress/progress-cookie";
+import {loadProgressDisplayEvidence} from "@/server/services/learning-progress-display";
+import {overallLearningProgress, unitProgressDisplay} from "@/lib/learning-progress-display";
 
 export const metadata = {
   title: "Course shell"
@@ -72,5 +74,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     notFound();
   }
 
+  const displayEvidence = await loadProgressDisplayEvidence([session.user.id]);
+  shell.overallProgressPercent = overallLearningProgress(unitProgressDisplay(course, session.user.id, displayEvidence, progress.completedUnitIds, true));
   return <CourseShell shell={shell} progressMessage={progressMessage} />;
 }

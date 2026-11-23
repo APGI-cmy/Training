@@ -45,7 +45,7 @@ export function CourseShell({
               ) : null}
             </div>
           </div>
-          <ProgressIndicator completedUnits={completedUnits} totalUnits={units.length} />
+          <ProgressIndicator completedUnits={completedUnits} totalUnits={units.length} overallPercent={shell.overallProgressPercent} />
         </div>
       </section>
 
