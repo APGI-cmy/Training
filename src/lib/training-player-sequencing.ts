@@ -66,5 +66,6 @@ export function attachTrainingSequencing(options:TrainingSequenceOptions){
  };
  const timer=host.setInterval(tick,150);
  return {summaryReady(doc:Document){return documents.get(doc)?.summaryReady()??options.completed(doc);},
+ async flush(){await Promise.all([...documents.values()].map(sequence=>sequence?.flush()));},
  dispose(){active=false;host.clearInterval(timer);for(const sequence of documents.values())sequence?.dispose();for(const doc of bound){doc.removeEventListener('click',intercept,true);doc.removeEventListener('keydown',keyboard,true);}for(const el of [...locks.keys()])lock(el,false);if(connectorHost.ispringPresentationConnector===connector){if(previous)connectorHost.ispringPresentationConnector=previous;else delete connectorHost.ispringPresentationConnector;}}};
 }

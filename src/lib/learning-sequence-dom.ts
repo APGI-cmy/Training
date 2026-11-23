@@ -22,7 +22,7 @@ export function attachActivitySequence(doc:Document,options:Options){
  let groups=controls();
  if(!groups.length||groups.some(g=>!g.length)||groups.length>120)return null;
  const identity={document:source,profile:profile.id,steps:groups.length},key=sequenceKey(identity);
- let state:SequenceState=options.load(key)??emptySequence(),failed=false,disposed=false,saving=false;
+ let state:SequenceState=options.load(key)??emptySequence(),failed=false,disposed=false,draining:Promise<void>|null=null;
  const backlog:SequenceRecord[]=[];
  const begin=doc.querySelector<HTMLElement>(profile.begin)!,modal=doc.querySelector<HTMLElement>(profile.modal)!;
  let summary=doc.querySelector<HTMLElement>(profile.summary);
@@ -51,13 +51,22 @@ export function attachActivitySequence(doc:Document,options:Options){
   if(text.textContent!==message)text.textContent=message;retry.hidden=!failed;
   options.changed();
  }
- async function drain(){
-  if(saving||failed||disposed)return;saving=true;
-  try{while(backlog.length){await options.save(backlog[0]);backlog.shift();}}
-  catch{failed=true;}
-  finally{saving=false;if(!disposed)paint();}
+ function drain():Promise<void>{
+  if(draining)return draining;if(failed||disposed)return Promise.resolve();
+  draining=(async()=>{
+   try{while(backlog.length){await options.save(backlog[0]);backlog.shift();}}
+   catch{failed=true;}
+   finally{draining=null;if(!disposed)paint();}
+  })();return draining;
  }
  function persist(){backlog.push({...identity,...state});paint();void drain();}
+ function rememberSummary(){if(!state.summary&&sequenceSummaryAllowed(state,groups.length)){state={...state,summary:true};persist();}}
+ // Polling alone can miss a summary opened and closed between two ticks.
+ // Attribute history retains that real opening even if the modal is now shut.
+ const summaryObserver=new MutationObserver(changes=>{
+  if(shown(modal)||changes.some(change=>change.attributeName==='hidden'&&change.oldValue!==null))rememberSummary();
+ });
+ summaryObserver.observe(modal,{attributes:true,attributeOldValue:true,attributeFilter:['hidden','aria-hidden','class','style']});
  function start(){if(state.begun||options.completed())return;state={...state,begun:true,through:profile!.firstVisible?0:-1};persist();}
  function select(index:number){if(!sequenceStepAllowed(state,index,groups.length,options.completed()))return false;if(index>state.through&&!options.completed()){state={...state,through:index};persist();}return true;}
  function block(event:Event){event.preventDefault();event.stopImmediatePropagation();paint();}
@@ -91,8 +100,9 @@ export function attachActivitySequence(doc:Document,options:Options){
    const index=groups.findIndex(g=>g.some(el=>el.getAttribute('aria-selected')==='true'||el.getAttribute('aria-pressed')==='true'||el.getAttribute('aria-current')==='step'||el.classList.contains('active')||el.classList.contains('is-active')));
    if(index>=0&&index>state.through&&sequenceStepAllowed(state,index,groups.length))select(index);
   }
-  if(!state.summary&&sequenceSummaryAllowed(state,groups.length)&&shown(modal)){state={...state,summary:true};persist();}
+  if(shown(modal))rememberSummary();
   paint();
  },canLeave:()=>options.completed()||state.summary&&!backlog.length&&!failed,summaryReady:()=>options.completed()||sequenceSummaryAllowed(state,groups.length)&&state.summary&&!backlog.length&&!failed,
- dispose(){disposed=true;doc.removeEventListener('click',click,true);doc.removeEventListener('keydown',keydown,true);retry.removeEventListener('click',retrySave);for(const el of [...owned.keys()])lock(el,false);note.remove();style.remove();}};
+ async flush(){failed=false;await drain();if(failed||backlog.length)throw Error('Activity progress could not be saved');},
+ dispose(){disposed=true;summaryObserver.disconnect();doc.removeEventListener('click',click,true);doc.removeEventListener('keydown',keydown,true);retry.removeEventListener('click',retrySave);for(const el of [...owned.keys()])lock(el,false);note.remove();style.remove();}};
 }

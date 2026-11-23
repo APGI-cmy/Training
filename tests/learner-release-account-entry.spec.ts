@@ -37,7 +37,7 @@ describe("Session monitor after switching accounts", () => {
     vi.spyOn(Date, "now").mockImplementation(() => clock);
     location = { pathname: "/dashboard", search: "", hash: "", assign: vi.fn() };
     vi.stubGlobal("location", location);
-    vi.stubGlobal("window", { location });
+    vi.stubGlobal("window", Object.assign(new EventTarget(),{ location }));
     vi.stubGlobal("BroadcastChannel", undefined);
     vi.stubGlobal("document", {
       visibilityState: "visible", querySelectorAll: () => [],
@@ -63,5 +63,12 @@ describe("Session monitor after switching accounts", () => {
     location.pathname = "/learn/tiger-kidnapping-telecommunications"; location.hash = "#unit-1";
     clock += 61_000; activity({ isTrusted: true } as Event); tick(); await settle();
     expect(location.assign).toHaveBeenCalledWith(`/alp-sign-in?next=${encodeURIComponent(location.pathname + location.hash)}`);
+  });
+  it('lets an open player retain pending work while server authentication remains required',async()=>{
+    window.addEventListener('learning:session-expired',event=>event.preventDefault());
+    SessionActivity();hooks.effects[0]();await settle();
+    location.pathname='/learn/tiger-kidnapping-telecommunications/units/lu1';
+    clock+=61_000;activity({isTrusted:true} as Event);tick();await settle();
+    expect(fetch).toHaveBeenCalledTimes(2);expect(location.assign).not.toHaveBeenCalled();
   });
 });

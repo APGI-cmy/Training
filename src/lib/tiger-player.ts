@@ -10,21 +10,27 @@ export function attachTigerPlayer(options:{host:Window;frame:HTMLIFrameElement;p
   const previous=connectorHost.ispringPresentationConnector;
   let active=true,state=options.initial,player:TigerNativePlayer|null=null,releasePlayer:(()=>void)|undefined,redirecting=false;
   let ranges=state.video_ranges,queue=Promise.resolve(state),lastSent=Date.now(),pending=0;
-  const cleanup:Array<()=>void>=[],summaryPending=new Set<string>(),observedVideos=new WeakSet<HTMLVideoElement>(),observedSummaries=new WeakMap<Document,number>();
+  const cleanup:Array<()=>void>=[],summaryPending=new Set<string>(),unsavedSummaries=new Set<string>(),observedVideos=new WeakSet<HTMLVideoElement>(),observedSummaries=new WeakMap<Document,number>();
   const currentSlide=()=>{try{return player?player.view().playbackController().currentSlideIndex()+1:0;}catch{return 0;}};
   const send=(evidence:Evidence)=>{
+    if(evidence.summary)unsavedSummaries.add(evidence.summary);
     pending++;
     const request=queue.then(async()=>{
       if(!active)return state;
       const saved=await options.save(evidence);
       if(!active)return saved;
       state=saved;ranges=mergeWatchedRanges([...ranges,...saved.video_ranges],policy.duration);
+      if(evidence.summary)unsavedSummaries.delete(evidence.summary);
       options.status(missingTigerRequirement(policy,state));return state;
     }).finally(()=>{pending--;});
     queue=request.catch(()=>{if(active)options.status('Progress could not be saved. Keep this page open and retry.');return state;});
     return request;
   };
-  const flush=()=>send({ranges});
+  const flush=async()=>{
+    await send({ranges});
+    for(const summary of [...unsavedSummaries])await send({summary});
+    return state;
+  };
   const isVisible=(element:Element)=>{
     const rect=element.getBoundingClientRect(),win=element.ownerDocument.defaultView;
     return !!win&&rect.width>0&&rect.height>0&&rect.bottom>0&&rect.right>0&&rect.top<win.innerHeight&&rect.left<win.innerWidth&&win.getComputedStyle(element).visibility!=='hidden'&&win.getComputedStyle(element).display!=='none';
@@ -83,7 +89,11 @@ export function attachTigerPlayer(options:{host:Window;frame:HTMLIFrameElement;p
       if(!active||currentSlide()!==activity.slide||activityComplete(policy,state,activity)||summaryPending.has(key))return;
       const identifier=doc.body?.textContent?.match(/TK-LU\d{2}-(?:LA|F)\d{2}/)?.[0];
       const modal=doc.getElementById('summary-modal');
-      if(identifier!==activity.id||!modal||modal.hidden||modal.getAttribute('aria-hidden')==='true'||!isVisible(modal)||options.summaryAllowed&&!options.summaryAllowed(doc))return;
+      // The learner may close the summary while its sequence save is in flight.
+      // Once that saved sequence confirms it was opened, closing it must not
+      // lose the evidence or leave Next locked until the modal is opened again.
+      const ready=options.summaryAllowed?options.summaryAllowed(doc):!!modal&&!modal.hidden&&modal.getAttribute('aria-hidden')!=='true'&&isVisible(modal);
+      if(identifier!==activity.id||!modal||!ready)return;
       summaryPending.add(key);void send({summary:key}).catch(()=>{}).finally(()=>{host.setTimeout(()=>summaryPending.delete(key),5000);});
     };
     for(const doc of documents()){

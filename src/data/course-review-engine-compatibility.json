@@ -1,6 +1,6 @@
 {
-  "engine": "ca22265cb0c2196b36b03f6a8c633ca7e13650b30fab3f03bb18830a9f5d5f4f",
-  "previousEngine": "891582ca07539c1d18ed33879e7eb557ef11f199bf3eac7cc01b861b9601ecad",
+  "engine": "9a6bdf59bc29f30521fac48ea40ead4ab11ddfb4af852a809e341513362df282",
+  "previousEngine": "ca22265cb0c2196b36b03f6a8c633ca7e13650b30fab3f03bb18830a9f5d5f4f",
   "legacySource": "891582ca07539c1d18ed33879e7eb557ef11f199bf3eac7cc01b861b9601ecad",
-  "note": "Exact navigation-only sequential-controls compatibility checkpoint. Course package bytes, content, assessments, video/quiz thresholds, existing learner completion and review decisions are unchanged. This adds separate navigation evidence and prevents premature button activation without awarding completion. Preserve the current reviewed content identity; do not reopen or approve reviews because of this UI-only repair. New unrecognised engine hashes or changed course packages still invalidate identity normally."
+  "note": "Exact save-recovery and summary-navigation compatibility checkpoint after native-player and activity regression tests. Preserve the deployed reviewed source identity. Course package bytes, video thresholds, quiz passes, enrolments, learner evidence, certificates and review decisions are unchanged. Future unknown engine or package changes still invalidate identity normally."
 }

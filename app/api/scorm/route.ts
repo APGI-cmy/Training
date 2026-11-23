@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getLearningCourse } from "@/server/services/course-editions";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { getCurrentSession, getSupabaseRestUrl } from "@/server/auth/session";
+import {requireLearningSession,learningSessionResponse} from '@/server/auth/learning-session';
 import { recordProgressForSession } from "@/server/progress/record-progress";
 
 import {tigerPolicy} from '@/lib/tiger-progression';
@@ -68,9 +69,9 @@ function normalizeAttempt(input: ScormAttemptInput) {
   };
 }
 
-async function context(request: NextRequest, courseSlug: string, unitSlug: string) {
-  const session = await getCurrentSession();
-  const course = await getLearningCourse(courseSlug);
+async function context(request: NextRequest, courseSlug: string, unitSlug: string, expectedLearnerId?:unknown) {
+  const session = await requireLearningSession(expectedLearnerId);
+  const course = await getLearningCourse(courseSlug,session);
   const unit = course?.units.find((candidate) => candidate.slug === unitSlug || candidate.legacySlug === unitSlug);
   if (!session || !course || !unit?.scormPath) return null;
 
@@ -84,7 +85,7 @@ async function context(request: NextRequest, courseSlug: string, unitSlug: strin
   return { session, course, unit };
 }
 
-export async function GET(request: NextRequest) {
+async function readAttempt(request: NextRequest) {
   const courseSlug = request.nextUrl.searchParams.get("courseSlug") ?? "";
   const unitSlug = request.nextUrl.searchParams.get("unitSlug") ?? "";
   const resolved = await context(request, courseSlug, unitSlug);
@@ -99,16 +100,17 @@ export async function GET(request: NextRequest) {
   const response = await fetch(url, { headers: requestHeaders, cache: "no-store" });
   if(tigerPolicy(resolved.course,resolved.unit)&&!response.ok)return NextResponse.json({error:'Saved SCORM data is temporarily unavailable.'},{status:503});
   const rows = response.ok ? await response.json().catch(() => []) : [];
-  return NextResponse.json({ attempt: Array.isArray(rows) ? rows[0] ?? null : null });
+  return NextResponse.json({ attempt: Array.isArray(rows) ? rows[0] ?? null : null,learnerId:resolved.session.user.id },{headers:{'Cache-Control':'private, no-store',Vary:'Cookie'}});
 }
 
-export async function PUT(request: NextRequest) {
+async function writeAttempt(request: NextRequest) {
   const body = await request.json().catch(() => null) as {
     courseSlug?: string;
     unitSlug?: string;
     attempt?: ScormAttemptInput;
+    expectedLearnerId?:unknown;
   } | null;
-  const resolved = await context(request, body?.courseSlug ?? "", body?.unitSlug ?? "");
+  const resolved = await context(request, body?.courseSlug ?? "", body?.unitSlug ?? "",body?.expectedLearnerId);
   if (!resolved || !body?.attempt) return NextResponse.json({ error: "Not authorized" }, { status: 401 });
 
   const policy=tigerPolicy(resolved.course,resolved.unit);
@@ -169,4 +171,11 @@ export async function PUT(request: NextRequest) {
   }
 
   return NextResponse.json({ ok: true,...(tiger?{tiger}:{}) });
+}
+
+export async function GET(request:NextRequest){
+  try{return await readAttempt(request);}catch(error){return learningSessionResponse(error)??NextResponse.json({error:'Your saved progress could not be loaded. Please retry.'},{status:503});}
+}
+export async function PUT(request:NextRequest){
+  try{return await writeAttempt(request);}catch(error){return learningSessionResponse(error)??NextResponse.json({error:'Your progress could not be saved. Keep this page open and retry.'},{status:503});}
 }

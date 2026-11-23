@@ -14,8 +14,12 @@ function request(extra:Record<string,unknown>={},origin='https://training-platfo
 describe('Tiger authenticated progress endpoint',()=>{
  beforeEach(()=>{vi.resetAllMocks();mock.session.mockResolvedValue({accessToken:'fixture',user:{id:'actual-user'}});mock.course.mockResolvedValue(course);mock.access.mockResolvedValue({canAccess:true});mock.allowed.mockResolvedValue(true);mock.save.mockResolvedValue({state:{},qualified:false});});
  it('rejects anonymous access and expired/revoked enrolment without writing evidence',async()=>{
-  mock.session.mockResolvedValue(null);expect((await PUT(request())).status).toBe(403);expect(mock.save).not.toHaveBeenCalled();
+  mock.session.mockResolvedValue(null);const signedOut=await PUT(request());expect(signedOut.status).toBe(401);expect((await signedOut.json()).code).toBe('session_required');expect(mock.save).not.toHaveBeenCalled();
   mock.session.mockResolvedValue({accessToken:'fixture',user:{id:'actual-user'}});mock.access.mockResolvedValue({canAccess:false});expect((await PUT(request())).status).toBe(403);expect(mock.save).not.toHaveBeenCalled();
+ });
+ it('keeps pending work bound to its original learner after another account signs in',async()=>{
+  const changed=await PUT(request({expectedLearnerId:'other-learner'}));
+  expect(changed.status).toBe(409);expect((await changed.json()).code).toBe('learner_changed');expect(mock.save).not.toHaveBeenCalled();
  });
  it('rejects cross-origin writes and wrong edition/policy bindings',async()=>{
   expect((await PUT(request({},'https://unrelated.invalid'))).status).toBe(403);

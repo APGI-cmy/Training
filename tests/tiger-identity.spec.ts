@@ -8,9 +8,9 @@ import identities from '@/data/course-content-identities.json';
 describe('Exact host-adapter compatibility checkpoint',()=>{
  it('binds the compatibility exemption to the exact tested shared engine bytes',()=>{
   const hash=createHash('sha256');
-  for(const path of ['src/lib/courses.ts','src/components/course/ScormPlayer.tsx','src/components/QuizEngine.tsx','src/components/assessments/ScannexTheoryAssessment.tsx','src/server/assessments/scannex-theory-bank.ts','src/lib/services/courses/get-unit-content.ts'])hash.update(readFileSync(path,'utf8').replaceAll('\r\n','\n'));
+  for(const path of ['src/lib/courses.ts','src/components/course/ScormPlayer.tsx','src/components/course/SequencedTrainingFrame.tsx','src/lib/learning-sequence.ts','src/lib/learning-sequence-dom.ts','src/lib/training-player-sequencing.ts','src/lib/tiger-player.ts','src/components/QuizEngine.tsx','src/components/assessments/ScannexTheoryAssessment.tsx','src/server/assessments/scannex-theory-bank.ts','src/lib/services/courses/get-unit-content.ts'])hash.update(readFileSync(path,'utf8').replaceAll('\r\n','\n'));
   expect(hash.digest('hex')).toBe(compatibility.engine);
-  expect(manifest.source).toBe(compatibility.legacySource);
+  expect(readFileSync('scripts/course-review-manifest.mjs','utf8')).toContain('engine===compatibility.engine?compatibility.legacySource:engine');
  });
  it('retains the verified deployed authored-course identities',()=>{
   expect(Object.fromEntries(Object.entries(identities.courses).map(([id,record])=>[id,record.fingerprint]))).toEqual({

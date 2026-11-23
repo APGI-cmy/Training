@@ -7,6 +7,7 @@ import {attachTigerPlayer} from '@/lib/tiger-player';
 import {activityComplete,firstBlockedSlide,missingTigerRequirement,type TigerPolicy,type TigerProgress} from '@/lib/tiger-progression';
 import {attachTrainingSequencing} from '@/lib/training-player-sequencing';
 import {sequenceKey,type SequenceRecord} from '@/lib/learning-sequence';
+import {learningResponse,LearningSaveError,type LearningSaveIssue} from '@/lib/learning-save';
 
 type ScormValues = Record<string, string>;
 
@@ -103,6 +104,19 @@ export function ScormPlayer({
   const [status, setStatus] = useState("Preparing your personal learning session…");
   const saveProgressRef = useRef<(() => Promise<boolean>) | null>(null);
   const [leaving, setLeaving] = useState(false);
+  const [saveIssue,setSaveIssue]=useState<LearningSaveIssue|null>(null),[retrying,setRetrying]=useState(false);
+  const learnerId=useRef<string|undefined>(undefined),sessionBlocked=useRef<LearningSaveIssue|null>(null);
+  const loadProgressRef=useRef<(()=>Promise<void>)|null>(null);
+  const requestProgress=useCallback(async(url:string,init?:RequestInit)=>{
+    try{
+      if(sessionBlocked.current)throw new LearningSaveError(sessionBlocked.current);
+      return await learningResponse(await fetch(url,init));
+    }catch(error){
+      const issue=error instanceof LearningSaveError?error.code:'save_failed';
+      if(issue!=='save_failed')sessionBlocked.current=issue;
+      setSaveIssue(issue);throw error;
+    }
+  },[]);
   const [adapterReady,setAdapterReady]=useState(false);
   const adapter=useRef<ReturnType<typeof attachTigerPlayer>|null>(null);
   const sequencing=useRef<ReturnType<typeof attachTrainingSequencing>|null>(null);
@@ -114,8 +128,7 @@ export function ScormPlayer({
     if(mode==='learner'&&progressionPolicy&&context)adapter.current=attachTigerPlayer({host:window,frame,policy:progressionPolicy,initial:context.state,status:setStatus,adapterReady:setAdapterReady,
       summaryAllowed:doc=>sequencing.current?.summaryReady(doc)??false,
       save:async(evidence)=>{
-        const response=await fetch('/api/tiger-progress',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({courseSlug,unitSlug,version:context.version,edition:context.edition,...evidence})});
-        if(!response.ok)throw Error('Save failed');
+        const response=await requestProgress('/api/tiger-progress',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({courseSlug,unitSlug,expectedLearnerId:learnerId.current,version:context.version,edition:context.edition,...evidence})});
         const payload=await response.json();context.state=payload.state;return payload.state;
       }
     });
@@ -133,12 +146,17 @@ export function ScormPlayer({
           if(previewScope)updatePreviewProgress(previewScope,current=>({...current,attempts:{...current.attempts,[unitSlug]:{...current.attempts[unitSlug],'apgi.sequence':JSON.stringify(sequenceRecords.current)}}}));
           return record;
         }
-        const response=await fetch('/api/learning-sequences',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({courseSlug,unitSlug,record})});
-        if(!response.ok)throw Error('Activity progress could not be saved');
+        const response=await requestProgress('/api/learning-sequences',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({courseSlug,unitSlug,expectedLearnerId:learnerId.current,record})});
         return (await response.json()).record as SequenceRecord;
       }
     });
-  },[courseSlug,unitSlug,mode,progressionPolicy,previewScope]);
+  },[courseSlug,unitSlug,mode,progressionPolicy,previewScope,requestProgress]);
+
+  async function retryProgress(){
+    if(retrying)return;setRetrying(true);sessionBlocked.current=null;setSaveIssue(null);
+    try{if(!ready)await loadProgressRef.current?.();else await saveProgressRef.current?.();}
+    finally{setRetrying(false);}
+  }
 
   async function returnToUnit(event: MouseEvent<HTMLAnchorElement>) {
     if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
@@ -153,6 +171,11 @@ export function ScormPlayer({
   useEffect(() => {
     let active = true;
     const endpoint = `/api/scorm?courseSlug=${encodeURIComponent(courseSlug)}&unitSlug=${encodeURIComponent(unitSlug)}`;
+    const sessionExpired=(event:Event)=>{
+      if(mode!=='learner'||!valuesRef.current)return;
+      event.preventDefault();sessionBlocked.current='session_required';setSaveIssue('session_required');
+    };
+    window.addEventListener('learning:session-expired',sessionExpired);
 
     const installApi = (saveProgress?: () => void) => {
       let initialized = false;
@@ -198,6 +221,7 @@ export function ScormPlayer({
         void savePreview();
         saveProgressRef.current = null;
         window.removeEventListener("pagehide", savePreview);
+        window.removeEventListener('learning:session-expired',sessionExpired);
         delete window.API_1484_11;
       };
     }
@@ -212,23 +236,24 @@ export function ScormPlayer({
       if (!valuesRef.current) return true;
       if (active) setStatus("Saving your progress…");
       try {
+        await sequencing.current?.flush();
         if(progressionPolicy&&adapter.current)await adapter.current.flush();
-        const response = await fetch(endpoint, {
+        const response = await requestProgress(endpoint, {
           method: "PUT",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ courseSlug, unitSlug, attempt: toAttempt(valuesRef.current) })
+          body: JSON.stringify({ courseSlug, unitSlug, expectedLearnerId:learnerId.current,attempt: toAttempt(valuesRef.current) })
         });
         if(response.ok&&progressionPolicy){
           const payload=await response.json();
           if(payload.tiger?.state){tigerContext.current!.state=payload.tiger.state;adapter.current?.update(payload.tiger.state);}
           if(payload.tiger?.qualified)window.dispatchEvent(new CustomEvent('tiger:unit-qualified',{detail:{courseSlug,unitSlug,qualified:true}}));
           if(active)setStatus(payload.tiger?.state?missingTigerRequirement(progressionPolicy,payload.tiger.state):'Your progress is saved.');
-          return true;
+          if(active)setSaveIssue(null);return true;
         }
         if (active) setStatus(response.ok
           ? "Your progress is saved to your learner record."
           : "Progress could not be saved. Keep this page open and try again.");
-        return response.ok;
+        if(active)setSaveIssue(null);return response.ok;
       } catch {
         if (active) setStatus("Progress could not be saved. Check your connection and try again.");
         return false;
@@ -237,13 +262,14 @@ export function ScormPlayer({
     saveProgressRef.current = save;
 
     const load = async () => {
-      const [response,sequences] = await Promise.all([fetch(endpoint, { cache: "no-store" }),fetch(`/api/learning-sequences?courseSlug=${encodeURIComponent(courseSlug)}&unitSlug=${encodeURIComponent(unitSlug)}`,{cache:'no-store'})]);
+      const [response,sequences] = await Promise.all([requestProgress(endpoint, { cache: "no-store" }),requestProgress(`/api/learning-sequences?courseSlug=${encodeURIComponent(courseSlug)}&unitSlug=${encodeURIComponent(unitSlug)}`,{cache:'no-store'})]);
       if(!sequences.ok)throw Error('Saved activity sequence unavailable');
       sequenceRecords.current=(await sequences.json()).records;
       if(progressionPolicy&&!response.ok)throw Error('Saved progress unavailable');
       const payload = response.ok ? await response.json() : { attempt: null };
+      learnerId.current=payload.learnerId;
       if(progressionPolicy){
-        const evidence=await fetch(`/api/tiger-progress?courseSlug=${encodeURIComponent(courseSlug)}&unitSlug=${encodeURIComponent(unitSlug)}`,{cache:'no-store'});
+        const evidence=await requestProgress(`/api/tiger-progress?courseSlug=${encodeURIComponent(courseSlug)}&unitSlug=${encodeURIComponent(unitSlug)}`,{cache:'no-store'});
         if(!evidence.ok)throw Error('Viewing requirements unavailable');
         const saved=await evidence.json();
         if(!active)return;
@@ -254,10 +280,12 @@ export function ScormPlayer({
       completedUnit.current=payload.attempt?.completion_status==='completed';
       installApi(() => { void save(); });
       setStatus("Your progress is saved to your learner record.");
+      setSaveIssue(null);
       setReady(true);
     };
 
-    void load().catch(()=>{if(active)setStatus('Your saved progress could not be loaded. Reload this page before continuing.');});
+    loadProgressRef.current=()=>load().catch(()=>{if(active)setStatus('Your saved progress could not be loaded. Retry before continuing.');});
+    void loadProgressRef.current();
     const saveBeforeLeaving = () => { void save(); };
     window.addEventListener("pagehide", saveBeforeLeaving);
     return () => {
@@ -266,13 +294,21 @@ export function ScormPlayer({
       active = false;
       saveProgressRef.current = null;
       window.removeEventListener("pagehide", saveBeforeLeaving);
+      window.removeEventListener('learning:session-expired',sessionExpired);
+      loadProgressRef.current=null;
       void save();
       delete window.API_1484_11;
     };
-  }, [courseSlug, mode, unitSlug, previewScope, unitId, progressionPolicy]);
+  }, [courseSlug, mode, unitSlug, previewScope, unitId, progressionPolicy,requestProgress]);
 
   return (
     <section className={immersive ? "scorm-player-immersive" : undefined} aria-label={`${title} SCORM learning activity`}>
+      {saveIssue?<div role="alert" className="learning-save-recovery" style={{padding:16,border:'2px solid #bd7b00',background:'#fff3cf',color:'#172b46'}}>
+        <strong>{saveIssue==='session_required'?'Sign in again to save your progress.':saveIssue==='learner_changed'?'Sign in with the original learner account.':'Your latest progress has not been saved yet.'}</strong>
+        <p>Keep this training tab open. {saveIssue==='save_failed'?'Check your connection, then retry.':'Open sign-in in a separate tab, complete sign-in, then return here and retry saving.'} Pending work stays in this tab; Next unlocks when the required work is saved.</p>
+        {saveIssue!=='save_failed'?<a className="secondary-button" href={`/alp-sign-in?next=${encodeURIComponent('/learn/'+courseSlug)}`} target="_blank" rel="noreferrer">Sign in in a separate tab</a>:null}
+        {' '}<button type="button" className="primary-button" disabled={retrying} onClick={()=>void retryProgress()}>{retrying?'Saving…':'Retry saving progress'}</button>
+      </div>:null}
       {immersive && returnHref ? (
         <nav className="activity-toolbar" aria-label="Learning activity navigation">
           <a className="secondary-button" href={returnHref} onClick={returnToUnit} aria-disabled={leaving}>

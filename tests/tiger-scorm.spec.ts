@@ -47,4 +47,10 @@ describe('Tiger SCORM result retention and qualification',()=>{
  it('denies direct later-unit writes before accepting a quiz result',async()=>{
   mock.allowed.mockResolvedValue(false);expect((await PUT(request())).status).toBe(401);expect(mock.evidence).not.toHaveBeenCalled();expect(mock.fetch).not.toHaveBeenCalled();
  });
+ it('identifies the owner of loaded progress and rejects a retry under a different learner',async()=>{
+  const read=await GET(new NextRequest(origin+`/api/scorm?courseSlug=${course.slug}&unitSlug=lu1`));
+  expect((await read.json()).learnerId).toBe('actual-user');mock.fetch.mockClear();
+  const r=await PUT(new NextRequest(origin+'/api/scorm',{method:'PUT',headers:{origin,'content-type':'application/json'},body:JSON.stringify({courseSlug:course.slug,unitSlug:'lu1',expectedLearnerId:'original-learner',attempt})}));
+  expect(r.status).toBe(409);expect((await r.json()).code).toBe('learner_changed');expect(mock.fetch).not.toHaveBeenCalled();expect(mock.evidence).not.toHaveBeenCalled();
+ });
 });

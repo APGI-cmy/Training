@@ -55,7 +55,12 @@ export function SessionActivity() {
           const wasAuthenticated=authenticated;
           authenticated=false;setWarning("");
           if(wasAuthenticated&&!isPublicAccountPath(location.pathname)){
-            stopped=true;window.location.assign(`/alp-sign-in?next=${encodeURIComponent(location.pathname+location.search+location.hash)}`);
+            // An open player keeps unsaved work in memory and offers sign-in in
+            // another tab. The API still rejects writes until authentication.
+            const expiry=new Event('learning:session-expired',{cancelable:true});
+            if(window.dispatchEvent(expiry)){
+              stopped=true;window.location.assign(`/alp-sign-in?next=${encodeURIComponent(location.pathname+location.search+location.hash)}`);
+            }
           }
           return;
         }
