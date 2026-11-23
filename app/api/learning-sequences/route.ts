@@ -7,6 +7,7 @@ import {adminRest} from '@/server/supabase/admin-rest';
 import {sequenceRecordValid} from '@/lib/learning-sequence';
 import {activityProfiles} from '@/lib/learning-sequence-dom';
 import {decodedCoursePath} from '@/server/security/course-assets';
+import {learningActivityPath} from '@/lib/learning-activity-path';
 
 const headers={'Cache-Control':'private, no-store',Vary:'Cookie'};
 async function context(courseSlug:string,unitSlug:string,expectedLearnerId?:unknown){
@@ -32,8 +33,8 @@ export async function PUT(request:NextRequest){
  if(!body||!sequenceRecordValid(body.record)||!activityProfiles.some(p=>p.id===body.record.profile))return NextResponse.json({error:'Invalid activity progress.'},{status:400,headers});
  try{
   const c=await context(body.courseSlug??'',body.unitSlug??'',body.expectedLearnerId);if(!c)return NextResponse.json({error:'Not authorised.'},{status:403,headers});
-  const path=decodedCoursePath(body.record.document),base=decodeURIComponent(c.unit.assetBase).replace(/\/$/,'');
-  if(!path||!path.startsWith(base+'/')||!path.endsWith('.html'))return NextResponse.json({error:'This activity does not belong to the learning unit.'},{status:400,headers});
+  const path=decodedCoursePath(body.record.document),base=learningActivityPath(decodeURIComponent(c.unit.assetBase))?.replace(/\/$/,'');
+  if(!path||!base||!path.startsWith(base+'/')||!path.endsWith('.html'))return NextResponse.json({error:'This activity does not belong to the learning unit.'},{status:400,headers});
   const r=body.record,response=await adminRest('/rest/v1/rpc/training_sequence_merge',{method:'POST',body:JSON.stringify({p_user:c.session.user.id,p_course:c.course.id,p_edition:c.edition,p_unit:c.unit.id,p_document:r.document,p_profile:r.profile,p_steps:r.steps,p_begun:r.begun,p_through:r.through,p_summary:r.summary})});
   if(!response.ok)return NextResponse.json({error:'Activity progress could not be saved. Keep this page open and retry.'},{status:503,headers});
   return NextResponse.json({record:await response.json()},{headers});

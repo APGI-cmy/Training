@@ -1,4 +1,5 @@
 import {emptySequence,sequenceKey,sequenceStepAllowed,sequenceSummaryAllowed,type SequenceRecord,type SequenceState} from './learning-sequence';
+import {learningActivityPath} from './learning-activity-path';
 
 type Profile={id:string;begin:string;steps:string;summary:string;modal:string;alternatives?:boolean;firstVisible?:boolean};
 // These are authored interaction contracts, not a guess at the order of every button.
@@ -16,8 +17,8 @@ type Options={load:(key:string)=>SequenceRecord|undefined;save:(record:SequenceR
 export function activityProfile(doc:Document){return activityProfiles.find(p=>doc.querySelector(p.begin)&&doc.querySelector(p.steps)&&doc.querySelector(p.modal));}
 export function attachActivitySequence(doc:Document,options:Options){
  const profile=activityProfile(doc);if(!profile)return null;
- const source=doc.location.pathname;
- if(!source.startsWith('/courses/'))return null;
+ const source=learningActivityPath(doc.location.pathname);
+ if(!source)return null;
  const controls=()=>{let raw=Array.from(doc.querySelectorAll<HTMLElement>(profile.steps));if(profile.id==='declared-v1'){raw.sort((a,b)=>Number(a.dataset.learningStep)-Number(b.dataset.learningStep));if(raw.some((el,index)=>el.dataset.learningStep!==String(index)))return [];}return profile.alternatives?[raw.filter(e=>e.id==='continue-decision'),raw.filter(e=>e.hasAttribute('data-choice'))]:raw.map(e=>[e]);};
  let groups=controls();
  if(!groups.length||groups.some(g=>!g.length)||groups.length>120)return null;

@@ -52,7 +52,25 @@ export async function courseAssetRoute(accessToken:string,courseId:string):Promi
 export async function tigerAssetAllowed(accessToken:string,courseId:string,unit:number):Promise<boolean>{
  try{
   assertStagingIsolation();
-  const response=await fetch(`https://${process.env.ALP_ENVIRONMENT==='training-production'?configuredDatabaseRef():STAGING_DATABASE_REF}.supabase.co/rest/v1/rpc/tiger_unit_asset_allowed`,{method:'POST',headers:{apikey:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,authorization:`Bearer ${accessToken}`,'content-type':'application/json'},body:JSON.stringify({p_course:courseId,p_unit:unit}),cache:'no-store'});
-  return response.ok&&(await response.json())===true;
+  if(!Number.isInteger(unit)||unit<1||unit>8)return false;
+  const {getCurrentSession}=await import('@/server/auth/session');
+  const session=await getCurrentSession();if(!session||session.accessToken!==accessToken)return false;
+  const {getCourseAccess}=await import('@/lib/services/enrolments/get-course-access');
+  const access=await getCourseAccess({accessToken,userId:session.user.id,userEmail:session.user.email,courseId});
+  if(!access.canAccess)return false;
+  const {storedEdition}=await import('@/server/services/course-editions');
+  const {getCourseBySlug}=await import('@/lib/courses');
+  const edition=access.editionId?await storedEdition(access.editionId):null;
+  if(access.editionId&&(!edition||edition.runtime_course_id!==courseId))return false;
+  const source=edition?.course_document??getCourseBySlug(courseId);
+  const {isTigerCourse}=await import('@/lib/tiger-progression');
+  if(!source||!isTigerCourse(source))return false;
+  const course={...source,id:courseId,...(edition?{editionId:edition.id}:{})};
+  const target=course.units.find(u=>u.slug===`lu${unit}`);if(!target)return false;
+  // Reuse the verified learner/edition gate used by the learning page. The
+  // former invoker RPC also queried a deliberately private editions table,
+  // causing permission-denied even for valid enrolments. No grants are widened.
+  const {tigerUnitAllowed}=await import('@/server/services/tiger-progression');
+  return tigerUnitAllowed(session,course,target);
  }catch{return false;}
 }
