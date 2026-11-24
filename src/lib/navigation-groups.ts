@@ -1,14 +1,15 @@
 export type NavigationItem={href:string;label:string};
+export const primaryNavigationPaths=["/dashboard","/security-watchdog","/security-assurance"];
 export function navigationGroups(items:NavigationItem[]) {
  const definitions=[
   {id:"learning",label:"My learning",paths:["/catalogue","/catalogue?view=my-learning","/learning-balances"]},
   {id:"publication",label:"Course publication",paths:["/admin/courses","/course-reviews","/review-requests","/course-calculator","/course-sharing","/admin/agreements","/admin/service-costs"]},
   {id:"companies",label:items.some(i=>i.href==="/company-branding")&&!items.some(i=>i.href==="/admin/companies")?"Company branding":"Companies and branding",paths:["/company-branding","/company","/admin/companies","/admin/certificates"]},
   {id:"enrolment",label:"Learners and payments",paths:["/admin/learners","/admin/invitations","/admin/enrolments","/admin/assessments","/payments","/admin/payments/stripe","/admin/payments"]},
-  {id:"governance",label:"Policies and administration",paths:["/admin","/policies","/admin/policies","/security-watchdog"]},
+  {id:"governance",label:"Policies and administration",paths:["/admin","/policies","/admin/policies"]},
   {id:"messages",label:"Messages and support",paths:["/messages","/messages/email-management","/messages/email-sets","/messages/image-library","/admin/notifications","/admin/test-messages","/admin/email-templates"]}
  ];
- const extra=items.filter(i=>!['/dashboard','/profile'].includes(i.href)&&!definitions.some(g=>g.paths.includes(i.href)));
+ const extra=items.filter(i=>i.href!=="/profile"&&!primaryNavigationPaths.includes(i.href)&&!definitions.some(g=>g.paths.includes(i.href)));
  return [...definitions.map(g=>({...g,items:g.paths.flatMap(path=>items.filter(i=>i.href===path))})),{id:"other",label:"Other pages",paths:extra.map(i=>i.href),items:extra}].filter(g=>g.items.length);
 }
 export function currentNavigation(items:NavigationItem[],pathname:string,view:string|null) {

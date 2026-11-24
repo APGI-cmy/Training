@@ -1,6 +1,7 @@
 import Link from 'next/link';
+import {notFound,redirect} from 'next/navigation';
 import {requireSession} from '@/server/auth/session';
-import {watchdogAccess,watchdogCompanies,checkWatchdogScope,watchdogRun} from '@/server/security-watchdog/access';
+import {watchdogScopeAccess,watchdogCompanies,checkWatchdogScope,watchdogRun,WatchdogError} from '@/server/security-watchdog/access';
 import {watchdogDashboard} from '@/server/security-watchdog/store';
 import {watchdogDeployment} from '@/server/security-watchdog/runner';
 import {verifyWatchdogReport} from '@/server/security-watchdog/signing';
@@ -17,24 +18,31 @@ export const dynamic='force-dynamic';
 export const metadata={title:'Security Watchdog'};
 const date=(value:string)=>new Date(value).toLocaleString('en-ZA',{timeZone:'Africa/Johannesburg',dateStyle:'medium',timeStyle:'short'})+' SAST';
 export default async function SecurityWatchdogPage({searchParams}:{searchParams:Promise<{scope?:string;run?:string;view?:string}>}){
- const session=await requireSession(),access=await watchdogAccess(session),companies=await watchdogCompanies(access),query=await searchParams;
+ const session=await requireSession(),query=await searchParams;
+ const access={session,...await watchdogScopeAccess(session)};
+ if(!access.principal&&!access.ownedCompanyIds.length){
+  if(!query.scope&&!query.run&&session.user.email_confirmed_at)redirect('/security-assurance');
+  notFound();
+ }
+ const companies=await watchdogCompanies(access);
  const scope=query.scope?query.scope==='platform'?null:query.scope:access.principal?null:companies[0]?.id;
  if(scope===undefined)return <main className="watchdog-page"><h1>Security Watchdog</h1><p>No active company-owner scope is assigned to this administrator account. Ask a platform principal to check your company assignment.</p></main>;
- checkWatchdogScope(access,scope);
+ try{checkWatchdogScope(access,scope);}catch(error){if(error instanceof WatchdogError)notFound();throw error;}
  const selectedCompany=scope?companies.find(c=>c.id===scope):null;if(scope&&!selectedCompany)return <main className="watchdog-page"><h1>Security Watchdog</h1><p>This company is unavailable.</p></main>;
- const [dashboard,operations]=await Promise.all([watchdogDashboard(access,scope),watchdogOperations(access,scope)]);const selected=query.run?await watchdogRun(access,query.run):dashboard.runs.find(r=>r.company_id===scope);
+ const [dashboard,operations]=await Promise.all([watchdogDashboard(access,scope),watchdogOperations(access,scope)]);
+ const selected=query.run?await watchdogRun(access,query.run).catch(error=>{if(error instanceof WatchdogError)notFound();throw error;}):dashboard.runs.find(r=>r.company_id===scope);
  // A bookmarked report and its score must match the selected scope.
  const report=selected&&selected.company_id===scope?selected:undefined;
  const payload=report?.payload,proof=report?.proof,verified=!!payload&&!!proof&&verifyWatchdogReport(payload,proof);
- return <main className="watchdog-page"><p className="eyebrow">Security assurance</p><h1>Security Watchdog</h1><p>Check the controls protecting information, exercise synthetic boundaries and follow the evidence.</p>
+ return <main className="watchdog-page"><p className="eyebrow">Security assurance</p><h1>Security Watchdog</h1><p>Review security activity, protection checks and evidence for this workspace.</p>
  <section className="watchdog-box"><h2>{scope?selectedCompany!.name:'Platform-wide security oversight'}</h2><p>{access.principal?'You can oversee platform and company security reports.':'Your view, test requests and downloads are restricted to your owned companies.'} Reports contain security metadata and synthetic test outcomes.</p><form className="watchdog-scope-form"><label>Security scope<select name="scope" defaultValue={scope??'platform'}>{access.principal?<option value="platform">Whole platform</option>:null}{companies.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label><button className="secondary-button">Open scope</button></form></section>
  <div className="watchdog-note"><strong>Evidence within a stated scope.</strong> Watchdog reports the named checks and their limits. It cannot prove that information has never leaked, and it does not issue ISO certification. No real customer content is copied into the drill.</div>
  {payload&&!verified?<p className="watchdog-note" role="alert">Report integrity could not be verified. Its percentage and downloads are unavailable. Run a fresh check and investigate the stored evidence.</p>:null}
  {payload&&verified?<p><strong>{payload.scope.label}</strong> · Checked {date(payload.finishedAt)} · {reportFreshness(report!,watchdogDeployment())==='current'?'Current evidence':'Evidence needs refreshing'}</p>:null}
  <WatchdogOverview checks={verified?payload!.checks:[]} stale={!!report&&reportFreshness(report,watchdogDeployment())!=='current'} trend={scopedTrend(dashboard.runs.filter(r=>r.payload&&r.proof&&verifyWatchdogReport(r.payload,r.proof)),scope,payload?.suite??'')} scope={scope} runId={report?.id} specialist={query.view==='specialist'}/>
  <div className="watchdog-actions">{report&&payload&&verified?<><a className="primary-button" href={`/api/security-watchdog/runs/${report.id}/export?format=pdf`}>Download report (PDF)</a><a className="secondary-button" href={`/api/security-watchdog/runs/${report.id}/export?format=json`}>Download signed evidence</a></>:null}<a className="secondary-button" href={`?scope=${scope??'platform'}${report?'&run='+report.id:''}&view=specialist#watchdog-report`}>Open specialist report</a></div>
- <WatchdogOperations scope={scope} monitor={operations.monitor} actions={operations.actions} alerts={operations.alerts} identity={operations.identity} eventCount={operations.events.length} databasePassed={verified&&!!report&&reportFreshness(report,watchdogDeployment())==='current'&&payload?.checks.some(c=>c.id==='destructive_grants'&&c.state==='passed')===true}/>
- <RunWatchdog key={scope??'platform'} scope={scope} actorId={session.user.id}/>
+ <WatchdogOperations scope={scope} monitor={operations.monitor} actions={operations.actions} alerts={operations.alerts} identity={operations.identity} eventCount={operations.events.length} syntheticChecksAvailable={!access.tenantId} databasePassed={verified&&!!report&&reportFreshness(report,watchdogDeployment())==='current'&&payload?.checks.some(c=>c.id==='destructive_grants'&&c.state==='passed')===true}/>
+ {!access.tenantId?<RunWatchdog key={scope??'platform'} scope={scope} actorId={session.user.id}/>:null}
  {scope===null?<section className="watchdog-box"><details><summary>OneDrive cloud recovery — 43 of 43 application checks passed</summary><p><strong>{cloudRecoveryEvidence.files.toLocaleString('en-ZA')} source/course files · {cloudRecoveryEvidence.tables} tables · {cloudRecoveryEvidence.storageFiles} file objects restored</strong></p><p>Verified {date(cloudRecoveryEvidence.verifiedAt)}. Database snapshot {date(cloudRecoveryEvidence.databaseAt)}; file snapshot {date(cloudRecoveryEvidence.storageAt)}. Review by {date(cloudRecoveryEvidence.reviewBy)}.</p><ul>{cloudRecoveryEvidence.limitations.map(t=><li key={t}>{t}</li>)}</ul><p className="watchdog-small">Application exercise receipt <code>{cloudRecoveryEvidence.applicationReceipt}</code></p></details></section>:null}
  {scope===null?<section className="watchdog-box"><details><summary>Recovery drill evidence — 3 November 2026</summary><p><strong>{recoveryDrillEvidence.tables} tables · {recoveryDrillEvidence.files}/{recoveryDrillEvidence.files} files hash-verified · {recoveryDrillEvidence.boundaryChecks}/{recoveryDrillEvidence.boundaryChecks} restored access checks passed</strong></p><p>Verified {date(recoveryDrillEvidence.verifiedAt)}. Review by {date(recoveryDrillEvidence.reviewBy)}. Database backup time: {date(recoveryDrillEvidence.backupAt)}.</p><ul>{recoveryDrillEvidence.limitations.map(t=><li key={t}>{t}</li>)}</ul><a href={'https://supabase.com/dashboard/project/'+recoveryDrillEvidence.target} target="_blank" rel="noreferrer">Open the separate recovery project</a></details></section>:null}
  <details className="watchdog-box" id="watchdog-specialist" open={query.view==='specialist'}><summary>Specialist report — controls, findings and technical evidence</summary> <section className="watchdog-box" id="watchdog-report"><div className="watchdog-heading"><h2>Security check report</h2>{report&&payload&&verified?<div className="watchdog-actions"><a className="secondary-button" href={`/api/security-watchdog/runs/${report.id}/export?format=pdf`}>Download PDF</a><a className="secondary-button" href={`/api/security-watchdog/runs/${report.id}/export?format=json`}>Download signed JSON</a></div>:null}</div>

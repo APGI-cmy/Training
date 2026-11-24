@@ -4,6 +4,7 @@ import {watchdogDashboard,watchdogRpc} from '@/server/security-watchdog/store';
 import {runSecurityWatchdog} from '@/server/security-watchdog/runner';
 import {watchdogActions} from '@/lib/watchdog-overview';
 import {queueWatchdogResult,flushWatchdogAlerts} from '@/server/security-watchdog/operations';
+import {rows} from '@/server/services/company-structure';
 export const dynamic='force-dynamic';
 export const maxDuration=300;
 function scopeOf(value:unknown){return value===null||value==='platform'?null:watchdogId(String(value));}
@@ -20,7 +21,13 @@ export async function POST(request:Request){
   if(Number(request.headers.get('content-length')??0)>10000)throw new WatchdogError('Request is too large.',400);
   const body=await request.json();
   if(body.operation==='acknowledge'){
-   const read=await watchdogRpc<boolean>('v2_watchdog_acknowledge',{p_actor:access.session.user.id,p_delivery:watchdogId(String(body.deliveryId))});
+   const deliveryId=watchdogId(String(body.deliveryId)),actor=access.session.user.id;
+   if(access.tenantId){
+    checkWatchdogScope(access,access.tenantId);
+    const matches=await rows<{id:string}>(`/rest/v1/v2_watchdog_deliveries?id=eq.${deliveryId}&recipient_id=eq.${actor}&select=id,v2_watchdog_runs!inner(company_id)&v2_watchdog_runs.company_id=eq.${access.tenantId}&limit=1`);
+    if(!matches.length)throw new WatchdogError('This read receipt is unavailable.',404);
+   }
+   const read=await watchdogRpc<boolean>('v2_watchdog_acknowledge',{p_actor:actor,p_delivery:deliveryId});
    if(!read)throw new WatchdogError('This read receipt is unavailable.',404);
    return Response.json({read:true},{headers:{'cache-control':'private, no-store'}});
   }
@@ -33,6 +40,7 @@ export async function POST(request:Request){
   }
   if(body.operation==='monitor'){
    if(typeof body.enabled!=='boolean')throw new WatchdogError('Select whether automatic checks are enabled.',400);
+   if(body.enabled&&access.tenantId)throw new WatchdogError('Production synthetic checks are awaiting qualification.',409);
    await watchdogRpc('v2_watchdog_monitor_set',{p_actor:access.session.user.id,p_company:scope,p_enabled:body.enabled});
    return Response.json({saved:true},{headers:{'cache-control':'private, no-store'}});
   }
@@ -41,7 +49,12 @@ export async function POST(request:Request){
    return Response.json(await flushWatchdogAlerts(),{headers:{'cache-control':'private, no-store'}});
   }
   if(body.operation==='alert_read'){
-   const saved=await watchdogRpc<boolean>('v2_watchdog_alert_read',{p_actor:access.session.user.id,p_alert:watchdogId(String(body.alertId))});
+   const alertId=watchdogId(String(body.alertId)),actor=access.session.user.id;
+   if(access.tenantId){
+    const matches=await rows<{id:string}>(`/rest/v1/v2_watchdog_alerts?id=eq.${alertId}&recipient_id=eq.${actor}&company_id=eq.${access.tenantId}&select=id&limit=1`);
+    if(!matches.length)throw new WatchdogError('This alert receipt is unavailable.',404);
+   }
+   const saved=await watchdogRpc<boolean>('v2_watchdog_alert_read',{p_actor:actor,p_alert:alertId});
    if(!saved)throw new WatchdogError('This alert receipt is unavailable.',404);
    return Response.json({saved:true},{headers:{'cache-control':'private, no-store'}});
   }

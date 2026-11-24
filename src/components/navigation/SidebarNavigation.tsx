@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Suspense,useEffect,useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
-import {navigationGroups,currentNavigation,type NavigationItem} from "@/lib/navigation-groups";
+import {navigationGroups,currentNavigation,primaryNavigationPaths,type NavigationItem} from "@/lib/navigation-groups";
 
 function NavigationGroup({label,items,currentHref}:{label:string;items:NavigationItem[];currentHref?:string}) {
  const active=items.some(i=>i.href===currentHref),[open,setOpen]=useState(active);
@@ -14,7 +14,7 @@ function NavigationGroup({label,items,currentHref}:{label:string;items:Navigatio
 
 function NavigationLinks({ items, currentHref }: { items: NavigationItem[]; currentHref?: string }) {
   return <nav className="sidebar-links" aria-label="Learner route navigation">
-    {items.filter(i=>i.href==="/dashboard").map(i=><Link key={i.href} href={i.href} aria-current={i.href===currentHref?"page":undefined}>{i.label}</Link>)}
+    {items.filter(i=>primaryNavigationPaths.includes(i.href)).map(i=><Link key={i.href} href={i.href} aria-current={i.href===currentHref?"page":undefined}>{i.label}</Link>)}
     {navigationGroups(items).map(g=><NavigationGroup key={g.id} label={g.label} items={g.items} currentHref={currentHref}/>)}
     {items.filter(i=>i.href==="/profile").map(i=><Link key={i.href} href={i.href} aria-current={i.href===currentHref?"page":undefined}>{i.label}</Link>)}
   </nav>;

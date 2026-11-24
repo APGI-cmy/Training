@@ -40,7 +40,7 @@ beforeEach(()=>{
   return Response.json({});
  });
  vi.mocked(requireCompanyForSession).mockImplementation(async(id)=>{if(id===fixtureCompanies[0])return {company:{id}} as never;throw Error('You do not have access to this company.');});
- vi.mocked(watchdogAccess).mockImplementation(async(s)=>{if(s?.user.id==='fixture-3')throw new WatchdogError('No administrator scope');return {session:s!,principal:false,ownedCompanyIds:[fixtureCompanies[0]]};});
+ vi.mocked(watchdogAccess).mockImplementation(async(s)=>{if(s?.user.id==='fixture-3')throw new WatchdogError('No administrator scope');return {session:s!,tenantId:null,principal:false,ownedCompanyIds:[fixtureCompanies[0]]};});
  vi.mocked(watchdogRun).mockImplementation(async(access)=>{if(watchdogActorId(access)!=='operator')throw new WatchdogError('Unavailable',404);return {payload:patches.find(p=>p.payload)?.payload,proof:{}} as never;});
  vi.mocked(watchdogDashboard).mockResolvedValue({runs:[],deliveries:[{id:'delivery',run_id:runId,created_at:'now',read_at:null}],evidence:[]});
  vi.stubGlobal('fetch',vi.fn(async(input:string,init?:RequestInit)=>{

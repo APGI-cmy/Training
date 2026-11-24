@@ -9,6 +9,7 @@ import { getCurrentSession, getUserRoles } from "@/server/auth/session";
 import { isPlatformPrincipal } from "@/server/services/platform-principals";
 import {ownMemberships} from "@/server/services/company-structure";
 import {paymentPortalEligible} from "@/lib/payment-reports";
+import {watchdogHref,watchdogScopeAccess} from "@/server/security-watchdog/access";
 
 export async function LearnerSidebar() {
   const session = await getCurrentSession();
@@ -18,6 +19,9 @@ export async function LearnerSidebar() {
   const principal = !partnerSite && isAdmin && session ? await isPlatformPrincipal(session) : false;
   const emailAdmin=isAdmin||!!session?.user.email_confirmed_at&&(await ownMemberships(session,true)).length>0;
   const paymentEligible=!!session?.user.email_confirmed_at&&paymentPortalEligible(roles,roles.some(r=>["admin","reviewer","course_publisher"].includes(r))?false:(await ownMemberships(session!,true)).length>0);
+  const securityHref=session?.user.email_confirmed_at
+    ? watchdogHref(await watchdogScopeAccess(session).catch(()=>({principal:false,ownedCompanyIds:[]})))
+    : null;
 
   let noticeCounts:NotificationCounts|null=null;
   if(session?.user.email_confirmed_at){try{const {unread,responses,attention}=await notificationInbox(session,"all",0,true);noticeCounts={unread,responses,attention};}catch{/* The workspace remains usable during notification outages. */}}
@@ -37,6 +41,7 @@ export async function LearnerSidebar() {
       {session?<SidebarNotifications initial={noticeCounts}/>:null}
       <SidebarNavigation items={[
         { href: "/dashboard", label: "Dashboard" },
+        ...(securityHref ? [{href:securityHref,label:'Security Watchdog'}] : []),
         { href: "/catalogue", label: "Course catalogue" },
         { href: "/catalogue?view=my-learning", label: "Enrolled courses" },
         ...(session ? [{href:'/learning-balances',label:'My learning balances'},{href:'/course-shop',label:'Learning options and test cart'}] : []),
@@ -49,7 +54,6 @@ export async function LearnerSidebar() {
           ...(emailAdmin?[{href:'/messages/email-management',label:'Email management'},{href:'/messages/email-sets',label:'Email message sets'},{href:'/messages/image-library',label:'Image library'}]:[]),
           ...(!partnerSite?[{ href: "/company", label: "Company workspaces" }]:!isAdmin&&emailAdmin?[{href:"/company-branding",label:"Company branding"}]:[]),
           { href: "/policies", label: "Policies and reviews" },
-          ...(emailAdmin?[{href:'/security-watchdog',label:'Security Watchdog'}]:[]),
           { href: "/course-reviews", label: "Course reviews" },
           { href: "/review-requests", label: "Review requests" },
         ] : []),

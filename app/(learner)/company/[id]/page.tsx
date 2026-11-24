@@ -21,6 +21,7 @@ import {
 import { getCourses, getCourseBySlug } from "@/lib/courses";
 import { CourseCardCover } from "@/components/course/CourseCardCover";
 import catalogueStyles from "@/components/course/compact-course-catalogue.module.css";
+import {watchdogHref,watchdogScopeAccess} from "@/server/security-watchdog/access";
 export default async function CompanyPage({
   params, searchParams,
 }: {
@@ -36,6 +37,9 @@ export default async function CompanyPage({
     notFound();
   }
   const { company, session, isAdmin } = access;
+  const securityHref=session.user.email_confirmed_at
+    ? watchdogHref(await watchdogScopeAccess(session).catch(()=>({principal:false,ownedCompanyIds:[]})),id)
+    : null;
   const partnerSite=!!productionCompanyId();
   const ownerInviter = isAdmin && await isPlatformPrincipal(session);
   const principal = !partnerSite && ownerInviter;
@@ -85,6 +89,7 @@ export default async function CompanyPage({
         </form>
       </header>
       <nav className="button-row">
+        {securityHref?<Link href={securityHref}>Security Watchdog</Link>:null}
         {returnTo ? <Link href={`${returnTo}${returnTo.includes("?")?"&":"?"}brand=${id}`}>Return to course preparation</Link> : null}
         {!partnerSite?<Link href="/company">Switch company</Link>:<Link href="/company-branding">Company branding</Link>}
         {owner ? <Link href="/policies">Policies and reviews</Link> : null}

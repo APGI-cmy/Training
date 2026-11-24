@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import {adminRest} from '@/server/supabase/admin-rest';
 import {rows} from '@/server/services/company-structure';
 import {deliverTransactionalEmail} from '@/server/services/email/transactional-delivery';
-import {STAGING_ORIGIN,assertStagingIsolation} from '@/server/environment-isolation';
+import {configuredAppOrigin,assertStagingIsolation} from '@/server/environment-isolation';
 import {watchdogRpc} from './store';
 import {checkWatchdogScope,watchdogActorId,WatchdogError,type WatchdogAccess} from './access';
 import type {WatchdogActionRow,WatchdogMonitor,WatchdogAlert} from '@/lib/watchdog-overview';
@@ -38,7 +38,7 @@ export async function flushWatchdogAlerts(){
   const allowed=user?.email_confirmed_at&&await watchdogRpc<boolean>('v2_watchdog_allowed',{p_actor:job.recipient_id,p_company:job.company_id});
   if(!allowed){await adminRest(`/rest/v1/v2_watchdog_alerts?id=eq.${job.id}`,{method:'PATCH',body:JSON.stringify({state:'cancelled'})});return;}
   const label=job.kind==='test'?'TEST ALARM — no breach is being reported':job.kind==='reminder'?'Reminder: an unread security alert needs review':job.kind==='security_events'?'Security activity requires review':job.kind==='incomplete'?'A security check could not finish':'A security check needs attention';
-  const link=`${STAGING_ORIGIN}/security-watchdog?scope=${job.company_id??'platform'}${job.run_id?'&run='+job.run_id:''}`;
+  const link=`${configuredAppOrigin()}/security-watchdog?scope=${job.company_id??'platform'}${job.run_id?'&run='+job.run_id:''}`;
   const text=`${label}\n\nOpen your scoped Security Watchdog dashboard to see the exact checks, gaps and required actions. Sign in with your own account. This email contains no customer information or private records.\n\n${link}\n\nProvider acceptance is not proof that this email reached your inbox. Record your own read receipt in Watchdog.`;
   const html=`<h1>${label}</h1><p>Open your scoped Watchdog dashboard to review the evidence and required actions.</p><p><a href="${link}">Open Security Watchdog</a></p><p>No customer information or private records are included. Record your own read receipt after signing in.</p>`;
   const result=await deliverTransactionalEmail({to:user.email,subject:'Security Watchdog: '+label,text,html,idempotencyKey:createHash('sha256').update('watchdog-alert:'+job.id).digest('hex'),tracking:{category:'system',organisationId:job.company_id,sourceId:job.id,messageKey:'watchdog-alert:'+job.id}});

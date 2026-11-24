@@ -1,11 +1,10 @@
 import 'server-only';
 import {createHash} from 'node:crypto';
 import {getCurrentSession} from '@/server/auth/session';
-import {isPlatformPrincipal} from '@/server/services/platform-principals';
-import {ownMemberships,rows} from '@/server/services/company-structure';
+import {rows} from '@/server/services/company-structure';
 import {WATCHDOG_SUITE,type WatchdogRun} from '@/lib/security-watchdog';
 import {projectAssurance} from '@/lib/security-assurance';
-import {WatchdogError,watchdogId,watchdogRunFields} from './access';
+import {WatchdogError,watchdogId,watchdogRunFields,watchdogScopeAccess} from './access';
 import {verifyWatchdogReport} from './signing';
 import {watchdogDeployment} from './runner';
 
@@ -13,13 +12,12 @@ export async function assuranceAccess(requestedScope?:string){
  const session=await getCurrentSession();
  if(!session)throw new WatchdogError('Sign in to view your security information.',401);
  if(!session.user.email_confirmed_at)throw new WatchdogError('Verify your email first.');
- const [principal,owners]=await Promise.all([isPlatformPrincipal(session),ownMemberships(session,true)]);
- owners.sort((a,b)=>a.organisation_id.localeCompare(b.organisation_id));
- const audience=principal?'principal' as const:owners.length?'company' as const:'learner' as const;
- let scope:string|null=principal?null:owners[0]?.organisation_id??null;
+ const {tenantId,principal,ownedCompanyIds}=await watchdogScopeAccess(session);
+ const audience=principal?'principal' as const:ownedCompanyIds.length?'company' as const:'learner' as const;
+ let scope:string|null=principal?null:tenantId??[...ownedCompanyIds].sort()[0]??null;
  if(requestedScope){
   if(requestedScope==='platform'){if(!principal)throw new WatchdogError('This security scope is unavailable.');scope=null;}
-  else {watchdogId(requestedScope);if(!principal&&!owners.some(m=>m.organisation_id===requestedScope))throw new WatchdogError('This security scope is unavailable.');scope=requestedScope;}
+  else {watchdogId(requestedScope);if(!principal&&!ownedCompanyIds.includes(requestedScope))throw new WatchdogError('This security scope is unavailable.');scope=requestedScope;}
  }
  return {session,scope,audience};
 }

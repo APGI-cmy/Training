@@ -1,18 +1,32 @@
 import 'server-only';
+import {cache} from 'react';
 import {getCurrentSession,getUserRoles,type AlpSession} from '@/server/auth/session';
 import {isPlatformPrincipal} from '@/server/services/platform-principals';
 import {ownMemberships,rows} from '@/server/services/company-structure';
 import {permittedWatchdogScope,type WatchdogRun} from '@/lib/security-watchdog';
 import {adminRest} from '@/server/supabase/admin-rest';
+import {productionCompanyId} from '@/server/services/tenant-courses';
 export class WatchdogError extends Error{constructor(message:string,public status=403){super(message);}}
 export function watchdogId(id:string){if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))throw new WatchdogError('Invalid request.',400);return id;}
+export const watchdogScopeAccess=cache(async (session:AlpSession)=>{
+ const tenantId=productionCompanyId();
+ if(!session.user.email_confirmed_at)return {tenantId,principal:false,ownedCompanyIds:[]};
+ const [principal,owners]=await Promise.all([isPlatformPrincipal(session),ownMemberships(session,true)]);
+ const ownedCompanyIds=owners.map(m=>m.organisation_id);
+ if(tenantId)return {tenantId,principal:false,ownedCompanyIds:principal||ownedCompanyIds.includes(tenantId)?[tenantId]:[]};
+ return {tenantId,principal,ownedCompanyIds};
+});
+export function watchdogHref(access:{principal:boolean;ownedCompanyIds:string[]},scope?:string){
+ if(scope)return permittedWatchdogScope(access.principal,access.ownedCompanyIds,scope)?`/security-watchdog?scope=${scope}`:'/security-assurance';
+ return access.principal||access.ownedCompanyIds.length?'/security-watchdog':'/security-assurance';
+}
 export async function watchdogAccess(verifiedSession?:AlpSession){
  const session=verifiedSession??await getCurrentSession();
  if(!session)throw new WatchdogError('Sign in to open Security Watchdog.',401);
  if(!session.user.email_confirmed_at)throw new WatchdogError('Verify your email before using Security Watchdog.');
- const [principal,owners,roles]=await Promise.all([isPlatformPrincipal(session),ownMemberships(session,true),getUserRoles(session.accessToken)]);
- if(!principal&&!owners.length&&!roles.includes('admin'))throw new WatchdogError('Security Watchdog is available to company administrators.');
- return {session,principal,ownedCompanyIds:owners.map(m=>m.organisation_id)};
+ const access=await watchdogScopeAccess(session);
+ if(!access.principal&&!access.ownedCompanyIds.length&&!(await getUserRoles(session.accessToken)).includes('admin'))throw new WatchdogError('Security Watchdog is available to company administrators.');
+ return {session,...access};
 }
 export type WatchdogAccess={principal:boolean;ownedCompanyIds:string[]}&({session:AlpSession;actorId?:never;automatic?:false}|{actorId:string;automatic:true;session?:never});
 export function watchdogActorId(access:WatchdogAccess){return access.session?access.session.user.id:access.actorId;}
