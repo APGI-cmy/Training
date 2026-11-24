@@ -1,4 +1,5 @@
 import {timingSafeEqual} from 'node:crypto';
+import {stagingCronSecret} from '@/server/environment-isolation';
 import {synchronizeCourseDeployments} from '@/server/services/course-deployments';
 import {processReviewMail} from '@/server/services/course-reviews';
 import {queueReviewResponseRequests} from '@/server/services/review-nonresponse';
@@ -6,7 +7,7 @@ import {rows} from '@/server/services/company-structure';
 import type {ReviewRound} from '@/lib/course-review';
 export const maxDuration=300;
 export async function GET(request:Request){
- const secret=process.env.CRON_SECRET,actual=Buffer.from(request.headers.get('authorization')??''),expected=Buffer.from(`Bearer ${secret??''}`);
+ const secret=stagingCronSecret(),actual=Buffer.from(request.headers.get('authorization')??''),expected=Buffer.from(`Bearer ${secret??''}`);
  if(!secret||actual.length!==expected.length||!timingSafeEqual(actual,expected))return Response.json({error:'Unauthorized'},{status:401});
  try{
   const result=await synchronizeCourseDeployments();

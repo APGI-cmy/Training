@@ -19,13 +19,13 @@ export type AssuranceSnapshot={
  current:boolean;checkedAt:string|null;reportHref:string;status:'checked'|'attention'|'incomplete'|'unavailable';
  payment:{passed:number;total:number;checks:{title:string;state:WatchdogCheck['state']}[]};
  overall:{passed:number;total:number;percent:number}|null;
- explanation:string;paymentMode:'sandbox';
+ explanation:string;paymentMode:'sandbox'|'disabled';
 };
 // Explicit projection: never return raw report details, actor IDs, company names,
 // findings, provider identifiers, credentials or other users' records to learners.
-export function projectAssurance({audience,context,event,phase,payload,trusted,current,reportHref,automatic=false}:{
+export function projectAssurance({audience,context,event,phase,payload,trusted,current,reportHref,automatic=false,production=false}:{
  audience:AssuranceAudience;context:string;event:string|null;phase:AssuranceSnapshot['phase'];
- payload:WatchdogPayload|null;trusted:boolean;current:boolean;reportHref:string;automatic?:boolean;
+ payload:WatchdogPayload|null;trusted:boolean;current:boolean;reportHref:string;automatic?:boolean;production?:boolean;
 }):AssuranceSnapshot{
  const valid=!!payload&&trusted&&current&&payload.cleanup;
  const checks:{title:string;state:WatchdogCheck['state']}[]=paymentAssuranceControls.map(c=>({title:c.title,state:valid?(payload.checks.find(p=>p.id===c.id)?.state??'inconclusive'):'not_tested'}));
@@ -37,7 +37,7 @@ export function projectAssurance({audience,context,event,phase,payload,trusted,c
  return {audience,context,automatic,phase,event,current:valid,checkedAt:trusted?payload?.finishedAt??null:null,reportHref,
   status:!valid?'unavailable':attention?'attention':checks.some(c=>c.state!=='passed')?'incomplete':'checked',
   payment:{passed:tested,total:checks.length,checks},overall:audience==='principal'&&valid?watchdogScore(payload.checks):null,
-  paymentMode:'sandbox',explanation:payload?.environment==='training-production'
+ paymentMode:production?'disabled':'sandbox',explanation:production
    ? 'Production checks inspect platform configuration without modifying learner records. Live payments are disabled. Technical checks do not constitute PCI DSS or ISO certification.'
    : 'Daily and after-release checks exercise named platform controls using fictional records. Card and bank details belong in Stripe-hosted forms, not messages or uploads here. These checks do not certify your bank account, prove that no information has ever leaked, or constitute PCI DSS or ISO certification.'};
 }

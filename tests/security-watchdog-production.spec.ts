@@ -16,6 +16,7 @@ vi.mock('@/server/production-environment',()=>({assertProductionEnvironment:vi.f
 import {GET} from '../app/api/cron/security-watchdog/route';
 import {PRODUCTION_WATCHDOG_SUITE} from '@/lib/security-watchdog';
 import {assertProductionEnvironment} from '@/server/production-environment';
+import {stagingCronSecret} from '@/server/environment-isolation';
 import {rows} from '@/server/services/company-structure';
 import {adminRest} from '@/server/supabase/admin-rest';
 import {watchdogRun} from '@/server/security-watchdog/access';
@@ -68,6 +69,10 @@ it('rejects a missing scheduler credential before inspecting production',async()
  expect((await GET(request('wrong'))).status).toBe(401);
  expect(assertProductionEnvironment).not.toHaveBeenCalled();
  expect(watchdogRpc).not.toHaveBeenCalled();
+});
+it('reserves the production schedule secret for Watchdog while retaining staging schedules',()=>{
+ expect(stagingCronSecret()).toBeUndefined();
+ expect(stagingCronSecret({ALP_ENVIRONMENT:'v2-staging',CRON_SECRET:'staging-scheduler'})).toBe('staging-scheduler');
 });
 it('fails closed before claiming work if production isolation is invalid',async()=>{
  vi.mocked(assertProductionEnvironment).mockImplementation(()=>{throw Error('Production checks disabled');});

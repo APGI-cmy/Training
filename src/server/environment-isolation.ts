@@ -20,6 +20,10 @@ export function usesStagingMailCapture(env: Environment = process.env) {
 
 export function configuredDatabaseRef(env:Environment=process.env){return env.ALP_ENVIRONMENT==='training-production'?PRODUCTION_DATABASE_REF:STAGING_DATABASE_REF;}
 export function configuredAppOrigin(env:Environment=process.env){return env.ALP_ENVIRONMENT==='training-production'?productionAppOrigin(env):STAGING_ORIGIN;}
+// The dedicated production project uses Vercel's shared CRON_SECRET only for Watchdog.
+export function stagingCronSecret(env:Environment=process.env){
+ return env.ALP_ENVIRONMENT==='training-production'?undefined:env.CRON_SECRET;
+}
 export function assertStagingIsolation(env: Environment = process.env) {
   if(env.ALP_ENVIRONMENT==='training-production')return assertProductionEnvironment(env);
   const fail = (reason: string): never => { throw new Error(`V2_ISOLATION_BLOCKED: ${reason}`); };

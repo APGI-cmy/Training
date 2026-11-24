@@ -31,7 +31,8 @@ export async function securityAssurance(requestedScope?:string){
  ]);
  const deployment=watchdogDeployment(),now=Date.now();
  const latest=runs.find(r=>r.deployment===deployment);
- const suite=process.env.ALP_ENVIRONMENT==='training-production'?PRODUCTION_WATCHDOG_SUITE:WATCHDOG_SUITE;
+ const production=process.env.ALP_ENVIRONMENT==='training-production';
+ const suite=production?PRODUCTION_WATCHDOG_SUITE:WATCHDOG_SUITE;
  const completed=runs.find(r=>r.payload?.suite===suite&&r.state==='finished'&&r.deployment===deployment);
  const trusted=!!completed?.payload&&!!completed.proof&&completed.fixtures_cleaned&&completed.payload.runId===completed.id&&completed.payload.scope.companyId===scope&&completed.payload.deployment===deployment&&verifyWatchdogReport(completed.payload,completed.proof);
  const time=Date.parse(completed?.payload?.finishedAt??'');
@@ -39,5 +40,5 @@ export async function securityAssurance(requestedScope?:string){
  const reportHref=audience==='learner'?'/security-assurance':`/security-watchdog?scope=${scope??'platform'}`;
  return projectAssurance({audience,context:createHash('sha256').update(session.user.id+'|'+(scope??'platform')).digest('hex').slice(0,24),
   event:latest?createHash('sha256').update(latest.id).digest('hex').slice(0,24):null,
-  phase:latest?.state==='running'&&now-Date.parse(latest.created_at)<=600000?'running':completed?'finished':'unavailable',payload:completed?.payload??null,trusted,current,reportHref,automatic:monitors[0]?.enabled===true});
+  phase:latest?.state==='running'&&now-Date.parse(latest.created_at)<=600000?'running':completed?'finished':'unavailable',payload:completed?.payload??null,trusted,current,reportHref,automatic:monitors[0]?.enabled===true,production});
 }
