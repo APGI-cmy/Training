@@ -40,7 +40,6 @@ export async function POST(request:Request){
   }
   if(body.operation==='monitor'){
    if(typeof body.enabled!=='boolean')throw new WatchdogError('Select whether automatic checks are enabled.',400);
-   if(body.enabled&&access.tenantId)throw new WatchdogError('Production synthetic checks are awaiting qualification.',409);
    await watchdogRpc('v2_watchdog_monitor_set',{p_actor:access.session.user.id,p_company:scope,p_enabled:body.enabled});
    return Response.json({saved:true},{headers:{'cache-control':'private, no-store'}});
   }

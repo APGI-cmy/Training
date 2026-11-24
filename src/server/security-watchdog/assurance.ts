@@ -2,7 +2,7 @@ import 'server-only';
 import {createHash} from 'node:crypto';
 import {getCurrentSession} from '@/server/auth/session';
 import {rows} from '@/server/services/company-structure';
-import {WATCHDOG_SUITE,type WatchdogRun} from '@/lib/security-watchdog';
+import {PRODUCTION_WATCHDOG_SUITE,WATCHDOG_SUITE,type WatchdogRun} from '@/lib/security-watchdog';
 import {projectAssurance} from '@/lib/security-assurance';
 import {WatchdogError,watchdogId,watchdogRunFields,watchdogScopeAccess} from './access';
 import {verifyWatchdogReport} from './signing';
@@ -31,7 +31,8 @@ export async function securityAssurance(requestedScope?:string){
  ]);
  const deployment=watchdogDeployment(),now=Date.now();
  const latest=runs.find(r=>r.deployment===deployment);
- const completed=runs.find(r=>r.payload?.suite===WATCHDOG_SUITE&&r.state==='finished'&&r.deployment===deployment);
+ const suite=process.env.ALP_ENVIRONMENT==='training-production'?PRODUCTION_WATCHDOG_SUITE:WATCHDOG_SUITE;
+ const completed=runs.find(r=>r.payload?.suite===suite&&r.state==='finished'&&r.deployment===deployment);
  const trusted=!!completed?.payload&&!!completed.proof&&completed.fixtures_cleaned&&completed.payload.runId===completed.id&&completed.payload.scope.companyId===scope&&completed.payload.deployment===deployment&&verifyWatchdogReport(completed.payload,completed.proof);
  const time=Date.parse(completed?.payload?.finishedAt??'');
  const current=trusted&&Number.isFinite(time)&&time<=now&&now-time<=86400000;

@@ -5,19 +5,24 @@ import {watchdogRpc} from './store';
 import {runSecurityWatchdog,watchdogDeployment} from './runner';
 import {queueWatchdogResult,flushWatchdogAlerts} from './operations';
 import {recordSecurityEvent} from './events';
+import {productionWatchdogContext,runProductionWatchdog} from './production';
 export async function runWatchdogSchedule(){
+ const production=process.env.ALP_ENVIRONMENT==='training-production'?await productionWatchdogContext():null;
  const job=await watchdogRpc<{actorId:string;companyId:string|null;requestId:string;principal:boolean;reason:'scheduled'|'deployment'}|null>('v2_watchdog_monitor_claim',{p_deployment:watchdogDeployment()});
  let runId:string|null=null;
  if(job){
-  const access={actorId:job.actorId,automatic:true as const,principal:job.principal,ownedCompanyIds:job.companyId?[job.companyId]:[]};
+  if(production&&job.companyId!==production.id)throw Error('The scheduled Watchdog scope is unavailable in production.');
+  const access={actorId:job.actorId,automatic:true as const,principal:!production&&job.principal,ownedCompanyIds:job.companyId?[job.companyId]:[]};
   try{
-   const run=await runSecurityWatchdog(access,job.companyId,job.requestId,job.reason);runId=run.id;
+   const run=production?await runProductionWatchdog(access,production,job.requestId,job.reason):await runSecurityWatchdog(access,job.companyId,job.requestId,job.reason);
+   runId=run.id;
    if(run.state==='finished'){
     const r=await adminRest(`/rest/v1/v2_watchdog_monitors?scope_key=eq.${job.companyId??'platform'}`,{method:'PATCH',body:JSON.stringify({last_run_at:new Date().toISOString(),last_run_id:run.id,last_deployment:watchdogDeployment()})});if(!r.ok)throw Error('Monitor completion was not recorded.');
    }
-   await queueWatchdogResult(access,job.companyId,run);
-  }catch{await recordSecurityEvent({kind:'monitor_failure',actorId:job.actorId,companyId:job.companyId});}
+   if(!production)await queueWatchdogResult(access,job.companyId,run);
+  }catch(error){await recordSecurityEvent({kind:'monitor_failure',actorId:job.actorId,companyId:job.companyId});if(production)throw error;}
  }
+ if(production)return {automaticRun:runId};
  // An instrumented event burst raises a bounded, hourly-deduplicated alert.
  const events=await rows<{id:string}>(`/rest/v1/v2_watchdog_events?synthetic=eq.false&kind=in.(auth_failure,company_access_denied,report_access_denied,monitor_failure)&created_at=gte.${encodeURIComponent(new Date(Date.now()-10*60000).toISOString())}&select=id&limit=11`);
  if(events.length>=10){

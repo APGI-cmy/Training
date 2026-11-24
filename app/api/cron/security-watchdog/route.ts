@@ -5,7 +5,9 @@ export const maxDuration=300;
 export async function GET(request:Request){
  const secret=process.env.CRON_SECRET,actual=Buffer.from(request.headers.get('authorization')??''),expected=Buffer.from(`Bearer ${secret??''}`);
  if(!secret||actual.length!==expected.length||!timingSafeEqual(actual,expected))return Response.json({error:'Unauthorized'},{status:401});
- if(process.env.ALP_ENVIRONMENT==='training-production')return Response.json({error:'Production synthetic monitoring is awaiting qualification; staging probes are not run against production.'},{status:503});
- try{const cleanup=await cleanInterruptedWatchdogRuns();return Response.json({...cleanup,...await runWatchdogSchedule()},{headers:{'cache-control':'no-store'}});}
- catch{return Response.json({error:'Watchdog cleanup will retry.'},{status:503,headers:{'cache-control':'no-store'}});}
+ try{
+  const cleanup=process.env.ALP_ENVIRONMENT==='training-production'?{}:await cleanInterruptedWatchdogRuns();
+  return Response.json({...cleanup,...await runWatchdogSchedule()},{headers:{'cache-control':'no-store'}});
+ }
+ catch{return Response.json({error:'Scheduled Watchdog checks could not complete.'},{status:503,headers:{'cache-control':'no-store'}});}
 }
