@@ -7,7 +7,7 @@ export function RunWatchdog({scope,actorId}:{scope:string|null;actorId:string}){
  const [consent,setConsent]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
  const request=useRef<string|null>(null),router=useRouter();
  async function run(){
-  if(busy||!consent)return;setBusy(true);setMessage('Checking live controls and synthetic access boundaries. This can take up to two minutes.');
+  if(busy||!consent)return;setBusy(true);setMessage(scope?'Checking this workspace’s configuration.':'Checking registered deployments and synthetic access boundaries. This can take up to two minutes.');
   const storageKey=`apgi-watchdog-request:${actorId}:${scope??'platform'}`;
   try{
    try{request.current??=sessionStorage.getItem(storageKey);}catch{/* In-memory idempotency remains available. */}
@@ -18,7 +18,7 @@ export function RunWatchdog({scope,actorId}:{scope:string|null;actorId:string}){
   }catch(e){setMessage(e instanceof Error?e.message:'The run could not finish. Check the saved run history before retrying.');router.refresh();}
   finally{setBusy(false);}
  }
- return <section className="watchdog-box"><h2>Run a controlled security check</h2><p>The drill creates three temporary fictional accounts and two synthetic companies inside V2 staging. It tests existing profile and membership rules, the deployed company guard, Watchdog scopes and canary isolation. It then removes its fixtures. Customer content is not copied into the drill.</p><label className="watchdog-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} disabled={busy}/> I understand this is a bounded synthetic test and a point-in-time report, with untested areas listed.</label><button className="primary-button" type="button" disabled={!consent||busy} onClick={()=>void run()}>{busy?'Security check running…':'Run security check'}</button><p role="status" aria-live="polite">{message}</p><p className="watchdog-small">One test runs at a time. Allow 90 seconds between your tests. If you leave this page, check the run history when you return.</p></section>;
+ return <section className="watchdog-box"><h2>{scope?'Run a check for this workspace':'Run APGI checks across platforms'}</h2><p>{scope?'Inspect this workspace’s security configuration without modifying learner records.':'Check registered deployments and exercise shared access rules using temporary fictional accounts in V2 staging.'}</p><label className="watchdog-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} disabled={busy}/> I confirm the selected scope for this security check.</label><button className="primary-button" type="button" disabled={!consent||busy} onClick={()=>void run()}>{busy?'Security check running…':'Run security check'}</button><p role="status" aria-live="polite">{message}</p><p className="watchdog-small">One test runs at a time. Allow 90 seconds between tests. If you leave this page, check the run history when you return.</p></section>;
 }
 export function WatchdogReceipt({id,readAt}:{id:string;readAt:string|null}){
  const [read,setRead]=useState(readAt),[busy,setBusy]=useState(false),[error,setError]=useState('');

@@ -5,16 +5,18 @@ import {watchdogRpc} from './store';
 import {runSecurityWatchdog,watchdogDeployment} from './runner';
 import {queueWatchdogResult,flushWatchdogAlerts} from './operations';
 import {recordSecurityEvent} from './events';
-import {productionWatchdogContext,runProductionWatchdog} from './production';
+import {companyWatchdogContext,runCompanyWatchdog} from './company-run';
+import {productionCompanyId} from '@/server/services/tenant-courses';
 export async function runWatchdogSchedule(){
- const production=process.env.ALP_ENVIRONMENT==='training-production'?await productionWatchdogContext():null;
+ const tenant=productionCompanyId();
+ const production=tenant?await companyWatchdogContext(tenant):null;
  const job=await watchdogRpc<{actorId:string;companyId:string|null;requestId:string;principal:boolean;reason:'scheduled'|'deployment'}|null>('v2_watchdog_monitor_claim',{p_deployment:watchdogDeployment()});
  let runId:string|null=null;
  if(job){
   if(production&&job.companyId!==production.id)throw Error('The scheduled Watchdog scope is unavailable in production.');
   const access={actorId:job.actorId,automatic:true as const,principal:!production&&job.principal,ownedCompanyIds:job.companyId?[job.companyId]:[]};
   try{
-   const run=production?await runProductionWatchdog(access,production,job.requestId,job.reason):await runSecurityWatchdog(access,job.companyId,job.requestId,job.reason);
+   const run=job.companyId?await runCompanyWatchdog(access,production??await companyWatchdogContext(job.companyId),job.requestId,job.reason):await runSecurityWatchdog(access,null,job.requestId,job.reason);
    runId=run.id;
    if(run.state==='finished'){
     const r=await adminRest(`/rest/v1/v2_watchdog_monitors?scope_key=eq.${job.companyId??'platform'}`,{method:'PATCH',body:JSON.stringify({last_run_at:new Date().toISOString(),last_run_id:run.id,last_deployment:watchdogDeployment()})});if(!r.ok)throw Error('Monitor completion was not recorded.');

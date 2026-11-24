@@ -1,5 +1,9 @@
-export const WATCHDOG_SUITE = 'apgi-watchdog-v6';
+export const WATCHDOG_SUITE = 'apgi-watchdog-v7';
 export const PRODUCTION_WATCHDOG_SUITE = 'watchdog-production-configuration-v1';
+export const COMPANY_WATCHDOG_SUITE = 'watchdog-company-configuration-v1';
+export function activeWatchdogSuite(production:boolean,companyId:string|null){
+ return production?PRODUCTION_WATCHDOG_SUITE:companyId?COMPANY_WATCHDOG_SUITE:WATCHDOG_SUITE;
+}
 export type CheckState = 'passed'|'failed'|'attention'|'inconclusive'|'not_tested';
 export type WatchdogCheck = {id:string;title:string;state:CheckState;kind:'live_configuration'|'synthetic_behaviour'|'alarm_drill'|'manual';detail:string;action?:string};
 export type WatchdogPayload = {

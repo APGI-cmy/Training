@@ -1,4 +1,6 @@
 import {afterEach,beforeEach,describe,it,expect,vi} from 'vitest';
+vi.mock('next/headers',()=>({cookies:vi.fn()}));
+vi.mock('@/server/services/tenant-branding',()=>({requestTenant:async()=>null}));
 vi.mock('@/server/auth/session',()=>({getCurrentSession:vi.fn(),getUserRoles:vi.fn()}));
 vi.mock('@/server/services/platform-principals',()=>({isPlatformPrincipal:vi.fn()}));
 vi.mock('@/server/services/company-structure',()=>({ownMemberships:vi.fn(),rows:vi.fn()}));
@@ -7,6 +9,7 @@ import {getCurrentSession,getUserRoles} from '@/server/auth/session';
 import {isPlatformPrincipal} from '@/server/services/platform-principals';
 import {ownMemberships,rows} from '@/server/services/company-structure';
 import {adminRest} from '@/server/supabase/admin-rest';
+import {cookies} from 'next/headers';
 import {watchdogAccess,watchdogHref,watchdogRun,requireSameOrigin,checkWatchdogScope} from '@/server/security-watchdog/access';
 import {navigationGroups,primaryNavigationPaths} from '@/lib/navigation-groups';
 const a='ad673bd3-ff61-46b6-9941-090675220964',b='bd673bd3-ff61-46b6-9941-090675220964';
@@ -27,6 +30,17 @@ describe('Watchdog verified server access',()=>{
   expect(()=>checkWatchdogScope(access,b)).not.toThrow();
   expect(()=>checkWatchdogScope(access,null)).toThrow();
   expect(()=>checkWatchdogScope(access,a)).toThrow();
+ });
+ it('limits the same principal in a selected partner workspace and restores APGI oversight outside it',async()=>{
+  vi.mocked(isPlatformPrincipal).mockResolvedValue(true);
+  vi.mocked(rows).mockResolvedValue([{id:b}]);
+  vi.mocked(cookies).mockResolvedValueOnce({get:()=>({value:b})} as never);
+  const partner=await watchdogAccess();
+  expect(()=>checkWatchdogScope(partner,b)).not.toThrow();
+  expect(()=>checkWatchdogScope(partner,a)).toThrow();
+  expect(()=>checkWatchdogScope(partner,null)).toThrow();
+  const platform=await watchdogAccess();
+  expect(()=>checkWatchdogScope(platform,null)).not.toThrow();
  });
  it('exposes a direct navigation link and grants reports only for an allowed scope',()=>{
   const owner={principal:false,ownedCompanyIds:[a]};

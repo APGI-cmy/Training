@@ -26,7 +26,7 @@ export function providerTarget(input:string|URL,init:RequestInit={}){
   const refresh=method==='POST',allowedHeaders=refresh?['authorization','content-type']:['authorization'];
   if(!auth||!/^Bearer eyJ[A-Za-z0-9._-]+$/.test(auth)||headers.has('apikey')||[...headers.keys()].some(k=>!allowedHeaders.includes(k)))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
   if(refresh?(headers.get('content-type')!=='application/json'||url.search!==''||init.body!==JSON.stringify({action:'refresh',version:PLATFORM_RELEASE.version})):init.body!=null)throw Error('OUTBOUND_TARGET_REJECTED');
- }else if((publicSources.has(url.href)||(PLATFORM_RELEASE.targets.some(t=>t.origin===url.origin)&&url.pathname==='/api/course-deployment'&&!url.search))&&['GET','HEAD'].includes(method)&&init.body==null){
+ }else if((publicSources.has(url.href)||(PLATFORM_RELEASE.targets.some(t=>t.origin===url.origin)&&['/api/course-deployment','/api/platform-version','/api/cron/security-watchdog'].includes(url.pathname)&&!url.search))&&['GET','HEAD'].includes(method)&&init.body==null){
   if([...headers.keys()].some(k=>!['accept','user-agent'].includes(k)))throw Error('OUTBOUND_CREDENTIAL_REJECTED');
  }else throw Error('OUTBOUND_TARGET_REJECTED');
  // Reject headers containing any configured provider secret at the wrong host.

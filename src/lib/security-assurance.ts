@@ -1,4 +1,4 @@
-import type {WatchdogCheck,WatchdogPayload} from './security-watchdog';
+import {COMPANY_WATCHDOG_SUITE,type WatchdogCheck,type WatchdogPayload} from './security-watchdog';
 import {watchdogScore} from './watchdog-overview';
 
 export const paymentAssuranceControls=[
@@ -37,7 +37,7 @@ export function projectAssurance({audience,context,event,phase,payload,trusted,c
  return {audience,context,automatic,phase,event,current:valid,checkedAt:trusted?payload?.finishedAt??null:null,reportHref,
   status:!valid?'unavailable':attention?'attention':checks.some(c=>c.state!=='passed')?'incomplete':'checked',
   payment:{passed:tested,total:checks.length,checks},overall:audience==='principal'&&valid?watchdogScore(payload.checks):null,
- paymentMode:production?'disabled':'sandbox',explanation:production
-   ? 'Production checks inspect platform configuration without modifying learner records. Live payments are disabled. Technical checks do not constitute PCI DSS or ISO certification.'
+  paymentMode:production?'disabled':'sandbox',explanation:production||payload?.suite===COMPANY_WATCHDOG_SUITE
+   ? 'Workspace checks inspect configuration without modifying learner records. Live payments are disabled. Technical checks do not constitute PCI DSS or ISO certification.'
    : 'Daily and after-release checks exercise named platform controls using fictional records. Card and bank details belong in Stripe-hosted forms, not messages or uploads here. These checks do not certify your bank account, prove that no information has ever leaked, or constitute PCI DSS or ISO certification.'};
 }

@@ -7,7 +7,7 @@ vi.mock('@/server/security-watchdog/runner',()=>({
 }));
 vi.mock('@/server/security-watchdog/signing',()=>({watchdogPublicKey:vi.fn(),signWatchdogReport:vi.fn(),verifyWatchdogReport:vi.fn()}));
 vi.mock('@/server/security-watchdog/store',()=>({watchdogRpc:vi.fn(),watchdogPatch:vi.fn()}));
-vi.mock('@/server/security-watchdog/access',()=>({watchdogActorId:()=> 'operator',watchdogRun:vi.fn()}));
+vi.mock('@/server/security-watchdog/access',()=>({checkWatchdogScope:vi.fn(),watchdogActorId:()=> 'operator',watchdogRun:vi.fn()}));
 vi.mock('@/server/security-watchdog/operations',()=>({queueWatchdogResult:vi.fn(),flushWatchdogAlerts:vi.fn()}));
 vi.mock('@/server/security-watchdog/events',()=>({recordSecurityEvent:vi.fn()}));
 vi.mock('@/server/services/company-structure',()=>({rows:vi.fn()}));

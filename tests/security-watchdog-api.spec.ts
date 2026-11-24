@@ -5,6 +5,7 @@ vi.mock('@/server/services/company-structure',()=>({ownMemberships:vi.fn(),rows:
 vi.mock('@/server/supabase/admin-rest',()=>({adminRest:vi.fn()}));
 vi.mock('@/server/security-watchdog/store',()=>({watchdogDashboard:vi.fn(),watchdogRpc:vi.fn()}));
 vi.mock('@/server/security-watchdog/runner',()=>({runSecurityWatchdog:vi.fn(),watchdogDeployment:()=> 'dpl_qa'}));
+vi.mock('@/server/security-watchdog/company-run',()=>({companyWatchdogContext:vi.fn(),runCompanyWatchdog:vi.fn()}));
 vi.mock('@/server/security-watchdog/signing',()=>({verifyWatchdogReport:vi.fn()}));
 vi.mock('@/server/security-watchdog/pdf',()=>({watchdogPdf:vi.fn()}));
 import {getCurrentSession,getUserRoles} from '@/server/auth/session';
@@ -13,6 +14,7 @@ import {ownMemberships,rows} from '@/server/services/company-structure';
 import {adminRest} from '@/server/supabase/admin-rest';
 import {watchdogRpc} from '@/server/security-watchdog/store';
 import {runSecurityWatchdog} from '@/server/security-watchdog/runner';
+import {companyWatchdogContext,runCompanyWatchdog} from '@/server/security-watchdog/company-run';
 import {verifyWatchdogReport} from '@/server/security-watchdog/signing';
 import {watchdogPdf} from '@/server/security-watchdog/pdf';
 import {POST,GET} from '../app/api/security-watchdog/route';
@@ -25,7 +27,15 @@ describe('Watchdog API security boundaries',()=>{
  it('rejects a cross-origin run and does not execute it',async()=>{expect((await POST(request({operation:'run',scope:id,consent:true,requestId:id},'https://foreign.example'))).status).toBe(403);expect(runSecurityWatchdog).not.toHaveBeenCalled();});
  it('rejects a forged foreign scope',async()=>{expect((await POST(request({operation:'run',scope:foreign,consent:true,requestId:id}))).status).toBe(403);expect(runSecurityWatchdog).not.toHaveBeenCalled();});
  it('requires consent and a valid idempotency key',async()=>{expect((await POST(request({operation:'run',scope:id,requestId:id}))).status).toBe(400);expect((await POST(request({operation:'run',scope:id,consent:true,requestId:'bad'}))).status).toBe(400);expect(runSecurityWatchdog).not.toHaveBeenCalled();});
- it('returns only a run identifier, never private fixture resources',async()=>{vi.mocked(runSecurityWatchdog).mockResolvedValue({id,resources:{password:'must-not-leak'}} as never);const r=await POST(request({operation:'run',scope:id,consent:true,requestId:id}));expect(await r.json()).toEqual({runId:id});expect(r.headers.get('cache-control')).toContain('no-store');});
+ it('uses the scoped suite for company requests and returns only a run identifier',async()=>{
+  vi.mocked(companyWatchdogContext).mockResolvedValue({id,name:'QA company',production:false});
+  vi.mocked(runCompanyWatchdog).mockResolvedValue({id,resources:{password:'must-not-leak'}} as never);
+  const r=await POST(request({operation:'run',scope:id,consent:true,requestId:id}));
+  expect(await r.json()).toEqual({runId:id});
+  expect(companyWatchdogContext).toHaveBeenCalledWith(id);
+  expect(runSecurityWatchdog).not.toHaveBeenCalled();
+  expect(r.headers.get('cache-control')).toContain('no-store');
+ });
  it('rejects another recipient receipt using the signed-in actor',async()=>{vi.mocked(watchdogRpc).mockResolvedValue(false);expect((await POST(request({operation:'acknowledge',deliveryId:id,actorId:foreign}))).status).toBe(404);expect(watchdogRpc).toHaveBeenCalledWith('v2_watchdog_acknowledge',{p_actor:id,p_delivery:id});});
  it('does not offer arbitrary database operations',async()=>{expect((await POST(request({operation:'delete',scope:id}))).status).toBe(400);expect(watchdogRpc).not.toHaveBeenCalled();});
  it('uses the signed-in recipient for an external alert read receipt',async()=>{vi.mocked(watchdogRpc).mockResolvedValue(false);expect((await POST(request({operation:'alert_read',scope:id,alertId:foreign,actorId:foreign}))).status).toBe(404);expect(watchdogRpc).toHaveBeenCalledWith('v2_watchdog_alert_read',{p_actor:id,p_alert:foreign});});

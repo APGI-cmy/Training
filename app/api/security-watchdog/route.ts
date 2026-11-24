@@ -2,6 +2,7 @@ import {manualControls} from '@/lib/security-watchdog';
 import {watchdogAccess,checkWatchdogScope,watchdogId,requireSameOrigin,WatchdogError,watchdogResponseError} from '@/server/security-watchdog/access';
 import {watchdogDashboard,watchdogRpc} from '@/server/security-watchdog/store';
 import {runSecurityWatchdog} from '@/server/security-watchdog/runner';
+import {companyWatchdogContext,runCompanyWatchdog} from '@/server/security-watchdog/company-run';
 import {watchdogActions} from '@/lib/watchdog-overview';
 import {queueWatchdogResult,flushWatchdogAlerts} from '@/server/security-watchdog/operations';
 import {rows} from '@/server/services/company-structure';
@@ -34,8 +35,11 @@ export async function POST(request:Request){
   const scope=scopeOf(body.scope);checkWatchdogScope(access,scope);
   if(body.operation==='run'){
    if(body.consent!==true)throw new WatchdogError('Confirm the controlled synthetic test before starting.',400);
-   const run=await runSecurityWatchdog(access,scope,watchdogId(String(body.requestId)));
-   const queued=await queueWatchdogResult(access,scope,run);if(queued)await flushWatchdogAlerts();
+   const requestId=watchdogId(String(body.requestId));
+   const run=scope?await runCompanyWatchdog(access,await companyWatchdogContext(scope),requestId):await runSecurityWatchdog(access,null,requestId);
+   if(process.env.ALP_ENVIRONMENT!=='training-production'){
+    const queued=await queueWatchdogResult(access,scope,run);if(queued)await flushWatchdogAlerts();
+   }
    return Response.json({runId:run.id},{headers:{'cache-control':'private, no-store'}});
   }
   if(body.operation==='monitor'){

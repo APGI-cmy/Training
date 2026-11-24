@@ -15,6 +15,7 @@ import {expectedWatchdogChecks} from '@/lib/watchdog-overview';
 import {httpProbes,httpCheckNames} from './http-probes';
 import {prepareFixtureMfa,hardeningProbes,hardeningCheckNames} from './hardening-probes';
 import {recoveryDrillCheck} from './recovery-evidence';
+import {PLATFORM_RELEASE} from '@/lib/platform-release';
 
 type InternalRun=WatchdogRun&{resources:Record<string,unknown>;reused?:boolean};
 type TestUser={id:string;session:AlpSession};
@@ -74,6 +75,7 @@ export async function cleanInterruptedWatchdogRuns(){
 
 export async function runSecurityWatchdog(access:WatchdogAccess,scope:string|null,requestId:string,trigger:'manual'|'scheduled'|'deployment'='manual'){
  if(process.env.ALP_ENVIRONMENT==='training-production')throw new WatchdogError('Production synthetic checks require separate qualification; use the staging test environment.');
+ if(scope!==null)throw new WatchdogError('Use the company configuration check for a single workspace.');
  assertStagingIsolation();checkWatchdogScope(access,scope);watchdogPublicKey();
  const scopeLabel=scope?(await rows<{name:string}>(`/rest/v1/organisations?id=eq.${scope}&is_active=eq.true&select=name&limit=1`))[0]?.name:'Whole platform';
  if(!scopeLabel)throw new WatchdogError('This company is unavailable.');
@@ -93,6 +95,21 @@ export async function runSecurityWatchdog(access:WatchdogAccess,scope:string|nul
  };
  let cleanup=false;
  try{
+  if(process.env.VERCEL==='1'){
+   await Promise.all(PLATFORM_RELEASE.targets.map(target=>check(
+    'edge_registered_'+target.workspaces[0],target.name+' hosting and scheduler safeguards','live_configuration',
+    'Checked the registered deployment readiness, disabled-payment status and rejection of an unauthenticated scheduler request. This uses public endpoints without accessing company records.',
+    async()=>{
+     const [health,cron]=await Promise.all([
+      fetch(target.origin+'/api/platform-version',{signal:AbortSignal.timeout(8000)}),
+      fetch(target.origin+'/api/cron/security-watchdog',{signal:AbortSignal.timeout(8000)}),
+     ]);
+     await cron.body?.cancel();
+     const status=health.ok?await health.json():null;
+     return status?.schemaReady===true&&status?.paymentsDisabled===true&&cron.status===401;
+    },
+   )));
+  }
   const config=await watchdogRpc<{allPublicTablesRls:boolean;clientDestructiveGrantsPresent:boolean;watchdogRecordsServerOnly:boolean;privateEvidenceBucket:boolean;platformCounts:unknown}>('v2_watchdog_configuration',{p_actor:watchdogActorId(access),p_company:scope});
   checks.push({id:'rls_configuration',title:'Database row-security configuration',kind:'live_configuration',state:config.allPublicTablesRls?'passed':'failed',detail:'Checked whether row-level security is enabled on public-schema tables. This configuration check alone does not prove each policy is correct.'});
   checks.push({id:'destructive_grants',title:'Client database privilege hardening',kind:'live_configuration',state:config.clientDestructiveGrantsPresent?'attention':'passed',detail:config.clientDestructiveGrantsPresent?'Client database roles retain TRUNCATE privileges on some tables. No destructive operation was attempted.':'No client-role TRUNCATE grants were found.',action:config.clientDestructiveGrantsPresent?'Review and remove unnecessary database privileges through a separately tested hardening change.':undefined});
