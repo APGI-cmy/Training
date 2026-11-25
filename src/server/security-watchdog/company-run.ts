@@ -29,6 +29,7 @@ export async function companyWatchdogContext(id:string) {
 export async function runCompanyWatchdog(access:WatchdogAccess,company:Awaited<ReturnType<typeof companyWatchdogContext>>,requestId:string,trigger:'manual'|'scheduled'|'deployment'='manual') {
   checkWatchdogScope(access,company.id);
   if(company.production&&(access.principal||company.id!==productionCompanyId()))throw Error('The production Watchdog requires its dedicated company scope.');
+  const sourceCommit=watchdogCommit();
   const actor=watchdogActorId(access),args={p_actor:actor,p_company:company.id};
   const run=await watchdogRpc<WatchdogRun&{reused?:boolean}>('v2_watchdog_start',{...args,p_request:requestId,p_deployment:watchdogDeployment()});
   if(run.reused||run.state!=='running')return run;
@@ -54,7 +55,7 @@ export async function runCompanyWatchdog(access:WatchdogAccess,company:Awaited<R
   const payload:WatchdogPayload={
     version:1,runId:run.id,suite:activeWatchdogSuite(company.production,company.id),application:company.name+' Training',
     environment:company.production?'training-production':'v2-staging',scope:{companyId:company.id,label:company.name},initiatedBy:actor,trigger,
-    startedAt:run.created_at,finishedAt:new Date().toISOString(),deployment:run.deployment,commit:watchdogCommit(),
+    startedAt:run.created_at,finishedAt:new Date().toISOString(),deployment:run.deployment,commit:sourceCommit,
     policy:'Workspace configuration reads and Watchdog record writes only',checks,cleanup:true,assurance:summariseChecks(checks),
     limitations:['These results cover the named configuration checks at the recorded time.','No learner accounts, progress, files, certificates or financial transactions are created or modified by this suite.'],
     manualEvidence:[],

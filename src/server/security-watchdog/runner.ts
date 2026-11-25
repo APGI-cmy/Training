@@ -15,13 +15,17 @@ import {expectedWatchdogChecks} from '@/lib/watchdog-overview';
 import {httpProbes,httpCheckNames} from './http-probes';
 import {prepareFixtureMfa,hardeningProbes,hardeningCheckNames} from './hardening-probes';
 import {recoveryDrillCheck} from './recovery-evidence';
-import {PLATFORM_RELEASE} from '@/lib/platform-release';
+import {PLATFORM_RELEASE,platformSourceCommit} from '@/lib/platform-release';
 
 type InternalRun=WatchdogRun&{resources:Record<string,unknown>;reused?:boolean};
 type TestUser={id:string;session:AlpSession};
 const origin=`https://${STAGING_DATABASE_REF}.supabase.co`;
 export const watchdogDeployment=()=>process.env.VERCEL_DEPLOYMENT_ID??process.env.VERCEL_URL??'local-development';
-export const watchdogCommit=()=>process.env.VERCEL_GIT_COMMIT_SHA??'unknown';
+export function watchdogCommit(){
+ const commit=platformSourceCommit();
+ if(!commit&&process.env.VERCEL==='1')throw new WatchdogError('The deployed source commit could not be verified.',503);
+ return commit??(process.env.VERCEL_GIT_COMMIT_SHA?.trim()||'unknown');
+}
 const fixtureEmail=(run:string,index:number)=>`watchdog-${run}-${index}@example.invalid`;
 
 async function publicRequest(path:string,token?:string,body?:unknown){
@@ -77,6 +81,7 @@ export async function runSecurityWatchdog(access:WatchdogAccess,scope:string|nul
  if(process.env.ALP_ENVIRONMENT==='training-production')throw new WatchdogError('Production synthetic checks require separate qualification; use the staging test environment.');
  if(scope!==null)throw new WatchdogError('Use the company configuration check for a single workspace.');
  assertStagingIsolation();checkWatchdogScope(access,scope);watchdogPublicKey();
+ const sourceCommit=watchdogCommit();
  const scopeLabel=scope?(await rows<{name:string}>(`/rest/v1/organisations?id=eq.${scope}&is_active=eq.true&select=name&limit=1`))[0]?.name:'Whole platform';
  if(!scopeLabel)throw new WatchdogError('This company is unavailable.');
  await cleanInterruptedWatchdogRuns();
@@ -160,7 +165,7 @@ export async function runSecurityWatchdog(access:WatchdogAccess,scope:string|nul
  if(!stillAllowed)checks.push({id:'permission_changed',title:'Operator permission changed during the run',kind:'live_configuration',state:'inconclusive',detail:'The operator no longer has access to this scope. Only authorised platform principals can review the retained run.'});
  const manual=stillAllowed?await watchdogEvidence(access,scope).catch(()=>[]):[];
  const completeChecks=expectedWatchdogChecks(checks,[...[{"id":"rls_configuration","title":"Database row-security configuration"},{"id":"destructive_grants","title":"Client database privilege hardening"},{"id":"private_storage","title":"Review evidence storage is private"},{"id":"report_storage","title":"Security evidence storage is protected"},{"id":"own_profile","title":"Legitimate own-profile access"},{"id":"peer_profile","title":"Same-company profile privacy"},{"id":"foreign_profile","title":"Other-company profile privacy"},{"id":"own_company","title":"Legitimate company access"},{"id":"foreign_company","title":"Other-company access denied"},{"id":"own_membership","title":"Own membership access"},{"id":"foreign_membership","title":"Foreign membership privacy"},{"id":"own_canary","title":"Own synthetic record access"},{"id":"peer_canary","title":"Same-company record privacy"},{"id":"foreign_canary","title":"Other-company record privacy"},{"id":"anonymous_canary","title":"Anonymous record access denied"},{"id":"watchdog_scope","title":"Watchdog scope boundaries"},{"id":"watchdog_report","title":"Report and export boundaries"},{"id":"raw_reports","title":"Direct report database bypass denied"},{"id":"viewer_only","title":"Viewing-only role cannot administer"},{"id":"alarm","title":"In-app alarm routing"},{"id":"cleanup","title":"Temporary fixture cleanup"}],...additionalCheckNames,...httpCheckNames,...hardeningCheckNames,...paymentCheckNames]);
- const payload:WatchdogPayload={version:1,runId:run.id,suite:WATCHDOG_SUITE,application:'APGI Training',environment:'v2-staging',scope:{companyId:scope,label:scopeLabel},initiatedBy:watchdogActorId(access),trigger,startedAt:run.created_at,finishedAt:new Date().toISOString(),deployment:run.deployment,commit:watchdogCommit(),policy:'Existing deployed database policies and server company guard; synthetic fixtures only',checks:completeChecks,cleanup,assurance:summariseChecks(completeChecks),limitations:['Point-in-time evidence for the named checks, not proof that information has never leaked.','Synthetic tenants share the isolated V2 staging database; real customer content is not copied into the drill.','In-app alarm routing is exercised. External provider acceptance is reported only when a separate alarm drill has evidence. Provider-wide firewall/log-drain and independent anchoring integrations remain separate.','Canary-specific checks validate their own RLS rules. Existing profiles, membership policies and company server guard are separately exercised.','This report supports ISO-aligned evidence collection; it is not an ISO certificate or a complete assessment.'],manualEvidence:manual.map(e=>({controlId:e.control_id,disposition:e.disposition,reference:e.reference,recordedAt:e.created_at,expiresAt:e.expires_at}))};
+ const payload:WatchdogPayload={version:1,runId:run.id,suite:WATCHDOG_SUITE,application:'APGI Training',environment:'v2-staging',scope:{companyId:scope,label:scopeLabel},initiatedBy:watchdogActorId(access),trigger,startedAt:run.created_at,finishedAt:new Date().toISOString(),deployment:run.deployment,commit:sourceCommit,policy:'Existing deployed database policies and server company guard; synthetic fixtures only',checks:completeChecks,cleanup,assurance:summariseChecks(completeChecks),limitations:['Point-in-time evidence for the named checks, not proof that information has never leaked.','Synthetic tenants share the isolated V2 staging database; real customer content is not copied into the drill.','In-app alarm routing is exercised. External provider acceptance is reported only when a separate alarm drill has evidence. Provider-wide firewall/log-drain and independent anchoring integrations remain separate.','Canary-specific checks validate their own RLS rules. Existing profiles, membership policies and company server guard are separately exercised.','This report supports ISO-aligned evidence collection; it is not an ISO certificate or a complete assessment.'],manualEvidence:manual.map(e=>({controlId:e.control_id,disposition:e.disposition,reference:e.reference,recordedAt:e.created_at,expiresAt:e.expires_at}))};
  const proof=signWatchdogReport(payload);
  await watchdogPatch(run.id,{payload,proof,state:!cleanup?'cleanup_pending':completeChecks.some(c=>c.state==='inconclusive')?'inconclusive':'finished',finished_at:payload.finishedAt,fixtures_cleaned:cleanup});
  await watchdogRpc('v2_watchdog_notify',{p_run:run.id});
