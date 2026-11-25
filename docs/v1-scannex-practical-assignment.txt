@@ -1,0 +1,111 @@
+V1 SCANNEX PRACTICAL ASSIGNMENT — IMPLEMENTATION AND RELEASE BOUNDARIES
+25 November 2026
+
+Scope
+APGI-cmy/Training, training.apgi.app, Supabase ooujszdvncwijbuzpjfp.
+V2, AWS builders/fleets/stacks, LU6–LU8 practice access and native Scannex
+configuration are unchanged. This feature does not install a new Viewer.
+
+Learner route
+/learn/scannex-training-programme/units/lu9/viewer-lab
+Assessor route
+/admin/assessments/practical (also linked from Assessment operations).
+
+Workflow
+1. Read advance instructions and weighted marking criteria.
+2. Administrator creates an assessment booking using the existing register.
+3. Administrator uploads THREE PRIVATE source images, records per-mode clarity
+   criteria and hidden reference findings, confirms ground truth and calibration,
+   saves the pack, then approves it. Approval is immutable.
+4. Administrator explicitly approves the learner booking and assigns that pack.
+   The booking and assignment bind to the learner's current V1 course attempt.
+5. Learner completes LU1–LU8, starts the assignment, downloads assigned images
+   and uses the real Scannex Viewer. Authentication must precede recording.
+6. Learner scans bottom to top, optimises F1–F4, annotates candidates and comments.
+   Excluded findings are retained with reasons. Remaining/uncertain candidates
+   receive the four-column electronic checklist. Density/spread use F1–F2;
+   F3–F4 are N/A for those rows. Uncertainty remains review, never an auto-release.
+7. Learner uploads a Viewer screenshot and a recording OR native action log for
+   EACH image, plus any native result or supporting report. Mode checkboxes are
+   learner declarations, not telemetry. Assessor must inspect actual evidence.
+8. Typed, profile-matching declaration seals an immutable report and manifest.
+   Returned corrections create a new revision; older snapshots remain retained.
+9. Administrator reviews evidence, hidden findings and all 21 rubric criteria.
+   Pass requires same-run theory, >=75 overall, complete evidence, no unresolved
+   material safety concern, and an authenticated assessor decision.
+10. Existing V1 certificate/redo rules remain. Attendance does not complete LU9;
+    issuing a verified achievement certificate does. No learner self-awards.
+
+Density / scoring correction
+Owner confirmed EVEN density spread as qualifying on 25 November 2026.
+Historical criterion ID diamond_uneven_density is retained for compatibility,
+but the new rubric version labels and assesses EVEN spread.
+Version: scannex-practical-v1-even-density-20261125.
+The existing criterion limits sum to 100, not the historically stated 99.
+New assignments use 100 raw marks and the same item weights, converted to 32
+practical marks plus 68 theory. Historical rubric results retain their 99-based
+normalisation. No existing marks are rewritten.
+
+Recording and evidence
+Browser screen capture requires explicit notice acceptance and a browser surface
+picker. Capture only the actual Scannex/AWS tab/window; no microphone or webcam.
+Sign in first; do not record credentials, email or other learners.
+Current recorder uses supported WebM/MP4, 8 fps request, 1.5 Mbps target and a
+10-minute clip limit. Stop uploads a complete playable clip, not isolated chunks.
+Files: 150 MiB recording maximum, 25 MiB others; 40 reservations / 750 MiB per
+assignment. Supabase's account-wide limits can further restrict uploads.
+Failed uploads retain the captured clip in memory for retry/local backup.
+Closing the browser can lose an unsaved clip. Do not leave during recording or
+upload. Supported desktop browser and capture permission are required; external
+recording/native-log upload is an alternative.
+No native Scannex action-log parser, AWS session recorder or remote-control
+integration is claimed. AWS usage reports alone do not prove Viewer actions.
+
+Security / audit
+Private bucket: v1-practical-evidence; no anon/authenticated object policies.
+Signed, non-upserting upload paths are random and reserved after ownership checks.
+Server verifies actual size, magic bytes and SHA-256 before sealing the file.
+All six new tables have RLS and service-role-only permissions. The mutation RPC
+uses SECURITY INVOKER and is not executable by PUBLIC, anon or authenticated.
+Actor IDs come only from a verified server session. Admin role is checked for
+case approval, assignment and marking. JSON body size and same-origin checks
+protect mutation routes. Optimistic draft versions reject stale tab writes.
+Approved packs, verified file metadata, submissions, reviews and events are
+immutable. Assessor notes/answer keys never enter learner API pack projections
+or the submitted report. Reports export canonical JSON plus its SHA-256 and file
+manifest. Evidence files must be downloaded separately for review in this chat.
+Retention is currently manual/APGI governed; no automatic deletion schedule is
+implemented. Signed upload tokens remain valid for the provider's normal period.
+
+Not activated / not proven
+- NO real three-image pack has been approved or assigned by this implementation.
+- Image 78 is nominated as Image 1, not proven to be a negative control.
+- Images 2 and 3 still require confirmed diamond-positive source cases and keys.
+- No real learner has been graded by the fixture tests.
+- Actual AWS Viewer capture, capture quality/permission behaviour and long-video
+  limits require the next isolated Viewer test; this release does not restart AWS.
+- AI evaluation is not connected; no model has been trained or validated as a
+  diamond detector. Reports/evidence can be supplied here for assisted review.
+- No automatic scoring of visual clarity, target identity or checkbox claims.
+
+Repeatable local tests (external Codex-Work checkout, NOT OneDrive)
+npm ci --ignore-scripts --no-audit --no-fund
+npm run typecheck
+npm run test:learner-release
+docker run --name apgi-v1-practical-qa-20261125 -e POSTGRES_PASSWORD=local-fixture-only -d postgres:17-alpine
+node scripts/qa-v1-practical-db.mjs
+node scripts/qa-v1-practical-ui.mjs
+node scripts/qa-v1-practical-http.mjs (while local UI fixture runs)
+Use the adjacent IAB for UI checks. Do NOT run the old benefits-browser script:
+it opens Edge. The new fixture scripts never connect to hosted Supabase or AWS.
+The DB script resets only v1_practical_qa inside the exact disposable container.
+The local gateway's /__qa routes exist ONLY in that test script, not the app.
+
+Deployment
+Use the Git-connected build, not a whole local archive of course media.
+Do not commit source images, recordings, e-books, credentials or evidence.
+Stage an exact production-target commit with autoAssignCustomDomains:false,
+verify the build and additive V1 migration, then promote that tested deployment.
+Confirm the actual training.apgi.app alias afterwards. Never pull production
+Secrets locally. Schema rollback is not automatic: disable the new UI/roll back
+the app rather than deleting retained assessment evidence.

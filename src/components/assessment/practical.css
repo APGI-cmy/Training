@@ -1,0 +1,12 @@
+.pa-workspace{display:grid;gap:1.25rem;margin:1.5rem 0;color:var(--ink,#172925)}
+.pa-card{padding:clamp(1rem,2.5vw,2rem);border:1px solid var(--border-color,#c6d4d4);border-radius:14px;background:var(--surface,#fffefa);min-width:0}
+.pa-workspace h2,.pa-card h2{font-size:clamp(1.5rem,2.5vw,2.2rem);line-height:1.2}.pa-card h3{font-size:1.2rem;margin:1rem 0 .6rem}
+.pa-card label{display:grid;gap:.4rem;font-weight:600;margin:.8rem 0}.pa-card .pa-check{display:flex;align-items:flex-start;gap:.65rem;font-weight:400}
+.pa-card input:not([type=checkbox]),.pa-card textarea,.pa-card select{width:100%;font:inherit;padding:.65rem;border:1px solid #a9b9ba;border-radius:6px;background:var(--surface,#fff);color:inherit;box-sizing:border-box}
+.pa-card textarea{min-height:5rem;resize:vertical}.pa-card input[type=checkbox]{width:1.15rem;height:1.15rem;flex-shrink:0;margin-top:.2rem}
+.pa-card fieldset{border:0;padding:0;min-width:0}.pa-card legend{font-weight:700;padding:1rem 0}.pa-card fieldset:disabled{opacity:.8}
+.pa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:.5rem 1rem}.pa-mode,.pa-candidate{border-top:1px solid #c6d4d4;padding:1rem 0}
+.pa-notice{padding:1rem;border-left:4px solid #127c78;background:var(--bg,#edf7f6)}.pa-card summary{font-weight:700;cursor:pointer;padding:.8rem 0}
+.pa-card table{border-collapse:collapse;width:100%;font-size:.92rem;margin:1rem 0}.pa-card th,.pa-card td{border:1px solid #bacacb;padding:.6rem;text-align:left;vertical-align:top}.pa-card caption{text-align:left;font-weight:700;margin:.5rem 0}
+.pa-card th{background:var(--bg,#edf3f3)}.pa-table-wrap{overflow-x:auto}.pa-table-wrap table{min-width:640px}.pa-card code{overflow-wrap:anywhere;white-space:normal}.pa-card button{cursor:pointer;min-height:42px}.pa-card button:disabled{cursor:not-allowed;opacity:.55}.pa-card .button-row{flex-wrap:wrap;gap:.65rem}.pa-card a{text-decoration:underline}
+@media print{body{margin:0}body *:not(:has(.pa-report)):not(.pa-report):not(.pa-report *){display:none!important}body *:has(.pa-report){display:block!important;position:static!important;width:auto!important;height:auto!important;max-width:none!important;overflow:visible!important}.pa-report{color:#000;background:#fff;border:0}.pa-report~.pa-report{break-before:page}.pa-no-print,.pa-no-print *{display:none!important}.pa-report section{break-inside:auto}.pa-report table{font-size:9pt}.pa-report a{color:#000}.pa-report code{font-size:8pt}}

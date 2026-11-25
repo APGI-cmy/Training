@@ -1,0 +1,3 @@
+import { actor, adminMutation, adminPack, adminWorkspace, practicalError, requestBody, reviewWorkspace } from "@/server/services/practical-assignment";
+export async function GET(r: Request) { try { const who = await actor(true), params = new URL(r.url).searchParams, id = params.get("id"), pack = params.get("pack"); return Response.json(pack ? await adminPack(who, pack) : id ? await reviewWorkspace(who, id) : await adminWorkspace(who), { headers: { "cache-control": "no-store" } }); } catch (e) { return practicalError(e); } }
+export async function POST(r: Request) { try { const body = await requestBody(r); return Response.json(await adminMutation(await actor(true), body)); } catch (e) { return practicalError(e); } }

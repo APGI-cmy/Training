@@ -10,6 +10,7 @@ import { evaluateViewerLabAvailability, getViewerLabSettings, SCANNEX_COURSE_ID 
 import { requireSession } from "@/server/auth/session";
 import { getCourseResume } from "@/lib/services/progress/get-course-resume";
 import { viewerReturnPath } from "@/lib/services/viewer-lab/viewer-return-path";
+import { PracticalAssignment } from "@/components/assessment/PracticalAssignment";
 
 export const dynamic = "force-dynamic";
 
@@ -144,7 +145,7 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
           </Link>
           <p className="eyebrow">Controlled practical environment</p>
           <h1>Scannex Practical Assessment</h1>
-          <p>Part B of the final assessment: complete the practical exercise in the genuine Scannex Viewer at an approved training station.</p>
+          <p>Part B of the final assessment: evaluate three assigned images in the genuine Scannex Viewer, save your electronic checklists and evidence, and submit your report for assessor review.</p>
           <div className="unit-meta">
             <span>32 practical marks</span>
             <span>100-point assessor rubric</span>
@@ -155,19 +156,23 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
 
       <section className="content-band">
         <div className="content-inner">
-          <section className="unit-resources" aria-labelledby="viewer-lab-session-heading">
+          <PracticalAssignment />
+          <details className="unit-resources">
+            <summary>Supervised station / native Trainer alternative</summary>
+          <section aria-labelledby="viewer-lab-session-heading">
             <p className="eyebrow">Assessment session</p>
             <h2 id="viewer-lab-session-heading">Attend your practical session</h2>
             <ol>
               <li>Complete the required learning units and formative checks.</li>
               <li>Arrange a supervised assessment session with the Scannex assessment lead.</li>
-              <li>At the approved training station, receive the assigned Trainer exercise reference and complete it in the genuine Viewer.</li>
+              <li>If APGI has assigned the native Trainer alternative, receive that exercise reference at the approved training station and complete it in the genuine Viewer.</li>
               <li>The assessor observes the practical rubric, then saves the approved result and Viewer Movement Log for review.</li>
             </ol>
             <p className="resource-status" role="status">
               The practical instrument is recorded as 99 raw marks, normalised to 100, then converted to the 32 practical marks. Your course is not complete merely by opening this page or attending the station.
             </p>
           </section>
+          </details>
 
           <section className="unit-resources" aria-labelledby="viewer-lab-evidence-heading">
             <p className="eyebrow">Evidence and review</p>
