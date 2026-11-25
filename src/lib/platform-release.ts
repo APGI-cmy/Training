@@ -5,7 +5,7 @@ export const PLATFORM_TEAM={id:release.teamId,slug:release.teamSlug};
 
 export function platformSourceCommit(
   gitValue = process.env.VERCEL_GIT_COMMIT_SHA,
-  buildValue = process.env.ALP_BUILD_SOURCE_COMMIT,
+  buildValue: string | undefined = release.sourceCommit ?? undefined,
 ): string | null {
   const git = gitValue?.trim().toLowerCase();
   const build = buildValue?.trim().toLowerCase();

@@ -1,21 +1,6 @@
 import type { NextConfig } from "next";
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-import release from "./src/data/platform-release.json";
-
-// The coordinated uploader adds this file outside the source archives.
-const sourceStampPath = join(process.cwd(), ".alp-release-source.json");
-let buildCommit: string | undefined;
-if (existsSync(sourceStampPath)) {
-  const stamp = JSON.parse(readFileSync(sourceStampPath, "utf8")) as { version?: string; commit?: string } | null;
-  if (stamp?.version !== release.version || typeof stamp.commit !== "string" || !/^[0-9a-f]{40}$/.test(stamp.commit)) {
-    throw new Error("The deployment source stamp does not match the platform release.");
-  }
-  buildCommit = stamp.commit;
-}
 
 const nextConfig: NextConfig = {
-  env: buildCommit ? { ALP_BUILD_SOURCE_COMMIT: buildCommit } : undefined,
   // The image optimiser must not become a public proxy for private course files.
   images: {localPatterns:[{pathname:'/images/**'},{pathname:'/branding/**'}]},
   experimental: { serverActions: { bodySizeLimit: "4mb" } },

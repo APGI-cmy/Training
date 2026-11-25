@@ -1,17 +1,21 @@
-"""One release gate for all registered deployments; source archives must already be uploaded.
+"""One release gate for all registered deployments.
 
 python scripts/deploy-shared-release.py RELEASE_DIRECTORY --build
 python scripts/deploy-shared-release.py RELEASE_DIRECTORY --verify-builds
 python scripts/deploy-shared-release.py RELEASE_DIRECTORY --promote
+Build and upload the shared overlay first. Include the output of
+release_registry_bytes(source_commit) at src/data/platform-release.json in that
+overlay. The release gate confirms the local overlay and the uploaded file list
+agree before creating either deployment.
 No credentials are read from files or printed. The authenticated Vercel CLI is used.
 """
-import argparse,base64,hashlib,json,subprocess,time,urllib.request,shutil,os,re
+import argparse,hashlib,json,subprocess,time,urllib.request,shutil,os,re,tarfile
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 REGISTRY=json.loads((ROOT/'src/data/platform-release.json').read_text())
 TEAM=REGISTRY['teamId']
-SOURCE_STAMP='.alp-release-source.json'
+REGISTRY_PATH='src/data/platform-release.json'
 if os.name=='nt':
     cli=Path(shutil.which('vercel.cmd')).parent/'node_modules/vercel/dist/vc.js'
     if not cli.is_file():raise RuntimeError('Verified Vercel CLI entry point missing')
@@ -26,16 +30,22 @@ def api(path,method='GET',body=None):
     return json.loads(result.stdout or '{}')
 
 def save(path,data):path.write_text(json.dumps(data,indent=2))
-def stamped_request(request):
-    commit=request.get('meta',{}).get('sourceCommit')
+def release_registry_bytes(commit):
     if not isinstance(commit,str) or not re.fullmatch('[0-9a-f]{40}',commit):
         raise ValueError('A full Git source commit is required')
-    if any(f.get('file')==SOURCE_STAMP for f in request['files']):
-        raise ValueError('The release gate creates the source stamp')
-    marker=json.dumps({'version':REGISTRY['version'],'commit':commit},sort_keys=True).encode()
-    return {**request,'files':[*request['files'],{
-        'file':SOURCE_STAMP,'encoding':'base64','data':base64.b64encode(marker).decode('ascii'),
-    }]}
+    return (json.dumps({**REGISTRY,'sourceCommit':commit},indent=2)+'\n').encode()
+
+def verify_source_archive(directory,requests,commit):
+    archive=directory/'common-platform-overlay.tgz'
+    overlay=archive.read_bytes()
+    uploads=[r['files'][-1] for _,_,r in requests]
+    digest=hashlib.sha1(overlay).hexdigest()
+    if any(file.get('sha')!=digest or file.get('size')!=len(overlay) for file in uploads):
+        raise ValueError('The release requests must end with the verified source overlay')
+    with tarfile.open(archive,'r:gz') as tar:
+        registry=[entry for entry in tar if entry.name==REGISTRY_PATH]
+        if len(registry)!=1 or not registry[0].isfile() or tar.extractfile(registry[0]).read()!=release_registry_bytes(commit):
+            raise ValueError('The source overlay is missing its verified release registry')
 
 def readiness_matches(data,source_commit):
     return (data.get('version')==REGISTRY['version'] and data.get('source')==source_commit
@@ -68,7 +78,7 @@ def main():
         file=directory/(target['project']+'.json');r=json.loads(file.read_text())
         if r.get('project')!=target['project'] or r.get('target')!='production' or r.get('autoAssignCustomDomains') is not False:raise ValueError('Incorrect target or unsafe automatic promotion')
         if r.get('meta',{}).get('platformVersion')!=REGISTRY['version']:raise ValueError('Release version mismatch')
-        requests.append((target,file,stamped_request(r)))
+        requests.append((target,file,r))
     sources=[hashlib.sha256(json.dumps(r['files'],sort_keys=True).encode()).hexdigest() for _,_,r in requests]
     commits={r.get('meta',{}).get('sourceCommit') for _,_,r in requests}
     if len(set(sources))!=1 or len(commits)!=1 or None in commits:raise ValueError('Every platform must use identical source archives and source commit')
@@ -79,15 +89,14 @@ def main():
         head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
         tracked_changes=subprocess.check_output(['git','status','--porcelain','--untracked-files=no'],cwd=ROOT,text=True).strip()
         if source_commit!=head or tracked_changes:raise ValueError('Use the clean Git checkout identified by the release request')
+        verify_source_archive(directory,requests,source_commit)
         audit={'version':REGISTRY['version'],'sourceCommit':source_commit,'archivesSha256':sources[0],'targets':[],'stage':'building'}
         # Capture current releases before starting any new build.
         for target,file,r in requests:
             project=api('/v9/projects/'+target['project'])
             previous=project.get('targets',{}).get('production',{}).get('id')
             if not previous:raise ValueError('Verified rollback deployment missing for '+target['project'])
-            stamped_file=file.with_suffix('.stamped.json')
-            save(stamped_file,r)
-            audit['targets'].append({**target,'previous':previous,'projectName':project['name'],'request':str(stamped_file)})
+            audit['targets'].append({**target,'previous':previous,'projectName':project['name'],'request':str(file)})
         save(auditfile,audit)
         for t in audit['targets']:
             deployment=api('/v13/deployments','POST',Path(t['request']))

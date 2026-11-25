@@ -9,11 +9,7 @@ afterEach(() => vi.unstubAllEnvs());
 
 describe("Watchdog deployment source", () => {
   it("uses the release stamp when a file upload leaves the Vercel Git variable blank", () => {
-    vi.stubEnv("VERCEL", "1");
-    vi.stubEnv("VERCEL_GIT_COMMIT_SHA", "");
-    vi.stubEnv("ALP_BUILD_SOURCE_COMMIT", source);
-    expect(platformSourceCommit()).toBe(source);
-    expect(watchdogCommit()).toBe(source);
+    expect(platformSourceCommit("", source)).toBe(source);
   });
 
   it("keeps direct Git deployments working", () => {
@@ -22,14 +18,9 @@ describe("Watchdog deployment source", () => {
   });
 
   it("refuses conflicting full commit identities or a missing commit on Vercel", () => {
+    expect(platformSourceCommit(different, source)).toBeNull();
     vi.stubEnv("VERCEL", "1");
-    vi.stubEnv("VERCEL_GIT_COMMIT_SHA", different);
-    vi.stubEnv("ALP_BUILD_SOURCE_COMMIT", source);
-    expect(platformSourceCommit()).toBeNull();
-    expect(watchdogCommit).toThrow("The deployed source commit could not be verified.");
-
     vi.stubEnv("VERCEL_GIT_COMMIT_SHA", "");
-    vi.stubEnv("ALP_BUILD_SOURCE_COMMIT", "");
     expect(platformSourceCommit()).toBeNull();
     expect(watchdogCommit).toThrow("The deployed source commit could not be verified.");
   });
