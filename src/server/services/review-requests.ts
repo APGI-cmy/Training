@@ -22,8 +22,9 @@ export async function reviewRequestWorkspace(){
  return {session,companies,requests};
 }
 export async function requireReviewRequest(id:string){
- const session=await requireSession();if(!session.user.email_confirmed_at)throw Error('Verified email required.');
- const r=(await rows<ReviewRequest>(`/rest/v1/v6_review_requests?id=eq.${validId(id)}&select=${reviewRequestFields}&limit=1`))[0],tenant=productionCompanyId();
+ const requestedId=validId(id),session=await requireSession(`/review-requests/${requestedId}`);
+ if(!session.user.email_confirmed_at)throw Error('Verified email required.');
+ const r=(await rows<ReviewRequest>(`/rest/v1/v6_review_requests?id=eq.${requestedId}&select=${reviewRequestFields}&limit=1`))[0],tenant=productionCompanyId();
  if(!r||tenant&&r.organisation_id!==tenant)throw Error('Review request unavailable.');
  const manager=await messageRpc<boolean>('v6_review_manager',{p_actor:session.user.id,p_org:r.organisation_id});
  if(!(await rows<{id:string}>(`/rest/v1/organisations?id=eq.${r.organisation_id}&is_active=eq.true&select=id&limit=1`)).length)throw Error('Review request unavailable.');

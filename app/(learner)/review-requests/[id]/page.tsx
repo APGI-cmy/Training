@@ -1,12 +1,15 @@
 import Link from 'next/link';
-import {notFound} from 'next/navigation';
+import {notFound,unstable_rethrow} from 'next/navigation';
 import {requireReviewRequest} from '@/server/services/review-requests';
 import {rows} from '@/server/services/company-structure';
 import {REVIEW_KINDS} from '@/lib/review-requests';
 import {ReviewRequestActions,ReviewRequestResponse,CopyReviewPack} from '@/components/reviews/ReviewRequestControls';
 export const dynamic='force-dynamic';
 export default async function ReviewRequestPage({params}:{params:Promise<{id:string}>}){
- let access;try{access=await requireReviewRequest((await params).id);}catch{notFound();}const {request:r,session,manager}=access;
+ let access;
+ try{access=await requireReviewRequest((await params).id);}
+ catch(error){unstable_rethrow(error);notFound();}
+ const {request:r,session,manager}=access;
  const events=await rows<{id:string;operation:string;reason:string;created_at:string;payload:{decisions?:Record<string,string>}}>(`/rest/v1/v6_review_events?request_id=eq.${r.id}&select=id,operation,reason,created_at,payload&order=created_at.desc`);
  const mail=manager?await rows<{recipient:string;state:string;last_error:string|null}>(`/rest/v1/v6_review_mail?context->>requestId=eq.${r.id}&select=recipient,state,last_error&order=created_at.desc&limit=30`):[];
  return <main className="admin-page"><Link href="/review-requests">All review requests</Link><h1>{r.title}</h1><p>{REVIEW_KINDS[r.kind]} · Reviewer: {r.reviewer_email} · cycle {r.cycle} · deadline {new Date(r.deadline).toLocaleString('en-ZA',{timeZone:'Africa/Johannesburg'})} SAST</p><ReviewRequestActions request={r} manager={manager}/><p>{r.reason}</p>

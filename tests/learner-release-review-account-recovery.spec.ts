@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createHash } from "node:crypto";
-const m = vi.hoisted(() => ({ rest: vi.fn(), deliver: vi.fn(), config: vi.fn(), capture: vi.fn() }));
+const m = vi.hoisted(() => ({ rest: vi.fn(), deliver: vi.fn(), config: vi.fn(), capture: vi.fn(), brand:vi.fn() }));
 vi.mock("@/server/supabase/admin-rest", () => ({ adminRest: m.rest }));
 vi.mock("@/server/environment-isolation", () => ({ usesStagingMailCapture: m.capture }));
 vi.mock("@/server/services/email/transactional-delivery", () => ({ emailConfiguration: m.config, deliverTransactionalEmail: m.deliver }));
+vi.mock("@/server/services/email/recipient-brand", () => ({ recipientBrand:m.brand }));
 import { recoverReviewAccount } from "@/server/services/invitations/recover-review-account";
 const email = "reviewer@example.invalid";
 const round = { id: "11111111-1111-4111-8111-111111111111", organisation_id: "org", status: "open", document: { cutoff: "2099-01-01T00:00:00Z", participants: [{ email, state: "invited" }] } };
@@ -16,6 +17,19 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllEnvs());
 describe("Reviewer account recovery", () => {
+  it("uses the production company's sender and domain for the assigned reviewer",async()=>{
+    const company="22222222-2222-4222-8222-222222222222";
+    vi.stubEnv("ALP_ENVIRONMENT","training-production");vi.stubEnv("ALP_DEFAULT_ORGANISATION_ID",company);
+    selected=[{...round,organisation_id:company}];
+    m.brand.mockResolvedValue({name:"NKS Capital",origin:"https://training.nkscapital.co.za",verified:true,from:"no_reply@nkscapital.co.za"});
+    await recoverReviewAccount(email);
+    expect(m.brand).toHaveBeenCalledWith(email,company);
+    expect(m.deliver).toHaveBeenCalledWith(expect.objectContaining({
+      subject:"Set up your NKS Capital password",
+      text:expect.stringContaining("https://training.nkscapital.co.za/course-reviews/"),
+      tracking:expect.objectContaining({organisationId:company}),
+    }));
+  });
   it("sends a private direct setup link for an already assigned reviewer without creating an account or granting roles", async () => {
     await recoverReviewAccount(email);
     const sent = m.deliver.mock.calls[0][0];

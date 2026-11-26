@@ -2,6 +2,7 @@ import {providerFetch as fetch} from '@/server/security/provider-fetch';
 import { ACTIVITY_COOKIE, sessionIsIdle } from "@/lib/session-activity";
 import {verifiedSessionSecurity,sessionNeedsMfa,type AccountFactor} from './session-assurance';
 import {claimSignInBudget} from '@/server/security/auth-budget';
+import {safeRecoveryNext} from '@/lib/auth/safe-recovery-next';
 
 import { cookies } from "next/headers";
 
@@ -298,13 +299,14 @@ export async function getCurrentSession(options:{allowMfaChallenge?:boolean}={})
 
 }
 
-export async function requireSession() {
+export async function requireSession(returnTo?: string) {
 
   const session = await getCurrentSession({allowMfaChallenge:true});
 
   if (!session) {
 
-    redirect("/alp-sign-in");
+    const next=returnTo?safeRecoveryNext(returnTo):undefined;
+    redirect(next?`/alp-sign-in?next=${encodeURIComponent(next)}`:"/alp-sign-in");
 
   }
 
