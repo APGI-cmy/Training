@@ -1,5 +1,17 @@
 import 'server-only';
 import {adminRest} from '@/server/supabase/admin-rest';
+import type {ReviewRound} from '@/lib/course-review';
+import type {ReviewOffering} from '@/lib/review-workflow-summary';
+import {publishedReleaseForOffering,publishedTrainingRelease} from '@/lib/review-publication-state';
+import {rows} from './company-structure';
+
+// Presentation only. The caller must already have access to this review.
+export async function reviewLearnerRelease(round:ReviewRound){
+ if(round.status==='published')return publishedTrainingRelease(round,round.fingerprint,round.document.brand.revision)??null;
+ if(round.status!=='open')return null;
+ const [offering]=await rows<ReviewOffering>(`/rest/v1/organisation_offerings?organisation_id=eq.${round.organisation_id}&course_id=eq.${encodeURIComponent(round.course_id)}&select=organisation_id,course_id,status,reviewed_release_id&limit=1`);
+ return publishedReleaseForOffering(round,offering)??null;
+}
 
 // Presentation metadata only. This never grants catalogue access or enrolment.
 export async function getPublishedCourseIds(courseIds:string[]):Promise<Set<string>|null>{

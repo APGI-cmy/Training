@@ -5,6 +5,7 @@ import {deliveryIdentityForCourse} from '@/lib/course-deployment';
 import {assertApprovedCorrectionScope,correctionRecheckUnits} from "@/lib/course-correction-scope";
 import {commercialReviewPath} from "@/lib/review-navigation";
 import {canProposeCommercial,readCommercialSuggestion} from "@/lib/commercial-feedback";
+import {publishedTrainingRelease} from "@/lib/review-publication-state";
 
 import {randomUUID,randomBytes,createHash} from "node:crypto";
 import {reviewInvitationNarrative} from '@/server/services/email/review-message';
@@ -135,8 +136,11 @@ export async function courseReviewAction(_:ReviewActionState,form:FormData):Prom
   const op=text(form,"operation"),now=new Date().toISOString();let notice="Saved to the shared review.",mail= [] as ReturnType<typeof reviewMail>;
   if(op==='review_override'){
    if(!principal||!fresh||round.status!=='open')throw Error('An authorised principal and the current open course version are required.');
-   const scope=text(form,'scope');
-   const result=await adminRest(`/rest/v1/rpc/${scope==='all'?'v4_apply_publication_review_override':'v4_apply_review_override'}`,{method:'POST',body:JSON.stringify({p_id:id,p_revision:Number(text(form,'expected_revision')),p_fingerprint:text(form,'expected_fingerprint',64,64),p_brand:Number(text(form,'brand_revision')),p_actor:session.user.id,p_mode:text(form,'mode'),p_reason:text(form,'reason',15,4000),p_confirm:form.get('confirm_override')==='on',...(scope==='all'?{}:{p_scope:scope,p_revoke:form.get('override_id')?validId(String(form.get('override_id'))):null})})});
+   const scope=text(form,'scope'),mode=text(form,'mode');
+   if(mode!=='revoke'&&publishedTrainingRelease(round,access.source.fingerprint,access.source.brand.brand_revision)){
+    throw Error('This version is already published. Continue the retained review from the workflow.');
+   }
+   const result=await adminRest(`/rest/v1/rpc/${scope==='all'?'v4_apply_publication_review_override':'v4_apply_review_override'}`,{method:'POST',body:JSON.stringify({p_id:id,p_revision:Number(text(form,'expected_revision')),p_fingerprint:text(form,'expected_fingerprint',64,64),p_brand:Number(text(form,'brand_revision')),p_actor:session.user.id,p_mode:mode,p_reason:text(form,'reason',15,4000),p_confirm:form.get('confirm_override')==='on',...(scope==='all'?{}:{p_scope:scope,p_revoke:form.get('override_id')?validId(String(form.get('override_id'))):null})})});
    if(!result.ok)throw Error('Override not saved. Refresh and check the exact version, confirmation, reason and principal authority.');
    revalidatePath(`/course-reviews/${id}`,'layout');revalidatePath('/course-reviews');revalidatePath('/notifications');return {success:'The review exception is recorded. Earlier evidence is archived and recoverable. Training publication is a separate explicit step; payments and learner assessment requirements are unchanged.'};
   }

@@ -1,6 +1,13 @@
 import type {ReviewRound} from './course-review';
 import {reviewOverride,type ReviewScope} from './review-overrides';
+import type {ReviewOffering} from './review-workflow-summary';
 export type TrainingRelease=NonNullable<ReviewRound['document']['trainingReleases']>[number];
+
+export function publishedReleaseForOffering(round:ReviewRound,offering:ReviewOffering|undefined):TrainingRelease|undefined{
+ if(offering?.status!=='published'||!offering.reviewed_release_id||
+    offering.organisation_id!==round.organisation_id||offering.course_id!==round.course_id)return undefined;
+ return round.document.trainingReleases?.find(release=>release.id===offering.reviewed_release_id);
+}
 
 // An existing learner release is distinct from an open review. Changed content,
 // branding or commercial terms still need a new explicit publication decision.
@@ -15,5 +22,5 @@ export function publishedTrainingRelease(round:ReviewRound,fingerprint:string,br
 export function publishedReviewOverride(round:ReviewRound,scope:ReviewScope,release:TrainingRelease){
  const overrides=(round.document.reviewOverrides??[]).filter(o=>Date.parse(o.at)<=Date.parse(release.at));
  const saved=overrides.filter(o=>o.scope===scope&&o.mode!=='revoke').at(-1);
- return reviewOverride({...round.document,reviewOverrides:overrides},scope,release.fingerprint,round.status==='published'&&saved?saved.brandRevision:release.brandRevision);
+ return reviewOverride({...round.document,reviewOverrides:overrides},scope,release.fingerprint,round.status==='published'&&saved?saved.brandRevision:release.brandRevision,release.commercialVersion);
 }

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {Fragment} from 'react';
 import {canWork} from '@/lib/course-review';
 import type {ReviewWorkflowSummary} from '@/lib/review-workflow-summary';
+import {publishedReviewOverride,publishedTrainingRelease} from '@/lib/review-publication-state';
 import {CoursePublicationBadge} from './CoursePublicationBadge';
 
 const date=(value:string)=>new Date(value).toLocaleString('en-ZA',{timeZone:'Africa/Johannesburg'});
@@ -17,10 +18,13 @@ export function SharedPublicationLinks({shares}:{shares:SharedPublication[]}){
 
 export function ReviewWorkflowCard({summary,shares=[]}:{summary:ReviewWorkflowSummary;shares?:SharedPublication[]}){
  const {current,openReview,publishedRelease,published,reviewContinuing,history}=summary;
+ const release=publishedRelease&&publishedTrainingRelease(publishedRelease,publishedRelease.fingerprint,publishedRelease.document.brand.revision);
+ const publishedUnderOverride=published&&publishedRelease&&release&&(['content','commercials','branding'] as const).some(scope=>publishedReviewOverride(publishedRelease,scope,release));
  return <article className="review-box" aria-label={`${current.document.title} — ${current.document.brand.name} workflow`}>
   <h2>{current.document.title}</h2>
   {published!==false||openReview?<CoursePublicationBadge published={published} underReview={published!==null&&!!openReview} reviewContinuing={reviewContinuing}/>:<p><strong>No current published release — review history retained</strong></p>}
   <p>{current.document.brand.name}</p>
+  {publishedUnderOverride?<p><strong>Published under override</strong></p>:null}
   {published&&reviewContinuing?<p>The course is published and available to enrolled learners. Outstanding review work remains open.</p>:published?<p>The published course is available to enrolled learners.</p>:openReview?<p>Continue the outstanding review and publication tasks.</p>:null}
   <SharedPublicationLinks shares={shares}/>
   {openReview?<p>Review cutoff: {date(openReview.document.cutoff)} SAST{!canWork(openReview)&&reviewContinuing?' · Unfinished review tasks are overdue.':''}</p>:null}

@@ -1,4 +1,4 @@
-import {publishedTrainingRelease} from '@/lib/review-publication-state';
+import {publishedTrainingRelease,type TrainingRelease} from '@/lib/review-publication-state';
 import {initialReviewerComplete} from "@/lib/lu-review-workflow";
 import {commercialReviewPath,commercialSignoffAnchor} from "@/lib/review-navigation";
 import {CommercialDiscussion} from "./CommercialDiscussion";
@@ -18,11 +18,11 @@ import {type ReviewRound} from "@/lib/course-review";
 
 import {currentCommercial,bothCommercialApprovals,quoteCommercial,commercialPrincipals} from "@/lib/publication-workflow";
 
-export function PublicationProgress({round,principal,email,hash,brandRevision,guide}:{round:ReviewRound;principal:boolean;email:string;hash:string;brandRevision:number;guide?:WorkflowStep[]}){
+export function PublicationProgress({round,principal,email,hash,brandRevision,guide,activeRelease}:{round:ReviewRound;principal:boolean;email:string;hash:string;brandRevision:number;guide?:WorkflowStep[];activeRelease?:TrainingRelease|null}){
 
  const w=round.document.workflow;if(!w)return <section className="review-box"><h2>Earlier workflow</h2><p>This record is preserved. Start a content-first workflow to complete the current publication process.</p>{principal?<Link href={`/course-reviews/new?course=${round.course_id}&brand=${round.organisation_id}`}>Start current workflow</Link>:null}</section>;
 
- const published=publishedTrainingRelease(round,hash,brandRevision);
+ const published=activeRelease===undefined?publishedTrainingRelease(round,hash,brandRevision):activeRelease;
  const v=currentCommercial(w),money=(n:number)=>`${v?.configuration.currency??"USD"} ${(n/100).toFixed(2)}`;
 
 

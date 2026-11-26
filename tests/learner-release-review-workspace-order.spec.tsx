@@ -4,12 +4,12 @@ import React from "react";
 import {renderToStaticMarkup} from "react-dom/server";
 import {beforeEach,describe,it,expect,vi} from "vitest";
 import type {ReviewRound} from "@/lib/course-review";
-const m=vi.hoisted(()=>({access:vi.fn(),requestManager:vi.fn()}));
+const m=vi.hoisted(()=>({access:vi.fn(),requestManager:vi.fn(),rows:vi.fn()}));
 vi.mock('next/navigation',()=>({usePathname:()=>'/course-reviews/example',useRouter:()=>({refresh:vi.fn()})}));
 vi.mock("next/link",()=>({default:({href,children}:{href:string;children:React.ReactNode})=><a href={href}>{children}</a>}));
 vi.mock("@/server/services/course-reviews",()=>({requireReview:m.access}));
 vi.mock("@/server/services/messages",()=>({messageRpc:m.requestManager}));
-vi.mock("@/server/services/company-structure",()=>({rows:async()=>[]}));
+vi.mock("@/server/services/company-structure",()=>({rows:m.rows}));
 vi.mock("@/components/reviews/ReviewForms",()=>({ReviewForm:({children,label,disabled}:{children:React.ReactNode;label:string;disabled:boolean})=><form>{children}<button disabled={disabled}>{label}</button></form>,CoverageConfirmation:()=> <span>Saved coverage</span>}));
 import Workspace from "../app/(learner)/course-reviews/[id]/page";
 const id="11111111-1111-4111-8111-111111111111";
@@ -19,9 +19,25 @@ beforeEach(()=>{
  // Request-management access is a separate permission from publication and
  // content clearance. Keep the legacy detail fixtures offline.
  m.requestManager.mockResolvedValue(false);
+ m.rows.mockResolvedValue([]);
 });
 describe("Review workspace sequence and requester controls",()=>{
  it("presents one Review process with submission, findings and independent checks",async()=>{m.access.mockResolvedValue(fixture());const html=renderToStaticMarkup(await Workspace({params:Promise.resolve({id})}));const headings=["Review team","Review the learning units and quizzes","<h2 id=\"review-process-heading\">Review process</h2>","Submit my completed content review","<h2>Commercial preparation and sign-off</h2>"];const positions=headings.map(h=>html.indexOf(h));expect(positions.every(p=>p>=0)).toBe(true);expect(positions).toEqual([...positions].sort((a,b)=>a-b));expect(html).not.toContain("Shared findings and discussion");expect(html).not.toContain("Review summary and submission");expect(html).not.toContain("Committed reports and independent checks");expect(html).not.toContain("Audit trail and earlier report versions");expect(html).toContain('name="confirm_review"');expect(html).toContain("Requester view");});
  it("keeps final publication and content clearance hidden from the other principal while allowing request approvals",async()=>{const a=fixture();a.email="jorrie.jordaan@apginc.ca";a.session.user.id="jorrie";m.access.mockResolvedValue(a);const html=renderToStaticMarkup(await Workspace({params:Promise.resolve({id})}));expect(html).not.toContain("Final publication for this company");expect(html).not.toContain("Approve final corrected content");expect(html).toContain("Approve this request now");});
  it("keeps final publication hidden from ordinary assigned reviewers",async()=>{const a=fixture();a.principal=false;m.access.mockResolvedValue(a);const html=renderToStaticMarkup(await Workspace({params:Promise.resolve({id})}));expect(html).not.toContain("Publish reviewed release");expect(html).not.toContain("Approve final corrected content");expect(html).toContain("Request a cutoff extension");});
+ it("keeps the published override visible while a corrected review continues",async()=>{
+  const a=fixture();
+  const release={id:"published-version",fingerprint:"prior-hash",brandRevision:8,commercialVersion:null,at:"2026-11-18T08:28:40Z"};
+  a.round.document.trainingReleases=[release];
+  a.round.document.reviewOverrides=[{id:"initial-override",scope:"content",mode:"retain",fingerprint:release.fingerprint,brandRevision:8,commercialVersion:null,at:"2026-11-18T08:28:34Z",reason:"Start the approved learner group while review continues.",actorId:"johan",email:a.email}];
+  m.access.mockResolvedValue(a);
+  m.rows.mockImplementation(async (path:string)=>path.startsWith("/rest/v1/organisation_offerings?")?[{organisation_id:id,course_id:a.round.course_id,status:"published",reviewed_release_id:release.id}]:[]);
+  const html=renderToStaticMarkup(await Workspace({params:Promise.resolve({id})}));
+  expect(html).toContain("Published under override — review continuing");
+  expect(html).toContain("Start the approved learner group while review continues.");
+  expect(html).toContain("Go to review steps");
+  expect(html).not.toContain("Continue to publish");
+  expect(html).not.toContain("Save review override");
+  expect(html).toContain("<details><summary>Publication checks for the next version</summary>");
+ });
 });

@@ -1,7 +1,8 @@
 import {beforeEach,describe,it,expect,vi} from "vitest";
 import type {ReviewRound} from "@/lib/course-review";
-const m=vi.hoisted(()=>({access:vi.fn(),commit:vi.fn(),owner:vi.fn(),mail:vi.fn(()=>[])}));
+const m=vi.hoisted(()=>({access:vi.fn(),commit:vi.fn(),owner:vi.fn(),mail:vi.fn(()=>[]),rest:vi.fn()}));
 vi.mock("next/cache",()=>({revalidatePath:vi.fn()}));
+vi.mock("@/server/supabase/admin-rest",()=>({adminRest:m.rest}));
 vi.mock("@/server/services/publication-workflow",()=>({requirePartnerOwner:m.owner}));
 vi.mock("@/server/services/course-reviews",()=>({requireReview:m.access,commitReview:m.commit,reviewMail:m.mail,reviewEvent:vi.fn(),processReviewMail:vi.fn(),claimReviewer:(r:ReviewRound,email:string,id:string)=>{const p=r.document.participants.find(p=>p.email===email);if(!p)throw Error("Not assigned");p.userId=id;return p;},assertReviewWork:(r:ReviewRound,fresh:boolean)=>{if(!fresh||r.status!=="open"||Date.parse(r.document.cutoff)<Date.now())throw Error("Review closed or overdue");}}));
 import {courseReviewAction} from "@/server/actions/course-reviews";
@@ -10,6 +11,15 @@ function access(){return {principal:false,email:"reviewer@example.com",session:{
 function form(){const f=new FormData();Object.entries({round_id:id,operation:"task_decision",task:"branding",task_target:"2",confirm_task:"on",decision:"approve",comment:"Logo, colours and certificate checked"}).forEach(([k,v])=>f.set(k,v));return f;}
 beforeEach(()=>{vi.clearAllMocks();m.access.mockResolvedValue(access());m.owner.mockResolvedValue(undefined);});
 describe("Separate reviewer assignments and branding authority",()=>{
+ it("rejects a second override for the exact published version without writing review data",async()=>{
+  const a=access(),f=new FormData();
+  a.principal=true;
+  a.round.document.trainingReleases=[{id:"published",at:"2026-11-18T08:28:40Z",fingerprint:a.source.fingerprint,brandRevision:2,commercialVersion:null}];
+  m.access.mockResolvedValue(a);
+  Object.entries({round_id:id,operation:"review_override",scope:"all",mode:"retain"}).forEach(([key,value])=>f.set(key,value));
+  expect((await courseReviewAction({},f)).error).toContain("This version is already published");
+  expect(m.rest).not.toHaveBeenCalled();
+ });
  it("records a branding-only decision with verified identity and exact revision",async()=>{const a=access(),before=structuredClone(a.round.document.workflow);m.access.mockResolvedValue(a);const result=await courseReviewAction({},form());expect(result.success).toContain("Branding");expect(a.round.document.taskDecisions?.[0]).toMatchObject({task:"branding",target:"2",userId:"reviewer",email:a.email,decision:"approve"});expect(a.round.document.participants[0].state).toBe("finished");expect(a.round.document.reports).toEqual([]);expect(a.round.document.workflow).toEqual(before);expect(m.commit).toHaveBeenCalledOnce();});
  it("retains each decision version and keeps requested changes outstanding",async()=>{const a=access();m.access.mockResolvedValue(a);const f=form();f.set("decision","changes");await courseReviewAction({},f);expect(a.round.document.participants[0].state).toBe("active");f.set("decision","approve");await courseReviewAction({},f);expect(a.round.document.taskDecisions).toHaveLength(2);expect(a.round.document.taskDecisions?.[0].decision).toBe("changes");});
  it("requires named owner membership before company branding sign-off",async()=>{const a=access();a.round.document.workflow!.partner=true;a.round.document.workflow!.partnerEmail=a.email;a.round.document.workflow!.partnerCompanyId="company-owner-scope";m.access.mockResolvedValue(a);await courseReviewAction({},form());expect(m.owner).toHaveBeenCalledWith("company-owner-scope","reviewer");});

@@ -5,7 +5,7 @@ vi.mock('@/components/reviews/ReviewForms',()=>({ReviewForm:({children,hidden,la
 import {ReviewPublicationOverride} from '@/components/reviews/ReviewPublicationOverride';
 import {ReviewOverrideControl} from '@/components/reviews/ReviewOverrideControl';
 import {notificationRound} from './fixtures/review-notification';
-import {publishedTrainingRelease,publishedReviewOverride} from '@/lib/review-publication-state';
+import {publishedTrainingRelease,publishedReviewOverride,publishedReleaseForOffering} from '@/lib/review-publication-state';
 
 function released(){
  const round=notificationRound(),at='2026-11-18T09:43:29Z',version=round.document.workflow!.commercials.at(-1)!.id;
@@ -32,6 +32,7 @@ describe('Publication override controls',()=>{
   expect(html).toContain('The review process was retained. Please complete your review steps below.');expect(html).toContain('Go to review steps');
   expect(html).not.toContain('Continue to publish');expect(html).not.toContain('publication is permitted');
   expect(html).toContain('<details data-override-management="true">');expect(html).not.toMatch(/<details(?=[^>]*data-override-management)[^>]*\sopen/);
+  expect(html).not.toContain('Save review override');expect(html).not.toContain('Save override for the next release');
   expect(JSON.stringify(round)).toBe(before);
  });
  it.each([['content','review-process'],['commercials','commercial-preparation'],['branding','branding-review']] as const)('links %s to its retained review tasks', (scope,anchor)=>{
@@ -67,5 +68,15 @@ describe('Publication override controls',()=>{
   const round=released();expect(publishedTrainingRelease(round,'hash',1)?.id).toBe('published-release');
   expect(publishedTrainingRelease(round,'changed',1)).toBeUndefined();expect(publishedTrainingRelease(round,'hash',2)).toBeUndefined();
   round.document.workflow!.commercials.at(-1)!.id='new-commercial-version';expect(publishedTrainingRelease(round,'hash',1)).toBeUndefined();
+ });
+ it('uses the active company release and its own terms when a later revision is under review',()=>{
+  const round=released(),old=round.document.trainingReleases![0];
+  const offering={organisation_id:round.organisation_id,course_id:round.course_id,status:'published',reviewed_release_id:old.id};
+  round.fingerprint='corrected-hash';
+  round.document.workflow!.commercials.at(-1)!.id='new-commercials';
+  expect(publishedReleaseForOffering(round,offering)).toEqual(old);
+  expect(publishedReviewOverride(round,'commercials',old)?.id).toBe('commercials');
+  expect(publishedReleaseForOffering(round,{...offering,status:'draft'})).toBeUndefined();
+  expect(publishedReleaseForOffering(round,{...offering,organisation_id:'different-company'})).toBeUndefined();
  });
 });
