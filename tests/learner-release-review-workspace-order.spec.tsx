@@ -4,16 +4,22 @@ import React from "react";
 import {renderToStaticMarkup} from "react-dom/server";
 import {beforeEach,describe,it,expect,vi} from "vitest";
 import type {ReviewRound} from "@/lib/course-review";
-const m=vi.hoisted(()=>({access:vi.fn()}));
+const m=vi.hoisted(()=>({access:vi.fn(),requestManager:vi.fn()}));
 vi.mock('next/navigation',()=>({usePathname:()=>'/course-reviews/example',useRouter:()=>({refresh:vi.fn()})}));
 vi.mock("next/link",()=>({default:({href,children}:{href:string;children:React.ReactNode})=><a href={href}>{children}</a>}));
 vi.mock("@/server/services/course-reviews",()=>({requireReview:m.access}));
+vi.mock("@/server/services/messages",()=>({messageRpc:m.requestManager}));
 vi.mock("@/server/services/company-structure",()=>({rows:async()=>[]}));
 vi.mock("@/components/reviews/ReviewForms",()=>({ReviewForm:({children,label,disabled}:{children:React.ReactNode;label:string;disabled:boolean})=><form>{children}<button disabled={disabled}>{label}</button></form>,CoverageConfirmation:()=> <span>Saved coverage</span>}));
 import Workspace from "../app/(learner)/course-reviews/[id]/page";
 const id="11111111-1111-4111-8111-111111111111";
 function fixture(){return {principal:true,email:"johan.ras@apginc.ca",session:{user:{id:"johan"}},fresh:true,source:{course:getCourseBySlug("vpshr-level-0"),fingerprint:"hash",brand:{name:"APGI",brand_revision:1}},round:{id,plan_id:null,organisation_id:id,course_id:"vpshr-level-0",created_at:"2026-10-19",status:"open",fingerprint:"hash",revision:1,document:{title:"Course",requester:"johan.ras@apginc.ca",requesterId:"johan",brand:{name:"APGI",revision:1,color:"#102b47",logo:null},cutoff:"2099-01-01",units:[{slug:"lu1",title:"First LU"}],participants:[{email:"johan.ras@apginc.ca",userId:"johan",role:"primary",state:"active",coverage:["lu1"]},{email:"jorrie.jordaan@apginc.ca",userId:"jorrie",role:"primary",state:"active",coverage:[]}],findings:[],reports:[],events:[],terms:{text:"",partner:false,acceptor:""},workflow:{version:2,ownerId:id,partner:false,partnerEmail:"",stage:"content_review",designerName:"Designer",designerCompany:"APGI",commercials:[],counterOffers:0}}} as ReviewRound};}
-beforeEach(()=>vi.clearAllMocks());
+beforeEach(()=>{
+ vi.clearAllMocks();
+ // Request-management access is a separate permission from publication and
+ // content clearance. Keep the legacy detail fixtures offline.
+ m.requestManager.mockResolvedValue(false);
+});
 describe("Review workspace sequence and requester controls",()=>{
  it("presents one Review process with submission, findings and independent checks",async()=>{m.access.mockResolvedValue(fixture());const html=renderToStaticMarkup(await Workspace({params:Promise.resolve({id})}));const headings=["Review team","Review the learning units and quizzes","<h2 id=\"review-process-heading\">Review process</h2>","Submit my completed content review","<h2>Commercial preparation and sign-off</h2>"];const positions=headings.map(h=>html.indexOf(h));expect(positions.every(p=>p>=0)).toBe(true);expect(positions).toEqual([...positions].sort((a,b)=>a-b));expect(html).not.toContain("Shared findings and discussion");expect(html).not.toContain("Review summary and submission");expect(html).not.toContain("Committed reports and independent checks");expect(html).not.toContain("Audit trail and earlier report versions");expect(html).toContain('name="confirm_review"');expect(html).toContain("Requester view");});
  it("keeps final publication and content clearance hidden from the other principal while allowing request approvals",async()=>{const a=fixture();a.email="jorrie.jordaan@apginc.ca";a.session.user.id="jorrie";m.access.mockResolvedValue(a);const html=renderToStaticMarkup(await Workspace({params:Promise.resolve({id})}));expect(html).not.toContain("Final publication for this company");expect(html).not.toContain("Approve final corrected content");expect(html).toContain("Approve this request now");});
