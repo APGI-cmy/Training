@@ -1,4 +1,10 @@
 import { PRACTICAL_API, type PracticalFile } from "@/lib/assessments/scannex-assignment";
+export type PracticalTransport = {
+  request: typeof practicalRequest;
+  upload: typeof uploadPracticalFile;
+  evidence: (id: string) => Blob | undefined;
+  evidenceHref: (id: string) => string | undefined;
+};
 export async function practicalRequest<T = unknown>(path = "", data?: unknown): Promise<T> {
   const response = await fetch(`${PRACTICAL_API}${path}`, { method: data ? "POST" : "GET", cache: "no-store", headers: data ? { "content-type": "application/json" } : undefined, body: data ? JSON.stringify(data) : undefined });
   const result = await response.json();

@@ -7,10 +7,12 @@ import { getCourseBySlug } from "@/lib/courses";
 import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { isViewerLabConfigured } from "@/lib/services/viewer-lab/viewer-lab-config";
 import { evaluateViewerLabAvailability, getViewerLabSettings, SCANNEX_COURSE_ID } from "@/lib/services/viewer-lab/viewer-lab-settings";
-import { requireSession } from "@/server/auth/session";
+import { getUserRoles, requireSession } from "@/server/auth/session";
 import { getCourseResume } from "@/lib/services/progress/get-course-resume";
 import { viewerReturnPath } from "@/lib/services/viewer-lab/viewer-return-path";
 import { PracticalAssignment } from "@/components/assessment/PracticalAssignment";
+import { ScannexHostedPilot } from "@/components/assessment/ScannexHostedPilot";
+import { isScannexHostedPilot } from "@/lib/assessments/scannex-hosted-pilot";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +62,27 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
 
   if (!access.canAccess) {
     return <CourseAccessDenied course={course} access={access} />;
+  }
+
+  if (isSummativeLab && course.slug === SCANNEX_COURSE_ID && unit.slug === "lu9"
+      && process.env.VERCEL_ENV === "preview" && process.env.SCANNEX_V1_IMAGE78_PILOT === "1") {
+    const allowed = isScannexHostedPilot({
+      environment: process.env.VERCEL_ENV, enabled: process.env.SCANNEX_V1_IMAGE78_PILOT,
+      operator: process.env.SCANNEX_V1_PILOT_OPERATOR, authenticatedEmail: session.user.email,
+      roles: await getUserRoles(session.accessToken), course: course.slug, unit: unit.slug,
+    });
+    if (!allowed) notFound();
+    return <main>
+      <section className="unit-masthead">
+        <div className="content-inner">
+          <Link className="back-link" href={`/learn/${course.slug}/units/${unit.slug}`}>Back to summative assessment</Link>
+          <p className="eyebrow">Private V1 preview</p>
+          <h1>Scannex Practical Assessment</h1>
+          <p>Test the redesigned learner workflow using one ungraded exercise in the development Viewer.</p>
+        </div>
+      </section>
+      <section className="content-band"><div className="content-inner"><ScannexHostedPilot /></div></section>
+    </main>;
   }
 
   if (isPracticeLab) {
@@ -145,12 +168,13 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
           </Link>
           <p className="eyebrow">Controlled practical environment</p>
           <h1>Scannex Practical Assessment</h1>
-          <p>Part B of the final assessment: evaluate three assigned images in the genuine Scannex Viewer, save your electronic checklists and evidence, and submit your report for assessor review.</p>
+          <p>Part B of the final assessment. Start with the instructions and printable checklist, then follow the guided steps for three assigned Viewer exercises.</p>
           <div className="unit-meta">
             <span>32 practical marks</span>
-            <span>100-point assessor rubric</span>
+            <span>40-mark assignment rubric</span>
             <span>75% overall pass requirement</span>
           </div>
+          <div className="button-row"><a className="primary-button" href="#practical-workflow">Go to the practical workflow</a></div>
         </div>
       </section>
 
@@ -169,7 +193,7 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
               <li>The assessor observes the practical rubric, then saves the approved result and Viewer Movement Log for review.</li>
             </ol>
             <p className="resource-status" role="status">
-              The practical instrument is recorded as 99 raw marks, normalised to 100, then converted to the 32 practical marks. Your course is not complete merely by opening this page or attending the station.
+              The supervised station uses its separate legacy rubric. The 40-mark rubric applies to the recorded assignment. Neither opening the page nor attending the station completes the course.
             </p>
           </section>
           </details>
@@ -178,7 +202,7 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
             <p className="eyebrow">Evidence and review</p>
             <h2 id="viewer-lab-evidence-heading">What is assessed</h2>
             <p>
-              The assessor reviews your use of the Viewer, systematic image interrogation and application of the Scannex checklist, alongside the approved exercise result and Viewer Movement Log. A material safety or role-boundary concern must be reviewed before a pass can be recorded.
+              The assessor checks your Viewer evidence, annotations, checklist and reasons against the approved case key. In the supervised station alternative, the assessor uses the saved exercise result and Viewer Movement Log. An unresolved material safety concern prevents a pass.
             </p>
           </section>
         </div>

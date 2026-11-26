@@ -1,6 +1,7 @@
 // Shared worksheet rules, not a material classifier or a learner self-grading engine.
 import { SCANNEX_PRACTICAL_RUBRIC } from "./scannex-practical-rubric";
 export const PRACTICAL_VERSION = "scannex-practical-assignment-v1-20261125";
+// The hosted pilot is ungraded. Preserve the deployed assessor contract.
 export const ASSIGNMENT_RUBRIC_VERSION = "scannex-practical-v1-even-density-20261125";
 export const ASSIGNMENT_RAW_MAX = SCANNEX_PRACTICAL_RUBRIC.reduce((n, c) => n + c.maximumScore, 0);
 export function assignmentScore(scores: Record<string, number>) {
@@ -11,6 +12,8 @@ export const RECORDING_NOTICE_VERSION = "scannex-recording-v1-20261125";
 export const PRACTICAL_PATH = "/learn/scannex-training-programme/units/lu9/viewer-lab";
 export const PRACTICAL_API = "/api/v1/scannex-practical";
 export const MODES = ["F1", "F2", "F3", "F4"] as const;
+export const SCANNEX_ZOOM_LEVELS = ["¼×", "½×", "1×", "2×", "4×"] as const;
+export type ScannexZoomLevel = typeof SCANNEX_ZOOM_LEVELS[number];
 export const REGIONS = ["feet", "lower_legs", "pelvis_hands", "abdomen_lower_arm", "chest_upper_arm", "head"] as const;
 export const REGION_LABELS: Record<Region, string> = {
   feet: "Feet", lower_legs: "Lower legs / knees", pelvis_hands: "Pelvis / hands",
@@ -27,9 +30,21 @@ export type Candidate = {
   modes: Record<Mode, Observation>; densityCheck: string; boneComparison: string;
   embossComparison: string; position: "inside" | "outside" | "uncertain"; decision: Decision;
 };
+export type ScanSequence = {
+  evidenceFileId: string | null;
+  completedAt: Record<Region, string>;
+};
 export type CaseWorksheet = {
   caseId: string; modes: Record<Mode, { used: boolean; tuned: boolean; clarity: string }>;
   regions: Record<Region, "not_reviewed" | "no_candidate" | "candidate_recorded">;
+  // Guided V1 readiness declaration. Older drafts and snapshots may omit it.
+  viewerReady?: boolean;
+  autoPanCompleted?: boolean;
+  screeningComplete?: boolean;
+  zoomLevels?: ScannexZoomLevel[];
+  checklistSource?: "electronic" | "paper";
+  // Optional in older frozen submissions. Required for new submission.
+  scanSequence?: ScanSequence;
   candidates: Candidate[]; summary: string; decision: Decision;
 };
 export type AssignmentDocument = { version: string; preparation: { viewerOpened: boolean; correctImages: boolean; systematicScan: boolean }; cases: CaseWorksheet[] };
@@ -75,10 +90,33 @@ function choice<T extends string>(value: unknown, allowed: readonly T[], fallbac
   return value as T;
 }
 const decision = (v: unknown) => choice(v, ["hold", "release", "review"] as const, "review");
+export function newScanSequence(): ScanSequence {
+  return { evidenceFileId: null, completedAt: Object.fromEntries(REGIONS.map(r => [r, ""])) as ScanSequence["completedAt"] };
+}
+export function elapsedScanSeconds(value: string) {
+  const time = /^(\d{1,2}):([0-5]\d)$/.exec(value.trim());
+  return time ? Number(time[1]) * 60 + Number(time[2]) : null;
+}
+export function scanSequenceOrder(sequence?: ScanSequence): "incomplete" | "in_order" | "review" {
+  if (!sequence) return "incomplete";
+  const times = REGIONS.map(r => elapsedScanSeconds(sequence.completedAt[r]));
+  if (times.some(t => t === null)) return "incomplete";
+  return times.every((t, i) => i === 0 || t! > times[i - 1]!) ? "in_order" : "review";
+}
+export function scanTimingEvidence(files: PracticalFile[], caseId: string) {
+  return files.filter(f => f.case_id === caseId && f.status === "verified" && (f.kind === "recording" || f.kind === "native_log"));
+}
+function parseScanSequence(value: unknown): ScanSequence {
+  const s = object(value), completedAt = object(s.completedAt), evidenceFileId = s.evidenceFileId ?? null;
+  if (evidenceFileId !== null && !isUuid(evidenceFileId)) throw new Error("INVALID_WORKSHEET");
+  // Keep bounded, partially entered offsets in drafts; submission requires valid times.
+  return { evidenceFileId, completedAt: Object.fromEntries(REGIONS.map(r => [r, text(completedAt[r], 5)])) as ScanSequence["completedAt"] };
+}
 export function newDocument(cases: LearnerCase[]): AssignmentDocument {
   return { version: PRACTICAL_VERSION, preparation: { viewerOpened: false, correctImages: false, systematicScan: false }, cases: cases.map(c => ({
     caseId: c.id, modes: Object.fromEntries(MODES.map(m => [m, { used: false, tuned: false, clarity: "" }])) as CaseWorksheet["modes"],
-    regions: Object.fromEntries(REGIONS.map(r => [r, "not_reviewed"])) as CaseWorksheet["regions"], candidates: [], summary: "", decision: "review"
+    regions: Object.fromEntries(REGIONS.map(r => [r, "not_reviewed"])) as CaseWorksheet["regions"],
+    scanSequence: newScanSequence(), candidates: [], summary: "", decision: "review"
   })) };
 }
 export function newCandidate(id: string, region: Region): Candidate {
@@ -97,8 +135,14 @@ export function parseDocument(input: unknown, cases: LearnerCase[]): AssignmentD
       const c = object(raw), modes = object(c.modes), regions = object(c.regions);
       if (c.caseId !== cases[i].id || !Array.isArray(c.candidates) || c.candidates.length > 40) throw new Error("INVALID_WORKSHEET");
       return { caseId: cases[i].id,
+        ...(typeof c.viewerReady === "boolean" ? { viewerReady: c.viewerReady } : {}),
+        ...(typeof c.autoPanCompleted === "boolean" ? { autoPanCompleted: c.autoPanCompleted } : {}),
+        ...(typeof c.screeningComplete === "boolean" ? { screeningComplete: c.screeningComplete } : {}),
+        ...(Array.isArray(c.zoomLevels) ? { zoomLevels: SCANNEX_ZOOM_LEVELS.filter(level => (c.zoomLevels as unknown[]).includes(level)) } : {}),
+        ...(c.checklistSource === "paper" || c.checklistSource === "electronic" ? { checklistSource: c.checklistSource } : {}),
         modes: Object.fromEntries(MODES.map(m => { const v = object(modes[m]); return [m, { used: v.used === true, tuned: v.tuned === true, clarity: text(v.clarity, 1000) }]; })) as CaseWorksheet["modes"],
         regions: Object.fromEntries(REGIONS.map(r => [r, choice(regions[r], ["not_reviewed", "no_candidate", "candidate_recorded"] as const, "not_reviewed")])) as CaseWorksheet["regions"],
+        ...(c.scanSequence === undefined ? {} : { scanSequence: parseScanSequence(c.scanSequence) }),
         candidates: c.candidates.map(rawCandidate => {
           const a = object(rawCandidate), am = object(a.modes);
           if (!isUuid(a.id) || seen.has(a.id)) throw new Error("INVALID_WORKSHEET"); seen.add(a.id);
@@ -119,30 +163,80 @@ export function parseDocument(input: unknown, cases: LearnerCase[]): AssignmentD
   return result;
 }
 
-// These are completeness checks only. Mode checkboxes are learner claims, NOT native telemetry.
-// Wrong answers remain assessable; uncertainty never becomes an automatic positive or pass.
-export function submissionIssues(doc: AssignmentDocument, files: PracticalFile[]): string[] {
+export const EXERCISE_STEPS = ["viewer", "recording", "evidence", "scan", "findings", "decision"] as const;
+export type ExerciseStep = typeof EXERCISE_STEPS[number];
+export type ExerciseEvidencePolicy = { requireScreenshot?: boolean; orderedReview?: boolean };
+export const RECORDING_ONLY_PREVIEW = { requireScreenshot: false } as const;
+export const ORDERED_SCANNEX_PREVIEW = { requireScreenshot: false, orderedReview: true } as const;
+
+export function hasPaperChecklist(c: CaseWorksheet, files: PracticalFile[]) {
+  return files.some(f => f.case_id === c.caseId && f.status === "verified" && f.kind === "supporting_report");
+}
+
+export function applySingleTimingSource(c: CaseWorksheet, files: PracticalFile[]) {
+  const sources = scanTimingEvidence(files, c.caseId);
+  if (sources.length !== 1 || c.scanSequence?.evidenceFileId) return c;
+  return { ...c, scanSequence: { ...(c.scanSequence ?? newScanSequence()), evidenceFileId: sources[0].id } };
+}
+
+// Completeness only. A saved selection is neither native telemetry nor an assessor decision.
+export function exerciseIssues(c: CaseWorksheet, files: PracticalFile[], i: number, policy: ExerciseEvidencePolicy = {}): Record<ExerciseStep, string[]> {
+    const label = `Image ${i + 1}`;
+    const issues: Record<ExerciseStep, string[]> = { viewer: [], recording: [], evidence: [], scan: [], findings: [], decision: [] };
+    if (!c.viewerReady) issues.viewer.push(`${label}: confirm the assigned exercise is visible in the assessment Viewer.`);
+    const timingSources = scanTimingEvidence(files, c.caseId);
+    if (!timingSources.length) issues.recording.push(`${label}: save a verified recording or native log for assessor review.`);
+    if (policy.requireScreenshot !== false && !files.some(f => f.case_id === c.caseId && f.status === "verified" && f.kind === "viewer_image"))
+      issues.evidence.push(`${label}: upload a Viewer screenshot, with native annotations where applicable.`);
+    const retained = c.candidates.filter(a => a.elimination !== "excluded");
+    const paper = policy.orderedReview && c.checklistSource === "paper";
+    if (policy.orderedReview) {
+      if (!c.autoPanCompleted) issues.scan.push(`${label}: confirm you used Auto Pan to inspect the entire image.`);
+      if (!c.screeningComplete) issues.findings.push(`${label}: confirm you finished screening and explained any exclusions.`);
+      if (retained.length && !SCANNEX_ZOOM_LEVELS.every(level => c.zoomLevels?.includes(level)))
+        issues.findings.push(`${label}: demonstrate and confirm all five Viewer zoom levels on the flagged finding.`);
+      if (retained.length && paper && !hasPaperChecklist(c, files)) issues.findings.push(`${label}: attach the completed paper checklist to this exercise.`);
+      if (c.decision === "review") issues.decision.push(`${label}: choose Hold or Release to finish the exercise.`);
+      if (c.decision === "release" && retained.some(a => a.decision !== "release")) issues.decision.push(`${label}: use Hold if a flagged candidate remains unresolved.`);
+    }
+    if (!policy.orderedReview || (retained.length && !paper)) MODES.forEach(m => {
+      if (!c.modes[m].used || !c.modes[m].tuned || !c.modes[m].clarity.trim()) (policy.orderedReview ? issues.findings : issues.scan).push(`${label}: describe your use and optimisation of ${m}.`);
+    });
+    REGIONS.forEach(r => {
+      if (c.regions[r] === "not_reviewed") issues.scan.push(`${label}: record the ${REGION_LABELS[r]} scan outcome.`);
+      else if ((c.regions[r] === "candidate_recorded") !== c.candidates.some(a => a.region === r))
+        issues.findings.push(`${label}: reconcile the ${REGION_LABELS[r]} region record with your candidates.`);
+    });
+    const sequence = c.scanSequence;
+    if (!sequence?.evidenceFileId || !timingSources.some(f => f.id === sequence.evidenceFileId))
+      issues.scan.push(`${label}: choose a verified recording or native log from this image as the scan timing source.`);
+    const missingCheckpoints = REGIONS.filter(r => elapsedScanSeconds(sequence?.completedAt[r] ?? "") === null);
+    if (missingCheckpoints.length)
+      issues.scan.push(`${label}: enter an MM:SS scan checkpoint for ${missingCheckpoints.map(r => REGION_LABELS[r]).join(", ")}.`);
+    if (!c.summary.trim()) issues.decision.push(`${label}: add your reasoned conclusion.`);
+    c.candidates.forEach((a, index) => {
+      if (!a.annotation.trim() || !a.location.trim() || !a.remarks.trim())
+        issues.findings.push(`${label}, candidate ${index + 1}: add the native annotation reference, location and Viewer remarks.`);
+      if (!a.reason.trim()) issues.findings.push(`${label}, candidate ${index + 1}: explain why you retained, excluded or could not resolve this candidate.`);
+      if (a.elimination !== "excluded" && !paper) {
+        if (MODES.some(m => !a.modes[m].anomaly || !a.modes[m].structure || !a.modes[m].edges)
+          || ["F1", "F2"].some(m => !a.modes[m as Mode].spread || !a.modes[m as Mode].density)
+          || !a.densityCheck.trim() || !a.boneComparison.trim() || !a.embossComparison.trim())
+          issues.findings.push(`${label}, candidate ${index + 1}: finish the electronic checklist; use uncertain where necessary.`);
+      }
+    });
+    return issues;
+}
+
+export function submissionIssues(doc: AssignmentDocument, files: PracticalFile[], policy?: ExerciseEvidencePolicy): string[] {
   const issues: string[] = [];
   if (Object.values(doc.preparation).some(v => !v)) issues.push("Complete the preparation declarations.");
   doc.cases.forEach((c, i) => {
-    const label = `Image ${i + 1}`;
-    MODES.forEach(m => { if (!c.modes[m].used || !c.modes[m].tuned || !c.modes[m].clarity) issues.push(`${label}: describe your use and optimisation of ${m}.`); });
-    REGIONS.forEach(r => {
-      const found = c.candidates.some(a => a.region === r);
-      if (c.regions[r] === "not_reviewed" || (c.regions[r] === "candidate_recorded") !== found) issues.push(`${label}: reconcile the ${REGION_LABELS[r]} region record.`);
-    });
-    if (!c.summary) issues.push(`${label}: add your reasoned conclusion.`);
-    c.candidates.forEach((a, index) => {
-      if (!a.annotation || !a.location || !a.reason || !a.remarks) issues.push(`${label}, candidate ${index + 1}: add the native annotation reference, location, reasons and remarks.`);
-      if (a.elimination !== "excluded") {
-        if (MODES.some(m => !a.modes[m].anomaly || !a.modes[m].structure || !a.modes[m].edges)
-          || ["F1", "F2"].some(m => !a.modes[m as Mode].spread || !a.modes[m as Mode].density)
-          || !a.densityCheck || !a.boneComparison || !a.embossComparison) issues.push(`${label}, candidate ${index + 1}: finish the electronic checklist; use uncertain where necessary.`);
-      }
-    });
-    const evidence = files.filter(f => f.case_id === c.caseId && f.status === "verified");
-    if (!evidence.some(f => f.kind === "viewer_image")) issues.push(`${label}: upload a Viewer screenshot, with native annotations where applicable.`);
-    if (!evidence.some(f => f.kind === "recording" || f.kind === "native_log")) issues.push(`${label}: provide a recording or an exported native action log for assessor review.`);
+    const perStep = exerciseIssues(c, files, i, policy);
+    for (const step of EXERCISE_STEPS) {
+      // Existing worksheets can predate the guided viewer acknowledgement.
+      if (step !== "viewer" || c.viewerReady !== undefined) issues.push(...perStep[step]);
+    }
   });
   return issues;
 }
