@@ -6,7 +6,7 @@ import {rows,write} from '@/server/services/company-structure';
 
 export async function saveCourseClassification(_:StructureState,form:FormData):Promise<StructureState>{try{
  const a=await calculatorAccess(validId(formText(form,'company',36,36))),id=validId(formText(form,'credit',36,36));
- const c=(await calculatorCourses(a.company.id,a.principal)).courses.find(c=>c.id===id);
+ const c=(await calculatorCourses(a.company.id)).courses.find(c=>c.id===id);
  if(!c||!a.principal&&c.ownerId!==a.company.id)throw Error('Only the course owner or a platform principal may label this course. Refresh if the course record changed.');
  const industry=formText(form,'industry',0,120).trim(),clientName=formText(form,'client_name',0,120).trim();
  if(c.scope==='industry'&&industry.length<2||c.scope==='client'&&clientName.length<2)throw Error('Enter the industry or client name for this category.');

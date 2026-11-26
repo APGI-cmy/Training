@@ -11,6 +11,7 @@ import {stripeRequest} from './stripe-platform';
 import {reconcileStripeFee,type StripeFeeTransaction} from '@/lib/stripe-fee-reconciliation';
 import pricingPolicy from '@/data/course-pricing-policy.json';
 import {productionCompanyId} from './tenant-courses';
+import {canSetCoursePrices,pricingOwnerId} from '@/lib/course-pricing-ownership';
 
 export type CalculatorQuote={id:string;company_id:string;created_by:string;input:CalculatorInput;result:ReturnType<typeof calculateCoursePrice>;courses:CreditCourse[];cost_snapshot:CostSchedule;fingerprint:string;policy_id:string;created_at:string};
 export type CalculatorOrder={id:string;quote_id:string;buyer_id:string;company_id:string;mode:'test';state:string;checkout_id:string|null;payment_intent:string|null;amount_cents:number;currency:string;fee_evidence:Record<string,unknown>|null;hold_reason:string|null};
@@ -21,27 +22,35 @@ export async function calculatorAccess(companyId?:string){
  const company=available.find(c=>c.id===companyId)??(!companyId?(available.find(c=>c.slug==='apgi')??available[0]):undefined);
  if(!company)throw Error('The course calculator is available to APGI principals and assigned company owners.');
  await requireCompany(company.id,true);
- return {session,principal,company,companies:available};
+ const priceEditor=canSetCoursePrices(company.slug,principal,members.some(m=>m.organisation_id===company.id));
+ return {session,principal,company,companies:available,priceEditor};
 }
-export async function calculatorCourses(companyId:string,principal:boolean){
+export async function calculatorCourses(companyId:string){
  const locked=new Set((await rows<{course_id:string}>(`/rest/v1/course_distribution?recipient_organisation_id=eq.${validId(companyId)}&state=neq.withdrawn&select=course_id`)).map(s=>s.course_id));
- const [versions,editions,companies,offerings]=await Promise.all([
+ const [versions,editions,companies,offerings,ownership]=await Promise.all([
   rows<{id:string;edition_id:string;owner_id:string;snapshot:Omit<CreditCourse,'id'|'editionId'|'ownerId'|'ownerIsApgi'>}>('/rest/v1/cc_credit_versions?select=*&order=created_at.desc&limit=1000'),
   rows<{id:string;course_id:string;edition_number:number;course_document:{title:string;classification?:{category?:CreditCourse['scope'];industry?:string;clientName?:string}}}>(`/rest/v1/course_editions?state=eq.ready&select=id,course_id,edition_number,course_document&limit=1000`),
   rows<{id:string;slug:string;name:string}>('/rest/v1/organisations?is_active=eq.true&select=id,slug,name'),
-  rows<{course_id:string}>(`/rest/v1/organisation_offerings?organisation_id=eq.${companyId}&select=course_id`)
+  rows<{course_id:string}>(`/rest/v1/organisation_offerings?organisation_id=eq.${companyId}&select=course_id`),
+  rows<{id:string;owner_organisation_id:string|null}>('/rest/v1/courses?select=id,owner_organisation_id&limit=1000')
  ]);
  const tenant=productionCompanyId();
  const seen=new Set<string>(),courses:CreditCourse[]=[];
- for(const v of versions){if(seen.has(v.edition_id))continue;seen.add(v.edition_id);const e=editions.find(e=>e.id===v.edition_id),owner=companies.find(c=>c.id===v.owner_id);if(!e||!owner||locked.has(e.course_id))continue;
+ for(const v of versions){
+  if(seen.has(v.edition_id))continue;
+  seen.add(v.edition_id);
+  const e=editions.find(e=>e.id===v.edition_id);
+  if(!e||locked.has(e.course_id))continue;
+  const recordedOwner=ownership.find(c=>c.id===e.course_id)?.owner_organisation_id??v.owner_id;
+  const owner=companies.find(c=>c.id===pricingOwnerId(e.course_id,recordedOwner,companies));
+  if(!owner||owner.id!==companyId)continue;
   if(tenant&&!offerings.some(o=>o.course_id===e.course_id))continue;
-  if(!principal&&v.owner_id!==companyId&&v.snapshot.scope!=='public'&&!offerings.some(o=>o.course_id===e.course_id))continue;
   courses.push({...v.snapshot,id:v.id,editionId:e.id,courseId:e.course_id,title:`${e.course_document.title} · edition ${e.edition_number}`,ownerId:owner.id,ownerIsApgi:owner.slug==='apgi',industry:v.snapshot.industry??e.course_document.classification?.industry,clientName:v.snapshot.clientName??e.course_document.classification?.clientName});
  }
  return {courses,editions,companies};
 }
-export async function calculatorWalletCourses(companyId:string,principal:boolean){
- const [catalogue,published]=await Promise.all([calculatorCourses(companyId,principal),rows<{course_id:string}>(`/rest/v1/organisation_offerings?organisation_id=eq.${companyId}&status=eq.published&select=course_id`)]);
+export async function calculatorWalletCourses(companyId:string){
+ const [catalogue,published]=await Promise.all([calculatorCourses(companyId),rows<{course_id:string}>(`/rest/v1/organisation_offerings?organisation_id=eq.${companyId}&status=eq.published&select=course_id`)]);
  return catalogue.courses.filter(c=>published.some(p=>p.course_id===c.courseId));
 }
 export async function calculatorPolicy(principal:boolean,actorId:string){

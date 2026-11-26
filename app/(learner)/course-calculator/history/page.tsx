@@ -14,7 +14,7 @@ export default async function CalculatorPage({searchParams}:{searchParams:Promis
  let access;try{access=await calculatorAccess(requested);}catch{notFound();}
  const {company,session,principal}=access;
  const [catalogue,costVersions,policy,quotes,orders]=await Promise.all([
-  calculatorCourses(company.id,principal),rows<{id:string;snapshot:CostSchedule}>('/rest/v1/cc_cost_versions?select=*&order=created_at.desc&limit=30'),calculatorPolicy(principal,session.user.id),
+  calculatorCourses(company.id),rows<{id:string;snapshot:CostSchedule}>('/rest/v1/cc_cost_versions?select=*&order=created_at.desc&limit=30'),calculatorPolicy(principal,session.user.id),
   rows<CalculatorQuote>(`/rest/v1/cc_quotes?company_id=eq.${company.id}&structure_id=is.null&select=*&order=created_at.desc&limit=50`),
   rows<CalculatorOrder>(`/rest/v1/cc_orders?company_id=eq.${company.id}&select=*&order=created_at.desc&limit=50`)
  ]);
