@@ -34,14 +34,16 @@ export const dynamic="force-dynamic";
 const Comment=({label="Comment",optional=false}:{label?:string;optional?:boolean})=><label>{label}{optional?" (optional explanation)":""}<textarea name="comment" required={!optional} minLength={optional?undefined:5} maxLength={5000}/></label>;
 export default async function ReviewWorkspace({params}:{params:Promise<{id:string}>}){
  const {id}=await params,{round,email,principal,session,source,fresh}=await requireReview(id,{archiveCancelled:true}),d=round.document;
- const requests=await rows<ReviewRequest>(`/rest/v1/v6_review_requests?source_round=eq.${round.document.sourceReviewId??round.id}&select=${reviewRequestFields}`);
- const requestManager=await messageRpc<boolean>('v6_review_manager',{p_actor:session.user.id,p_org:round.organisation_id});
+ const [requests,requestManager,activeRelease]=await Promise.all([
+  rows<ReviewRequest>(`/rest/v1/v6_review_requests?source_round=eq.${round.document.sourceReviewId??round.id}&select=${reviewRequestFields}`),
+  messageRpc<boolean>('v6_review_manager',{p_actor:session.user.id,p_org:round.organisation_id}),
+  reviewLearnerRelease(round),
+ ]);
  const progress=d.reviewProcessVersion===3?courseReviewProgress(round):undefined;
  const person=d.participants.find(p=>p.email===email),editable=canWork(round)&&fresh&&round.document.reviewerRequests?.[email]?.state!=='closed'&&person?.state!=="declined"&&!!person;
  const requester=principal&&d.requester===email&&d.requesterId===session.user.id;
  const invitationEmail=principal?(await reviewInvitationEmail(round.organisation_id,round.course_id)).state:undefined;
  const responseTracking=await reviewResponseTracking(round,email);
- const activeRelease=await reviewLearnerRelease(round);
  const liveForVersion=!!activeRelease&&publishedTrainingRelease(round,source.fingerprint,source.brand.brand_revision)?.id===activeRelease.id;
  const publishedUnderOverride=activeRelease&&(['content','commercials','branding'] as const).some(scope=>publishedReviewOverride(round,scope,activeRelease));
  const publicationLabel=activeRelease&&round.status==='open'?(publishedUnderOverride?'Published under override — review continuing':'Published — review continuing'):round.status;
@@ -67,7 +69,7 @@ export default async function ReviewWorkspace({params}:{params:Promise<{id:strin
  <ReviewManagement invitationEmail={invitationEmail} round={round} principal={principal} email={email} mail={mail}/>
  <FinalContentClearance round={round} principal={principal} email={email} hash={source.fingerprint} guide={guide}/>{requester?<section className="review-box" id="final-publication">
   <WorkflowSectionHeading title={activeRelease?"Published release":"Final publication for this company"} step={activeRelease?undefined:step("publication")}/>
-  {activeRelease?<p className="form-success">{round.status==="open"?`${publicationLabel}. Existing learners keep the published release. Complete the remaining review tasks below.`:"This release was published for the selected company."}</p>:null}
+  {activeRelease?<p className="form-success">{round.status==="open"?`${publicationLabel}. Existing learners keep the published release.`:"This release was published for the selected company."}{round.status==="open"?<> <Link href="#review-process">Return to review steps</Link>.</>:null}</p>:null}
   {!activeRelease?publicationControls:round.status==="open"&&!liveForVersion?<details>
    <summary>Publication checks for the next version</summary>
    <p>The saved release stays available while this updated version is reviewed. Use these checks only when preparing a new release.</p>
