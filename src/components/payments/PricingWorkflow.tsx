@@ -1,6 +1,6 @@
 'use client';
 import type {CreditCourse} from '@/lib/credit-course-metadata';
-import {useState} from 'react';
+import {useEffect,useState} from 'react';
 import {FieldHelp} from '@/components/admin/FieldHelp';
 import {CourseFilters} from '@/components/course/CourseFilters';
 import {emptyCourseFilter,matchesCourseFilter,classificationLabel} from '@/lib/course-selection';
@@ -10,14 +10,15 @@ import {MonthlyPrice} from './MonthlyPrice';
 import {saveCourseClassification} from '@/server/actions/course-classification';
 import {QUANTITY_MARKS,courseValue,rentalAddition} from '@/lib/commercial-pricing';
 import {StructureForm} from '@/components/admin/StructureForm';
-import {savePricingStructure} from '@/server/actions/pricing-structures';
+import {submitPricingReview} from '@/server/actions/pricing-structures';
+import {reviewQuantities} from '@/lib/pricing-review';
 import {defaultStructure,quoteStructure,validateStructure,offerCourses,selectOfferCourses,ROUTES,ROUTE_NAMES,moneyLabel,type PricingStructure,type OfferTerms} from '@/lib/pricing-structures';
 import {type CostSchedule,type PurchaseRoute} from '@/lib/course-calculator';
 
 export function QuantitySlider({value,min,max,onChange,label}:{value:number;min:number;max:number;onChange:(n:number)=>void;label:string}){
  return <label className="pricing-quantity">{label}: <strong>{value.toLocaleString()}</strong><input aria-label={`${label} slider`} type="range" min={min} max={max} step="1" value={value} onChange={e=>onChange(Number(e.target.value))}/><input aria-label={`${label} number`} type="number" min={min} max={max} step="1" value={value} onChange={e=>onChange(Math.max(min,Math.min(max,Number(e.target.value)||min)))}/><small>{min.toLocaleString()}–{max.toLocaleString()} named learners</small></label>;
 }
-export function PricingWorkflow({company,costs,courses,walletCourses=[],priceEditor,planningOnly=false}:{company:{id:string;slug:string;name:string};costs:CostSchedule[];courses:CreditCourse[];walletCourses?:CreditCourse[];priceEditor:boolean;planningOnly?:boolean}){
+export function PricingWorkflow({company,costs,courses,walletCourses=[],priceEditor,planningOnly=false,submitPlanning=false,reviewers=[]}:{company:{id:string;slug:string;name:string};costs:CostSchedule[];courses:CreditCourse[];walletCourses?:CreditCourse[];priceEditor:boolean;planningOnly?:boolean;submitPlanning?:boolean;reviewers?:string[]}){
  costs=costs.filter(c=>c.currency==='USD');
  const [filter,setFilter]=useState(emptyCourseFilter);
  const initial=costs[0]&&courses.find(c=>c.currency===costs[0].currency),[s,setS]=useState<PricingStructure|null>(()=>initial?withCategoryWallet(defaultStructure(costs[0],[initial],{id:company.id,isApgi:company.slug==='apgi'}),walletCourses):null),[step,setStep]=useState(0),[counts,setCounts]=useState<Record<PurchaseRoute,number>>({individual:1,seat_pack:100,wallet:1,subscription:100});
@@ -41,7 +42,7 @@ export function PricingWorkflow({company,costs,courses,walletCourses=[],priceEdi
   }
   setS(next);
  }
- return <div className="pricing-workflow">{planningOnly?<p role="note"><strong>{company.name} course pricing preview.</strong> Compare and adjust estimates using the recorded platform service costs. Saving a proposal requires a verified course edition and a cost record in this workspace.</p>:null}{!priceEditor&&!planningOnly?<p role="note">{company.name}’s owner can submit its course prices for review.</p>:null}<ol className="pricing-steps">{['Course and buying conditions','Four default options','Commercial adjustments','Review price structure'].map((t,i)=><li key={t} aria-current={step===i?'step':undefined}><button type="button" disabled={i>step} onClick={()=>setStep(i)}>{i+1}. {t}</button></li>)}</ol>
+ return <div className="pricing-workflow">{planningOnly?<p role="note"><strong>{company.name} course pricing preview.</strong> Submit these estimates for commercial review. Buyer publication requires a verified course edition and a recorded platform cost version.</p>:null}{!priceEditor&&!planningOnly?<p role="note">{company.name}’s owner can submit its course prices for review.</p>:null}<ol className="pricing-steps">{['Course and buying conditions','Four default options','Commercial adjustments','Review price structure'].map((t,i)=><li key={t} aria-current={step===i?'step':undefined}><button type="button" disabled={i>step} onClick={()=>setStep(i)}>{i+1}. {t}</button></li>)}</ol>
  {step===0?<section><h2>1. Select the course and buying conditions</h2><p>Credits and scope come from the recorded edition. All four buying options are prepared before commercial adjustments.</p><div className="pricing-fields">
  <label><span>Platform cost version <FieldHelp label="Platform cost version" text="A documented snapshot from APGI's platform costing register. It supplies protected shared costs, usage assumptions and estimated processor fees. Selecting courses does not multiply the same fixed cost pool. Existing approved prices retain their original snapshot."/></span><select value={current.cost.id} onChange={e=>{const c=costs.find(c=>c.id===e.target.value)!;const eligible=current.courses.filter(x=>x.currency===c.currency);reset(c,eligible.length?eligible:courses.filter(x=>x.currency===c.currency).slice(0,1));}}>{costs.map(c=><option key={c.id} value={c.id}>{c.currency} · {moneyLabel(c.monthlyPoolCents,c.currency)}/month · {c.id.slice(0,8)}</option>)}</select></label>
  <label><span>Credits or Courses <FieldHelp label="Credits or Courses" text="Courses uses the recorded learning credits and workload of the ticked editions. Purchasing credits uses a prepaid money balance for the wallet: one purchasing credit represents USD 1 of content value. Neither option changes academic or learning credits. All four buying options remain available for comparison."/></span><select value={current.mode} onChange={e=>setS({...current,mode:e.target.value as 'credits'|'courses'})}><option value="courses">Courses — use recorded learning credits</option><option value="credits">Purchasing credits — prepaid wallet value</option></select></label>
@@ -55,8 +56,28 @@ export function PricingWorkflow({company,costs,courses,walletCourses=[],priceEdi
  {step===1||step===3?<section><h2>{step===1?'2. Compare the four default options':'4. Review the proposed price structure'}</h2><p>Platform allocation uses the greatest of 20, the recorded overall active-learner forecast and the quoted group. Annual platform service and selected content licences are separate. Purchasing credits do not change course learning credits.</p><div className="pricing-cards">{ROUTES.map(route=><PricingPreview key={route} structure={current} route={route} count={Math.max(current.offers[route].minSeats,Math.min(current.offers[route].maxSeats,counts[route]))} onCount={n=>setCounts({...counts,[route]:n})} onCourses={ids=>chooseForOption(route,ids)} onStructure={setS}/>)}</div><PackageComparison structure={current} learners={counts.seat_pack}/></section>:null}
  {step===2?<section><h2>3. Adjust the commercial proposition if required</h2><p>Defaults are already applied. You can adjust the reference-course price, commercial value factors, annual content licence and external recipient shares. Discounts and platform costs are fixed. Any share change needs the course owner’s authority.</p><CommercialValues structure={current} onChange={setS}/>{ROUTES.map(route=>{const o=current.offers[route];return <details key={route} className="directory-card"><summary>{ROUTE_NAMES[route]} · {moneyLabel(o.rateCents,current.cost.currency)} per reference course</summary><label>Price per eight-hour reference course<input type="number" min="0.01" step="0.01" value={o.rateCents/100} onChange={e=>updateOffer(route,{rateCents:Math.round(Number(e.target.value)*100)})}/></label>{offerCourses(current,route).map(c=><fieldset key={c.editionId}><legend>{c.title}</legend><div className="pricing-fields">{(['ownerBps','sellerBps','apgiBps'] as const).map((key,i)=><label key={key}>{['Course owner','Selling platform','APGI'][i]} (%)<input type="number" min="0" max="100" step="0.01" value={o.shares[c.editionId][key]/100} onChange={e=>updateOffer(route,{shares:{...o.shares,[c.editionId]:{...o.shares[c.editionId],[key]:Math.round(Number(e.target.value)*100)}}})}/></label>)}</div></fieldset>)}<label>Reason for any exception<textarea value={o.exceptionReason} onChange={e=>updateOffer(route,{exceptionReason:e.target.value})}/></label><label>Course-owner authority reference for changed shares<input value={o.ownerAuthority} onChange={e=>updateOffer(route,{ownerAuthority:e.target.value})}/></label></details>;})}<RentalAdditionPlanner structure={current}/><p>Revenue shares apply to course content. Platform recovery and processing are separate invoice components. The separate internal APGI/SRMS agreement is unchanged.</p></section>:null}
  {error?<p role="alert" className="form-error">{error}</p>:null}
- {step===3&&priceEditor&&!planningOnly?<StructureForm action={savePricingStructure} label="Submit the owner’s pricing proposal" disabled={!!error}><input type="hidden" name="company" value={company.id}/><input type="hidden" name="document" value={JSON.stringify(current)}/><label><input type="checkbox" name="reviewed" required/> This exact four-option structure is ready for review, including course editions, terms, quantity limits, cost assumptions, fee treatment and allocations.</label></StructureForm>:null}
+ {step===3&&(priceEditor||planningOnly&&submitPlanning)?<PricingReviewSubmit structure={current} counts={counts} reviewers={reviewers} invalid={!!error}/>:null}
  <nav className="button-row">{step>0?<button type="button" className="secondary-button" onClick={()=>setStep(step-1)}>Back</button>:null}{step<3?<button type="button" className="primary-button" disabled={step>0&&!!error} onClick={()=>setStep(step+1)}>{['Compare default options','Continue to commercial adjustments','Review all four prices'][step]}</button>:null}</nav></div>;
+}
+
+function PricingReviewSubmit({structure,counts,reviewers,invalid}:{structure:PricingStructure;counts:Record<PurchaseRoute,number>;reviewers:string[];invalid:boolean}){
+ const [operation,setOperation]=useState('');
+ const document=JSON.stringify(structure);
+ const quantities=JSON.stringify(reviewQuantities(structure,counts));
+ useEffect(()=>setOperation(crypto.randomUUID()),[document,quantities]);
+ return <section className="admin-form-card">
+  <h2>Submit pricing for commercial review</h2>
+  <p>The submitted version includes all four options, named courses, quantity ranges and allocations. Submitting a replacement archives the previous proposal for this course.</p>
+  <StructureForm action={submitPricingReview} label="Accept and submit for Commercials Review" disabled={invalid||!operation}>
+   <input type="hidden" name="operation_id" value={operation}/>
+   <input type="hidden" name="company" value={structure.company.id}/>
+   <input type="hidden" name="document" value={document}/>
+   <input type="hidden" name="quantities" value={quantities}/>
+   <label>Reviewer email addresses<textarea name="reviewers" required rows={3} defaultValue={reviewers.join('\n')} placeholder="One email address per line"/></label>
+   <label>Review instructions<textarea name="reason" required minLength={5} maxLength={5000} rows={3} defaultValue="Please review the named courses, four buyer options, and the complete price and quantity ranges."/></label>
+   <label><input type="checkbox" name="reviewed" required/> I accept this exact proposal for Commercials Review. The named reviewers will receive a request.</label>
+  </StructureForm>
+ </section>;
 }
 
 export function DiscountBands(){return <details><summary>Bulk quantity discount reference points</summary><p>Discount applies to the whole named-course line and interpolates between reference points. It reaches 50% at 1,000 places. Platform service and processing remain separate; minimum prices are protected.</p><table><thead><tr><th>Places</th><th>Content discount</th></tr></thead><tbody>{QUANTITY_MARKS.map(b=><tr key={b.learners}><td>{b.learners}</td><td>{b.percent}%</td></tr>)}</tbody></table></details>;}

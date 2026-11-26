@@ -1,4 +1,5 @@
 'use server';
+import {createHash,randomBytes} from 'node:crypto';
 import {parseWalletPurchase} from '@/lib/wallet-purchase-input';
 import {revalidatePath} from 'next/cache';
 import {validId,type StructureState} from '@/lib/company-structure';
@@ -13,28 +14,69 @@ import {stripeRedirect} from '@/lib/stripe-payments';
 import pricingPolicy from '@/data/course-pricing-policy.json';
 import {assertNoSharedPriceRewrite} from '@/server/services/course-distribution';
 import {STAGING_ORIGIN} from '@/server/environment-isolation';
+import {anchorPricingStructure,reviewQuantities,type PricingReview} from '@/lib/pricing-review';
+import {reviewEmails} from '@/lib/review-requests';
+import {calculatorPlanningPreview} from '@/server/services/calculator-planning-preview';
+import {messageRpc} from '@/server/services/messages';
+import {currentPricingReviews} from '@/server/services/review-requests';
 const field=(f:FormData,k:string)=>{const v=f.get(k);if(typeof v!=='string'||v.length>500000)throw Error('Check the form.');return v;};
 const failure=(e:unknown):StructureState=>({error:e instanceof Error?e.message:'This change could not be saved.'});
 function refresh(){for(const p of ['/course-calculator','/course-shop','/course-cart','/learning-balances'])revalidatePath(p);}
-export async function savePricingStructure(_:StructureState,f:FormData):Promise<StructureState>{try{
+export async function submitPricingReview(_:StructureState,f:FormData):Promise<StructureState>{try{
  const a=await calculatorAccess(validId(field(f,'company'))),raw=JSON.parse(field(f,'document')) as PricingStructure;
- if(!a.priceEditor)throw Error('The course owner must submit pricing from their own company workspace.');
- await assertNoSharedPriceRewrite(a.company.id,raw.courses.map(c=>c.courseId));
- if(raw.version!==STRUCTURE_VERSION)throw Error('The pricing model changed. Refresh and prepare a new proposal; earlier records remain retained.');
- const cost=(await rows<{id:string;snapshot:CostSchedule}>(`/rest/v1/cc_cost_versions?id=eq.${validId(raw.cost.id)}&select=id,snapshot&limit=1`))[0];if(!cost)throw Error('Choose a recorded platform cost version.');
- if(!['USD','CAD','ZAR'].includes(cost.snapshot.currency))throw Error('Unsupported cost currency.');
- const latest=(await rows<{id:string}>(`/rest/v1/cc_cost_versions?snapshot->>currency=eq.${cost.snapshot.currency}&select=id&order=created_at.desc&limit=1`))[0];
- if(latest?.id!==cost.id)throw Error('The central platform cost version changed. Refresh before preparing a new structure. Existing approved structures retain their frozen basis.');
- const available=(await calculatorCourses(a.company.id)).courses;
- const walletAvailable=raw.categoryWallet?await calculatorWalletCourses(a.company.id):[];
- const courses=raw.courses.map(c=>available.find(v=>v.id===c.id));if(courses.some(c=>!c))throw Error('Course records changed. Refresh before saving.');
- const s:PricingStructure={version:STRUCTURE_VERSION,mode:raw.mode,company:{id:a.company.id,isApgi:a.company.slug==='apgi'},cost:shareableCost(cost.id,cost.snapshot),courses:courses.filter(c=>!!c),paymentMethod:raw.paymentMethod,feeBearer:raw.feeBearer,offers:raw.offers,commercial:raw.commercial,...(raw.categoryWallet?{categoryWallet:{...raw.categoryWallet,catalogue:walletAvailable}}:{})};
- validateStructure(s);
- const policy=await calculatorPolicy(a.principal,a.session.user.id);if(!policy||policy.version!==pricingPolicy.version)throw Error('APGI must prepare the new pricing policy draft first.');
- if(f.get('reviewed')!=='on')throw Error('Confirm the exact structure is ready for review.');
- const saved=(await write('/rest/v1/cc_price_structures',{company_id:a.company.id,created_by:a.session.user.id,policy_id:policy.id,document:s,fingerprint:pricingFingerprint(s)}))[0] as {id:string};refresh();return {success:'The owner’s proposed pricing structure is saved for review.',link:`/course-calculator?company=${a.company.id}#structure-${saved.id}`};
+ if(raw.version!==STRUCTURE_VERSION||!Array.isArray(raw.courses)||!raw.courses.length||raw.courses.length>100||!raw.categoryWallet)throw Error('Refresh and prepare a current four-option pricing proposal.');
+ if(f.get('reviewed')!=='on')throw Error('Confirm this exact pricing proposal for review.');
+ const preview=raw.cost?.id?.startsWith('estimate-')?await calculatorPlanningPreview(a.company):null;
+ if(!a.priceEditor&&!(a.principal&&preview))throw Error('The course owner must submit pricing from their own company workspace.');
+ const costRecord=preview?null:(await rows<{id:string;snapshot:CostSchedule}>(`/rest/v1/cc_cost_versions?snapshot->>currency=eq.USD&select=id,snapshot&order=created_at.desc&limit=1`))[0];
+ const cost=preview?.costs[0]??(costRecord&&shareableCost(costRecord.id,costRecord.snapshot));
+ if(!cost||raw.cost.id!==cost.id)throw Error('The platform cost version changed. Refresh before submitting.');
+ const available=preview?.courses??(await calculatorCourses(a.company.id)).courses;
+ const wallet=preview?.courses??await calculatorWalletCourses(a.company.id);
+ const courses=raw.courses.map(c=>available.find(v=>v.id===c.id&&v.editionId===c.editionId&&v.courseId===c.courseId));
+ if(courses.some(c=>!c))throw Error('Course records changed. Refresh before submitting.');
+ const walletIds=raw.categoryWallet.catalogue.map(c=>c.id);
+ if(wallet.length!==walletIds.length||wallet.some(c=>!walletIds.includes(c.id)))throw Error('Wallet courses changed. Refresh before submitting.');
+ await assertNoSharedPriceRewrite(a.company.id,[...courses.filter(c=>!!c),...wallet].map(c=>c.courseId));
+ const structure=anchorPricingStructure({
+  version:STRUCTURE_VERSION,mode:raw.mode,company:{id:a.company.id,isApgi:a.company.slug==='apgi'},cost,
+  courses:courses.filter(c=>!!c),paymentMethod:raw.paymentMethod,feeBearer:raw.feeBearer,
+  offers:raw.offers,commercial:raw.commercial,categoryWallet:{...raw.categoryWallet,catalogue:wallet},
+ });
+ validateStructure(structure);
+ const policy=preview?null:await calculatorPolicy(a.principal,a.session.user.id);
+ if(!preview&&(!policy||policy.version!==pricingPolicy.version))throw Error('APGI must prepare the current pricing policy draft.');
+ const reviewers=reviewEmails(field(f,'reviewers'));
+ if(!preview){
+  const approvers=await rows<{email:string}>('/rest/v1/platform_principals?select=email');
+  if(approvers.some(p=>!reviewers.includes(p.email.toLowerCase())))throw Error('Include both platform pricing approvers so they can sign off the exact proposal.');
+ }
+ const reason=field(f,'reason').trim();
+ if(reason.length<5||reason.length>5000)throw Error('Provide review instructions of 5 to 5,000 characters.');
+ const primary=structure.courses[0],fingerprint=pricingFingerprint(structure),title=`Course pricing — ${primary.title}`.slice(0,200);
+ const pricing:PricingReview={primaryCourseId:primary.courseId,fingerprint,structure,planningOnly:!!preview,quantities:reviewQuantities(structure,JSON.parse(field(f,'quantities')))};
+ const token=randomBytes(32).toString('hex');
+ const saved=await messageRpc<{id:string;batch:string;existing?:boolean}>('v7_submit_pricing_review',{
+  p_actor:a.session.user.id,p_policy:policy?.id??null,p_payload:{
+   company:a.company.id,kind:'commercials',title,recipients:reviewers,reason,
+   operationId:validId(field(f,'operation_id')),deadline:new Date(Date.now()+7*86400000).toISOString(),
+   joinToken:token,joinHash:createHash('sha256').update(token).digest('hex'),
+   snapshot:{pricing,items:[{id:'course-pricing',title,version:fingerprint,body:preview?'Planning proposal for commercial review. Buyer publication requires verified course and cost records.':'Review the four buyer options, the named courses and their exact price terms.'}]}
+  }
+ });
+ refresh();for(const p of ['/review-requests','/course-reviews','/notifications'])revalidatePath(p);
+ return {success:'Pricing submitted to Commercials Review. Reviewer notifications are queued.',link:`/review-requests?company=${a.company.id}&kind=commercials#batch-${saved.batch}`};
  }catch(e){return failure(e);}}
-export async function pricingStructureDecision(_:StructureState,f:FormData):Promise<StructureState>{try{const {session}=await requirePlatformPrincipal();const saved=(await rows<PriceRecord>(`/rest/v1/cc_price_structures?id=eq.${validId(field(f,'structure'))}&select=*&limit=1`))[0];if(saved?.document.version!==STRUCTURE_VERSION)throw Error('This earlier allocation model needs a replacement proposal before approval or publication.');if(f.get('exact')!=='on')throw Error('Confirm this exact structure.');await calculatorRpc('cc_structure_decision',{p_actor:session.user.id,p_id:validId(field(f,'structure')),p_decision:field(f,'decision'),p_reason:field(f,'reason')});refresh();return {success:'Your decision is recorded. Publication is a separate step.'};}catch(e){return failure(e);}}
+export async function pricingStructureDecision(_:StructureState,f:FormData):Promise<StructureState>{try{
+ const {session}=await requirePlatformPrincipal(),id=validId(field(f,'structure'));
+ const saved=(await rows<PriceRecord>(`/rest/v1/cc_price_structures?id=eq.${id}&select=*&limit=1`))[0];
+ if(saved?.document.version!==STRUCTURE_VERSION)throw Error('This earlier allocation model needs a replacement proposal before approval or publication.');
+ const {company}=await calculatorAccess(saved.company_id);
+ if((await currentPricingReviews(company.id)).some(r=>r.primary_course===saved.document.courses[0].courseId))throw Error('Record your decision in the current Commercials Review proposal.');
+ if(f.get('exact')!=='on')throw Error('Confirm this exact structure.');
+ await calculatorRpc('cc_structure_decision',{p_actor:session.user.id,p_id:id,p_decision:field(f,'decision'),p_reason:field(f,'reason')});refresh();
+ return {success:'Your decision is recorded. Publication is a separate step.'};
+ }catch(e){return failure(e);}}
 export async function publishPricingStructure(_:StructureState,f:FormData):Promise<StructureState>{try{
  const {session}=await requirePlatformPrincipal(),id=validId(field(f,'structure'));
  const saved=(await rows<PriceRecord>(`/rest/v1/cc_price_structures?id=eq.${id}&select=*&limit=1`))[0];

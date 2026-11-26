@@ -13,13 +13,25 @@ import {REVIEW_KINDS,type ReviewKind,type ReviewItem,type ReviewRequest} from '@
 import {validId} from '@/lib/company-structure';
 import pricingPolicy from '@/data/course-pricing-policy.json';
 import {contentSource} from './course-reviews';
-export const reviewRequestFields='id,batch_id,organisation_id,kind,title,snapshot,source_round,reviewer_email,requester_id,state,cycle,revision,reason,deadline,response,created_at,updated_at';
+export const reviewRequestFields='id,batch_id,organisation_id,kind,title,snapshot,superseded_by,source_round,reviewer_email,requester_id,state,cycle,revision,reason,deadline,response,created_at,updated_at';
 export async function reviewRequestWorkspace(){
  const session=await requireSession();if(!session.user.email_confirmed_at)throw Error('Verified email required.');
  const companies=await accessibleCompanies(session,true),ids=companies.map(c=>c.id),email=session.user.email!.toLowerCase(),tenant=productionCompanyId();
  const filter=ids.length?`&or=(organisation_id.in.(${ids.join(',')}),reviewer_email.eq.${encodeURIComponent(email)})`:`&reviewer_email=eq.${encodeURIComponent(email)}`;
  const requests=await rows<ReviewRequest>(`/rest/v1/v6_review_requests?select=${reviewRequestFields}&order=updated_at.desc&limit=200${filter}${tenant?`&organisation_id=eq.${tenant}`:''}`);
  return {session,companies,requests};
+}
+export async function pricingReviewsForCourse(companyId:string,courseId:string){
+ const session=await requireSession();
+ if(!session.user.email_confirmed_at||!session.user.email||productionCompanyId()&&productionCompanyId()!==companyId)return [];
+ const company=validId(companyId),manager=await messageRpc<boolean>('v6_review_manager',{p_actor:session.user.id,p_org:company});
+ const recipient=manager?'':`&reviewer_email=eq.${encodeURIComponent(session.user.email.toLowerCase())}`;
+ return rows<ReviewRequest>(`/rest/v1/v6_review_requests?organisation_id=eq.${company}&kind=eq.commercials&snapshot->pricing->>primaryCourseId=eq.${encodeURIComponent(courseId)}${recipient}&select=${reviewRequestFields}&order=created_at.desc&limit=100`);
+}
+export async function currentPricingReviews(companyId:string){
+ return rows<{id:string;primary_course:string;structure_id:string|null;reviewer_email:string}>(
+  `/rest/v1/v6_review_requests?organisation_id=eq.${validId(companyId)}&kind=eq.commercials&superseded_by=is.null&snapshot->pricing=not.is.null&select=id,reviewer_email,primary_course:snapshot->pricing->>primaryCourseId,structure_id:snapshot->pricing->>structureId&order=created_at.desc&limit=1000`,
+ );
 }
 export async function requireReviewRequest(id:string){
  const requestedId=validId(id),session=await requireSession(`/review-requests/${requestedId}`);
