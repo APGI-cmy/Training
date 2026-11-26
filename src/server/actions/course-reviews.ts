@@ -6,6 +6,7 @@ import {assertApprovedCorrectionScope,correctionRecheckUnits} from "@/lib/course
 import {commercialReviewPath} from "@/lib/review-navigation";
 import {canProposeCommercial,readCommercialSuggestion} from "@/lib/commercial-feedback";
 import {publishedTrainingRelease} from "@/lib/review-publication-state";
+import {syncReviewMessages} from "@/server/services/review-message-sync";
 
 import {randomUUID,randomBytes,createHash} from "node:crypto";
 import {reviewInvitationNarrative} from '@/server/services/email/review-message';
@@ -569,6 +570,11 @@ Create a separate V2 review account if needed: ${process.env.NEXT_PUBLIC_APP_URL
   if(["finding","reopen_report","team","review_scope"].includes(op)&&d.workflow)delete d.workflow.contentApproval;
 
   await commitReview(round,session.user.id,op,mail);
+
+  if(d.reviewProcessVersion===3&&(op==="coverage"||op==="finding")){
+   try{await syncReviewMessages(session.user.id,{round,hash:access.source.fingerprint,brandRevision:access.source.brand.brand_revision});}
+   catch{console.error("Review saved; recipient messages will resync on refresh.");}
+  }
 
   try{if(mail.length)await processReviewMail();}catch{/* Durable failed/pending delivery remains visible. */}
 

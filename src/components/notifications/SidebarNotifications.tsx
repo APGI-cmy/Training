@@ -7,17 +7,22 @@ export function SidebarNotifications({initial}:{initial:NotificationCounts|null}
  const [counts,setCounts]=useState(initial),pathname=usePathname();
  useEffect(()=>setCounts(initial),[initial]);
  useEffect(()=>{
-  let busy=false,stopped=false,controller:AbortController|undefined;
+  let busy=false,refreshAgain=false,stopped=false,controller:AbortController|undefined;
   async function refresh(){
-   if(busy||stopped||document.visibilityState!=="visible")return;
+   if(stopped||document.visibilityState!=="visible")return;
+   if(busy){refreshAgain=true;return;}
    busy=true;controller=new AbortController();const timeout=setTimeout(()=>controller?.abort(),15000);
    try{const response=await fetch("/api/notifications",{cache:"no-store",signal:controller.signal});
     if(!stopped){if(response.status===401||response.status===403){stopped=true;setCounts(null);}else if(response.ok)setCounts(await response.json());else setCounts(null);}
-   }catch{if(!stopped)setCounts(null);}finally{clearTimeout(timeout);busy=false;}
+   }catch{if(!stopped)setCounts(null);}finally{
+    clearTimeout(timeout);busy=false;
+    if(refreshAgain){refreshAgain=false;void refresh();}
+   }
   }
   const timer=setInterval(()=>void refresh(),30000),update=()=>void refresh();
-  window.addEventListener("focus",update);window.addEventListener("apgi-notifications-changed",update);document.addEventListener("visibilitychange",update);
-  return ()=>{stopped=true;clearInterval(timer);controller?.abort();window.removeEventListener("focus",update);window.removeEventListener("apgi-notifications-changed",update);document.removeEventListener("visibilitychange",update);};
+  const reviewSaved=(event:StorageEvent)=>{if(event.key==="apgi-review-updated")update();};
+  window.addEventListener("focus",update);window.addEventListener("apgi-notifications-changed",update);window.addEventListener("storage",reviewSaved);document.addEventListener("visibilitychange",update);
+  return ()=>{stopped=true;clearInterval(timer);controller?.abort();window.removeEventListener("focus",update);window.removeEventListener("apgi-notifications-changed",update);window.removeEventListener("storage",reviewSaved);document.removeEventListener("visibilitychange",update);};
  },[]);
  const label=counts?`Notifications: ${counts.unread} unread, ${counts.responses} requiring a response`:"Notifications: unable to check for updates";
  return <Link className="sidebar-notification-prompt" href="/notifications" aria-current={pathname==="/notifications"?"page":undefined} aria-label={label}>

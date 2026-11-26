@@ -10,7 +10,7 @@ import {reviewNotificationTasks} from '@/lib/review-notification-tasks';
 import {syncReviewMessages} from '@/server/services/review-message-sync';
 export async function luReviewAction(_:ReviewActionState,form:FormData):Promise<ReviewActionState>{
  try{
-  const id=validId(formText(form,'round_id',1)),{round,email,session,fresh}=await requireReview(id);assertReviewWork(round,fresh);
+  const id=validId(formText(form,'round_id',1)),{round,email,session,fresh,source:live}=await requireReview(id);assertReviewWork(round,fresh);
   if(round.document.participants.some(p=>p.email===email))claimReviewer(round,email,session.user.id);
   const f=activeFindings(round.document).find(f=>f.id===formText(form,'finding_id',1));if(!f)throw Error('Finding unavailable. Reload the LU workspace.');
   const op=formText(form,'operation',1),actor={email,userId:session.user.id},at=new Date().toISOString(),r=currentImplementation(round,f);
@@ -29,7 +29,7 @@ export async function luReviewAction(_:ReviewActionState,form:FormData):Promise<
   }else throw Error('Unknown LU review action.');
   round.document.reviewProcessVersion=3;if(round.document.workflow)delete round.document.workflow.contentApproval;
   reviewEvent(round.document,email,op,`${f.unit} · ${f.reference} · ${f.id}: ${message} ${reason}`);
-  const source={round,hash:round.fingerprint,brandRevision:round.document.brand.revision};
+  const source={round,hash:live.fingerprint,brandRevision:live.brand.brand_revision};
   const mail=round.document.participants.filter(p=>p.email!==email&&p.state!=='declined').flatMap(p=>{
    const task=reviewNotificationTasks(source,p.email,p.userId??p.email,false).find(t=>t.anchor===`finding-${f.id}`);
    const confirmation=op==='finding_endorsement'&&[f.author,r?.email].includes(p.email);
@@ -39,7 +39,7 @@ export async function luReviewAction(_:ReviewActionState,form:FormData):Promise<
   await commitReview(round,session.user.id,op,mail);
   try{await syncReviewMessages(session.user.id,source);}catch{console.error('Review saved; recipient messages will resync on refresh.');}
   try{await processReviewMail();}catch{/* Durable delivery can retry. */}
-  revalidatePath(`/course-reviews/${id}`,'layout');revalidatePath('/course-reviews');
+  revalidatePath(`/course-reviews/${id}`,'layout');revalidatePath('/course-reviews');revalidatePath('/notifications');
   return {success:message,href:`/course-reviews/${id}#finding-${f.id}`};
  }catch(e){if(e instanceof Error&&'digest' in e)throw e;return {error:e instanceof Error?e.message:'The LU review update could not be saved.'};}
 }
