@@ -1,38 +1,56 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
-import { privateIrelandViewerUrl } from "@/lib/assessments/scannex-hosted-pilot";
+import { useEffect, useRef, useState } from "react";
+import { SCANNEX_PILOT_LAUNCH, privateIrelandViewerUrl } from "@/lib/assessments/scannex-hosted-pilot";
 import { PracticalAssignment } from "./PracticalAssignment";
 import { openScannexPilotTransport } from "./scannex-pilot-transport";
 
 const GUIDE = "/scannex-v1-pilot/scannex-practical-recording-guide-illustrated.pdf";
 const CHECKLIST = "/scannex-v1-pilot/scannex-viewers-checklist.pdf";
 
-export function ScannexHostedPilot() {
+export function ScannexHostedPilot({ automaticLaunchConfigured }: { automaticLaunchConfigured: boolean }) {
   const [pilot] = useState(openScannexPilotTransport);
   const [viewerPath, setViewerPath] = useState<"new" | "already-open" | null>(null);
   const connected = viewerPath !== null;
   const [edge, setEdge] = useState(false);
   const [message, setMessage] = useState("");
-  const field = useRef<HTMLInputElement>(null);
-  const fieldId = useId();
+  const [opening, setOpening] = useState(false);
+  const pendingLaunch = useRef(false);
   useEffect(() => {
     setEdge(/\bEdg\//.test(navigator.userAgent));
     return () => pilot.clearEvidence();
   }, [pilot]);
 
-  function launch(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!edge || !field.current) return;
-    const target = privateIrelandViewerUrl(field.current.value);
-    field.current.value = "";
-    if (!target) { setMessage("Use a fresh private Ireland streaming link for the development builder."); return; }
+  async function launch() {
+    if (!edge || !automaticLaunchConfigured || pendingLaunch.current) return;
     const tab = window.open("", "_blank");
-    if (!tab) { setMessage("Allow the worksheet to open a new tab and ask APGI for a fresh connection."); return; }
+    if (!tab) { setMessage("Allow this worksheet to open a new tab, then try again."); return; }
     tab.opener = null;
-    tab.location.replace(target.href);
-    setViewerPath("new");
     setMessage("");
+    pendingLaunch.current = true;
+    setOpening(true);
+    try {
+      const response = await fetch(SCANNEX_PILOT_LAUNCH, {
+        method: "POST", credentials: "same-origin", cache: "no-store", referrerPolicy: "no-referrer",
+        headers: { Accept: "application/json" }, signal: AbortSignal.timeout(16_000),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        setMessage(typeof result?.error === "string" ? result.error : "The Viewer could not be opened. Try again.");
+        tab.close();
+        return;
+      }
+      const target = privateIrelandViewerUrl(typeof result?.streamingUrl === "string" ? result.streamingUrl : "");
+      if (!target || tab.closed) throw new Error("Viewer tab is unavailable");
+      tab.location.replace(target.href);
+      setViewerPath("new");
+    } catch {
+      tab.close();
+      setMessage("The Viewer did not open. Keep this worksheet open and try again.");
+    } finally {
+      pendingLaunch.current = false;
+      setOpening(false);
+    }
   }
 
   const instructions = <section className="pa-card" aria-label="Private Image 78 connection">
@@ -40,14 +58,14 @@ export function ScannexHostedPilot() {
     <p>Use the private development Viewer in standalone Edge. Sign in there before recording and share only the Viewer tab.</p>
     <p><a href={GUIDE} download>Download the illustrated recording guide (PDF)</a></p>
     {connected ? <p role="status">{viewerPath === "new" ? "The development Viewer opened in another tab." : "Continue with your existing development Viewer tab."} Verify Image 78 is visible there before confirming below.</p> :
-      !edge ? <p role="status">Open this preview in standalone Microsoft Edge to continue.</p> : <><form method="post" autoComplete="off" onSubmit={launch}>
-        <label htmlFor={fieldId}>Private Viewer connection from APGI</label>
-        <input id={fieldId} type="password" ref={field} required autoComplete="off" spellCheck={false} maxLength={20_000} />
-        <button type="submit" className="primary-button">Open Scannex Viewer</button>
-      </form>
+      !edge ? <p role="status">Open this preview in standalone Microsoft Edge to continue.</p> : <>
+      <button type="button" className="primary-button" disabled={opening || !automaticLaunchConfigured}
+        aria-describedby={!automaticLaunchConfigured ? "pilot-auto-launch-notice" : undefined}
+        onClick={() => void launch()}>{opening ? "Opening the development Viewer…" : "Open Scannex Viewer"}</button>
+      {!automaticLaunchConfigured && <p id="pilot-auto-launch-notice">Automatic launch is not enabled for this preview yet. If your private development Viewer is already open, use the option below.</p>}
       <details><summary>Viewer already open?</summary>
         <p>If the private development Viewer is open in Edge and already shows Image 78, keep it open. Do not use the learner practice Viewer.</p>
-        <button type="button" className="secondary-button" onClick={() => { if (field.current) field.current.value = ""; setViewerPath("already-open"); setMessage(""); }}>Use the open development Viewer</button>
+        <button type="button" className="secondary-button" disabled={opening} onClick={() => { setViewerPath("already-open"); setMessage(""); }}>Use the open development Viewer</button>
       </details></>}
     {message && <p role="alert">{message}</p>}
     {connected && <details><summary>If Review or Load Image is greyed out</summary>

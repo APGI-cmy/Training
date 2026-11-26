@@ -12,7 +12,8 @@ import { getCourseResume } from "@/lib/services/progress/get-course-resume";
 import { viewerReturnPath } from "@/lib/services/viewer-lab/viewer-return-path";
 import { PracticalAssignment } from "@/components/assessment/PracticalAssignment";
 import { ScannexHostedPilot } from "@/components/assessment/ScannexHostedPilot";
-import { isScannexHostedPilot } from "@/lib/assessments/scannex-hosted-pilot";
+import { isHostedPilotDeployment, isScannexHostedPilot } from "@/lib/assessments/scannex-hosted-pilot";
+import { devPilotStreamingRole } from "@/server/services/scannex-pilot-stream";
 
 export const dynamic = "force-dynamic";
 
@@ -65,7 +66,7 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
   }
 
   if (isSummativeLab && course.slug === SCANNEX_COURSE_ID && unit.slug === "lu9"
-      && process.env.VERCEL_ENV === "preview" && process.env.SCANNEX_V1_IMAGE78_PILOT === "1") {
+      && isHostedPilotDeployment(process.env)) {
     const allowed = isScannexHostedPilot({
       environment: process.env.VERCEL_ENV, enabled: process.env.SCANNEX_V1_IMAGE78_PILOT,
       operator: process.env.SCANNEX_V1_PILOT_OPERATOR, authenticatedEmail: session.user.email,
@@ -81,7 +82,7 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
           <p>Test the redesigned learner workflow using one ungraded exercise in the development Viewer.</p>
         </div>
       </section>
-      <section className="content-band"><div className="content-inner"><ScannexHostedPilot /></div></section>
+      <section className="content-band"><div className="content-inner"><ScannexHostedPilot automaticLaunchConfigured={Boolean(devPilotStreamingRole())} /></div></section>
     </main>;
   }
 

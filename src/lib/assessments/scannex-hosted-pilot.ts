@@ -1,3 +1,11 @@
+export const SCANNEX_PILOT_COURSE = "scannex-training-programme";
+export const SCANNEX_PILOT_UNIT = "lu9";
+export const SCANNEX_PILOT_LAUNCH = "/api/v1/scannex-pilot/launch";
+
+export function isHostedPilotDeployment(source: Record<string, string | undefined>) {
+  return source.VERCEL_ENV === "preview" && source.SCANNEX_V1_IMAGE78_PILOT === "1";
+}
+
 export function isScannexHostedPilot(input: {
   environment?: string; enabled?: string; operator?: string;
   authenticatedEmail?: string; roles: readonly string[]; course: string; unit: string;
@@ -5,7 +13,7 @@ export function isScannexHostedPilot(input: {
   const operator = input.operator?.trim().toLowerCase();
   return input.environment === "preview" && input.enabled === "1" && Boolean(operator)
     && input.authenticatedEmail?.trim().toLowerCase() === operator
-    && input.roles.includes("admin") && input.course === "scannex-training-programme" && input.unit === "lu9";
+    && input.roles.includes("admin") && input.course === SCANNEX_PILOT_COURSE && input.unit === SCANNEX_PILOT_UNIT;
 }
 
 export function privateIrelandViewerUrl(input: string) {
