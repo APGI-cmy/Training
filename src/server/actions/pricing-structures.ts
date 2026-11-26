@@ -19,6 +19,9 @@ import {reviewEmails} from '@/lib/review-requests';
 import {calculatorPlanningPreview} from '@/server/services/calculator-planning-preview';
 import {messageRpc} from '@/server/services/messages';
 import {currentPricingReviews} from '@/server/services/review-requests';
+import {requireReviewRecord} from '@/server/services/course-reviews';
+import {commercialReviewPath} from '@/lib/review-navigation';
+import {partnerRetainer} from '@/server/services/partner-commercial-terms';
 const field=(f:FormData,k:string)=>{const v=f.get(k);if(typeof v!=='string'||v.length>500000)throw Error('Check the form.');return v;};
 const failure=(e:unknown):StructureState=>({error:e instanceof Error?e.message:'This change could not be saved.'});
 function refresh(){for(const p of ['/course-calculator','/course-shop','/course-cart','/learning-balances'])revalidatePath(p);}
@@ -54,7 +57,15 @@ export async function submitPricingReview(_:StructureState,f:FormData):Promise<S
  const reason=field(f,'reason').trim();
  if(reason.length<5||reason.length>5000)throw Error('Provide review instructions of 5 to 5,000 characters.');
  const primary=structure.courses[0],fingerprint=pricingFingerprint(structure),title=`Course pricing — ${primary.title}`.slice(0,200);
+ const returnRound=f.get('review');
+ let returnLink:string|undefined;
+ if(typeof returnRound==='string'&&returnRound){
+  const {round}=await requireReviewRecord(validId(returnRound));
+  if(round.organisation_id!==a.company.id||round.course_id!==primary.courseId)throw Error('Select this review’s course in the individual price option before submitting.');
+  returnLink=commercialReviewPath(round.id)+'#submitted-course-pricing';
+ }
  const pricing:PricingReview={primaryCourseId:primary.courseId,fingerprint,structure,planningOnly:!!preview,quantities:reviewQuantities(structure,JSON.parse(field(f,'quantities')))};
+ if(!structure.company.isApgi)pricing.retainer=await partnerRetainer(a.company,primary.courseId);
  const token=randomBytes(32).toString('hex');
  const saved=await messageRpc<{id:string;batch:string;existing?:boolean}>('v7_submit_pricing_review',{
   p_actor:a.session.user.id,p_policy:policy?.id??null,p_payload:{
@@ -65,7 +76,7 @@ export async function submitPricingReview(_:StructureState,f:FormData):Promise<S
   }
  });
  refresh();for(const p of ['/review-requests','/course-reviews','/notifications'])revalidatePath(p);
- return {success:'Pricing submitted to Commercials Review. Reviewer notifications are queued.',link:`/review-requests?company=${a.company.id}&kind=commercials#batch-${saved.batch}`};
+ return {success:'Pricing submitted to Commercials Review. Reviewer notifications are queued.',link:returnLink??`/review-requests?company=${a.company.id}&kind=commercials#batch-${saved.batch}`};
  }catch(e){return failure(e);}}
 export async function pricingStructureDecision(_:StructureState,f:FormData):Promise<StructureState>{try{
  const {session}=await requirePlatformPrincipal(),id=validId(field(f,'structure'));

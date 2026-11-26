@@ -1,5 +1,6 @@
 import type {PurchaseRoute} from './course-calculator';
 import {offerCourses,quoteStructure,ROUTES,type PricingStructure} from './pricing-structures';
+import type {PartnerRetainer} from './partner-commercial-terms';
 
 export type PricingReview={
  primaryCourseId:string;
@@ -8,6 +9,7 @@ export type PricingReview={
  planningOnly:boolean;
  quantities:Record<PurchaseRoute,number>;
  structureId?:string;
+ retainer?:PartnerRetainer;
 };
 
 export function anchorPricingStructure(structure:PricingStructure){
