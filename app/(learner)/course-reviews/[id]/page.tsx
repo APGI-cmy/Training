@@ -1,4 +1,4 @@
-import {reviewRequestFields} from '@/server/services/review-requests';
+import {pricingSignoffProgress,reviewRequestFields} from '@/server/services/review-requests';
 import type {ReviewRequest} from '@/lib/review-requests';
 import {messageRpc} from '@/server/services/messages';
 import {SectionReviewRequests} from '@/components/reviews/SectionReviewRequests';
@@ -34,10 +34,11 @@ export const dynamic="force-dynamic";
 const Comment=({label="Comment",optional=false}:{label?:string;optional?:boolean})=><label>{label}{optional?" (optional explanation)":""}<textarea name="comment" required={!optional} minLength={optional?undefined:5} maxLength={5000}/></label>;
 export default async function ReviewWorkspace({params}:{params:Promise<{id:string}>}){
  const {id}=await params,{round,email,principal,session,source,fresh}=await requireReview(id,{archiveCancelled:true}),d=round.document;
- const [requests,requestManager,activeRelease]=await Promise.all([
+ const [requests,requestManager,activeRelease,pricingSignoff]=await Promise.all([
   rows<ReviewRequest>(`/rest/v1/v6_review_requests?source_round=eq.${round.document.sourceReviewId??round.id}&select=${reviewRequestFields}`),
   messageRpc<boolean>('v6_review_manager',{p_actor:session.user.id,p_org:round.organisation_id}),
   reviewLearnerRelease(round),
+  pricingSignoffProgress(round),
  ]);
  const progress=d.reviewProcessVersion===3?courseReviewProgress(round):undefined;
  const person=d.participants.find(p=>p.email===email),editable=canWork(round)&&fresh&&round.document.reviewerRequests?.[email]?.state!=='closed'&&person?.state!=="declined"&&!!person;
@@ -49,7 +50,7 @@ export default async function ReviewWorkspace({params}:{params:Promise<{id:strin
  const publicationLabel=activeRelease&&round.status==='open'?(publishedUnderOverride?'Published under override — review continuing':'Published — review continuing'):round.status;
  const blockers=reviewBlockers(round,source.fingerprint,source.brand.brand_revision);
  const overridden=(['content','commercials','branding'] as const).some(scope=>reviewOverride(d,scope,source.fingerprint,source.brand.brand_revision));
- const guide=publicationGuide(round,source.fingerprint,source.brand.brand_revision,email),step=(id:string)=>findWorkflowStep(guide,id);
+ const guide=publicationGuide(round,source.fingerprint,source.brand.brand_revision,email,undefined,pricingSignoff),step=(id:string)=>findWorkflowStep(guide,id);
  const mail=principal?await rows<{id:string;recipient:string;kind:string;state:string;last_error:string|null;provider_id:string|null}>(`/rest/v1/course_review_mail?round_id=eq.${id}&select=id,recipient,kind,state,last_error,provider_id&order=created_at.desc&limit=100`):[];
  const publicationControls=<>{round.status==="open"&&fresh&&!liveForVersion?<ReviewPublicationOverride id={id} revision={round.revision} fingerprint={round.fingerprint} brandRevision={source.brand.brand_revision}/>:null}{blockers.length?<ul>{blockers.map(b=><li key={b}>{b}</li>)}</ul>:<p className="form-success">{overridden?"Publication is permitted by the recorded review override. Outstanding reviews remain visible where retained.":"All content-review and company acceptance checks are complete."}</p>}<ReviewForm id={id} operation="publish" label="Publish reviewed release" disabled={blockers.length>0}><label><input name="confirm_release" type="checkbox" required disabled={blockers.length>0}/> I approve this exact course, brand and commercial schedule for V2 company publication. The applicable internal approvals remain in force. This does not activate payments or change V1.</label></ReviewForm></>;
  return <WorkflowFrame steps={guide} guided={d.reviewProcessVersion===3}><main className="review-page" data-content-fingerprint={source.fingerprint}><Link href="/course-reviews">All course reviews</Link><h1>{d.title}</h1><p>{source.brand.name} · <strong>{publicationLabel}</strong> · Version {round.fingerprint.slice(0,12)} · Revision {round.revision}</p><p>Requested by {d.requester}. Cutoff: <strong>{new Date(d.cutoff).toLocaleString("en-ZA",{timeZone:"Africa/Johannesburg"})} SAST</strong>.</p>{!fresh?<p className="form-error">Course content changed. This evidence is retained, but approval and new submissions are blocked. The platform is automatically registering the live deployment before saving resumes. <a href="#changes-implemented">Open Changes implemented</a>.</p>:null}{!canWork(round)&&round.status==="open"?<p className="form-error">Cutoff reached. Unfinished tasks are overdue. The requester must extend the deadline before further submissions. No automatic approval occurred.</p>:null}

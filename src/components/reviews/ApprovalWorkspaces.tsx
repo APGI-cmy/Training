@@ -9,6 +9,7 @@ import {PublicationProgress} from './PublicationProgress';
 import {ReviewTaskPanel} from './ReviewTaskPanel';
 import type {TrainingRelease} from '@/lib/review-publication-state';
 import {commercialReviewPath} from '@/lib/review-navigation';
+import {WorkflowSectionStatus} from './WorkflowSectionStatus';
 
 export function ApprovalWorkspaces({round,brand,email,principal,hash,guide,commercialPage=false,activeRelease}:{round:ReviewRound;brand:CompanyRecord;email:string;principal:boolean;hash:string;guide:WorkflowStep[];commercialPage?:boolean;activeRelease?:TrainingRelease|null}){
  const v=round.document.workflow?.commercials.at(-1),person=round.document.participants.find(p=>p.email===email);
@@ -16,7 +17,7 @@ export function ApprovalWorkspaces({round,brand,email,principal,hash,guide,comme
  const commercial=findWorkflowStep(guide,'commercials'),branding=findWorkflowStep(guide,'branding');
  const partner=!!brand.slug&&brand.slug!=='apgi';
  return <>
-  {commercial&&partner&&!commercialPage?<div id="commercial-workflow"><Link className="primary-button" href={commercialReviewPath(round.id)}>Open commercial workflow</Link></div>:null}
+  {commercial&&partner&&!commercialPage?<div id="commercial-workflow" className="button-row"><Link className="primary-button" href={commercial.href??commercialReviewPath(round.id)}>Open commercial workflow</Link><WorkflowSectionStatus step={commercial}/></div>:null}
   {commercial&&!partner?<ApprovalWorkflowModal kind="commercials" title="Commercial preparation and sign-off" course={round.document.title} email={email} step={commercial} roundId={round.id} revision={round.revision} autoOpen={commercialPage}>
    {commercialVisible?<ReviewOverrideControl round={round} scope="commercials" principal={principal} brandRevision={brand.brand_revision} activeRelease={activeRelease}/>:null}{commercialVisible?<><PublicationProgress round={round} principal={principal} email={email} hash={hash} brandRevision={brand.brand_revision} guide={guide} activeRelease={activeRelease}/><ReviewTaskPanel mode="commercials" round={round} brand={brand} email={email} principal={principal} hash={hash} guide={guide}/></>:<p>The commercial proposal will be available when APGI sends the jointly approved offer. Content and branding reviews remain available in their own workflows.</p>}
   </ApprovalWorkflowModal>:null}

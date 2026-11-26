@@ -18,7 +18,7 @@ import {anchorPricingStructure,reviewQuantities,type PricingReview} from '@/lib/
 import {reviewEmails} from '@/lib/review-requests';
 import {calculatorPlanningPreview} from '@/server/services/calculator-planning-preview';
 import {messageRpc} from '@/server/services/messages';
-import {currentPricingReviews} from '@/server/services/review-requests';
+import {currentPricingReviews,flushReviewRequestMail} from '@/server/services/review-requests';
 import {requireReviewRecord} from '@/server/services/course-reviews';
 import {commercialReviewPath} from '@/lib/review-navigation';
 import {partnerRetainer} from '@/server/services/partner-commercial-terms';
@@ -75,8 +75,13 @@ export async function submitPricingReview(_:StructureState,f:FormData):Promise<S
    snapshot:{pricing,items:[{id:'course-pricing',title,version:fingerprint,body:preview?'Planning proposal for commercial review. Buyer publication requires verified course and cost records.':'Review the four buyer options, the named courses and their exact price terms.'}]}
   }
  });
+ let mail='Reviewer notifications are queued.';
+ try{
+  const {accepted}=await flushReviewRequestMail({batch:saved.batch,company:a.company.id});
+  if(accepted>0)mail=`${accepted} reviewer email(s) accepted by the provider.`;
+ }catch{/* The saved batch and its outbox can be retried. */}
  refresh();for(const p of ['/review-requests','/course-reviews','/notifications'])revalidatePath(p);
- return {success:'Pricing submitted to Commercials Review. Reviewer notifications are queued.',link:returnLink??`/review-requests?company=${a.company.id}&kind=commercials#batch-${saved.batch}`};
+ return {success:`Pricing submitted to Commercials Review. ${mail}`,link:returnLink??`/review-requests?company=${a.company.id}&kind=commercials#batch-${saved.batch}`};
  }catch(e){return failure(e);}}
 export async function pricingStructureDecision(_:StructureState,f:FormData):Promise<StructureState>{try{
  const {session}=await requirePlatformPrincipal(),id=validId(field(f,'structure'));

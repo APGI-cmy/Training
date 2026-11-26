@@ -4,10 +4,11 @@ import {commercialReviewPath,commercialSignoffAnchor,commercialReviewerAnchor,br
 import {activeFindings,currentReport,contentReviewBlockers,type ReviewRound} from "./course-review";
 import {assignedTasks,hasReviewTask,commercialReviewApproved,reviewTaskBlockers,taskDecision,companyBrandApproved} from "./review-tasks";
 import {bothCommercialApprovals,commercialPrincipals} from "./publication-workflow";
+import {commercialSignoffLabel,type CommercialSignoffProgress} from './commercial-signoff-progress';
 export type WorkflowStep={id:string;label:string;done:boolean;href?:string;note?:string;current?:boolean;number?:string;children?:WorkflowStep[]};
 function numberSteps(steps:WorkflowStep[],prefix=""):WorkflowStep[]{return steps.map((step,i)=>{const number=prefix?`${prefix}.${i+1}`:String(i+1);return {...step,number,...(step.children?{children:numberSteps(step.children,number)}:{})};});}
 export function findWorkflowStep(steps:WorkflowStep[]|undefined,id:string):WorkflowStep|undefined{for(const step of steps??[]){if(step.id===id)return step;const child=findWorkflowStep(step.children,id);if(child)return child;}}
-export function publicationGuide(round:ReviewRound,hash:string,brandRevision:number,email:string,phase?:string):WorkflowStep[]{
+export function publicationGuide(round:ReviewRound,hash:string,brandRevision:number,email:string,phase?:string,pricing?:CommercialSignoffProgress|null):WorkflowStep[]{
  const d=round.document,w=d.workflow,v=w?.commercials.at(-1),base=`/course-reviews/${round.id}`,fresh=hash===round.fingerprint;
  const principalViewer=commercialPrincipals.some(p=>p===email);
  const primary=d.participants.filter(p=>p.role==="primary"&&p.state!=="declined"&&hasReviewTask(p,"content"));
@@ -51,6 +52,19 @@ export function publicationGuide(round:ReviewRound,hash:string,brandRevision:num
  const publication=result.find(s=>s.id==='publication');
  if(publication)publication.children=publication.children?.map(s=>s.id==='clearance'&&contentClear||s.id==='acceptance'&&commercialClear&&brandClear?{...s,done:true,note:'Cleared by recorded review override; no reviewer approval is inferred.'}:s);
  const live=d.trainingReleases?.at(-1);if(live?.fingerprint===hash&&live.brandRevision===brandRevision&&live.commercialVersion===(v?.id??null)){const p=result.find(x=>x.id==="publication");if(p){p.done=true;p.note="Training release published; the retained review remains open. Existing learner records use the frozen release.";p.children=p.children?.map(s=>s.id==="release"?{...s,done:true,note:"This exact release is already published."}:s);}}
+ if(pricing){
+  const commercial=result.find(step=>step.id==='commercials')!;
+  const href=commercialReviewPath(round.id)+'#submitted-course-pricing';
+  commercial.done=pricing.complete;
+  commercial.note=commercialSignoffLabel(pricing);
+  commercial.href=href;
+  commercial.current=phase==='commercials'||!!commercial.current&&!pricing.complete;
+  commercial.children=pricing.assignments.map((a,i)=>({
+   id:`pricing-review-${a.id}`,number:`4.${i+1}`,label:a.email,done:a.approved,
+   href:a.email===email?`/review-requests/${a.id}`:href,
+   note:a.changes?'Changes requested':a.closed?'Request closed without approval':'Awaiting sign-off',
+  }));
+ }
  return result;
 }
 export function setupGuide():WorkflowStep[]{return numberSteps(["Course and review team","Content review","Corrections and verification","Commercial preparation and sign-off","Branding review","Final clearance and publication"].map((label,i)=>({id:`setup-${i}`,label:`${i+1}. ${label}`,done:false,current:i===0,note:i===0?"Save a review request to start tracking this course.":undefined})));}

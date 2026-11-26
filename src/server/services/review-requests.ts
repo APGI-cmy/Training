@@ -13,6 +13,7 @@ import {REVIEW_KINDS,type ReviewKind,type ReviewItem,type ReviewRequest} from '@
 import {validId} from '@/lib/company-structure';
 import pricingPolicy from '@/data/course-pricing-policy.json';
 import {contentSource} from './course-reviews';
+import {commercialSignoffProgress,type CommercialSignoffRecord} from '@/lib/commercial-signoff-progress';
 export const reviewRequestFields='id,batch_id,organisation_id,kind,title,snapshot,superseded_by,source_round,reviewer_email,requester_id,state,cycle,revision,reason,deadline,response,created_at,updated_at';
 export async function reviewRequestWorkspace(){
  const session=await requireSession();if(!session.user.email_confirmed_at)throw Error('Verified email required.');
@@ -32,6 +33,14 @@ export async function currentPricingReviews(companyId:string){
  return rows<{id:string;primary_course:string;structure_id:string|null;reviewer_email:string}>(
   `/rest/v1/v6_review_requests?organisation_id=eq.${validId(companyId)}&kind=eq.commercials&superseded_by=is.null&snapshot->pricing=not.is.null&select=id,reviewer_email,primary_course:snapshot->pricing->>primaryCourseId,structure_id:snapshot->pricing->>structureId&order=created_at.desc&limit=1000`,
  );
+}
+// Pass an authorised review round. Only assignment progress is returned here.
+export async function pricingSignoffProgress(round:{organisation_id:string;course_id:string}){
+ const id=validId(round.organisation_id),course=encodeURIComponent(round.course_id),tenant=productionCompanyId();
+ if(tenant&&tenant!==id)return null;
+ const select='id,batch_id,reviewer_email,state,cycle,superseded_by,fingerprint:snapshot->pricing->>fingerprint,decisions:response->decisions,response_email:response->>email,response_cycle:response->cycle';
+ const records=await rows<CommercialSignoffRecord>(`/rest/v1/v6_review_requests?organisation_id=eq.${id}&kind=eq.commercials&superseded_by=is.null&snapshot->pricing->>primaryCourseId=eq.${course}&select=${select}&order=created_at.desc,id.asc&limit=100`);
+ return commercialSignoffProgress(records);
 }
 export async function requireReviewRequest(id:string){
  const requestedId=validId(id),session=await requireSession(`/review-requests/${requestedId}`);
@@ -69,9 +78,11 @@ export async function reviewSnapshot(companyId:string,kind:ReviewKind,sourceIds:
  }else{if(body.length<10||body.length>100000)throw Error('Enter the exact commercial proposal text to review.');items.push({id:'commercial-proposal',title,version:createHash('sha256').update(body).digest('hex'),body});}
  if(!items.length||items.length>100)throw Error('Select at least one review item.');return {items,internal};
 }
-export async function flushReviewRequestMail(){
+export async function flushReviewRequestMail(scope?:{batch:string;company:string}){
  const config=emailConfiguration();if(!config)return {accepted:0,failed:0};
- const jobs=await messageRpc<{id:string;claim_token:string;recipient:string;organisation_id:string;context:{requestId:string;title:string;operation:string;reason:string;sender:string;deadline:string;state:string;joinToken?:string}}[]>('v6_review_mail_claim',{});let accepted=0,failed=0;
+ const jobs=await messageRpc<{id:string;claim_token:string;recipient:string;organisation_id:string;context:{requestId:string;title:string;operation:string;reason:string;sender:string;deadline:string;state:string;joinToken?:string}}[]>(
+  scope?'v8_review_mail_claim_batch':'v6_review_mail_claim',scope?{p_batch:validId(scope.batch),p_company:validId(scope.company)}:{},
+ );let accepted=0,failed=0;
  for(const j of jobs){
   if(accepted+failed)await new Promise(resolve=>setTimeout(resolve,550));
   const b=await recipientBrand(j.recipient,j.organisation_id);if(!b)throw Error('Company mail identity unavailable.');

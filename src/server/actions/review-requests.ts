@@ -17,7 +17,7 @@ import {sendAccountConfirmationEmail} from '@/server/services/email/send-account
 export async function reviewRequestAction(_:StructureState,f:FormData):Promise<StructureState>{try{
  const session=await requireSession(),op=String(f.get('operation')),reason=String(f.get('reason')??'').trim(),token=randomBytes(32).toString('hex');
  const payload:Record<string,unknown>={reason,operationId:validId(String(f.get('operation_id'))),joinToken:token,joinHash:createHash('sha256').update(token).digest('hex')};
- let id:string|null=null,expected=0,rpc='v6_review_action';
+ let id:string|null=null,expected=0,rpc='v6_review_action',pricingScope:{batch:string;company:string}|undefined;
  if(op==='create'){
   const company=validId(String(f.get('company'))),kind=String(f.get('kind')) as ReviewKind,title=String(f.get('title')??'').trim();await requireCompany(company);
   if(!Object.hasOwn(REVIEW_KINDS,kind))throw Error('Choose a review type.');
@@ -26,15 +26,25 @@ export async function reviewRequestAction(_:StructureState,f:FormData):Promise<S
   Object.assign(payload,{company,kind,title,recipients,snapshot,deadline});
  }else{
   id=validId(String(f.get('id')));const a=await requireReviewRequest(id);expected=Number(f.get('revision'));
-  if(a.request.snapshot.pricing){rpc='v7_pricing_review_action';if(a.request.superseded_by)throw Error('Open the current pricing proposal to respond.');}
+  if(a.request.snapshot.pricing){rpc='v7_pricing_review_action';if(a.request.superseded_by)throw Error('Open the current pricing proposal to respond.');pricingScope={batch:a.request.batch_id,company:a.request.organisation_id};}
   if(op!=='respond'&&!a.manager)throw Error('Company review management access required.');
   if(op==='respond'){if(f.get('confirm')!=='on')throw Error('Confirm your own human review.');payload.decisions=Object.fromEntries(a.request.snapshot.items.map(i=>[i.id,String(f.get('decision:'+i.id)??'')]));}
  }
  const saved=await messageRpc<{id?:string}>(rpc,{p_actor:session.user.id,p_operation:op,p_id:id,p_expected:expected,p_payload:payload});
- let mail='Email is queued.';try{const r=await flushReviewRequestMail();mail=`${r.accepted} email(s) accepted by the provider${r.failed?`; ${r.failed} remain queued for retry`:''}.`;}catch{/* Durable queue retained. */}
+ let mail='Email is queued.';try{const r=await flushReviewRequestMail(pricingScope);mail=`${r.accepted} email(s) accepted by the provider${r.failed?`; ${r.failed} remain queued for retry`:''}.`;}catch{/* Durable queue retained. */}
  for(const p of ['/review-requests','/course-reviews','/notifications'])revalidatePath(p);
  return {success:`Review request ${op==='respond'?'response saved':op==='close'?'closed without approval':op==='reopen'?'reopened with earlier evidence retained':op==='resend'?'resent':'created'}. ${mail} Published learner releases and live payment settings are unchanged.`,link:saved.id?`/review-requests/${saved.id}`:'/review-requests'};
 }catch(e){return {error:e instanceof Error?e.message:'Review request could not be saved.'};}}
+
+export async function deliverQueuedPricingLinks(_:StructureState,f:FormData):Promise<StructureState>{
+ try{
+  const {request,manager}=await requireReviewRequest(validId(String(f.get('request'))));
+  if(!manager||!request.snapshot.pricing||request.superseded_by)throw Error('The current company pricing review is required.');
+  const {accepted,failed}=await flushReviewRequestMail({batch:request.batch_id,company:request.organisation_id});
+  for(const path of ['/review-requests','/course-reviews'])revalidatePath(path);
+  return {success:accepted||failed?`${accepted} queued email(s) accepted by the provider. ${failed?failed+' remain queued for retry.':''}`:'No queued review links are currently due.'};
+ }catch(e){return {error:e instanceof Error?e.message:'The review links remain queued.'};}
+}
 export async function registerIndependentReviewer(_:StructureState,f:FormData):Promise<StructureState>{try{
  const invite=await independentReviewJoin(validId(String(f.get('id'))),String(f.get('token'))),password=String(f.get('password')??'');
  if(!invite)throw Error('Invitation unavailable. Ask for a fresh review request.');
