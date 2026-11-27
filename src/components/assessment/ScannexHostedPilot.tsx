@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { SCANNEX_PILOT_LAUNCH, privateIrelandViewerUrl } from "@/lib/assessments/scannex-hosted-pilot";
 import { PracticalAssignment } from "./PracticalAssignment";
+import { ScannexPilotViewerHelp } from "./ScannexPilotViewerHelp";
 import { openScannexPilotTransport } from "./scannex-pilot-transport";
 
 const GUIDE = "/scannex-v1-pilot/scannex-practical-recording-guide-illustrated.pdf";
@@ -16,10 +17,16 @@ export function ScannexHostedPilot({ automaticLaunchConfigured }: { automaticLau
   const [message, setMessage] = useState("");
   const [opening, setOpening] = useState(false);
   const pendingLaunch = useRef(false);
+  const viewerHelp = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     setEdge(/\bEdg\//.test(navigator.userAgent));
     return () => pilot.clearEvidence();
   }, [pilot]);
+
+  function showViewerHelp() {
+    const dialog = viewerHelp.current;
+    if (dialog?.isConnected && !dialog.open) dialog.showModal();
+  }
 
   async function launch() {
     if (!edge || !automaticLaunchConfigured || pendingLaunch.current) return;
@@ -47,17 +54,20 @@ export function ScannexHostedPilot({ automaticLaunchConfigured }: { automaticLau
     } catch {
       tab.close();
       setMessage("The Viewer did not open. Keep this worksheet open and try again.");
+      return;
     } finally {
       pendingLaunch.current = false;
       setOpening(false);
     }
+    // Show the guide on the worksheet, not over or inside the separate AWS tab.
+    showViewerHelp();
   }
 
   const instructions = <section className="pa-card" aria-label="Private Image 78 connection">
     <h3>Open the Scannex Viewer</h3>
     <p>Use the private development Viewer in standalone Edge. Sign in there before recording and share only the Viewer tab.</p>
     <p><a href={GUIDE} download>Download the illustrated recording guide (PDF)</a></p>
-    {connected ? <p role="status">{viewerPath === "new" ? "The development Viewer opened in another tab." : "Continue with your existing development Viewer tab."} Verify Image 78 is visible there before confirming below.</p> :
+    {connected ? <p role="status">{viewerPath === "new" ? "Switch to the new AWS tab to finish setting up the Viewer." : "Continue with your existing development Viewer tab."} Verify Image 78 is visible there before confirming below.</p> :
       !edge ? <p role="status">Open this preview in standalone Microsoft Edge to continue.</p> : <>
       <button type="button" className="primary-button" disabled={opening || !automaticLaunchConfigured}
         aria-describedby={!automaticLaunchConfigured ? "pilot-auto-launch-notice" : undefined}
@@ -68,10 +78,9 @@ export function ScannexHostedPilot({ automaticLaunchConfigured }: { automaticLau
         <button type="button" className="secondary-button" disabled={opening} onClick={() => { setViewerPath("already-open"); setMessage(""); }}>Use the open development Viewer</button>
       </details></>}
     {message && <p role="alert">{message}</p>}
-    {connected && <details><summary>If Review or Load Image is greyed out</summary>
-      <p>On the private AWS development desktop, open File Explorer and run <code>C:\scannex\APGI-Scannex-Pilot-Launcher.exe</code>. The Viewer-only desktop shortcut does not prepare the station.</p>
-      <p>At READY, choose Review (R/W) and finish sign-in before recording. Use Load Image to open <code>C:\scannex\Viewer Training Images\F000000078.Tiff</code>. It is already on the development desktop; do not upload a file.</p>
-    </details>}
+    <p className="pa-subtle">Striped test pattern or grey Review button? The Viewer is not ready to record.</p>
+    <button type="button" className="secondary-button" aria-haspopup="dialog" onClick={showViewerHelp}>Show Viewer setup help</button>
+    <ScannexPilotViewerHelp dialogRef={viewerHelp} />
   </section>;
 
   return <>
