@@ -24,7 +24,7 @@ export function AccountSecurity({factors,mfaRequired,reauthenticate=false}:{fact
    <p>Keep the QR code, setup key and verification codes private.</p>
   </div>
   <div>
-   <img alt="Your private authenticator setup QR code" src={setup.qr.startsWith('data:')?setup.qr:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(setup.qr)} width="220" height="220"/>
+   <img className="authenticator-qr" alt="Your private authenticator setup QR code" src={setup.qr.startsWith('data:')?setup.qr:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(setup.qr)} width="240" height="240"/>
    <details>
     <summary>Enter setup key manually instead</summary>
     <p>If you’re using the same phone or can’t scan, choose manual entry in your authenticator app. Name the account and select <strong>Time based</strong> if asked, then enter this setup key.</p>
