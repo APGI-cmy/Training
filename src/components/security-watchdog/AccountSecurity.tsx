@@ -13,7 +13,11 @@ export function AccountSecurity({factors,mfaRequired,reauthenticate=false}:{fact
   <div>
    <h3>Set up two-step verification (MFA)</h3>
    <ol>
-    <li>Open an authenticator app on your phone, such as Microsoft Authenticator or Google Authenticator. Install one from your phone’s app store if needed.</li>
+    <li>
+     Open an authenticator app on your phone, such as 2FAS Auth, Microsoft Authenticator or Google Authenticator.
+     You can use 2FAS Auth on iPhone or Android without a Microsoft or Google account.{' '}
+     <a href="https://2fas.com/download/" target="_blank" rel="noopener noreferrer">Download 2FAS Auth (opens in a new tab)</a>.
+    </li>
     <li>In the app, tap <strong>Add account</strong> or <strong>+</strong>. Choose <strong>Scan QR code</strong> and point the camera at the code shown here. If asked for an account type, choose <strong>Other account</strong>.</li>
     <li>Enter the current six-digit code from the app under <strong>Authenticator code</strong>, then select <strong>Verify my authenticator</strong>. If the code expires, use the next one the app shows.</li>
    </ol>
