@@ -58,3 +58,6 @@
   .pa-checklist-print tr{break-inside:avoid}
   .pa-print-square{display:inline-block;border:1px solid #333;width:.16in;height:.16in}
 }
+.learner-shell:has([data-scannex-learner-test]) .learner-sidebar .sidebar-links a[href^="/admin"] {
+  display: none;
+}

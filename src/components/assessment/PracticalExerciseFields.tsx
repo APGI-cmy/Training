@@ -17,6 +17,11 @@ const LABELS: Record<string, string> = {
   not_reviewed: "Not yet reviewed", no_candidate: "Checked, no candidate", candidate_recorded: "Checked, candidate found",
   review: "Review / second opinion", hold: "Hold", release: "Release",
 };
+const CHECKLIST_LABELS: Record<string, string> = {
+  yes: "Y — Yes", no: "N — No", unstructured: "US — Unstructured", structured: "S — Structured",
+  undefined: "UD — Undefined", defined: "WD — Well-defined", even: "E — Even", uneven: "UE — Uneven", uncertain: "Uncertain",
+  inside: "I — Inside", outside: "O — Outside",
+};
 
 function Select({ value, options, labels = LABELS, onChange, label }: {
   value: string; options: readonly string[]; labels?: Record<string, string>; onChange: (s: string) => void; label: string;
@@ -77,7 +82,29 @@ export function PracticalScanFields({ value: c, change, item, files, recordingFi
   </>;
 }
 
-export function PracticalFindingsFields({ value: c, change, orderedReview = false }: Fields & { orderedReview?: boolean }) {
+function CandidateChecklist({ item, number, change, showPosition = false }: { item: Candidate; number: number; change: Fields["change"]; showPosition?: boolean }) {
+  const update = (fn: (candidate: Candidate) => void) => change(d => {
+    const candidate = d.candidates.find(a => a.id === item.id);
+    if (candidate) fn(candidate);
+  });
+  return <>
+    <div className="pa-table-wrap"><table>
+      <caption>Electronic anomaly checklist — all four modes</caption>
+      <thead><tr><th scope="col">Observation</th>{MODES.map(m => <th scope="col" key={m}>{m}</th>)}</tr></thead>
+      <tbody>{CHARACTERISTICS.map(field => <tr key={field}><th scope="row">{field === "spread" ? "Density spread" : field}</th>
+        {MODES.map(m => <td key={m}>{(field === "spread" || field === "density") && (m === "F3" || m === "F4") ? "N/A"
+          : <Select label={`${field} ${m} candidate ${number}`} value={item.modes[m][field]} options={OBSERVATION_OPTIONS[field]} labels={CHECKLIST_LABELS}
+            onChange={v => update(a => { a.modes[m][field] = v; })} />}</td>)}</tr>)}</tbody>
+    </table></div>
+    <p>Record what you could see. Use Uncertain when a feature isn’t clear.</p>
+    <label>Density check and interpretation<textarea maxLength={4000} value={item.densityCheck} onChange={e => update(a => { a.densityCheck = e.target.value; })} /></label>
+    <label>Compare density with bone<textarea maxLength={4000} value={item.boneComparison} onChange={e => update(a => { a.boneComparison = e.target.value; })} /></label>
+    <label>Emboss comparison and exclusion factors<textarea maxLength={4000} value={item.embossComparison} onChange={e => update(a => { a.embossComparison = e.target.value; })} /></label>
+    {showPosition ? <label>Position<Select label={`Candidate ${number} position`} value={item.position} labels={CHECKLIST_LABELS} options={["inside", "outside", "uncertain"]} onChange={v => update(a => { a.position = v as Candidate["position"]; })} /></label> : null}
+  </>;
+}
+
+export function PracticalFindingsFields({ value: c, change, orderedReview = false, guidedDeclaration = false }: Fields & { orderedReview?: boolean; guidedDeclaration?: boolean }) {
   const ready = c.candidates.every(a => a.annotation.trim() && a.location.trim() && a.remarks.trim() && a.reason.trim());
   const needsReview = c.candidates.some(a => a.elimination !== "excluded");
   function changeCandidate<K extends keyof Candidate>(id: string, key: K, val: Candidate[K]) {
@@ -111,22 +138,9 @@ export function PracticalFindingsFields({ value: c, change, orderedReview = fals
       </div>
       <label>Viewer observation / remarks (required)<textarea maxLength={4000} value={item.remarks} onChange={e => changeCandidate(item.id, "remarks", e.target.value)} /></label>
       <label>{orderedReview && item.elimination === "excluded" ? "Why this is not a diamond (required)" : "Reason for this candidate (required)"}<textarea maxLength={4000} placeholder={orderedReview && item.elimination === "excluded" ? "For example: a key, because I could see both the ring and the cut teeth." : "What visible feature made you retain, rule out or leave this candidate unresolved?"} value={item.reason} onChange={e => changeCandidate(item.id, "reason", e.target.value)} /></label>
-      {item.elimination === "excluded" ? <p>This finding stays in your report with its native annotation, location and reason. A ruled-out candidate does not need the full grid.</p> : (!orderedReview || (c.screeningComplete && c.checklistSource !== "paper")) ? <>
-        <div className="pa-table-wrap"><table>
-          <caption>Electronic anomaly checklist — all four modes</caption>
-          <thead><tr><th scope="col">Observation</th>{MODES.map(m => <th scope="col" key={m}>{m}</th>)}</tr></thead>
-          <tbody>{CHARACTERISTICS.map(field => <tr key={field}><th scope="row">{field === "spread" ? "Density spread" : field}</th>
-            {MODES.map(m => <td key={m}>{(field === "spread" || field === "density") && (m === "F3" || m === "F4") ? "N/A"
-              : <Select label={`${field} ${m} candidate ${j + 1}`} value={item.modes[m][field]} options={OBSERVATION_OPTIONS[field]}
-                onChange={v => change(d => { const a = d.candidates.find(candidate => candidate.id === item.id); if (a) a.modes[m][field] = v; })} />}</td>)}</tr>)}</tbody>
-        </table></div>
-        <p>Use Uncertain if you can’t judge a feature. Record what the image shows; even density spread and bone-range density are qualifying observations, not proof of a diamond.</p>
-        <label>Density check and interpretation<textarea maxLength={4000} value={item.densityCheck} onChange={e => changeCandidate(item.id, "densityCheck", e.target.value)} /></label>
-        <label>Compare density with bone<textarea maxLength={4000} value={item.boneComparison} onChange={e => changeCandidate(item.id, "boneComparison", e.target.value)} /></label>
-        <label>Emboss comparison and exclusion factors<textarea maxLength={4000} value={item.embossComparison} onChange={e => changeCandidate(item.id, "embossComparison", e.target.value)} /></label>
-      </> : null}
+      {item.elimination === "excluded" ? <p>This finding stays in your report with its native annotation, location and reason. A ruled-out candidate does not need the full grid.</p> : !guidedDeclaration && (!orderedReview || (c.screeningComplete && c.checklistSource !== "paper")) ? <CandidateChecklist item={item} number={j + 1} change={change} /> : null}
       {(!orderedReview || (c.screeningComplete && item.elimination !== "excluded")) ? <div className="pa-grid">
-        <label>Position<Select label={`Candidate ${j + 1} position`} value={item.position} options={["inside", "outside", "uncertain"]} onChange={v => changeCandidate(item.id, "position", v as Candidate["position"])} /></label>
+        {!guidedDeclaration ? <label>Position<Select label={`Candidate ${j + 1} position`} value={item.position} options={["inside", "outside", "uncertain"]} onChange={v => changeCandidate(item.id, "position", v as Candidate["position"])} /></label> : null}
         <label>{orderedReview ? "Result of your detailed review" : "Candidate action"}<Select label={`Candidate ${j + 1} action`} value={item.decision} options={DECISIONS} labels={orderedReview ? {review: "Still unresolved", hold: "Still suspicious", release: "Ruled out after review"} : LABELS} onChange={v => changeCandidate(item.id, "decision", v as Decision)} /></label>
       </div> : null}
       <button type="button" className="secondary-button" onClick={() => change(d => {
@@ -148,10 +162,43 @@ export function PracticalFindingsFields({ value: c, change, orderedReview = fals
           })} /> {level}
         </label>)}</div>
       </fieldset> : null}
-      {c.screeningComplete && needsReview ? <label>How did you complete the detailed checklist?
+      {!guidedDeclaration && c.screeningComplete && needsReview ? <label>How did you complete the detailed checklist?
         <Select label="Detailed checklist format" value={c.checklistSource ?? "electronic"} options={["electronic", "paper"]} labels={{electronic: "Use the electronic checklist", paper: "Attach my completed paper checklist"}} onChange={v => change(d => { d.checklistSource = v as "paper" | "electronic"; })} />
       </label> : null}
       {c.screeningComplete && !needsReview ? <p>No flagged candidate needs a detailed checklist for this image.</p> : null}
+    </> : null}
+  </>;
+}
+
+export function PracticalLearnerDeclaration({ value: c, change, item }: Fields & { item: LearnerCase }) {
+  const held = c.decision === "hold";
+  const actionable = c.candidates.filter(a => a.elimination !== "excluded" && a.decision !== "release");
+  const areas = REGIONS.filter(r => actionable.some(a => a.region === r));
+  const selectedArea = held && c.heldRegion && areas.includes(c.heldRegion) ? c.heldRegion : null;
+  return <>
+    <fieldset>
+      <legend>Did you hold the scanned person?</legend>
+      {([ ["hold", "Yes — held"], ["release", "No — released"] ] as const).map(([decision, label]) => <label className="pa-check" key={decision}>
+        <input type="radio" name={`hold-${c.caseId}`} value={decision} checked={c.decision === decision} onChange={() => change(d => {
+          d.decision = decision;
+          d.summary = "";
+          if (decision === "release") delete d.heldRegion;
+        })} /> {label}
+      </label>)}
+    </fieldset>
+    {c.decision !== "review" ? <label>{held ? "Why did you hold the scanned person?" : "Why did you release the scanned person?"}<textarea required maxLength={4000} value={c.summary}
+      onChange={e => change(d => { d.summary = e.target.value; })} /></label> : null}
+    {held ? areas.length ? <label>Which body area led to Hold?{areas.length > 1 ? " Select the main one." : ""}
+      <Select label="Body area that led to Hold" value={c.heldRegion ?? ""} options={areas} labels={REGION_LABELS} onChange={v => change(d => { d.heldRegion = v as Region; })} />
+    </label> : <p>Go back to Findings and record the flagged candidate that led you to hold.</p> : null}
+    {selectedArea ? <>
+      <h4>Scannex checklist · {REGION_LABELS[selectedArea]}</h4>
+      <p>Record your own observations from this run. This checklist does not give you a mark.</p>
+      <PracticalModeFields value={c} change={change} item={item} orderedReview />
+      {c.candidates.map((a, i) => actionable.includes(a) ? <section key={a.id} className="pa-candidate">
+        <h4>Candidate {i + 1} · {REGION_LABELS[a.region]} · {a.annotation}</h4>
+        <CandidateChecklist item={a} number={i + 1} change={change} showPosition />
+      </section> : null)}
     </> : null}
   </>;
 }

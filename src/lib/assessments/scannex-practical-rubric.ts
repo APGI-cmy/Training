@@ -1,6 +1,16 @@
 export const SCANNEX_PRACTICAL_RUBRIC_VERSION = "scannex-practical-v1";
 export const SCANNEX_PRACTICAL_RAW_MAX_SCORE = 99;
 export const SCANNEX_PRACTICAL_NORMALIZED_MAX_SCORE = 100;
+export const ASSIGNMENT_RUBRIC_VERSION = "scannex-practical-v1-even-density-20261125";
+
+export function assignmentScore(scores: Record<string, number>) {
+  const rawScore = SCANNEX_PRACTICAL_RUBRIC.reduce((n, c) => n + (scores[c.id] ?? 0), 0);
+  return { rawScore, normalizedScore: Math.round(rawScore / assignmentRawMax() * 10000) / 100 };
+}
+
+export function assignmentRawMax() {
+  return SCANNEX_PRACTICAL_RUBRIC.reduce((n, c) => n + c.maximumScore, 0);
+}
 
 export type ScannexPracticalCriterion = {
   id: string;

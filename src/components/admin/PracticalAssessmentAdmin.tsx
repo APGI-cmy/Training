@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { MODES, PRACTICAL_API, ASSIGNMENT_RAW_MAX, assignmentScore, type AnswerKey, type CasePack, type LearnerCase, type PracticalAssignment, type PracticalFile } from "@/lib/assessments/scannex-assignment";
+import { MODES, PRACTICAL_API, type AnswerKey, type CasePack, type LearnerCase, type PracticalAssignment, type PracticalFile } from "@/lib/assessments/scannex-assignment";
+import { assignmentRawMax, assignmentScore } from "@/lib/assessments/scannex-practical-rubric";
+const ASSIGNMENT_RAW_MAX = assignmentRawMax();
 import { SCANNEX_PRACTICAL_RUBRIC } from "@/lib/assessments/scannex-practical-rubric";
 import { practicalRequest, uploadPracticalFile } from "@/components/assessment/practical-client";
 import { PracticalReport, type Submission } from "@/components/assessment/PracticalReport";

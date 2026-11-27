@@ -1,6 +1,8 @@
 export const SCANNEX_PILOT_COURSE = "scannex-training-programme";
 export const SCANNEX_PILOT_UNIT = "lu9";
 export const SCANNEX_PILOT_LAUNCH = "/api/v1/scannex-pilot/launch";
+export const SCANNEX_LEARNER_TEST = "learner-test";
+export const SCANNEX_TEST_CASES = [1, 2, 3] as const;
 
 export function isHostedPilotDeployment(source: Record<string, string | undefined>) {
   return source.VERCEL_ENV === "preview" && source.SCANNEX_V1_IMAGE78_PILOT === "1";

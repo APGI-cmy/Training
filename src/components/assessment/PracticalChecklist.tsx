@@ -34,8 +34,12 @@ export function PrintChecklistButton() {
   return <button type="button" className="secondary-button" onClick={printChecklist}>Print the learner checklist</button>;
 }
 
-export function PracticalChecklist({ recordingFirst = false, orderedReview = false }: { recordingFirst?: boolean; orderedReview?: boolean } = {}) {
-  const instructions = orderedReview ? ORDERED_DEMONSTRATE : recordingFirst ? [...DEMONSTRATE.slice(0, -1),
+export function PracticalChecklist({ recordingFirst = false, orderedReview = false, guidedDeclaration = false }: { recordingFirst?: boolean; orderedReview?: boolean; guidedDeclaration?: boolean } = {}) {
+  const instructions = guidedDeclaration ? [
+    "Confirm the assigned image. For Exercises 2 and 3, make and play one practice clip first. Then start the live recording before you scan.",
+    ...ORDERED_DEMONSTRATE.slice(1, 6), ORDERED_DEMONSTRATE[7],
+    "In the worksheet, declare Hold or Release and explain why. For Hold, select the body area and complete the electronic checklist. Save before moving on.",
+  ] : orderedReview ? ORDERED_DEMONSTRATE : recordingFirst ? [...DEMONSTRATE.slice(0, -1),
     "Leave any annotation and comment visible for a few seconds. Select Stop & save recording, wait for confirmation, then continue with the worksheet. No screenshot is needed."] : DEMONSTRATE;
   return <article className="pa-checklist-print">
     <h1>Scannex practical learner checklist</h1>

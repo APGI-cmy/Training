@@ -6,6 +6,8 @@ export function PracticalReport({ submission }: { submission: Submission }) {
   return <article className="pa-report pa-card"><h2>Scannex practical report</h2><p>{s.learnerName} · {s.assessmentReference} · revision {submission.revision} · {new Date(submission.submitted_at).toLocaleString()}</p>
     <p>Signed by typed declaration: {submission.signed_name}. This is an authenticated submission, not a verified handwritten or cryptographic personal signature.</p>
     {s.document.cases.map((c, i) => <section key={c.caseId}><h3>Image {i + 1} — {c.decision.toUpperCase()}</h3><p>{c.summary}</p>
+      {c.heldRegion ? <p>Declared Hold area: {REGION_LABELS[c.heldRegion]}</p> : null}
+      {c.practiceReviewed ? <p>Learner confirmed playback of the practice clip. The practice clip was not submitted.</p> : null}
       <table><caption>Systematic scan, bottom to top</caption><tbody>{REGIONS.map(r => <tr key={r}><th>{REGION_LABELS[r]}</th><td>{c.regions[r].replaceAll("_", " ")}</td></tr>)}</tbody></table>
       <table><caption>Mode optimisation — learner declarations, verified by assessor against evidence</caption><tbody>{MODES.map(m => <tr key={m}><th>{m}</th><td>Used: {c.modes[m].used ? "Yes" : "No"}; tuned: {c.modes[m].tuned ? "Yes" : "No"}. {c.modes[m].clarity}</td></tr>)}</tbody></table>
       {c.candidates.map((a, j) => <section key={a.id}><h4>Candidate {j + 1} — {a.annotation} · {REGION_LABELS[a.region]}</h4><p>{a.location} · {a.elimination} · {a.decision.toUpperCase()}</p><p>Elimination / retention reason: {a.reason}</p><p>Remarks: {a.remarks}</p>

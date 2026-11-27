@@ -20,21 +20,23 @@ function stable(value: unknown): string {
   return JSON.stringify(value) ?? "null";
 }
 
-function draftPart(value: CaseWorksheet, step: ExerciseStep) {
+function draftPart(value: CaseWorksheet, step: ExerciseStep, policy?: ExerciseEvidencePolicy) {
   switch (step) {
     case "viewer": return value.viewerReady;
-    case "scan": return [value.modes, value.regions, value.scanSequence, value.autoPanCompleted];
-    case "findings": return [value.candidates, value.regions, value.screeningComplete, value.checklistSource, value.modes, value.zoomLevels];
-    case "decision": return [value.decision, value.summary];
+    case "scan": return [policy?.guidedDeclaration ? null : value.modes, value.regions, value.scanSequence, value.autoPanCompleted];
+    case "findings": return policy?.guidedDeclaration ? [value.candidates.map(a => [a.id, a.annotation, a.region, a.location, a.elimination, a.reason, a.remarks, a.decision]), value.screeningComplete, value.zoomLevels]
+      : [value.candidates, value.regions, value.screeningComplete, value.checklistSource, value.modes, value.zoomLevels];
+    case "decision": return [value.decision, value.summary, value.heldRegion, value.modes, value.candidates];
     // These are verified independently of the worksheet, by the evidence API.
-    case "recording": case "evidence": return null;
+    case "recording": return value.practiceReviewed;
+    case "evidence": return null;
   }
 }
 
 export function exerciseProgress(value: CaseWorksheet, saved: CaseWorksheet | undefined, files: PracticalFile[], index: number, policy?: ExerciseEvidencePolicy) {
   const issues = exerciseIssues(value, files, index, policy);
   const completed = (step: ExerciseStep) => issues[step].length === 0 &&
-    (step === "recording" || step === "evidence" || (saved !== undefined && stable(draftPart(value, step)) === stable(draftPart(saved, step))));
+    (step === "evidence" || (step === "recording" && !policy?.guidedDeclaration) || (saved !== undefined && stable(draftPart(value, step, policy)) === stable(draftPart(saved, step, policy))));
   let priorStepsSaved = true;
   const steps = Object.fromEntries(EXERCISE_STEPS.map(step => {
     const done = priorStepsSaved && completed(step);
@@ -44,4 +46,8 @@ export function exerciseProgress(value: CaseWorksheet, saved: CaseWorksheet | un
     Record<ExerciseStep, { issues: string[]; done: boolean }>;
   const first = EXERCISE_STEPS.find(step => !steps[step].done);
   return { steps, done: !first, first: first ?? "decision" };
+}
+
+export function canOpenExercise(index: number, progress: ReturnType<typeof exerciseProgress>[]) {
+  return index >= 0 && index < progress.length && progress.slice(0, index).every(p => p.done);
 }

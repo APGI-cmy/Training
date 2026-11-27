@@ -3,7 +3,7 @@ import { getCourses } from "@/lib/courses";
 import { getAdminLearners } from "@/lib/services/admin/get-admin-learners";
 import { getAssessmentBookings } from "@/server/services/assessments/get-assessment-bookings";
 import { CourseBenefitRegister } from "@/components/admin/CourseBenefitRegister";
-import { ASSIGNMENT_RUBRIC_VERSION, ASSIGNMENT_RAW_MAX } from "@/lib/assessments/scannex-assignment";
+import { ASSIGNMENT_RUBRIC_VERSION, assignmentRawMax } from "@/lib/assessments/scannex-practical-rubric";
 
 export const dynamic = "force-dynamic";
 
@@ -57,7 +57,7 @@ export default async function AssessmentsPage() {
                       <strong>{booking.finalScore === null ? "Awaiting score" : `${booking.finalScore}/100`}</strong>
                       <span>Theory: {booking.theoryScore === null ? "—" : `${booking.theoryScore}/${booking.theoryMaxScore ?? 68}`}</span>
                       <span>Practical: {booking.practicalConvertedScore === null ? "—" : `${booking.practicalConvertedScore}/32`}</span>
-                      {booking.practicalRubric ? <span>Rubric: {booking.practicalRubric.rawScore}/{booking.practicalRubric.version === ASSIGNMENT_RUBRIC_VERSION ? ASSIGNMENT_RAW_MAX : 99} → {booking.practicalRubric.normalizedScore}/100</span> : null}
+                      {booking.practicalRubric ? <span>Rubric: {booking.practicalRubric.rawScore}/{booking.practicalRubric.version === ASSIGNMENT_RUBRIC_VERSION ? assignmentRawMax() : 99} → {booking.practicalRubric.normalizedScore}/100</span> : null}
                     </td>
                     <td><strong>{booking.stationLabel ?? "Station to be confirmed"}</strong><span>{booking.scheduledFor ? new Date(booking.scheduledFor).toLocaleString() : "Not scheduled"}</span>{booking.practicalRubric ? <span>Exercise: {booking.practicalRubric.trainerExerciseReference}</span> : null}{booking.practicalRubric?.materialSafetyConcern ? <span className="assessment-safety-flag">Safety review required</span> : null}</td>
                     <td>{booking.evidence.length ? booking.evidence.map((item) => <span key={`${item.type}:${item.reference}`}>{item.type.replaceAll("_", " ")}: {item.reference}</span>) : <span>Evidence not yet recorded</span>}</td>

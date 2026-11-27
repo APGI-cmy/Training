@@ -6,7 +6,7 @@ import { uploadPracticalFile, type PracticalTransport } from "./practical-client
 type ClipPurpose = "practice" | "assessment";
 const PRACTICE_LIMIT = 2;
 
-export function PracticalEvidence({ assignmentId, caseId, files, locked, onSaved, onBusy, phase, recordingFirst = false, guideHref, viewerReady = true, tabOnly = false, pilotTransport }: {
+export function PracticalEvidence({ assignmentId, caseId, files, locked, onSaved, onBusy, phase, recordingFirst = false, guideHref, viewerReady = true, tabOnly = false, pilotTransport, onPracticeReviewed, practiceReviewed = false, liveRecordingRequired = false }: {
   assignmentId: string; caseId: string; files: PracticalFile[]; locked: boolean; onSaved: (f: PracticalFile) => void; onBusy: (busy: boolean) => void;
   phase: "recording" | "evidence" | "hidden";
   recordingFirst?: boolean;
@@ -14,16 +14,22 @@ export function PracticalEvidence({ assignmentId, caseId, files, locked, onSaved
   viewerReady?: boolean;
   tabOnly?: boolean;
   pilotTransport?: PracticalTransport;
+  onPracticeReviewed?: () => void;
+  practiceReviewed?: boolean;
+  liveRecordingRequired?: boolean;
 }) {
   const [notice, setNotice] = useState(false), [message, setMessage] = useState("");
   const [recording, setRecording] = useState(false), [busy, setBusy] = useState(false), [choosing, setChoosing] = useState(false);
   const [recordAgain, setRecordAgain] = useState(false);
   const [purpose, setPurpose] = useState<ClipPurpose>("assessment");
-  const practiceKey = `scannex-preview-practice:${assignmentId}`;
+  const practiceRequired = Boolean(onPracticeReviewed);
+  const practicePending = practiceRequired && !practiceReviewed;
+  const practiceKey = `scannex-preview-practice:${assignmentId}:${caseId}`;
   const scopeCheckKey = `scannex-preview-scope-check:${assignmentId}`;
   const [practiceUsed, setPracticeUsed] = useState(() => recordingFirst && typeof window !== "undefined" ? Number(sessionStorage.getItem(practiceKey) ?? 0) : 0);
   const [scopeChecked, setScopeChecked] = useState(() => tabOnly && typeof window !== "undefined" && sessionStorage.getItem(scopeCheckKey) === "viewer-only");
   const [practiceClip, setPracticeClip] = useState<Blob | null>(null), [practiceUrl, setPracticeUrl] = useState("");
+  const [practicePlayed, setPracticePlayed] = useState(false);
   const [playClip, setPlayClip] = useState<Blob | null>(null), [playUrl, setPlayUrl] = useState("");
   const [scope, setScope] = useState<"viewer" | "screen">("viewer"), [cleanScreen, setCleanScreen] = useState(false);
   const [localClip, setLocalClip] = useState<{ file: File; needsUpload: boolean } | null>(null);
@@ -31,8 +37,8 @@ export function PracticalEvidence({ assignmentId, caseId, files, locked, onSaved
   const recorder = useRef<MediaRecorder | null>(null), stream = useRef<MediaStream | null>(null), timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mounted = useRef(true);
   const showRecorder = phase === "recording";
-  const savedEvidence = files.filter(f => f.case_id === caseId && f.status === "verified" && (f.kind === "recording" || f.kind === "native_log"));
-  const showCapture = showRecorder && (!recordingFirst || !savedEvidence.length || recordAgain);
+  const savedEvidence = files.filter(f => f.case_id === caseId && f.status === "verified" && (f.kind === "recording" || (!liveRecordingRequired && f.kind === "native_log")));
+  const showCapture = showRecorder && (!recordingFirst || !savedEvidence.length || recordAgain || practicePending);
   const captureDisabled = recording || busy || locked || choosing;
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; if (timer.current) clearTimeout(timer.current); if (recorder.current?.state === "recording") recorder.current.stop(); stream.current?.getTracks().forEach(t => t.stop()); }; }, []);
   useEffect(() => {
@@ -78,10 +84,15 @@ export function PracticalEvidence({ assignmentId, caseId, files, locked, onSaved
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   async function start(target: ClipPurpose = "assessment") {
-    if (!viewerReady || captureDisabled || (scope === "screen" && !cleanScreen) || (target === "practice" && practiceUsed >= PRACTICE_LIMIT)) return;
+    const practiceUnavailable = practiceRequired ? practiceReviewed : practiceUsed >= PRACTICE_LIMIT;
+    if (!viewerReady || captureDisabled || (scope === "screen" && !cleanScreen) || (target === "practice" && practiceUnavailable) || (target === "assessment" && practicePending)) return;
     if (tabOnly && !/\bEdg\//.test(navigator.userAgent)) { setMessage("Open this test in the standalone Microsoft Edge browser, not in the adjacent Codex pane."); return; }
     if (tabOnly && target === "assessment" && !scopeChecked) { setMessage("Play a short practice clip first and confirm that it shows only the Viewer."); return; }
-    if ((!notice && !recordingFirst) || !navigator.mediaDevices?.getDisplayMedia || typeof MediaRecorder === "undefined") { setMessage("Screen recording needs a supported desktop browser and your permission. Alternatively upload a recording or native log."); return; }
+    if ((!notice && !recordingFirst) || !navigator.mediaDevices?.getDisplayMedia || typeof MediaRecorder === "undefined") {
+      setMessage(practicePending ? "Practice recording needs a supported desktop browser and permission to share the Viewer. Open the worksheet in your desktop browser and try again."
+        : liveRecordingRequired ? "Recording needs a supported desktop browser and permission to share the Viewer." : "Screen recording needs a supported desktop browser and your permission. Alternatively upload a recording or native log.");
+      return;
+    }
     let started = false;
     setPurpose(target); setChoosing(true); onBusy(true);
     if (recordingFirst) setNotice(true);
@@ -108,8 +119,11 @@ export function PracticalEvidence({ assignmentId, caseId, files, locked, onSaved
         const type = mime.split(";")[0], blob = new Blob(chunks, { type });
         if (!blob.size) { setMessage("No recording was captured. Please record again."); return; }
         if (target === "practice") {
-          const count = practiceUsed + 1;
-          sessionStorage.setItem(practiceKey, String(count)); setPracticeUsed(count);
+          if (!practiceRequired) {
+            const count = practiceUsed + 1;
+            sessionStorage.setItem(practiceKey, String(count)); setPracticeUsed(count);
+          }
+          setPracticePlayed(false);
           setPracticeClip(blob); setMessage("Practice clip ready to play. It will not be submitted."); return;
         }
         const file = new File([blob], `scannex-${caseId}-${Date.now()}.${type === "video/mp4" ? "mp4" : "webm"}`, { type });
@@ -123,7 +137,7 @@ export function PracticalEvidence({ assignmentId, caseId, files, locked, onSaved
     finally { setChoosing(false); if (!started) onBusy(false); }
   }
   return <section className="pa-card pa-evidence" aria-label="Private evidence" hidden={phase === "hidden"}>
-    {showRecorder && recordingFirst && savedEvidence.length ? <>
+    {showRecorder && recordingFirst && savedEvidence.length && !practicePending ? <>
       <p className="pa-notice" role="status"><strong>{pilotTransport ? "Pilot recording saved in this tab." : savedEvidence.some(f => f.kind === "recording") ? "Recording saved for assessment." : "Evidence saved for assessment."}</strong> {pilotTransport ? "Play it here or save a private backup before closing this tab." : savedEvidence.length === 1 ? "No download, upload or screenshot needed." : "If you saved more than one clip, choose the one showing your scan in the next step."}</p>
       {!showCapture ? <details><summary>Need to record again?</summary><p>Only record again if the saved clip doesn’t show your work clearly.</p><button type="button" disabled={captureDisabled} onClick={() => setRecordAgain(true)}>Record again</button></details> : null}
     </> : null}
@@ -136,15 +150,19 @@ export function PracticalEvidence({ assignmentId, caseId, files, locked, onSaved
       {guideHref ? <p><a href={guideHref} download>Download the printable sign-in and recording guide (PDF)</a></p> : null}
       {!recording ? <p>Sign in to <strong>APGI Training</strong> with your course account first. Open the <strong>Assessment Viewer</strong> and finish any Scannex Viewer sign-in. Make the Viewer fill your screen and have your image ready. Then choose a recording below. {tabOnly ? "In standalone Edge, share the Viewer under the tab list, not Window or Entire screen." : "Share only the Viewer tab or window in the browser picker."}</p> : null}
       {recording ? <button type="button" className="primary-button" onClick={() => recorder.current?.stop()}>{purpose === "practice" ? "Stop practice recording" : "Stop & save recording"}</button> : <>
-        <p>{practiceUsed >= PRACTICE_LIMIT ? "You have used both practice recordings." : `${PRACTICE_LIMIT - practiceUsed} optional practice ${practiceUsed === 1 ? "recording" : "recordings"} left. Practice clips are never submitted.`}</p>
+        <p>{practiceRequired ? practiceReviewed ? "Practice complete. You can start the live run." : "Record one practice run for this image. Play it back and check it before starting the live run. The practice clip is not submitted." : practiceUsed >= PRACTICE_LIMIT ? "You have used both practice recordings." : `${PRACTICE_LIMIT - practiceUsed} optional practice ${practiceUsed === 1 ? "recording" : "recordings"} left. Practice clips are never submitted.`}</p>
         {tabOnly && !scopeChecked ? <p><strong>Before live recording:</strong> play one short practice clip. If it includes the worksheet, Codex, or anything outside the Viewer, do not proceed.</p> : null}
         {viewerReady ? <div className="button-row">
-          {practiceUsed < PRACTICE_LIMIT && !savedEvidence.length ? <button type="button" disabled={captureDisabled || Boolean(pending)} onClick={() => void start("practice")}>Practice recording</button> : null}
-          <button type="button" className="primary-button" disabled={captureDisabled || Boolean(pending) || (tabOnly && !scopeChecked)} onClick={() => void start()}>{pilotTransport ? "Live recording — ungraded pilot" : "Live recording — for assessment"}</button>
+          {(practiceRequired ? practicePending && !practiceClip : practiceUsed < PRACTICE_LIMIT && !savedEvidence.length) ? <button type="button" className={practicePending ? "primary-button" : undefined} disabled={captureDisabled || Boolean(pending)} onClick={() => void start("practice")}>Practice recording</button> : null}
+          {!practicePending ? <button type="button" className="primary-button" disabled={captureDisabled || Boolean(pending) || (tabOnly && !scopeChecked)} onClick={() => void start()}>{pilotTransport ? "Live recording — ungraded pilot" : "Live recording — for assessment"}</button> : null}
         </div> : <p>Return to <strong>Connect &amp; confirm</strong> to check your Viewer session before recording.</p>}
         {practiceUrl ? <details open><summary>Play latest practice recording</summary>
           <p>This clip is temporary. Check that it shows the Viewer and is clear, then use your checklist. Saving a live recording clears this clip.</p>
-          <video controls preload="metadata" src={practiceUrl} style={{width: "100%", maxHeight: "55vh"}} aria-label="Practice recording" />
+          <video controls preload="metadata" src={practiceUrl} onPlaying={() => setPracticePlayed(true)} style={{width: "100%", maxHeight: "55vh"}} aria-label="Practice recording" />
+          {practicePending ? <div className="button-row">
+            <button type="button" className="primary-button" disabled={captureDisabled || !practicePlayed} onClick={onPracticeReviewed}>I checked the practice clip — continue</button>
+            <button type="button" disabled={captureDisabled} onClick={() => { setPracticeClip(null); setPracticePlayed(false); }}>Wrong tab or unreadable? Retry practice</button>
+          </div> : null}
           {tabOnly ? <label className="pa-check"><input type="checkbox" checked={scopeChecked} onChange={e => { const ok = e.target.checked; setScopeChecked(ok); if (ok) sessionStorage.setItem(scopeCheckKey,"viewer-only"); else sessionStorage.removeItem(scopeCheckKey); }} /> I played this clip and it shows only Scannex Viewer, not Codex, the worksheet or my desktop.</label> : null}
         </details> : null}
       </>}
@@ -175,9 +193,9 @@ export function PracticalEvidence({ assignmentId, caseId, files, locked, onSaved
       </div>
       {!recordingFirst ? <p>Download a copy of the latest clip before switching images or leaving or refreshing this page. Keep the downloaded file private.</p> : null}
     </> : null}
-    {showCapture && (!recordingFirst || (!recording && !busy)) ? <details><summary>{recordingFirst ? "Having trouble recording?" : "Use an existing recording or an APGI-approved native action log"}</summary>
+    {showCapture && !practicePending && (!recordingFirst || (!recording && !busy)) ? <details><summary>{recordingFirst ? "Having trouble recording?" : "Use an existing recording or an APGI-approved native action log"}</summary>
       <label className="pa-file">Upload a recording<input type="file" accept=".webm,.mp4" disabled={captureDisabled || !notice} onChange={e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void upload(f, "recording"); }} /></label>
-      <label className="pa-file">Upload a native log<input type="file" accept=".txt,.log,.csv,.json,.pdf" disabled={captureDisabled} onChange={e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void upload(f, "native_log"); }} /></label>
+      {!liveRecordingRequired ? <label className="pa-file">Upload a native log<input type="file" accept=".txt,.log,.csv,.json,.pdf" disabled={captureDisabled} onChange={e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void upload(f, "native_log"); }} /></label> : null}
     </details> : null}
     {phase === "evidence" ? <><h3>Save a Viewer screenshot</h3><p>Use a clear Viewer still from this exercise with the native annotation visible, if you made one. Do not upload the desktop or browser screenshot if it shows unrelated information.</p>
       <label>Upload Viewer screenshot<input type="file" disabled={captureDisabled} accept=".png,.jpg,.jpeg,.tif,.tiff" onChange={e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void upload(f, "viewer_image"); }} /></label>

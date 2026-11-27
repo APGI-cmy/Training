@@ -1,13 +1,5 @@
 // Shared worksheet rules, not a material classifier or a learner self-grading engine.
-import { SCANNEX_PRACTICAL_RUBRIC } from "./scannex-practical-rubric";
 export const PRACTICAL_VERSION = "scannex-practical-assignment-v1-20261125";
-// The hosted pilot is ungraded. Preserve the deployed assessor contract.
-export const ASSIGNMENT_RUBRIC_VERSION = "scannex-practical-v1-even-density-20261125";
-export const ASSIGNMENT_RAW_MAX = SCANNEX_PRACTICAL_RUBRIC.reduce((n, c) => n + c.maximumScore, 0);
-export function assignmentScore(scores: Record<string, number>) {
-  const rawScore = SCANNEX_PRACTICAL_RUBRIC.reduce((n, c) => n + (scores[c.id] ?? 0), 0);
-  return { rawScore, normalizedScore: Math.round(rawScore / ASSIGNMENT_RAW_MAX * 10000) / 100 };
-}
 export const RECORDING_NOTICE_VERSION = "scannex-recording-v1-20261125";
 export const PRACTICAL_PATH = "/learn/scannex-training-programme/units/lu9/viewer-lab";
 export const PRACTICAL_API = "/api/v1/scannex-practical";
@@ -43,6 +35,8 @@ export type CaseWorksheet = {
   screeningComplete?: boolean;
   zoomLevels?: ScannexZoomLevel[];
   checklistSource?: "electronic" | "paper";
+  practiceReviewed?: boolean;
+  heldRegion?: Region;
   // Optional in older frozen submissions. Required for new submission.
   scanSequence?: ScanSequence;
   candidates: Candidate[]; summary: string; decision: Decision;
@@ -138,6 +132,8 @@ export function parseDocument(input: unknown, cases: LearnerCase[]): AssignmentD
         ...(typeof c.viewerReady === "boolean" ? { viewerReady: c.viewerReady } : {}),
         ...(typeof c.autoPanCompleted === "boolean" ? { autoPanCompleted: c.autoPanCompleted } : {}),
         ...(typeof c.screeningComplete === "boolean" ? { screeningComplete: c.screeningComplete } : {}),
+        ...(typeof c.practiceReviewed === "boolean" ? { practiceReviewed: c.practiceReviewed } : {}),
+        ...(c.decision === "hold" && c.heldRegion != null && c.heldRegion !== "" ? { heldRegion: choice(c.heldRegion, REGIONS, "feet") } : {}),
         ...(Array.isArray(c.zoomLevels) ? { zoomLevels: SCANNEX_ZOOM_LEVELS.filter(level => (c.zoomLevels as unknown[]).includes(level)) } : {}),
         ...(c.checklistSource === "paper" || c.checklistSource === "electronic" ? { checklistSource: c.checklistSource } : {}),
         modes: Object.fromEntries(MODES.map(m => { const v = object(modes[m]); return [m, { used: v.used === true, tuned: v.tuned === true, clarity: text(v.clarity, 1000) }]; })) as CaseWorksheet["modes"],
@@ -165,9 +161,14 @@ export function parseDocument(input: unknown, cases: LearnerCase[]): AssignmentD
 
 export const EXERCISE_STEPS = ["viewer", "recording", "evidence", "scan", "findings", "decision"] as const;
 export type ExerciseStep = typeof EXERCISE_STEPS[number];
-export type ExerciseEvidencePolicy = { requireScreenshot?: boolean; orderedReview?: boolean };
+export type ExerciseEvidencePolicy = { requireScreenshot?: boolean; orderedReview?: boolean; guidedDeclaration?: boolean };
 export const RECORDING_ONLY_PREVIEW = { requireScreenshot: false } as const;
 export const ORDERED_SCANNEX_PREVIEW = { requireScreenshot: false, orderedReview: true } as const;
+export const LEARNER_SCANNEX_WORKFLOW = { ...ORDERED_SCANNEX_PREVIEW, guidedDeclaration: true } as const;
+
+export function requiresExercisePractice(index: number, policy?: ExerciseEvidencePolicy) {
+  return policy?.guidedDeclaration === true && index > 0;
+}
 
 export function hasPaperChecklist(c: CaseWorksheet, files: PracticalFile[]) {
   return files.some(f => f.case_id === c.caseId && f.status === "verified" && f.kind === "supporting_report");
@@ -184,12 +185,15 @@ export function exerciseIssues(c: CaseWorksheet, files: PracticalFile[], i: numb
     const label = `Image ${i + 1}`;
     const issues: Record<ExerciseStep, string[]> = { viewer: [], recording: [], evidence: [], scan: [], findings: [], decision: [] };
     if (!c.viewerReady) issues.viewer.push(`${label}: confirm the assigned exercise is visible in the assessment Viewer.`);
-    const timingSources = scanTimingEvidence(files, c.caseId);
-    if (!timingSources.length) issues.recording.push(`${label}: save a verified recording or native log for assessor review.`);
+    const timingSources = scanTimingEvidence(files, c.caseId).filter(f => !policy.guidedDeclaration || f.kind === "recording");
+    if (!timingSources.length) issues.recording.push(`${label}: save a verified ${policy.guidedDeclaration ? "live recording" : "recording or native log"} for assessor review.`);
+    if (requiresExercisePractice(i, policy) && !c.practiceReviewed) issues.recording.push(`${label}: record and check one practice clip before the live run.`);
     if (policy.requireScreenshot !== false && !files.some(f => f.case_id === c.caseId && f.status === "verified" && f.kind === "viewer_image"))
       issues.evidence.push(`${label}: upload a Viewer screenshot, with native annotations where applicable.`);
     const retained = c.candidates.filter(a => a.elimination !== "excluded");
-    const paper = policy.orderedReview && c.checklistSource === "paper";
+    const paper = policy.orderedReview && !policy.guidedDeclaration && c.checklistSource === "paper";
+    const heldCandidates = retained.filter(a => a.decision !== "release");
+    const checklistStep = policy.guidedDeclaration ? issues.decision : issues.findings;
     if (policy.orderedReview) {
       if (!c.autoPanCompleted) issues.scan.push(`${label}: confirm you used Auto Pan to inspect the entire image.`);
       if (!c.screeningComplete) issues.findings.push(`${label}: confirm you finished screening and explained any exclusions.`);
@@ -198,9 +202,13 @@ export function exerciseIssues(c: CaseWorksheet, files: PracticalFile[], i: numb
       if (retained.length && paper && !hasPaperChecklist(c, files)) issues.findings.push(`${label}: attach the completed paper checklist to this exercise.`);
       if (c.decision === "review") issues.decision.push(`${label}: choose Hold or Release to finish the exercise.`);
       if (c.decision === "release" && retained.some(a => a.decision !== "release")) issues.decision.push(`${label}: use Hold if a flagged candidate remains unresolved.`);
+      if (policy.guidedDeclaration && c.decision === "hold") {
+        if (!c.heldRegion) issues.decision.push(`${label}: select the main body area that led to Hold.`);
+        else if (!heldCandidates.some(a => a.region === c.heldRegion)) issues.decision.push(`${label}: record a flagged candidate in the selected body area, and do not mark it ruled out.`);
+      }
     }
-    if (!policy.orderedReview || (retained.length && !paper)) MODES.forEach(m => {
-      if (!c.modes[m].used || !c.modes[m].tuned || !c.modes[m].clarity.trim()) (policy.orderedReview ? issues.findings : issues.scan).push(`${label}: describe your use and optimisation of ${m}.`);
+    if (!policy.orderedReview || (retained.length && !paper && (!policy.guidedDeclaration || c.decision === "hold"))) MODES.forEach(m => {
+      if (!c.modes[m].used || !c.modes[m].tuned || !c.modes[m].clarity.trim()) (policy.orderedReview ? checklistStep : issues.scan).push(`${label}: describe your use and optimisation of ${m}.`);
     });
     REGIONS.forEach(r => {
       if (c.regions[r] === "not_reviewed") issues.scan.push(`${label}: record the ${REGION_LABELS[r]} scan outcome.`);
@@ -209,7 +217,7 @@ export function exerciseIssues(c: CaseWorksheet, files: PracticalFile[], i: numb
     });
     const sequence = c.scanSequence;
     if (!sequence?.evidenceFileId || !timingSources.some(f => f.id === sequence.evidenceFileId))
-      issues.scan.push(`${label}: choose a verified recording or native log from this image as the scan timing source.`);
+      issues.scan.push(`${label}: choose a verified ${policy.guidedDeclaration ? "recording" : "recording or native log"} from this image as the scan timing source.`);
     const missingCheckpoints = REGIONS.filter(r => elapsedScanSeconds(sequence?.completedAt[r] ?? "") === null);
     if (missingCheckpoints.length)
       issues.scan.push(`${label}: enter an MM:SS scan checkpoint for ${missingCheckpoints.map(r => REGION_LABELS[r]).join(", ")}.`);
@@ -218,11 +226,11 @@ export function exerciseIssues(c: CaseWorksheet, files: PracticalFile[], i: numb
       if (!a.annotation.trim() || !a.location.trim() || !a.remarks.trim())
         issues.findings.push(`${label}, candidate ${index + 1}: add the native annotation reference, location and Viewer remarks.`);
       if (!a.reason.trim()) issues.findings.push(`${label}, candidate ${index + 1}: explain why you retained, excluded or could not resolve this candidate.`);
-      if (a.elimination !== "excluded" && !paper) {
+      if (a.elimination !== "excluded" && !paper && (!policy.guidedDeclaration || (c.decision === "hold" && a.decision !== "release"))) {
         if (MODES.some(m => !a.modes[m].anomaly || !a.modes[m].structure || !a.modes[m].edges)
           || ["F1", "F2"].some(m => !a.modes[m as Mode].spread || !a.modes[m as Mode].density)
           || !a.densityCheck.trim() || !a.boneComparison.trim() || !a.embossComparison.trim())
-          issues.findings.push(`${label}, candidate ${index + 1}: finish the electronic checklist; use uncertain where necessary.`);
+          checklistStep.push(`${label}, candidate ${index + 1}: finish the electronic checklist; use uncertain where necessary.`);
       }
     });
     return issues;
@@ -235,7 +243,7 @@ export function submissionIssues(doc: AssignmentDocument, files: PracticalFile[]
     const perStep = exerciseIssues(c, files, i, policy);
     for (const step of EXERCISE_STEPS) {
       // Existing worksheets can predate the guided viewer acknowledgement.
-      if (step !== "viewer" || c.viewerReady !== undefined) issues.push(...perStep[step]);
+      if (step !== "viewer" || policy?.guidedDeclaration || c.viewerReady !== undefined) issues.push(...perStep[step]);
     }
   });
   return issues;

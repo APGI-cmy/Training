@@ -6,11 +6,12 @@ import { getCourseAccess } from "@/lib/services/enrolments/get-course-access";
 import { getBenefitState } from "@/server/services/course-benefits";
 import { getProfile } from "@/server/services/profiles";
 import { SCANNEX_PRACTICAL_RUBRIC } from "@/lib/assessments/scannex-practical-rubric";
-import { FILE_KINDS, isUuid, newDocument, object, packApprovalIssues, parseAnswerKeys, parseDocument, parsePackCases, safeFilename, submissionIssues, text, uploadLimit, validateFile,
+import { FILE_KINDS, LEARNER_SCANNEX_WORKFLOW, isUuid, newDocument, object, packApprovalIssues, parseAnswerKeys, parseDocument, parsePackCases, safeFilename, submissionIssues, text, uploadLimit, validateFile,
  type CasePack, type FileKind, type PracticalAssignment, type PracticalFile } from "@/lib/assessments/scannex-assignment";
 
 export const BUCKET = "v1-practical-evidence";
 const PACK_COLUMNS = "id,title,version,status,instructions,density_rule,learner_cases,created_at,approved_at,edit_version";
+const ASSIGNMENT_COLUMNS = "id,assessment_id,pack_id,learner_user_id,v1_run_id,status,revision,draft_version,document,latest_submission_id,started_at,submitted_at";
 type StoredFile = PracticalFile & { storage_path: string; uploaded_by: string };
 export type Actor = { session: AlpSession; admin: boolean };
 export async function actor(adminOnly = false): Promise<Actor> {
@@ -50,17 +51,18 @@ export async function learnerWorkspace(who: Actor) {
   await enrolled(who.session);
   const [benefits, profile, assignments] = await Promise.all([
     getBenefitState(who.session.user.id), getProfile(who.session),
-    rows<PracticalAssignment>("v1_practical_assignments", `learner_user_id=eq.${who.session.user.id}&select=*&order=created_at.desc&limit=20`)
+    rows<PracticalAssignment>("v1_practical_assignments", `learner_user_id=eq.${who.session.user.id}&select=${ASSIGNMENT_COLUMNS}&order=created_at.desc&limit=20`)
   ]);
   const a = assignments.find(x => x.v1_run_id === benefits.runId) ?? null;
-  if (!a) return { assignment: null, pack: null, files: [], submissions: [], reviews: [], learningComplete: benefits.learningComplete, name: profile?.certificate_name || profile?.full_name || "" };
-  const [p, files, submissions, reviews, bookings] = await Promise.all([
-    pack(a.pack_id), rows<StoredFile>("v1_practical_files", `assignment_id=eq.${a.id}&select=*&order=created_at`),
-    rows<Record<string, unknown>>("v1_practical_submissions", `assignment_id=eq.${a.id}&select=*&order=revision.desc&limit=2`),
-    rows<Record<string, unknown>>("v1_practical_reviews", `submission_id=in.(${a.latest_submission_id || "00000000-0000-4000-8000-000000000000"})&select=*`),
+  if (!a) return { assignment: null, pack: null, files: [], submissions: [], learningComplete: benefits.learningComplete, name: profile?.certificate_name || profile?.full_name || "" };
+  const [[p], files, bookings] = await Promise.all([
+    rows<Pick<CasePack, "learner_cases">>("v1_practical_packs", `id=eq.${a.pack_id}&select=learner_cases&limit=1`),
+    rows<StoredFile>("v1_practical_files", `assignment_id=eq.${a.id}&select=*&order=created_at`),
     rows<{ assessment_reference: string }>("assessment_bookings", `id=eq.${a.assessment_id}&select=assessment_reference`)
   ]);
-  return { assignment: a, pack: p, files: files.map(publicFile), submissions, reviews, learningComplete: benefits.learningComplete,
+  if (!p) throw new Error("NOT_FOUND");
+  const learnerCases = parsePackCases(p.learner_cases).map(({ id, number, title, brief }) => ({ id, number, title, brief, sourceFileId: null, quality: { F1: "", F2: "", F3: "", F4: "" } }));
+  return { assignment: a, pack: { learner_cases: learnerCases }, files: files.map(publicFile), submissions: [], learningComplete: benefits.learningComplete,
     name: profile?.certificate_name || profile?.full_name || "", reference: bookings[0]?.assessment_reference };
 }
 export function publicFile(f: StoredFile): PracticalFile {
@@ -79,9 +81,9 @@ export async function learnerMutation(who: Actor, body: Record<string, unknown>)
   } else if (body.operation === "submit") {
     if (body.declaration !== true || !Number.isSafeInteger(expectedVersion)) throw new Error("SIGNATURE_REQUIRED");
     const files = await rows<PracticalFile>("v1_practical_files", `assignment_id=eq.${a.id}&select=*`);
-    const issues = submissionIssues(parseDocument(a.document, p.learner_cases), files);
+    const issues = submissionIssues(parseDocument(a.document, p.learner_cases), files, LEARNER_SCANNEX_WORKFLOW);
     if (issues.length) throw new Error("INCOMPLETE_SUBMISSION");
-    await mutate(who, "submit", a.id, { expectedVersion, signedName: text(body.signedName, 200), declaration: true });
+    await mutate(who, "submit", a.id, { expectedVersion, signedName: text(body.signedName, 200), declaration: true, evidencePolicy: "guided-recording-v1" });
   } else throw new Error("INVALID_OPERATION");
   return learnerWorkspace(who);
 }
@@ -150,11 +152,8 @@ export async function accessibleFile(who: Actor, id: unknown): Promise<StoredFil
   const [f] = await rows<StoredFile>("v1_practical_files", `id=eq.${id}&select=*`);
   if (!f) throw new Error("NOT_FOUND");
   if (!who.admin) {
-    if (f.assignment_id) await ownedAssignment(who, f.assignment_id);
-    else {
-      const assignments = await rows<PracticalAssignment>("v1_practical_assignments", `pack_id=eq.${f.pack_id}&learner_user_id=eq.${who.session.user.id}&select=*`);
-      if (!assignments.length || f.status !== "verified") throw new Error("NOT_FOUND");
-    }
+    if (!f.assignment_id || f.kind === "case_source") throw new Error("NOT_FOUND");
+    await ownedAssignment(who, f.assignment_id);
   }
   return f;
 }

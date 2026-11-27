@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { isScannexHostedPilot, privateIrelandViewerUrl } from "../src/lib/assessments/scannex-hosted-pilot";
 import { openScannexPilotTransport } from "../src/components/assessment/scannex-pilot-transport";
 import type { PracticalWorkspace } from "../src/components/assessment/PracticalAssignment";
+import { REGIONS, newDocument, newScanSequence } from "../src/lib/assessments/scannex-assignment";
 
 const allowed = {
   environment: "preview", enabled: "1", operator: "operator@example.test",
@@ -41,4 +42,43 @@ describe("signed-in V1 Image 78 preview", () => {
     pilot.clearEvidence();
     expect(pilot.evidence(evidence.id)).toBeUndefined();
   });
+});
+
+it("lets the three-case preview complete only a local learner submission, with separate evidence and practice for each later case", async () => {
+  const pilot = openScannexPilotTransport("learner-test");
+  const start = await pilot.request<PracticalWorkspace>();
+  const id = start.assignment!.id;
+  const cases = start.pack!.learner_cases;
+  expect(cases.map(c => c.title)).toEqual(["Test Image 1", "Test Image 2", "Test Image 3"]);
+  expect(start).not.toHaveProperty("reviews");
+  await pilot.request("", { operation: "start", id });
+  const doc = newDocument(cases);
+  doc.preparation = { viewerOpened: true, correctImages: true, systematicScan: true };
+  const submit = (expectedVersion: number, signedName = "Test Learner") => pilot.request<PracticalWorkspace>("", { operation: "submit", id, expectedVersion, signedName, declaration: true });
+  await expect(submit(0)).rejects.toThrow();
+  const file = new File(["test clip"], "clip.webm", { type: "video/webm" });
+  for (const c of doc.cases) {
+    const recording = await pilot.upload(file, { assignmentId: id, caseId: c.caseId, kind: "recording", recordingNoticeAccepted: true }, () => {});
+    c.viewerReady = c.autoPanCompleted = c.screeningComplete = true;
+    c.decision = "release";
+    c.summary = "Synthetic test decision";
+    c.scanSequence = newScanSequence();
+    c.scanSequence.evidenceFileId = recording.id;
+    const times = c.scanSequence.completedAt;
+    REGIONS.forEach((r, j) => { c.regions[r] = "no_candidate"; times[r] = `00:0${j + 1}`; });
+  }
+  doc.cases[1].practiceReviewed = true;
+  await pilot.request("", { operation: "save", id, expectedVersion: 0, document: doc });
+  await expect(submit(1)).rejects.toThrow();
+  doc.cases[2].practiceReviewed = true;
+  await pilot.request("", { operation: "save", id, expectedVersion: 1, document: doc });
+  await expect(submit(2, "Wrong Name")).rejects.toThrow();
+  const completed = await submit(2);
+  expect(completed.assignment?.status).toBe("submitted");
+  expect(completed.submissions).toEqual([]);
+  expect(completed.files.map(f => f.case_id)).toEqual(cases.map(c => c.id));
+  expect(completed).not.toHaveProperty("reviews");
+  await expect(pilot.request("", { operation: "review", id })).rejects.toThrow();
+  expect((await openScannexPilotTransport("learner-test").request<PracticalWorkspace>()).assignment?.status).toBe("assigned");
+  pilot.clearEvidence();
 });

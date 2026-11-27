@@ -12,7 +12,8 @@ import { getCourseResume } from "@/lib/services/progress/get-course-resume";
 import { viewerReturnPath } from "@/lib/services/viewer-lab/viewer-return-path";
 import { PracticalAssignment } from "@/components/assessment/PracticalAssignment";
 import { ScannexHostedPilot } from "@/components/assessment/ScannexHostedPilot";
-import { isHostedPilotDeployment, isScannexHostedPilot } from "@/lib/assessments/scannex-hosted-pilot";
+import { ScannexSyntheticViewer, ScannexWorkflowPreview } from "@/components/assessment/ScannexWorkflowPreview";
+import { SCANNEX_LEARNER_TEST, SCANNEX_TEST_CASES, isHostedPilotDeployment, isScannexHostedPilot } from "@/lib/assessments/scannex-hosted-pilot";
 import { devPilotStreamingRole } from "@/server/services/scannex-pilot-stream";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,8 @@ type PageProps = {
   searchParams: Promise<{
     status?: string;
     returnTo?: string;
+    workflow?: string;
+    sample?: string;
   }>;
 };
 
@@ -40,7 +43,9 @@ const statusMessages: Record<string, string> = {
 export default async function ViewerLabPage({ params, searchParams }: PageProps) {
   const session = await requireSession();
   const { courseSlug, unitSlug } = await params;
-  const { status, returnTo } = await searchParams;
+  const { status, returnTo, workflow, sample } = await searchParams;
+  const learnerTest = workflow === SCANNEX_LEARNER_TEST;
+  if (learnerTest && (!isHostedPilotDeployment(process.env) || courseSlug !== SCANNEX_COURSE_ID || unitSlug !== "lu9")) notFound();
   const course = getCourseBySlug(courseSlug);
   const unit = course?.units.find((candidate) => candidate.slug === unitSlug);
   const settings = await getViewerLabSettings();
@@ -73,16 +78,22 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
       roles: await getUserRoles(session.accessToken), course: course.slug, unit: unit.slug,
     });
     if (!allowed) notFound();
+    if (learnerTest && sample !== undefined) {
+      const image = SCANNEX_TEST_CASES.find(n => String(n) === sample);
+      if (!image) notFound();
+      return <ScannexSyntheticViewer image={image} />;
+    }
     return <main>
       <section className="unit-masthead">
         <div className="content-inner">
           <Link className="back-link" href={`/learn/${course.slug}/units/${unit.slug}`}>Back to summative assessment</Link>
           <p className="eyebrow">Private V1 preview</p>
           <h1>Scannex Practical Assessment</h1>
-          <p>Test the redesigned learner workflow using one ungraded exercise in the development Viewer.</p>
+          <p>{learnerTest ? "Test the full three-exercise learner workflow in Edge using synthetic cases." : "Test one ungraded exercise in the development Viewer."}</p>
+          {!learnerTest && <Link href={`?workflow=${SCANNEX_LEARNER_TEST}`}>Open the three-exercise learner test</Link>}
         </div>
       </section>
-      <section className="content-band"><div className="content-inner"><ScannexHostedPilot automaticLaunchConfigured={Boolean(devPilotStreamingRole())} /></div></section>
+      <section className="content-band"><div className="content-inner">{learnerTest ? <ScannexWorkflowPreview /> : <ScannexHostedPilot automaticLaunchConfigured={Boolean(devPilotStreamingRole())} />}</div></section>
     </main>;
   }
 
@@ -170,11 +181,6 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
           <p className="eyebrow">Controlled practical environment</p>
           <h1>Scannex Practical Assessment</h1>
           <p>Part B of the final assessment. Start with the instructions and printable checklist, then follow the guided steps for three assigned Viewer exercises.</p>
-          <div className="unit-meta">
-            <span>32 practical marks</span>
-            <span>40-mark assignment rubric</span>
-            <span>75% overall pass requirement</span>
-          </div>
           <div className="button-row"><a className="primary-button" href="#practical-workflow">Go to the practical workflow</a></div>
         </div>
       </section>
@@ -194,7 +200,7 @@ export default async function ViewerLabPage({ params, searchParams }: PageProps)
               <li>The assessor observes the practical rubric, then saves the approved result and Viewer Movement Log for review.</li>
             </ol>
             <p className="resource-status" role="status">
-              The supervised station uses its separate legacy rubric. The 40-mark rubric applies to the recorded assignment. Neither opening the page nor attending the station completes the course.
+              Neither opening the page nor attending the station completes the course.
             </p>
           </section>
           </details>
